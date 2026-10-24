@@ -1,0 +1,43 @@
+# Suwayomi-Server for Kartka. Runs Tachiyomi/Keiyoushi extensions on the JVM
+# and serves a GraphQL API on loopback; the host Caddy edge publishes it as
+# https://suwayomi.kuhy.duckdns.org/ behind basic auth (install.sh writes that
+# site). Installed by deploy/suwayomi/install.sh -- edit the repo copy, rerun.
+#
+# Loopback on purpose: on 0.0.0.0 anyone on the LAN could reach port 4567 and
+# skip Caddy's password. The -D flags below win over server.conf, so a setting
+# changed through the web UI cannot reopen it after a restart.
+
+[Unit]
+Description=Suwayomi-Server for Kartka (loopback; published by Caddy)
+Documentation=file://%h/src/kartka/docs/DOCS-suwayomi.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/services/suwayomi
+# The user manager carries the i3 session's DISPLAY; without this the server
+# would put a tray icon and a browser tab on the live desktop.
+UnsetEnvironment=DISPLAY XAUTHORITY WAYLAND_DISPLAY
+# Upstream's suwayomi-server.sh preloads this (it catches KCEF aborts).
+Environment=LD_PRELOAD=%h/services/suwayomi/app/current/bin/catch_abort.so
+ExecStart=%h/services/suwayomi/app/current/jre/bin/java \
+	-Xmx1g \
+	-Djava.awt.headless=true \
+	-Dsuwayomi.tachidesk.config.server.rootDir=%h/services/suwayomi/data \
+	-Dsuwayomi.tachidesk.config.server.ip=127.0.0.1 \
+	-Dsuwayomi.tachidesk.config.server.port=4567 \
+	-Dsuwayomi.tachidesk.config.server.authMode=NONE \
+	-Dsuwayomi.tachidesk.config.server.initialOpenInBrowserEnabled=false \
+	-Dsuwayomi.tachidesk.config.server.systemTrayEnabled=false \
+	-Dsuwayomi.tachidesk.config.server.kcefEnabled=false \
+	-jar %h/services/suwayomi/app/current/bin/Suwayomi-Server.jar
+# The JVM exits 143 on SIGTERM; that is a clean stop, not a failure.
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=10s
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target
