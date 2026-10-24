@@ -78,7 +78,7 @@ void main() {
           },
         );
       });
-      final kh = ProxyKartkaHttp(client, Uri.parse('http://127.0.0.1:8791/'));
+      final kh = ProxyKartkaHttp(client, Uri.parse('http://127.0.0.1:47391/'));
       final r = await kh.post(
         Uri.parse('https://uploads.mangadex.org/a?b=c'),
         headers: {'Referer': 'https://mangadex.org/', 'Content-Type': 'text/x'},
@@ -107,7 +107,7 @@ void main() {
     test('refuses non-http(s) before reaching the wrapper', () async {
       final kh = ProxyKartkaHttp(
         MockClient((_) async => fail('must not send')),
-        Uri.parse('http://127.0.0.1:8791/'),
+        Uri.parse('http://127.0.0.1:47391/'),
       );
       await expectLater(kh.get(Uri.parse('ftp://h/')), throwsArgumentError);
     });
@@ -122,7 +122,7 @@ void main() {
 
   test('wrapper protocol constants are what desktop/ serves', () {
     // Keep in step with desktop/lib/src/protocol.dart (separate package).
-    expect(KartkaWrapper.port, 8791);
+    expect(KartkaWrapper.port, 47391);
     expect(KartkaWrapper.apiHeader, 'x-kartka');
     expect(KartkaWrapper.requestHeaderPrefix, 'x-kartka-h-');
     expect(KartkaWrapper.responseHeaderPrefix, 'x-kartka-r-');
