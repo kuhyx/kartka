@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:kartka/platform/http_client.dart';
-import 'package:kartka/platform/key_value_store.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/platform/oauth_redirect.dart';
 import 'package:kartka/tracking/common/rate_limiter.dart';
 
@@ -16,64 +15,28 @@ KartkaResponse reply(
   String body, {
   int status = 200,
   Map<String, String> headers = const {},
-}) => KartkaResponse(
-  statusCode: status,
-  bodyBytes: Uint8List.fromList(utf8.encode(body)),
-  headers: headers,
-);
+}) => FakeKartkaHttp.text(body, status: status, headers: headers);
 
-/// One recorded POST.
-class SentRequest {
-  new(this.url, this.headers, this.body);
-  final Uri url;
-  final Map<String, String> headers;
-  final String? body;
-
+/// Decoded GraphQL payload of a recorded request.
+extension GraphQlRequest on FakeRequest {
+  /// The JSON body.
   Map<String, Object?> get json => jsonDecode(body!) as Map<String, Object?>;
+
+  /// The `variables` object.
   Map<String, Object?> get variables =>
       json['variables']! as Map<String, Object?>;
 }
 
-/// Replays queued responses and records every request.
-class FakeHttp implements KartkaHttp {
+/// The shared [FakeKartkaHttp], answering from a queue of responses.
+class QueuedHttp {
+  /// Responses still to hand out, in order.
   final List<KartkaResponse> queue = [];
-  final List<SentRequest> sent = [];
 
-  @override
-  Future<KartkaResponse> get(
-    Uri url, {
-    Map<String, String> headers = const {},
-  }) => throw UnsupportedError('AniList only POSTs');
+  /// The client under test.
+  late final FakeKartkaHttp http = FakeKartkaHttp((_) => queue.removeAt(0));
 
-  @override
-  Future<KartkaResponse> post(
-    Uri url, {
-    Map<String, String> headers = const {},
-    String? body,
-  }) async {
-    sent.add(SentRequest(url, headers, body));
-    return queue.removeAt(0);
-  }
-}
-
-/// In-memory [KeyValueStore].
-class MemoryKv implements KeyValueStore {
-  final Map<String, String> data = {};
-
-  @override
-  Future<String?> get(String key) async => data[key];
-
-  @override
-  Future<void> set(String key, String value) async => data[key] = value;
-
-  @override
-  Future<void> remove(String key) async => data.remove(key);
-
-  @override
-  Future<Map<String, String>> entries({String prefix = ''}) async => {
-    for (final e in data.entries)
-      if (e.key.startsWith(prefix)) e.key: e.value,
-  };
+  /// Every request sent so far.
+  List<FakeRequest> get sent => http.requests;
 }
 
 /// Returns a preset redirect, or throws [error].
@@ -101,3 +64,6 @@ class FakeOAuth implements OAuthRedirect {
 /// A limiter that never waits.
 RateLimiter freeLimiter() =>
     RateLimiter(perMinute: 1000, minGap: Duration.zero, sleep: (_) async {});
+
+/// Lets queued microtasks and stream events run.
+Future<void> pumpEvents() => Future<void>.delayed(Duration.zero);

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/platform/oauth_redirect.dart';
 import 'package:kartka/tracking/anilist/anilist_auth.dart';
 
@@ -16,7 +17,7 @@ Uri _granted(Uri base, {String token = 'TOK', String expires = '31536000'}) =>
     );
 
 void main() {
-  late MemoryKv secrets;
+  late MemoryKeyValueStore secrets;
   var now = _t0;
 
   AniListAuth auth(FakeOAuth oauth, {String android = 'A', String web = 'W'}) =>
@@ -28,7 +29,7 @@ void main() {
       );
 
   setUp(() {
-    secrets = MemoryKv();
+    secrets = MemoryKeyValueStore();
     now = _t0;
   });
 
@@ -41,8 +42,9 @@ void main() {
       'https://anilist.co/api/v2/oauth/authorize?client_id=W&response_type=token',
     );
     expect(await a.token(), 'TOK');
-    final stored =
-        jsonDecode(secrets.data[AniListAuth.tokenKey]!) as Map<String, Object?>;
+    final stored = jsonDecode(
+      (await secrets.get(AniListAuth.tokenKey))!,
+    ) as Map<String, Object?>;
     expect(stored['expiresAt'], '2027-10-24T12:00:00.000Z');
   });
 
@@ -98,7 +100,7 @@ void main() {
   });
 
   test('corrupt stored token reads as logged out', () async {
-    secrets.data[AniListAuth.tokenKey] = 'not json';
+    await secrets.set(AniListAuth.tokenKey, 'not json');
     expect(await auth(FakeOAuth(_web)).token(), isNull);
   });
 
@@ -110,7 +112,9 @@ void main() {
   });
 
   test('fromEnvironment reads dart-defines (empty in tests)', () {
-    const ids = AniListClientIds.fromEnvironment();
+    // Not const on purpose: runs the constructor at test time.
+    // ignore: prefer_const_constructors
+    final ids = AniListClientIds.fromEnvironment();
     expect(ids.forRedirect(_web), isNull);
     expect(ids.forRedirect(_android), isNull);
   });

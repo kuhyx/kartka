@@ -7,15 +7,15 @@ import 'package:kartka/tracking/common/rate_limiter.dart';
 import '../fakes.dart';
 
 void main() {
-  late FakeHttp http;
+  late QueuedHttp http;
   late List<Duration> waits;
   late AniListApi api;
 
   setUp(() {
-    http = FakeHttp();
+    http = QueuedHttp();
     waits = [];
     api = AniListApi(
-      http,
+      http.http,
       limiter: RateLimiter(
         perMinute: 30,
         minGap: Duration.zero,
@@ -29,6 +29,7 @@ void main() {
     final body = await api.call(searchQuery, {'search': 'x'}, token: 'T');
     final sent = http.sent.single;
     expect(sent.url, aniListEndpoint);
+    expect(sent.method, 'POST');
     expect(sent.headers['Authorization'], 'Bearer T');
     expect(sent.headers['Content-Type'], 'application/json');
     expect(sent.json['query'], searchQuery);
@@ -95,6 +96,6 @@ void main() {
   });
 
   test('default limiter allows 30 per minute', () {
-    expect(AniListApi(http).limiter.perMinute, 30);
+    expect(AniListApi(http.http).limiter.perMinute, 30);
   });
 }

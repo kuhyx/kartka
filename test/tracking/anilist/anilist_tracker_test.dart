@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/tracking/anilist/anilist_api.dart';
 import 'package:kartka/tracking/anilist/anilist_auth.dart';
 import 'package:kartka/tracking/anilist/anilist_parse.dart';
@@ -11,20 +12,20 @@ import '../fakes.dart';
 final Uri _web = Uri.parse('http://127.0.0.1:8791/oauth');
 
 void main() {
-  late FakeHttp http;
-  late MemoryKv secrets;
+  late QueuedHttp http;
+  late MemoryKeyValueStore secrets;
   late FakeOAuth oauth;
   late AniListTracker tracker;
 
   setUp(() {
-    http = FakeHttp();
-    secrets = MemoryKv();
+    http = QueuedHttp();
+    secrets = MemoryKeyValueStore();
     oauth = FakeOAuth(
       _web,
       result: _web.replace(fragment: 'access_token=TOK&expires_in=3600'),
     );
     tracker = AniListTracker(
-      api: AniListApi(http, limiter: freeLimiter()),
+      api: AniListApi(http.http, limiter: freeLimiter()),
       auth: AniListAuth(
         secrets: secrets,
         oauth: oauth,
