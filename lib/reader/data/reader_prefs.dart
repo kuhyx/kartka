@@ -7,7 +7,7 @@ import 'package:kartka/reader/logic/reader_mode.dart';
 
 /// Reader preferences in the device-local key-value store.
 class ReaderPrefs {
-  /// Prefs stored in [kv].
+  /// Prefs stored in the given key-value store.
   const new(this._kv);
 
   final KeyValueStore _kv;
