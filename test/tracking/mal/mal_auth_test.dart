@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/tracking/mal/mal_auth.dart';
+import 'package:kartka/tracking/mal/mal_tokens.dart';
 import 'package:kartka/tracking/mal/mal_transport.dart';
 
 import 'mal_fakes.dart';
@@ -141,9 +142,76 @@ void main() {
     expect(store.tokens, isNull);
   });
 
-  test('a non-JSON token body is an auth failure', () async {
+  test('a non-JSON token body is a plain failure', () async {
     http.handler = (_) => const MalResponse(200, '<html>');
-    await expectLater(build().login(), throwsA(isA<MalAuthException>()));
+    await expectLater(
+      build().login(),
+      throwsA(
+        isA<MalException>().having(
+          (e) => e,
+          'e',
+          isNot(isA<MalAuthException>()),
+        ),
+      ),
+    );
+  });
+
+  test('a transient refresh failure keeps the tokens', () async {
+    for (final status in [403, 429, 503]) {
+      http.handler = (_) => MalResponse(status, '');
+      store.tokens = validTokens();
+      await expectLater(
+        build().refresh(validTokens()),
+        throwsA(
+          isA<MalException>().having(
+            (e) => e,
+            'e',
+            isNot(isA<MalAuthException>()),
+          ),
+        ),
+      );
+      expect(store.tokens, validTokens(), reason: 'HTTP $status');
+    }
+  });
+
+  test('refresh reuses tokens another caller already rotated', () async {
+    final rotated = validTokens(access: 'access-9');
+    store.tokens = MalTokens(
+      accessToken: rotated.accessToken,
+      refreshToken: 'refresh-9',
+      expiresAt: rotated.expiresAt,
+    );
+    final got = await build().refresh(validTokens());
+    expect(got.accessToken, 'access-9');
+    expect(http.requests, isEmpty);
+  });
+
+  test('rejected stale refresh does not clear newer tokens', () async {
+    final auth = build();
+    http.handler = (_) => fx(400, 'invalid_grant.json');
+    final newer = MalTokens(
+      accessToken: 'access-9',
+      refreshToken: 'refresh-9',
+      expiresAt: testNow,
+    );
+    store.tokens = newer;
+    await expectLater(
+      auth.refresh(validTokens()),
+      throwsA(isA<MalAuthException>()),
+    );
+    expect(store.tokens, newer);
+  });
+
+  test('concurrent refreshes share one token request', () async {
+    http.handler = (_) => fx(200, 'token_refreshed.json');
+    store.tokens = validTokens();
+    final auth = build();
+    final both = await Future.wait([
+      auth.refresh(validTokens()),
+      auth.refresh(validTokens()),
+    ]);
+    expect(both[0], both[1]);
+    expect(http.requests, hasLength(1));
   });
 
   test('exception toString names the status', () {

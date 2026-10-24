@@ -5,6 +5,7 @@ import 'package:kartka/tracking/common/tracker.dart';
 import 'package:kartka/tracking/mal/mal_api.dart';
 import 'package:kartka/tracking/mal/mal_auth.dart';
 import 'package:kartka/tracking/mal/mal_tokens.dart';
+import 'package:kartka/tracking/mal/mal_transport.dart';
 
 /// List status to send with a progress update, or `null` to leave it.
 ///
@@ -81,8 +82,9 @@ class MalTracker implements Tracker {
   Future<void> pushProgress(String remoteId, int chaptersRead) async {
     final id = _parseId(remoteId);
     final manga = await _api.manga(id);
-    final total = manga?.totalChapters;
-    final entry = manga?.listStatus;
+    if (manga == null) throw MalException('unknown MAL id', statusCode: 404);
+    final total = manga.totalChapters;
+    final entry = manga.listStatus;
     final target = total != null && chaptersRead > total ? total : chaptersRead;
     if (target <= (entry?.chaptersRead ?? 0)) return;
     await _api.updateListStatus(

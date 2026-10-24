@@ -93,9 +93,23 @@ class MalAuth {
 
   /// Exchanges [old]'s refresh token for a new pair and stores it.
   ///
-  /// On failure the stored tokens are cleared (the user must log in again)
-  /// and a [MalAuthException] is thrown.
-  Future<MalTokens> refresh(MalTokens old) async {
+  /// MAL rotates the pair on every refresh, so concurrent callers share one
+  /// in-flight request, and a caller holding a pair someone else already
+  /// rotated gets the stored pair instead of burning a dead refresh token.
+  /// Only a credential rejection (400/401) clears the store, and only while
+  /// it still holds [old]; transient failures keep the tokens.
+  Future<MalTokens> refresh(MalTokens old) =>
+      _refreshing ??= _refresh(old).whenComplete(() => _refreshing = null);
+
+  Future<MalTokens>? _refreshing;
+
+  Future<MalTokens> _refresh(MalTokens old) async {
+    final stored = await _store.read();
+    if (stored != null &&
+        stored.refreshToken != old.refreshToken &&
+        !stored.isExpired(_now())) {
+      return stored;
+    }
     try {
       final tokens = await _tokenRequest({
         'client_id': client.clientId,
@@ -105,7 +119,8 @@ class MalAuth {
       await _store.write(tokens);
       return tokens;
     } on MalAuthException {
-      await _store.clear();
+      final current = await _store.read();
+      if (current?.refreshToken == old.refreshToken) await _store.clear();
       rethrow;
     }
   }
@@ -119,18 +134,21 @@ class MalAuth {
         body: malForm(fields),
       ),
     );
-    if (!res.ok) {
+    if (res.statusCode == 400 || res.statusCode == 401) {
       throw MalAuthException(
         'token request rejected: ${res.body}',
         statusCode: res.statusCode,
       );
+    }
+    if (!res.ok) {
+      throw MalException('token endpoint failed', statusCode: res.statusCode);
     }
     try {
       final json = jsonDecode(res.body);
       if (json is! Map<String, Object?>) throw const FormatException();
       return MalTokens.fromTokenResponse(json, _now());
     } on FormatException {
-      throw const MalAuthException('unreadable token response');
+      throw const MalException('unreadable token response');
     }
   }
 }

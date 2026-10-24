@@ -86,6 +86,41 @@ void main() {
     expect(store.tokens, isNull);
   });
 
+  test(
+    '401 with a token rotated meanwhile retries without refreshing',
+    () async {
+      http = FakeTransport((r) {
+        if (r.headers['Authorization'] == 'Bearer access-0') {
+          store.tokens = validTokens(access: 'access-7');
+          return fx(401, 'invalid_token.json');
+        }
+        return const MalResponse(200, '{}');
+      });
+      session = _rebuild(http, store);
+      final res = await session.authorized(get);
+      expect(res.statusCode, 200);
+      expect(http.requests, hasLength(2));
+      expect(http.requests.last.headers['Authorization'], 'Bearer access-7');
+    },
+  );
+
+  test('concurrent calls with an expired token refresh once', () async {
+    store.tokens = validTokens().copyWithExpiry(testNow);
+    http.handler = (r) => r.url.path.endsWith('token')
+        ? fx(200, 'token_refreshed.json')
+        : const MalResponse(200, '{}');
+    final results = await Future.wait([
+      session.authorized(get),
+      session.authorized(get),
+      session.authorized(get),
+    ]);
+    expect(results.map((r) => r.statusCode), [200, 200, 200]);
+    expect(
+      http.requests.where((r) => r.url.path.endsWith('token')),
+      hasLength(1),
+    );
+  });
+
   test('403 (DoS guard) is returned as-is, never retried', () async {
     http.handler = (_) => const MalResponse(403, '');
     final res = await session.authorized(get);

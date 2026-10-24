@@ -133,6 +133,15 @@ void main() {
       });
     });
 
+    test('unknown id throws instead of PATCHing', () async {
+      http.handler = (_) => const MalResponse(404, '');
+      await expectLater(
+        tracker.pushProgress('7', 3),
+        throwsA(isA<MalException>().having((e) => e.statusCode, 's', 404)),
+      );
+      expect(http.withMethod(MalMethod.patch), isEmpty);
+    });
+
     test('zero chapters on a missing entry is a no-op', () async {
       expect(await push(0, _entry()), isNull);
     });

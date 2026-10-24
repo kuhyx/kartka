@@ -9,7 +9,8 @@ import 'package:kartka/tracking/mal/mal_transport.dart';
 typedef MalRequestBuilder = MalRequest Function(Map<String, String> auth);
 
 /// Sends requests with the stored bearer token, refreshing it when it is
-/// expired or MAL answers 401. Refreshes at most once per call; a second
+/// expired or MAL answers 401 (reusing a pair another call already
+/// rotated). Refreshes at most once per call; a second
 /// 401 logs out. Other statuses (403 = MAL's DoS guard) are returned
 /// untouched and never retried.
 class MalSession {
@@ -33,7 +34,11 @@ class MalSession {
     if (tokens.isExpired(_now())) tokens = await _auth.refresh(tokens);
     var res = await _send(build(_bearer(tokens)));
     if (res.statusCode != 401) return res;
-    tokens = await _auth.refresh(tokens);
+    // Another call may have rotated the pair while this one was in flight.
+    final stored = await _store.read();
+    tokens = stored != null && stored.accessToken != tokens.accessToken
+        ? stored
+        : await _auth.refresh(tokens);
     res = await _send(build(_bearer(tokens)));
     if (res.statusCode != 401) return res;
     await _store.clear();
