@@ -39,7 +39,7 @@ void main() {
   test('GraphQL errors keep only the first line', () {
     expect(
       () =>
-          client(cannedHttp(200, '{"errors":[{"message":"boom\\r\\nat x"}]}'))
+          client(cannedHttp(200, r'{"errors":[{"message":"boom\r\nat x"}]}'))
               .run(SuwayomiQueries.about),
       throwsA(
         isA<SuwayomiException>().having((e) => e.message, 'message', 'boom'),

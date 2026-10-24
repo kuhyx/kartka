@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_exceptions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_mappers.dart';
@@ -115,10 +115,10 @@ void main() {
     expect(chapters.first.number, isNotNull);
     expect(chapters.first.uploadedAt!.isUtc, isTrue);
     expect(chapters.first.scanlator, isNotNull);
-    final numbers = [for (final c in chapters) c.number!];
+    final numbers = <double>[for (final c in chapters) c.number!];
     expect(
       numbers,
-      orderedEquals([...numbers]..sort((a, b) => b.compareTo(a))),
+      orderedEquals(<double>[...numbers]..sort((a, b) => b.compareTo(a))),
     );
   });
 

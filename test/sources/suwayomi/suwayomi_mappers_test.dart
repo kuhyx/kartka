@@ -12,7 +12,7 @@ Map<String, Object?> _data(String name) =>
 String _resolve(String p) => 'https://h$p';
 
 void main() {
-  test('every fixture was recorded with the client\'s own documents', () {
+  test("every fixture was recorded with the client's own documents", () {
     const documents = {
       SuwayomiQueries.about,
       SuwayomiQueries.sources,

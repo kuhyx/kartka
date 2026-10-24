@@ -49,9 +49,8 @@ class SuwayomiSource implements MangaSource {
   Future<SearchPage> popular(int page) => _list('POPULAR', page);
 
   @override
-  Future<SearchPage> latest(int page) async => info.supportsLatest
-      ? _list('LATEST', page)
-      : const SearchPage(items: [], hasNext: false);
+  Future<SearchPage> latest(int page) async =>
+      info.supportsLatest ? await _list('LATEST', page) : SearchPage.empty;
 
   @override
   Future<SearchPage> search(String query, int page) =>
@@ -130,7 +129,7 @@ class SuwayomiSource implements MangaSource {
     });
     final nodes = _maps((data['mangas']! as Map<String, Object?>)['nodes']);
     if (nodes.isNotEmpty) return _mangaIds[url] = nodes.first['id']! as int;
-    return _searchForUnseen(url);
+    return await _searchForUnseen(url);
   }
 
   /// A title search registers its results server-side, which fills

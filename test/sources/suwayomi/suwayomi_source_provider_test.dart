@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/platform/http_client.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_settings.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_source_provider.dart';
@@ -27,7 +27,7 @@ void main() {
 
   List<String> ids(List<MangaSource> s) => [for (final x in s) x.ref.id];
 
-  test('lists every installed source except Suwayomi\'s local one', () async {
+  test("lists every installed source except Suwayomi's local one", () async {
     await store.save(fixtureSettings);
     final p = provider(fixtureHttp(['sources']));
     final sources = await p.watch().first;

@@ -14,14 +14,14 @@ const fixtureSettings = SuwayomiSettings(
 /// MangaDex (EN) on the fixture server.
 const mangadexEn = '2499283573021220255';
 
-/// Reads `test/fixtures/suwayomi/<name>.json`.
-Map<String, Object?> fixture(String name) =>
-    jsonDecode(File('test/fixtures/suwayomi/$name.json').readAsStringSync())
-        as Map<String, Object?>;
+/// Reads `test/fixtures/suwayomi/client/<name>.json`.
+Map<String, Object?> fixture(String name) => jsonDecode(
+  File('test/fixtures/suwayomi/client/$name.json').readAsStringSync(),
+) as Map<String, Object?>;
 
 /// Every fixture name in the directory.
 List<String> fixtureNames() => [
-  for (final f in Directory('test/fixtures/suwayomi').listSync())
+  for (final f in Directory('test/fixtures/suwayomi/client').listSync())
     if (f.path.endsWith('.json'))
       f.uri.pathSegments.last.replaceFirst('.json', ''),
 ];
