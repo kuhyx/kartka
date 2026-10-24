@@ -197,4 +197,23 @@ void main() {
       ..onItem(1)
       ..dispose();
   });
+
+  test('without a progress repository it still reads', () async {
+    final s = ReaderSession(
+      sourceId: 'fake',
+      mangaUrl: '/m/1',
+      chapterUrl: '/c/2',
+      deps: ReaderDeps(
+        findSource: (_) async =>
+            FakeSource(pageMap: {'/c/2': fakePages('/c/2', 2)}),
+        prefs: prefs,
+        loadImage: (p) async => Uint8List(1),
+      ),
+    );
+    await s.open();
+    expect(s.phase, ReaderPhase.ready);
+    s.onItem(2);
+    await Future<void>.delayed(Duration.zero);
+    s.dispose();
+  });
 }

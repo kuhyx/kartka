@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/reader/platform/reader_system.dart';
 
 /// A source serving fixed chapters and pages.
 class FakeSource implements MangaSource {
@@ -106,3 +108,25 @@ List<PageRef> fakePages(String chapter, int count) => [
       headers: const {'Referer': 'https://src.test/'},
     ),
 ];
+
+/// A 1x1 transparent PNG.
+final onePixelPng = Uint8List.fromList(const [
+  0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, //
+  0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+  0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, 0x89, 0x00, 0x00, 0x00,
+  0x0B, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9C, 0x63, 0x60, 0x00, 0x02, 0x00,
+  0x00, 0x05, 0x00, 0x01, 0x7A, 0x5E, 0xAB, 0x3F, 0x00, 0x00, 0x00, 0x00,
+  0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82,
+]);
+
+/// Records wake-lock and fullscreen requests.
+class FakeReaderSystem implements ReaderSystem {
+  final List<bool> awake = [];
+  final List<bool> fullscreen = [];
+
+  @override
+  Future<void> keepAwake({required bool on}) async => awake.add(on);
+
+  @override
+  Future<void> setFullscreen({required bool on}) async => fullscreen.add(on);
+}

@@ -10,9 +10,9 @@ class ReaderDeps {
   /// Bundles the reader's collaborators.
   const new({
     required this.findSource,
-    required this.progress,
     required this.prefs,
     required this.loadImage,
+    this.progress,
     this.downloads,
     this.now = DateTime.now,
   });
@@ -20,8 +20,9 @@ class ReaderDeps {
   /// The source with this id, or null when it is not installed.
   final Future<MangaSource?> Function(String sourceId) findSource;
 
-  /// Where reading progress and read marks go.
-  final ProgressRepository progress;
+  /// Where reading progress and read marks go; null when the library part
+  /// is not installed, in which case the reader still reads.
+  final ProgressRepository? progress;
 
   /// Downloaded chapters, when the downloads part is installed.
   final DownloadRepository? downloads;

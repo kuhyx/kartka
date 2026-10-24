@@ -116,7 +116,7 @@ class ReaderSession extends ChangeNotifier {
     _recorder = ProgressRecorder(
       pageCount: pages.length,
       record: _record,
-      markRead: () => deps.progress.markRead(key, chapterUrl),
+      markRead: () async => await deps.progress?.markRead(key, chapterUrl),
     );
     phase = ReaderPhase.ready;
     _prefetch();
@@ -140,7 +140,9 @@ class ReaderSession extends ChangeNotifier {
   }
 
   Future<int> _resumePage() async {
-    final saved = await deps.progress
+    final progress = deps.progress;
+    if (progress == null) return 0;
+    final saved = await progress
         .watch(key)
         .first
         .timeout(const Duration(seconds: 2), onTimeout: () => null);
@@ -148,7 +150,7 @@ class ReaderSession extends ChangeNotifier {
     return saved.page < pages.length - 1 ? saved.page : 0;
   }
 
-  Future<void> _record(int page) => deps.progress.record(
+  Future<void> _record(int page) async => await deps.progress?.record(
     ReadingProgress(
       key: key,
       chapterUrl: chapterUrl,
