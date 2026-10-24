@@ -193,4 +193,7 @@ class FakeDownloads implements DownloadRepository {
   @override
   Future<List<PageRef>?> offlinePages(MangaKey key, String chapterUrl) async =>
       null;
+
+  @override
+  Future<List<ChapterInfo>> downloadedChapters(MangaKey key) async => const [];
 }

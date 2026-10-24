@@ -60,11 +60,6 @@ void main() {
     expect(src.calls, hasLength(2));
   });
 
-  test('splitMangaKey splits at the first bar and rejects non-keys', () {
-    expect(splitMangaKey('a|b|c'), ('a', 'b|c'));
-    expect(() => splitMangaKey('nobar'), throwsFormatException);
-  });
-
   test('unread counts: null until loaded, then chapters minus read', () async {
     final store = storeWith();
     final progress = FakeProgress();

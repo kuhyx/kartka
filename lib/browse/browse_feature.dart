@@ -130,9 +130,7 @@ class BrowseResolverPort implements ChapterUrlResolver {
   Future<String?> resolve(MangaKey key, int chapterNumber) =>
       _runtime.resolver.resolve(key, chapterNumber);
 
-  // PENDING @override: ChapterUrlResolver.numberOf is being added on
-  // agent/tracking-anilist; annotate once it lands there.
-  /// See `BrowseChapterUrlResolver.numberOf`.
+  @override
   Future<double?> numberOf(MangaKey key, String chapterUrl) =>
       _runtime.resolver.numberOf(key, chapterUrl);
 }

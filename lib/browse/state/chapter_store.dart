@@ -81,11 +81,3 @@ class ChapterStore {
     return out.stream;
   }
 }
-
-/// Splits a [MangaKey] (`'<sourceId>|<mangaUrl>'`) at its first `|`; source
-/// ids never contain `|`, urls may.
-(String sourceId, String mangaUrl) splitMangaKey(MangaKey key) {
-  final i = key.indexOf('|');
-  if (i < 0) throw FormatException('Not a MangaKey', key);
-  return (key.substring(0, i), key.substring(i + 1));
-}
