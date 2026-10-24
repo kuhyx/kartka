@@ -17,7 +17,7 @@ import 'package:kartka/platform/key_value_store.dart';
 /// have, so the reader marks a chapter read when it is finished.
 class LocalProgressRepository implements ProgressRepository {
   /// Creates the repository; [now] stamps read marks.
-  LocalProgressRepository(KeyValueStore store, {DateTime Function()? now})
+  new(KeyValueStore store, {DateTime Function()? now})
     : _now = now ?? _utcNow,
       _progress = KvTable(
         store,
