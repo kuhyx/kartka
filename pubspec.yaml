@@ -11,6 +11,8 @@ environment:
 # (pre-commit) and the dependency-freshness workflow (CI). Only the carve-out
 # packages (very_good_analysis, the SDK ones) keep a caret.
 dependencies:
+  # gzip for .tachibk (pure Dart, so it also runs on web).
+  archive: 4.5.2
   # Android deep link kartka://oauth for OAuthRedirect.
   app_links: 7.2.2
   # Deep ==/hashCode for the list and map fields of the core models.
