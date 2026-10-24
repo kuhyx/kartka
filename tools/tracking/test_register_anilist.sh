@@ -65,7 +65,7 @@ conf() { echo "$SANDBOX/home/.config/kartka/oauth.json"; }
 test_full_registration() {
     mkdir -p "$SANDBOX/home/.config/kartka"
     echo '{"KARTKA_MAL_CLIENT_ID":"keepme"}' >"$(conf)"
-    local login='http://127.0.0.1:8791/oauth#access_token=GOODTOKEN&token_type=Bearer&expires_in=31536000'
+    local login='http://127.0.0.1:47391/oauth#access_token=GOODTOKEN&token_type=Bearer&expires_in=31536000'
     run_script $'not-an-id\n11111\n22222\n'"$login" ||
         fail "registration exited non-zero: $(cat "$SANDBOX/out")"
     [[ "$(jq -r .KARTKA_ANILIST_CLIENT_ID_ANDROID "$(conf)")" == 11111 ]] ||
@@ -75,7 +75,7 @@ test_full_registration() {
     [[ "$(jq -r .KARTKA_MAL_CLIENT_ID "$(conf)")" == keepme ]] ||
         fail "existing MAL key lost"
     [[ "$(stat -c %a "$(conf)")" == 600 ]] || fail "config mode not 600"
-    local want=$'Kartka Android\nkartka://oauth\nKartka Web\nhttp://127.0.0.1:8791/oauth'
+    local want=$'Kartka Android\nkartka://oauth\nKartka Web\nhttp://127.0.0.1:47391/oauth'
     [[ "$(grep -v '^$' "$SANDBOX/clip_log")" == "$want" ]] ||
         fail "clipboard order: $(cat "$SANDBOX/clip_log")"
     grep -q 'anilist.co/settings/developer' "$SANDBOX/opened" ||
@@ -86,7 +86,7 @@ test_full_registration() {
 }
 
 test_verify_only_bad_token() {
-    run_script 'http://127.0.0.1:8791/oauth#access_token=BAD' --verify-only &&
+    run_script 'http://127.0.0.1:47391/oauth#access_token=BAD' --verify-only &&
         fail "bad token passed verification"
     grep -q 'Invalid token' "$SANDBOX/out" || fail "bad token reason missing"
 }

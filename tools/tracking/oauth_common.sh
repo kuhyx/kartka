@@ -12,6 +12,15 @@
 KARTKA_CONFIG_DIR="${KARTKA_CONFIG_DIR:-$HOME/.config/kartka}"
 KARTKA_OAUTH_FILE="${KARTKA_OAUTH_FILE:-$KARTKA_CONFIG_DIR/oauth.json}"
 
+# The desktop wrapper's fixed loopback port (kartkaWrapperPort in
+# lib/platform/wrapper_protocol.dart, contracts §13). Both trackers register
+# these two redirects, one client per platform.
+WRAPPER_PORT="${KARTKA_WRAPPER_PORT:-47391}"
+# shellcheck disable=SC2034 # read by the scripts that source this file
+ANDROID_REDIRECT="kartka://oauth"
+# shellcheck disable=SC2034
+WEB_REDIRECT="http://127.0.0.1:${WRAPPER_PORT}/oauth"
+
 die() {
     echo "error: $*" >&2
     exit 1

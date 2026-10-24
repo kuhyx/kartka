@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/models/manga_key.dart';
+import 'package:kartka/tracking/common/credentials_login.dart';
 import 'package:kartka/tracking/common/track_binding.dart';
 import 'package:kartka/tracking/common/tracker.dart';
 import 'package:kartka/tracking/common/tracking_service.dart';
@@ -94,6 +95,14 @@ class _TrackerSectionState extends State<TrackerSection> {
     ),
   );
 
+  /// Credential trackers bring their own sheet; OAuth ones redirect.
+  Future<void> _login(BuildContext context) {
+    final t = _t;
+    return t is CredentialsLogin
+        ? (t as CredentialsLogin).showLogin(context)
+        : t.login();
+  }
+
   Widget _header(BuildContext context, {required bool loggedIn}) => Row(
     children: [
       Expanded(
@@ -106,7 +115,7 @@ class _TrackerSectionState extends State<TrackerSection> {
         )
       else
         FilledButton(
-          onPressed: () => unawaited(_guard(_t.login)),
+          onPressed: () => unawaited(_guard(() => _login(context))),
           child: Text('Log in to ${_t.name}'),
         ),
     ],

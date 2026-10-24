@@ -139,3 +139,8 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
 - **Downloads cancel/delete**: consumers use
   `registry.maybe<DownloadService>()`
   (`package:kartka/downloads/download_service.dart`); §8 stays minimal.
+- **Credential trackers** implement `CredentialsLogin { Future<void>
+  showLogin(BuildContext) }` (`lib/tracking/common/credentials_login.dart`)
+  beside `Tracker`. The track sheet calls `showLogin(context)` when
+  `tracker is CredentialsLogin`, else `tracker.login()`. MangaUpdates shows
+  its username + password sheet; AniList and MAL stay OAuth (§9 unchanged).
