@@ -7,6 +7,7 @@ library;
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/downloads/downloads_feature.dart';
 import 'package:kartka/library/library_feature.dart';
+import 'package:kartka/sources/local/local_feature.dart';
 import 'package:kartka/sources/mangadex/mangadex_feature.dart';
 
 export 'package:kartka/app/feature.dart';
@@ -17,4 +18,5 @@ final List<KartkaFeatureFactory> kartkaFeatureFactories = [
   libraryFeature,
   downloadsFeature,
   mangadexFeature,
+  localFeature,
 ];
