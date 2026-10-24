@@ -87,7 +87,8 @@ markUnread is a `read: false` tombstone).
   "subsetOf": {"sourceId": "mangadex", "overlap": 0.93},
   "score": 0.852, "rank": 3,
   "verdict": "keep|cut|pending",
-  "cutReasons": ["uptime<0.95", "blocking", "coverage<0.60", "subset"]
+  "cutReasons": ["uptime<0.95", "blocking", "coverage<0.60", "subset"],
+  "flags": ["needs-browser-engine"]
 }
 ```
 
@@ -97,14 +98,21 @@ markUnread is a `read: false` tombstone).
   MangaUpdates) chapter count for sampled reference titles, capped at 1.
 - **Subset**: ≥ 90 % of a source's found titles also found by a higher-ranked
   source with ≥ its image quality → `subsetOf` set, verdict `cut`.
-- **Cut rules**: uptime ratio < 0.95 (only once `final`), challengeRate > 0,
-  coverage < 0.60, subset. Otherwise `keep`; `pending` while uptime accrues.
+- **Cut rules**: uptime ratio < 0.95 (only once `final`), challengeRate > 0
+  from any kind other than `webview`, coverage < 0.60, subset. Otherwise `keep`; `pending` while uptime accrues.
 - **Score**: 0.30 coverage + 0.20 completeness + 0.20 uptime + 0.15 image
   quality (width/1400 capped) + 0.15 latency (1 − p95/5000 capped at 0).
 - **As built** (evaluator, 2026-10-24): every record also carries
   `availability: {native, mangayomiJs, keiyoushi}` (bools: where else the
   source can be read). `blocking.kinds` may also list `webview` (the extension
-  needs a browser engine; measured as blocking, never defeated). A metric that
+  needs a browser engine; recorded, never defeated). `webview` is **flagged,
+  not cut** (decision 2026-10-24): it still counts in `challengeRate` and
+  `kinds`, but a record whose only kind is `webview` is not cut for
+  `blocking`; any other kind next to it still cuts. `flags` is an additive
+  list of non-cutting warnings (absent = none; readers tolerate it missing and
+  keep unknown entries). The only flag today is `needs-browser-engine`, set
+  whenever `webview` challenges were seen. The app shows a "Needs browser
+  engine" chip on the Sources row, the detail page and the Browse badge. A metric that
   could not be measured is `null` at the leaf (`latencyMs.p50/p95`,
   `coverage.found/ratio`, `chapterCompleteness.medianRatio`,
   `imageQuality.medianJpegQuality`); it adds 0 to the score, and an unmeasured

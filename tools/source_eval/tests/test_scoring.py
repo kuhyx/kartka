@@ -19,6 +19,7 @@ def record(  # noqa: PLR0913
     width: float | None = 1200,
     p95: float | None = 1000,
     challenge: float = 0.0,
+    kinds: list[str] | None = None,
     origin: str = "suwayomi",
 ) -> Record:
     return {
@@ -29,7 +30,10 @@ def record(  # noqa: PLR0913
         "uptime": {"ratio": up, "status": status},
         "imageQuality": {"medianWidthPx": width},
         "latencyMs": {"p95": p95},
-        "blocking": {"challengeRate": challenge},
+        "blocking": {
+            "challengeRate": challenge,
+            **({} if kinds is None else {"kinds": kinds}),
+        },
     }
 
 
@@ -70,6 +74,9 @@ def test_cut_reasons() -> None:
     assert cut_reasons(record("x", up=0.9)) == ["uptime<0.95"]
     assert cut_reasons(record("x", up=0.9, status="accruing")) == []
     assert cut_reasons(record("x", challenge=0.01)) == ["blocking"]
+    assert cut_reasons(record("x", challenge=0.06, kinds=["cloudflare"])) == [
+        "blocking"
+    ]
     assert cut_reasons(record("x", coverage=0.5)) == ["coverage<0.60"]
     assert cut_reasons(record("x", coverage=None)) == []
 
@@ -121,3 +128,16 @@ def test_rank_tie_break_prefers_native() -> None:
     b = record("aa", origin="suwayomi")
     ordered = rank([b, a], {})
     assert [r["id"] for r in ordered] == ["zz", "aa"]
+
+
+def test_webview_only_challenges_are_not_a_cut_reason() -> None:
+    allmanga = record("a", challenge=0.06, kinds=["webview"])
+    assert cut_reasons(allmanga) == []
+    assert rank([allmanga], {})[0]["verdict"] == "keep"
+    pending = record("p", challenge=0.06, kinds=["webview"], status="accruing")
+    assert rank([pending], {})[0]["verdict"] == "pending"
+
+
+def test_webview_mixed_with_a_real_challenge_still_cuts() -> None:
+    mixed = record("m", challenge=0.1, kinds=["captcha", "webview"])
+    assert cut_reasons(mixed) == ["blocking"]

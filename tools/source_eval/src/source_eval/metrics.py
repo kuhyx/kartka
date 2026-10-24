@@ -9,6 +9,7 @@ from statistics import median
 from typing import TYPE_CHECKING, cast
 
 from source_eval import imagequality, uptime
+from source_eval.challenge import FLAG_BROWSER_ENGINE, WEBVIEW
 
 if TYPE_CHECKING:
     from source_eval.models import Candidate
@@ -93,6 +94,7 @@ def metrics(
             else 0.0,
             "kinds": sorted(set(challenged)),
         },
+        "flags": [FLAG_BROWSER_ENGINE] if WEBVIEW in challenged else [],
         "coverage": {
             "referenceSize": len(manifest.sample),
             "found": found if is_measured else None,

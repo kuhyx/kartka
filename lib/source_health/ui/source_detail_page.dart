@@ -75,6 +75,17 @@ class SourceDetailPage extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.sm),
               FreshnessBanner(at: r.probedAt, now: now),
+              if (r.needsBrowserEngine) ...[
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: BrowserEngineChip(),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                const Text(
+                  'Its extension needs a browser engine Kartka does not ship, '
+                  'so some requests fail; flagged, not cut.',
+                ),
+              ],
               if (r.cutReasons.isNotEmpty) ...[
                 const SectionHeader('Why it was cut'),
                 for (final why in explainCutReasons(

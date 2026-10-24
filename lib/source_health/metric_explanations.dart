@@ -87,14 +87,16 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
     value: blockingText(r.blocking),
     meaning:
         'Share of requests answered with a Cloudflare challenge, a '
-        'captcha, 403 Forbidden or 429 Too Many Requests.',
+        'captcha, 403 Forbidden or 429 Too Many Requests, or by an '
+        'extension that needs a browser engine.',
     threshold:
         'Cut above ${pct(HealthThresholds.maxChallengeRate)}: Kartka never '
-        'bypasses challenges, so any blocking cuts the source.',
-    status: _below(
-      r.blocking?.challengeRate,
-      HealthThresholds.maxChallengeRate,
-    ),
+        'bypasses challenges, so any blocking cuts the source. Needing a '
+        'browser engine only raises the "Needs browser engine" flag; it '
+        'never cuts.',
+    status: (r.blocking?.onlyBrowserEngine ?? false)
+        ? MetricStatus.info
+        : _below(r.blocking?.challengeRate, HealthThresholds.maxChallengeRate),
   ),
   MetricExplanation(
     title: 'Coverage',

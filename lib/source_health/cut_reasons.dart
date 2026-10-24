@@ -23,6 +23,7 @@ String describeBlockingKind(String kind) => switch (kind) {
   'captcha' => 'captcha',
   '403' => '403 Forbidden',
   '429' => '429 Too Many Requests',
+  'webview' => 'needs a browser engine',
   _ => kind,
 };
 
@@ -53,7 +54,8 @@ String _blocking(SourceHealthRecord r) {
   final rate = b?.challengeRate;
   final share = rate == null ? '' : ' on ${pct(rate)} of requests';
   return 'Blocks automated reading: answered with $kinds$share. '
-      'Kartka never bypasses challenges, so any blocking cuts a source.';
+      'Kartka never bypasses challenges, so any blocking other than a '
+      'browser-engine need cuts a source.';
 }
 
 String _coverage(SourceHealthRecord r) {

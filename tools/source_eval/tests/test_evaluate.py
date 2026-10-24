@@ -112,6 +112,7 @@ def test_full_evaluation_and_metrics(tmp_path: Path) -> None:
         "medianJpegQuality": None,
     }
     assert m["blocking"] == {"challengeRate": 0.333, "kinds": ["webview"]}
+    assert m["flags"] == ["needs-browser-engine"]
     assert m["latencyMs"] == {"p50": 300, "p95": 900}
     assert cast("dict[str, object]", m["uptime"])["status"] == "accruing"
     assert m["availability"] == {
@@ -146,6 +147,19 @@ def test_blocked_source_aborts_early(tmp_path: Path) -> None:
     assert len(state.titles) == 3
 
 
+def test_webview_source_does_not_abort(tmp_path: Path) -> None:
+    state = RunDir(tmp_path, "t").source(CAND.id)
+    assert evaluate(
+        CAND,
+        FakeBackend(kind="webview"),
+        state,
+        PLAN,
+        Deadline(FakeClock(), None),
+    )
+    assert state.aborted is None
+    assert len(state.titles) == len(PLAN.manifest.sample)
+
+
 def test_dead_source_aborts_after_five(tmp_path: Path) -> None:
     refs = {f"k{i}": RefTitle(f"k{i}", (f"T{i}",)) for i in range(7)}
     manifest = Manifest(list(refs), 3, 2, 2)
@@ -176,6 +190,7 @@ def test_unavailable_source_is_unmeasured(tmp_path: Path) -> None:
     m = metrics(CAND, state, MANIFEST, [], 0.0)
     assert m["coverage"] == {"referenceSize": 4, "found": None, "ratio": None}
     assert m["blocking"] == {"challengeRate": 0.0, "kinds": []}
+    assert m["flags"] == []
     assert m["latencyMs"] == {"p50": None, "p95": None}
 
 

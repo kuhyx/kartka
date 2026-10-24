@@ -134,8 +134,13 @@ class BlockingMetric {
   /// Share of requests that hit a challenge (0 = never).
   final double? challengeRate;
 
-  /// Challenge kinds seen: `cloudflare`, `captcha`, `403`, `429`.
+  /// Challenge kinds seen: `cloudflare`, `captcha`, `403`, `429`, `webview`.
   final List<String> kinds;
+
+  /// True when the only kind seen is `webview` (needs a browser engine): that
+  /// is flagged, not cut.
+  bool get onlyBrowserEngine =>
+      kinds.isNotEmpty && kinds.every((k) => k == 'webview');
 
   /// The JSON block.
   Map<String, Object?> toJson() =>
