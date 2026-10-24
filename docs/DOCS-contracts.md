@@ -253,3 +253,13 @@ Stream<bool>` (tracking-anilist supplies from TrackingService bindings).
 - Suwayomi entries the server has never seen are resolved by searching their
   title on that source and matching the exact url, then retrying. Kartka never
   restores the .tachibk into Suwayomi.
+- Credentials (Suwayomi basic auth, OAuth tokens) go in `KartkaPlatform.secrets`:
+  the Android Keystore, or on web a wrapper-held 0600 file in ~/.config/kartka/.
+- Sync decorates repositories through the `RepositoryDecorator` port
+  (lib/library/). Library's accessor applies every decorator lazily, and other
+  parts get repos only from that accessor.
+- **Suwayomi's future is decided by data (kuhy, 2026-10-24, option d):** keep
+  the Suwayomi parts. Once the evaluator's first results are in, drop the Suwayomi
+  client from the app if every `keep` source is available natively or as a JS
+  plugin. Otherwise keep it, or port the missing source to a JS plugin.
+  Building our own extension server is ruled out (it would be the fork again).
