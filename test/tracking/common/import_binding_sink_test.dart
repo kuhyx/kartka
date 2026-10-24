@@ -68,7 +68,7 @@ void main() {
 
   test('imported bindings are followed for pushes right away', () async {
     await sink.bind(_k, 'anilist', '1', lastPushedChapter: 2);
-    await progress.record(progressAt(_k, 4));
+    await finish(progress, _k, 4);
     await pumpEvents();
     expect(anilist.pushes, [('1', 4)]);
   });
