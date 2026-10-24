@@ -67,6 +67,7 @@ class FakeSource implements MangaSource {
       sourceId: ref.id,
       url: mangaUrl,
       title: 'Detail title',
+      coverUrl: 'https://img.test/cover.jpg',
       authors: const ['Author A'],
       description: 'A long description.',
       genres: const ['Action', 'Drama'],
@@ -144,6 +145,14 @@ class FakeProgress implements ProgressRepository {
   @override
   Future<void> markRead(MangaKey key, String chapterUrl) async {
     (marks[key] ??= {})[chapterUrl] = true;
+    _c.add(key);
+  }
+
+  @override
+  Future<void> markReadMany(MangaKey key, Iterable<String> urls) async {
+    for (final u in urls) {
+      (marks[key] ??= {})[u] = true;
+    }
     _c.add(key);
   }
 

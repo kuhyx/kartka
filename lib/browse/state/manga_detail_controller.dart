@@ -64,18 +64,25 @@ class MangaDetailController extends ChangeNotifier {
     _notify();
   }
 
-  Future<MangaSource> _source() async {
-    final now = _deps.sources.byId(sourceId);
-    if (now != null) return now;
-    try {
-      await _deps.sources
-          .watch()
-          .firstWhere((_) => _deps.sources.byId(sourceId) != null)
-          .timeout(sourceWait);
-    } on TimeoutException {
-      throw StateError('Source $sourceId is not available');
-    }
-    return _deps.sources.byId(sourceId)!;
+  /// The route's source, waiting up to [sourceWait] for a runtime source.
+  /// Completes without awaiting the subscription's cancel, so a slow
+  /// provider teardown never delays the screen.
+  Future<MangaSource> _source() {
+    final found = Completer<MangaSource>();
+    late final StreamSubscription<void> sub;
+    final timer = Timer(sourceWait, () {
+      if (found.isCompleted) return;
+      found.completeError(StateError('Source $sourceId is not available'));
+      unawaited(sub.cancel());
+    });
+    sub = _deps.sources.watch().listen((_) {
+      final source = _deps.sources.byId(sourceId);
+      if (source == null || found.isCompleted) return;
+      timer.cancel();
+      found.complete(source);
+      unawaited(sub.cancel());
+    });
+    return found.future;
   }
 
   /// Whether the manga is in the library, live.
