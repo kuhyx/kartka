@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:kartka/core/models/models.dart';
@@ -6,17 +5,12 @@ import 'package:kartka/downloads/engine/download_engine.dart';
 import 'package:kartka/downloads/keys.dart';
 import 'package:kartka/platform/key_value_store.dart';
 
-/// Builds a periodic timer; injectable so tests need not wait hours.
-typedef PeriodicTimer = Timer Function(
-  Duration every,
-  void Function(Timer) tick,
-);
-
 /// Queues chapters that appeared since the last check, for library manga,
 /// when the "auto-download new chapters" setting is on.
 ///
-/// Runs only while the app is open (start + every [schedule] period); there
-/// is no background worker in v1. The first time a manga is seen its current
+/// Runs only while the app is open, via [checkIfDue] (called when the
+/// download service first loads and when the Downloads screen opens); there
+/// is no timer and no background worker in v1. The first time a manga is seen its current
 /// chapters become the baseline, so enabling the setting never downloads a
 /// whole back catalogue.
 class AutoDownloader {
@@ -26,7 +20,8 @@ class AutoDownloader {
     required this.library,
     required this.findSource,
     required this.enqueue,
-  });
+    DateTime Function()? now,
+  }) : _now = now ?? DateTime.now;
 
   /// Setting and known-chapter storage.
   final KeyValueStore kv;
@@ -40,7 +35,7 @@ class AutoDownloader {
   /// Queues one chapter (the download service's `enqueue`).
   final Future<void> Function(MangaKey key, ChapterInfo chapter) enqueue;
 
-  Timer? _timer;
+  final DateTime Function() _now;
 
   /// Whether new chapters are downloaded automatically.
   Future<bool> enabled() async => await kv.get(autoDownloadKvKey) == 'true';
@@ -87,15 +82,16 @@ class AutoDownloader {
     return fresh.length;
   }
 
-  /// Checks now and then every [every] until [dispose].
-  void schedule({
-    Duration every = const Duration(hours: 6),
-    PeriodicTimer periodic = Timer.periodic,
-  }) {
-    unawaited(check());
-    _timer = periodic(every, (_) => unawaited(check()));
+  /// Runs [check] unless one ran less than [every] ago; returns whether
+  /// it ran.
+  Future<bool> checkIfDue({Duration every = const Duration(hours: 6)}) async {
+    final last = await kv.get(autoLastCheckKvKey);
+    final now = _now();
+    if (last != null && now.difference(DateTime.parse(last)) < every) {
+      return false;
+    }
+    await kv.set(autoLastCheckKvKey, now.toUtc().toIso8601String());
+    await check();
+    return true;
   }
-
-  /// Stops the schedule.
-  void dispose() => _timer?.cancel();
 }

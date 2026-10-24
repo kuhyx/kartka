@@ -88,8 +88,16 @@ class DownloadQueue {
   String encode() => jsonEncode(toJson());
 }
 
-DownloadState _requeued(DownloadState s) => DownloadState(
-  status: DownloadStatus.queued,
+/// [s] with a new [status] and [error], keeping its page counts.
+DownloadState stateAs(
+  DownloadState s,
+  DownloadStatus status, {
+  String? error,
+}) => DownloadState(
+  status: status,
   pagesDone: s.pagesDone,
   pagesTotal: s.pagesTotal,
+  error: error,
 );
+
+DownloadState _requeued(DownloadState s) => stateAs(s, DownloadStatus.queued);

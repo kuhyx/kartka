@@ -25,6 +25,7 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
     required this.blobs,
     required this.engine,
     this.maxChapters = 2,
+    this.onLoaded,
     DateTime Function()? now,
   }) : _now = now ?? DateTime.now;
 
@@ -40,6 +41,9 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
   /// Chapters downloading at once (pages are further capped per host).
   final int maxChapters;
 
+  /// Called once the persisted state is loaded (auto-download hooks in).
+  final void Function()? onLoaded;
+
   final DateTime Function() _now;
   late final Future<void> _ready = _load();
   late DownloadQueue _queue;
@@ -50,13 +54,13 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
   Future<void> _load() async {
     _queue = DownloadQueue.decode(await kv.get(queueKvKey));
     _index = DownloadIndex.decode(await kv.get(indexKvKey));
+    _pump();
+    onLoaded?.call();
   }
 
-  /// Loads the persisted queue and resumes it (unless paused).
-  Future<void> start() async {
-    await _ready;
-    _pump();
-  }
+  /// Loads the persisted queue and resumes it (unless paused). Any other
+  /// call does the same on first use, so starting explicitly is optional.
+  Future<void> start() => _ready;
 
   @override
   Future<void> enqueue(MangaKey key, ChapterInfo chapter) async {
@@ -196,49 +200,28 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
       _changes.add(null);
     }
 
-    update(
-      DownloadState(
-        status: DownloadStatus.downloading,
-        pagesDone: task.state.pagesDone,
-        pagesTotal: task.state.pagesTotal,
-      ),
-    );
+    void restate(DownloadStatus status, [String? error]) =>
+        update(stateAs(_queue.byId(task.id)!.state, status, error: error));
+
+    restate(DownloadStatus.downloading);
     try {
       final record = await engine.download(
         task,
         onProgress: update,
         shouldStop: () => run.cancelled || _queue.paused,
       );
-      _queue.remove(task.id);
-      if (run.cancelled) {
-        await _deleteBlobs(task.mangaKey, task.chapter.url);
-      } else {
+      if (!run.cancelled) {
+        _queue.remove(task.id);
         _index.put(task.mangaKey, record);
       }
     } on DownloadStopped {
-      if (run.cancelled) {
-        _queue.remove(task.id);
-        await _deleteBlobs(task.mangaKey, task.chapter.url);
-      } else {
-        final s = _queue.byId(task.id)!.state;
-        update(
-          DownloadState(
-            status: DownloadStatus.queued,
-            pagesDone: s.pagesDone,
-            pagesTotal: s.pagesTotal,
-          ),
-        );
-      }
+      if (!run.cancelled) restate(DownloadStatus.queued);
     } on Object catch (e) {
-      final s = _queue.byId(task.id)!.state;
-      update(
-        DownloadState(
-          status: DownloadStatus.failed,
-          pagesDone: s.pagesDone,
-          pagesTotal: s.pagesTotal,
-          error: '$e',
-        ),
-      );
+      restate(DownloadStatus.failed, '$e');
+    }
+    if (run.cancelled) {
+      _queue.remove(task.id);
+      await _deleteBlobs(task.mangaKey, task.chapter.url);
     }
     _running.remove(task.id);
     await _changed();

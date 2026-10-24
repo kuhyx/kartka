@@ -20,6 +20,9 @@ const indexKvKey = 'downloads/index';
 /// KeyValueStore key of the "auto-download new chapters" setting.
 const autoDownloadKvKey = 'downloads/auto_new_chapters';
 
+/// KeyValueStore key of the last auto-download check time (UTC ISO-8601).
+const autoLastCheckKvKey = 'downloads/auto_last_check';
+
 /// KeyValueStore key prefix of each manga's known chapter URLs.
 const knownChaptersKvPrefix = 'downloads/known/';
 

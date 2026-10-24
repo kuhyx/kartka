@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/downloads/auto/auto_downloader.dart';
@@ -77,36 +75,20 @@ void main() {
     expect(source.chapterCalls, 1);
   });
 
-  test('schedule runs check periodically until disposed', () async {
-    final a = auto();
-    await a.setEnabled(enabled: true);
-    void Function(Timer)? tick;
-    final timer = _FakeTimer();
-    a.schedule(
-      periodic: (d, cb) {
-        tick = cb;
-        return timer;
-      },
+  test('checkIfDue runs at most once per period', () async {
+    var now = DateTime.utc(2026, 10, 24, 8);
+    final a = AutoDownloader(
+      kv: kv,
+      library: () => Stream.value(library),
+      findSource: (id) async => source,
+      enqueue: (key, c) async {},
+      now: () => now,
     );
-    await pumpEventQueue(); // the immediate first check
-    expect(source.chapterCalls, 1);
-    tick!(timer);
-    await pumpEventQueue();
+    await a.setEnabled(enabled: true);
+    expect(await a.checkIfDue(), isTrue);
+    expect(await a.checkIfDue(), isFalse);
+    now = now.add(const Duration(hours: 6));
+    expect(await a.checkIfDue(), isTrue);
     expect(source.chapterCalls, 2);
-    a.dispose();
-    expect(timer.cancelled, isTrue);
   });
-}
-
-class _FakeTimer implements Timer {
-  bool cancelled = false;
-
-  @override
-  void cancel() => cancelled = true;
-
-  @override
-  bool get isActive => !cancelled;
-
-  @override
-  int get tick => 0;
 }
