@@ -113,6 +113,13 @@ void main() {
     });
   });
 
+  test('the User-Agent is honest and carries no personal identifier', () {
+    expect(kartkaUserAgent, startsWith('Kartka/'));
+    expect(kartkaUserAgent, contains('https://github.com/kuhyx/kartka'));
+    expect(kartkaUserAgent, isNot(contains('@')));
+    expect(kartkaUserAgent, isNot(contains('Mozilla')));
+  });
+
   test('wrapper protocol constants are what desktop/ serves', () {
     // Keep in step with desktop/lib/src/protocol.dart (separate package).
     expect(KartkaWrapper.port, 8791);
