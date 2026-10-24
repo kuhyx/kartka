@@ -1,0 +1,8 @@
+{
+  "status": "success",
+  "reason": "Login successful",
+  "context": {
+    "session_token": "mu-session-abc123",
+    "uid": 4242
+  }
+}
