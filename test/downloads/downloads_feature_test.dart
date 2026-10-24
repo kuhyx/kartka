@@ -57,6 +57,15 @@ void main() {
     expect(await platform.kv.get(autoLastCheckKvKey), isNotNull);
   });
 
+  test('works without a library part (auto check sees no manga)', () async {
+    final bare = KartkaRegistry.build(platform, [downloadsFeature]);
+    await platform.kv.set(autoDownloadKvKey, 'true');
+    final repo = bare.maybe<DownloadRepository>()!;
+    expect(await repo.offlinePages(mangaKey, ch1.url), isNull);
+    await pumpEventQueue();
+    expect(await platform.kv.get(autoLastCheckKvKey), isNotNull);
+  });
+
   testWidgets('More tiles open the Downloads screen; auto switch persists', (
     tester,
   ) async {
