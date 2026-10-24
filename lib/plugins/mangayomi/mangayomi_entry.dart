@@ -7,7 +7,7 @@ import 'package:kartka/plugins/runtime/host_api.dart';
 /// `lang`, `dateFormat`).
 class MangayomiEntry {
   /// Creates an entry.
-  const MangayomiEntry({
+  const new({
     required this.id,
     required this.name,
     required this.lang,
@@ -23,7 +23,7 @@ class MangayomiEntry {
 
   /// Parses one index entry; throws [FormatException] when a required field
   /// is missing.
-  factory MangayomiEntry.fromJson(Map<String, Object?> json) {
+  factory fromJson(Map<String, Object?> json) {
     String req(String key) {
       final v = json[key];
       if (v is String && v.isNotEmpty) return v;

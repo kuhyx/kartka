@@ -24,29 +24,33 @@ void main() {
   test('Client.get returns Mangayomi response shape, never throws', () async {
     final h = ReplayServices([ok('GET', 'https://a.test/1', 'hi')]);
     expect(
-      await run(
-        'const r = await new Client({a: 1}).get("https://a.test/1", {A: 2});'
-        'const h = await new Client().head("https://a.test/1");'
-        'return [r.body, r.statusCode, r.headers, r.request.url, h.body];',
-        h,
-      ),
-      ['hi', 201, {'x': 'y'}, 'https://a.test/1', 'hi'],
+      await run('''
+const r = await new Client({a: 1}).get("https://a.test/1", {A: 2});
+const h = await new Client().head("https://a.test/1");
+return [r.body, r.statusCode, r.headers, r.request.url, h.body];
+        ''', h),
+      [
+        'hi',
+        201,
+        {'x': 'y'},
+        'https://a.test/1',
+        'hi',
+      ],
     );
     expect(h.sentHeaders.first, {'A': '2'});
   });
 
   test('Client.post encodes JSON, form and string bodies', () async {
     final h = ReplayServices([ok('POST', 'https://a.test/p', 'ok')]);
-    await run(
-      'const c = new Client(); const u = "https://a.test/p";'
-      'await c.post(u, {"content-type": "application/json"}, {q: 1});'
-      'await c.post(u, {}, {q: "a b", n: null});'
-      'await c.post(u, undefined, "raw");'
-      'await c.post(u, {}, [1, 2]);'
-      'await c.post(u);'
-      'return 0;',
-      h,
-    );
+    await run('''
+const c = new Client(); const u = "https://a.test/p";
+await c.post(u, {"content-type": "application/json"}, {q: 1});
+await c.post(u, {}, {q: "a b", n: null});
+await c.post(u, undefined, "raw");
+await c.post(u, {}, [1, 2]);
+await c.post(u);
+return 0;
+      ''', h);
     expect(h.sentBodies, ['{"q":1}', 'q=a%20b&n=', 'raw', '[1,2]', '']);
     expect(h.sentHeaders[1], {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -102,8 +106,21 @@ class DefaultExtension extends MProvider {
     final r = await s.call(PluginMethod.popular, [1]);
     final title = (((r! as Map)['items']! as List).single as Map)['title'];
     expect(jsonDecode(title! as String), [
-      'b', 'z', ['x'], <Object?>[], true, false, 'https://e.test', '', null,
-      'not json', 5, null, 'true', 'fb', 'https://new.test',
+      'b',
+      'z',
+      ['x'],
+      <Object?>[],
+      true,
+      false,
+      'https://e.test',
+      '',
+      null,
+      'not json',
+      5,
+      null,
+      'true',
+      'fb',
+      'https://new.test',
     ]);
     expect(h.prefs['pref:e'], '"https://new.test"');
     // The stored value wins on the next call.
@@ -115,24 +132,41 @@ class DefaultExtension extends MProvider {
   test('string helpers, atob/btoa and console', () async {
     final h = ReplayServices();
     expect(
-      await run(
-        'console.log("hello", 1);'
-        'const s = "a/b/c";'
-        'return [s.substringAfter("/"), s.substringAfterLast("/"),'
-        ' s.substringBefore("/"), s.substringBeforeLast("/"),'
-        ' s.substringAfter("#"), s.substringBeforeLast("#"),'
-        ' s.substringAfterLast("#"), s.substringBefore("#"),'
-        ' "x[1]y".substringBetween("[", "]"),'
-        ' btoa("hi?"), btoa("ab"), btoa("a"), atob("aGk/"), atob("YWI="),'
-        ' atob("-_8")];',
-        h,
-      ),
-      ['b/c', 'c', 'a', 'a/b', 'a/b/c', 'a/b/c', 'a/b/c', 'a/b/c', '1',
-        'aGk/', 'YWI=', 'YQ==', 'hi?', 'ab', 'ûÿ'],
+      await run('''
+console.log("hello", 1);
+const s = "a/b/c";
+return [s.substringAfter("/"), s.substringAfterLast("/"),
+s.substringBefore("/"), s.substringBeforeLast("/"),
+s.substringAfter("#"), s.substringBeforeLast("#"),
+s.substringAfterLast("#"), s.substringBefore("#"),
+"x[1]y".substringBetween("[", "]"),
+btoa("hi?"), btoa("ab"), btoa("a"), atob("aGk/"), atob("YWI="),
+atob("-_8")];
+        ''', h),
+      [
+        'b/c',
+        'c',
+        'a',
+        'a/b',
+        'a/b/c',
+        'a/b/c',
+        'a/b/c',
+        'a/b/c',
+        '1',
+        'aGk/',
+        'YWI=',
+        'YQ==',
+        'hi?',
+        'ab',
+        'ûÿ',
+      ],
     );
     expect(h.logs, contains('hello 1'));
     for (final bad in ['btoa("Ā")', 'atob("*")']) {
-      await expectLater(run('return $bad;', h), throwsA(isA<PluginException>()));
+      await expectLater(
+        run('return $bad;', h),
+        throwsA(isA<PluginException>()),
+      );
     }
   });
 }

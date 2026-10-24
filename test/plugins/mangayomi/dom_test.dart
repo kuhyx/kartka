@@ -35,11 +35,14 @@ const page = '''
 
 void main() {
   test('parses text, entities and implied end tags', () async {
-    expect(await probe('return H.select("p").map((e) => e.text);', html: page), [
-      'One',
-      'Two <b>',
-    ]);
-    expect(await probe('return H.selectFirst("title").text;', html: page), 'T & U');
+    expect(
+      await probe('return H.select("p").map((e) => e.text);', html: page),
+      ['One', 'Two <b>'],
+    );
+    expect(
+      await probe('return H.selectFirst("title").text;', html: page),
+      'T & U',
+    );
     expect(await probe('return H.select("li").length;', html: page), 2);
   });
 
@@ -66,39 +69,43 @@ void main() {
 
   test('a leading combinator is relative to the element', () async {
     expect(
-      await probe('return H.selectFirst("#main").select("> ul").length;', html: page),
+      await probe(
+        'return H.selectFirst("#main").select("> ul").length;',
+        html: page,
+      ),
       1,
     );
     expect(
-      await probe('return H.selectFirst("#main").select("> li").length;', html: page),
+      await probe(
+        'return H.selectFirst("#main").select("> li").length;',
+        html: page,
+      ),
       0,
     );
   });
 
   test('misses yield empty elements, not null', () async {
     expect(
-      await probe(
-        'const e = H.selectFirst("nope");'
-        'return [e.text, e.attr("x"), e.outerHtml, e.select("a").length,'
-        ' e.selectFirst("a").text, e.children.length, e.getSrc, e.hasAttr("x"),'
-        ' e.parent.text, e.nextElementSibling.text, e.localName];',
-        html: page,
-      ),
+      await probe('''
+const e = H.selectFirst("nope");
+return [e.text, e.attr("x"), e.outerHtml, e.select("a").length,
+e.selectFirst("a").text, e.children.length, e.getSrc, e.hasAttr("x"),
+e.parent.text, e.nextElementSibling.text, e.localName];
+        ''', html: page),
       ['', '', '', 0, '', 0, '', false, '', '', ''],
     );
   });
 
   test('attributes, getters and serialisation', () async {
     expect(
-      await probe(
-        'const a = H.selectFirst("a"); const img = H.selectFirst("#main > img");'
-        'return [a.attr("href"), a.getHref, a.attr("DATA-X"), a.hasAttr("href"),'
-        ' img.getSrc, img.getDataSrc, H.selectFirst("section").getSrc,'
-        ' a.outerHtml, a.parent.attr("id"), a.parent.nextElementSibling.attr("id"),'
-        ' H.selectFirst("#episode_2").previousElementSibling.attr("id"),'
-        ' H.selectFirst("#main").className, a.localName, a.namespaceUri];',
-        html: page,
-      ),
+      await probe('''
+const a = H.selectFirst("a"); const img = H.selectFirst("#main > img");
+return [a.attr("href"), a.getHref, a.attr("DATA-X"), a.hasAttr("href"),
+img.getSrc, img.getDataSrc, H.selectFirst("section").getSrc,
+a.outerHtml, a.parent.attr("id"), a.parent.nextElementSibling.attr("id"),
+H.selectFirst("#episode_2").previousElementSibling.attr("id"),
+H.selectFirst("#main").className, a.localName, a.namespaceUri];
+        ''', html: page),
       [
         '/c/1?a=1&b=2',
         '/c/1?a=1&b=2',
@@ -120,35 +127,53 @@ void main() {
 
   test('script bodies stay raw and comments are dropped', () async {
     expect(
-      await probe('return [H.select("script")[0].text, H.select("div").length,'
-          ' H.selectFirst("button").innerHtml];', html: page),
+      await probe('''
+return [H.select("script")[0].text, H.select("div").length,
+H.selectFirst("button").innerHtml];
+        ''', html: page),
       ['if (a < b) { x = "</div>"; }', 1, ''],
     );
   });
 
   test('document accessors', () async {
     expect(
-      await probe(
-        'return [H.body.localName, H.head.localName, H.documentElement.localName,'
-        ' H.getElementById("main").localName, H.getElementsByClassName("box").length,'
-        ' H.getElementsByTagName("li").length, H.children.length, H.parent.text,'
-        ' H.selectFirst("ul").innerHtml.startsWith("<li"), H.text.indexOf("Ch 2") > 0,'
-        ' H.outerHtml.startsWith("<html>"), H.attr("lang"), H.hasAttr("lang"),'
-        ' H.selectFirst("#main").getElementsByClassName("x").length,'
-        ' H.selectFirst("ul").children.length, H.selectFirst("ul").getElementsByTagName("A").length];',
-        html: page,
-      ),
-      ['body', 'head', 'html', 'div', 1, 2, 1, '', true, true, true, '', false, 0, 2, 2],
+      await probe('''
+return [H.body.localName, H.head.localName, H.documentElement.localName,
+H.getElementById("main").localName, H.getElementsByClassName("box").length,
+H.getElementsByTagName("li").length, H.children.length, H.parent.text,
+H.selectFirst("ul").innerHtml.startsWith("<li"), H.text.indexOf("Ch 2") > 0,
+H.outerHtml.startsWith("<html>"), H.attr("lang"), H.hasAttr("lang"),
+H.selectFirst("#main").getElementsByClassName("x").length,
+H.selectFirst("ul").children.length, H.selectFirst("ul").getElementsByTagName("A").length];
+        ''', html: page),
+      [
+        'body',
+        'head',
+        'html',
+        'div',
+        1,
+        2,
+        1,
+        '',
+        true,
+        true,
+        true,
+        '',
+        false,
+        0,
+        2,
+        2,
+      ],
     );
   });
 
   test('odd markup: unquoted, bare, numeric entities, stray <', () async {
     expect(
-      await probe(
-        'const d = new Document("<p a=1 b c=\\"x\\">1 < 2 &#65;&#x42;&bogus; &copy</p><p/>x");'
-        'const p = d.selectFirst("p");'
-        'return [p.attr("a"), p.hasAttr("b"), p.attr("c"), p.text, d.select("p").length];',
-      ),
+      await probe(r'''
+const d = new Document("<p a=1 b c=\"x\">1 < 2 &#65;&#x42;&bogus; &copy</p><p/>x");
+const p = d.selectFirst("p");
+return [p.attr("a"), p.hasAttr("b"), p.attr("c"), p.text, d.select("p").length];
+        '''),
       ['1', true, 'x', '1 < 2 AB&bogus; ©', 2],
     );
   });
@@ -156,11 +181,23 @@ void main() {
   test('unsupported selectors and xpath throw named errors', () async {
     await expectLater(
       probe('return H.select("a:hover").length;', html: page),
-      throwsA(isA<PluginException>().having((e) => e.message, 'message', contains(':hover'))),
+      throwsA(
+        isA<PluginException>().having(
+          (e) => e.message,
+          'message',
+          contains(':hover'),
+        ),
+      ),
     );
     await expectLater(
       probe('return H.xpath("//a");', html: page),
-      throwsA(isA<PluginException>().having((e) => e.message, 'message', contains('xpath'))),
+      throwsA(
+        isA<PluginException>().having(
+          (e) => e.message,
+          'message',
+          contains('xpath'),
+        ),
+      ),
     );
   });
 }

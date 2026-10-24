@@ -109,7 +109,10 @@ void main() {
     });
 
     test('isConvertible treats a missing itemType as manga', () {
-      expect(MangayomiEntry.isConvertible(entryJson({'itemType': null})), isTrue);
+      expect(
+        MangayomiEntry.isConvertible(entryJson({'itemType': null})),
+        isTrue,
+      );
       expect(
         MangayomiEntry.isConvertible(entryJson({'sourceCodeUrl': 3})),
         isFalse,

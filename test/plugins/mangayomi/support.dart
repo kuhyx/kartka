@@ -17,9 +17,9 @@ Object? fixtureJson(String name) =>
 
 /// A recorded request/response pair.
 class Exchange {
-  Exchange(this.method, this.url, this.status, this.headers, this.body);
+  new(this.method, this.url, this.status, this.headers, this.body);
 
-  factory Exchange.fromJson(Map<String, Object?> j) => Exchange(
+  factory fromJson(Map<String, Object?> j) => Exchange(
     j['method']! as String,
     j['url']! as String,
     j['status']! as int,
@@ -51,7 +51,7 @@ class Exchange {
 /// Host services replaying recorded exchanges. An unrecorded request fails
 /// loudly (the plugin sees a rejected promise naming the URL).
 class ReplayServices implements PluginHostServices {
-  ReplayServices([List<Exchange> exchanges = const []])
+  new([List<Exchange> exchanges = const []])
     : _byKey = {for (final e in exchanges) '${e.method} ${e.url}': e};
 
   final Map<String, Exchange> _byKey;

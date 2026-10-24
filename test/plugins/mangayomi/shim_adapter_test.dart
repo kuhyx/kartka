@@ -29,7 +29,10 @@ async getDetail(url) { return { genre: "A, B", author: "X, Y", artist: "Y, Z" };
       ],
       'hasNext': true,
     });
-    expect(await s.call(PluginMethod.latest, [1]), {'items': <Object?>[], 'hasNext': false});
+    expect(await s.call(PluginMethod.latest, [1]), {
+      'items': <Object?>[],
+      'hasNext': false,
+    });
     expect(await s.call(PluginMethod.search, ['q', 1]), {
       'items': [
         {'url': '/q', 'title': 'q0', 'coverUrl': null},
@@ -45,7 +48,10 @@ async getDetail(url) { return { genre: "A, B", author: "X, Y", artist: "Y, Z" };
       'genres': ['A', 'B'],
       'status': 'unknown',
     });
-    expect(await s.call(PluginMethod.details, ['/new']), containsPair('title', '/new'));
+    expect(
+      await s.call(PluginMethod.details, ['/new']),
+      containsPair('title', '/new'),
+    );
   });
 
   test('a throwing supportsLatest counts as supported', () async {
@@ -54,7 +60,10 @@ get supportsLatest() { throw new Error("x"); }
 async getLatestUpdates(p) { return { list: [], hasNextPage: false }; }
 ''');
     addTearDown(s.dispose);
-    expect(await s.call(PluginMethod.latest, [1]), {'items': <Object?>[], 'hasNext': false});
+    expect(await s.call(PluginMethod.latest, [1]), {
+      'items': <Object?>[],
+      'hasNext': false,
+    });
   });
 
   test('getDetail is memoised per url and a failure is not cached', () async {
@@ -78,7 +87,13 @@ async getDetail(url) {
     final chapters = await s.call(PluginMethod.chapters, ['/m']);
     expect((d as Map)['title'], 'N1');
     expect(chapters, [
-      {'url': '/e7', 'name': 'Episode 7', 'number': 7, 'uploadedAt': null, 'scanlator': null},
+      {
+        'url': '/e7',
+        'name': 'Episode 7',
+        'number': 7,
+        'uploadedAt': null,
+        'scanlator': null,
+      },
       {
         'url': '/c35',
         'name': 'Vol.2 Ch.3.5 - x',
@@ -86,17 +101,44 @@ async getDetail(url) {
         'uploadedAt': '2023-11-14T22:13:20.000Z',
         'scanlator': 'S',
       },
-      {'url': '/v4', 'name': 'Vol.4', 'number': null, 'uploadedAt': null, 'scanlator': null},
-      {'url': '/s12', 'name': 'Special #12', 'number': 12, 'uploadedAt': null, 'scanlator': null},
-      {'url': '/blank', 'name': '/blank', 'number': null, 'uploadedAt': null, 'scanlator': null},
+      {
+        'url': '/v4',
+        'name': 'Vol.4',
+        'number': null,
+        'uploadedAt': null,
+        'scanlator': null,
+      },
+      {
+        'url': '/s12',
+        'name': 'Special #12',
+        'number': 12,
+        'uploadedAt': null,
+        'scanlator': null,
+      },
+      {
+        'url': '/blank',
+        'name': '/blank',
+        'number': null,
+        'uploadedAt': null,
+        'scanlator': null,
+      },
     ]);
-    await expectLater(s.call(PluginMethod.details, ['/bad']), throwsA(isA<PluginException>()));
-    expect(await s.call(PluginMethod.details, ['/bad']), containsPair('title', 'N3'));
+    await expectLater(
+      s.call(PluginMethod.details, ['/bad']),
+      throwsA(isA<PluginException>()),
+    );
+    expect(
+      await s.call(PluginMethod.details, ['/bad']),
+      containsPair('title', 'N3'),
+    );
     for (var i = 0; i < 9; i++) {
       await s.call(PluginMethod.details, ['/k$i']);
     }
     // '/m' was evicted (cache holds 8), so it is fetched again.
-    expect(await s.call(PluginMethod.details, ['/m']), containsPair('title', 'N13'));
+    expect(
+      await s.call(PluginMethod.details, ['/m']),
+      containsPair('title', 'N13'),
+    );
   });
 
   test('pages: strings and objects, de-duplicated, headers layered', () async {
@@ -108,9 +150,18 @@ async getPageList(url) { return [" https://i.test/1.jpg ", null,
 ''');
     addTearDown(s.dispose);
     expect(await s.call(PluginMethod.pages, ['/c']), [
-      {'imageUrl': 'https://i.test/1.jpg', 'headers': {'Referer': 'https://r.test/', 'X-N': '1'}},
-      {'imageUrl': 'https://i.test/2.jpg', 'headers': {'Referer': 'https://own.test/', 'X-N': '1'}},
-      {'imageUrl': 'https://i.test/3.jpg', 'headers': {'Referer': 'https://r.test/', 'X-N': '1'}},
+      {
+        'imageUrl': 'https://i.test/1.jpg',
+        'headers': {'Referer': 'https://r.test/', 'X-N': '1'},
+      },
+      {
+        'imageUrl': 'https://i.test/2.jpg',
+        'headers': {'Referer': 'https://own.test/', 'X-N': '1'},
+      },
+      {
+        'imageUrl': 'https://i.test/3.jpg',
+        'headers': {'Referer': 'https://r.test/', 'X-N': '1'},
+      },
     ]);
   });
 
@@ -130,7 +181,13 @@ async getPageList(url) { return ["https://i.test/1.jpg"]; }
     for (final m in PluginMethod.values) {
       await expectLater(
         s.call(m, m == PluginMethod.search ? ['q', 1] : [1]),
-        throwsA(isA<PluginException>().having((e) => e.message, 'm', contains('not implemented'))),
+        throwsA(
+          isA<PluginException>().having(
+            (e) => e.message,
+            'm',
+            contains('not implemented'),
+          ),
+        ),
       );
     }
   });

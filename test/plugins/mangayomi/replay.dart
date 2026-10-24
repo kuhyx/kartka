@@ -1,5 +1,6 @@
+import 'package:kartka/plugins/runtime/engine.dart';
+import 'package:kartka/plugins/runtime/engine_interpreter.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
-import 'package:kartka/plugins/runtime/plugin_session.dart';
 
 import 'support.dart';
 
@@ -16,11 +17,20 @@ typedef Replay = ({
 });
 
 /// Replays `http/<name>.json` offline.
-Future<Replay> replay(String name, {String? pagesUrl}) async {
+Future<Replay> replay(
+  String name, {
+  String? pagesUrl,
+  JsEngineFactory engine = InterpreterEngine.new,
+}) async {
   final rec = recording(name);
   final services = ReplayServices(rec.exchanges);
   final j = fixtureJson('http/$name.json')! as Map<String, Object?>;
-  final session = sessionFor(rec.entry, rec.exchanges.first.body, services);
+  final session = sessionFor(
+    rec.entry,
+    rec.exchanges.first.body,
+    services,
+    engine: engine,
+  );
   try {
     Future<T> call<T>(PluginMethod m, List<Object?> args) async =>
         (await session.call(m, args)) as T;
@@ -51,10 +61,4 @@ Future<Replay> replay(String name, {String? pagesUrl}) async {
   } finally {
     await session.dispose();
   }
-}
-
-/// Convenience: session for a recording, for single-call tests.
-PluginSession replaySession(String name) {
-  final rec = recording(name);
-  return sessionFor(rec.entry, rec.exchanges.first.body, ReplayServices(rec.exchanges));
 }

@@ -6,7 +6,6 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/platform/http_client.dart';
-import 'package:kartka/plugins/mangayomi/mangayomi_entry.dart';
 import 'package:kartka/plugins/mangayomi/mangayomi_index.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
 
@@ -33,7 +32,9 @@ class RecordingServices extends ReplayServices {
     Map<String, String> headers,
     String? body,
   ) async {
-    final wait = _last.add(const Duration(seconds: 2)).difference(DateTime.now());
+    final wait = _last
+        .add(const Duration(seconds: 2))
+        .difference(DateTime.now());
     if (!wait.isNegative) await Future<void>.delayed(wait);
     _last = DateTime.now();
     final req = await _client.openUrl(method, Uri.parse(url));
@@ -83,9 +84,8 @@ Future<void> record(
   final live = RecordingServices();
   final src = await live.httpGet('$pinnedRepo/javascript/manga/src/$path');
   expect(src.status, 200);
-  final entry = MangayomiIndex.parse(fixtureJson('index.json')).firstWhere(
-    (MangayomiEntry e) => e.sourceCodeUrl.endsWith('/$path') && e.lang == 'en',
-  );
+  final entry = MangayomiIndex.parse(fixtureJson('index.json'))
+      .firstWhere((e) => e.sourceCodeUrl.endsWith('/$path') && e.lang == 'en');
   final s = sessionFor(entry, src.body, live);
   final results = <String, String>{};
   Future<Object?> step(PluginMethod m, List<Object?> args) async {
@@ -130,6 +130,7 @@ Future<void> record(
   File('$fixtureDir/http/$name.json')
     ..createSync(recursive: true)
     ..writeAsStringSync(const JsonEncoder.withIndent(' ').convert(out));
+  // The recorder's job is to report live results to the person re-recording.
   // ignore: avoid_print
   print('$name: $results');
 }

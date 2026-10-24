@@ -11,7 +11,7 @@ import 'package:kartka/plugins/runtime/host_api.dart';
 /// A Mangayomi extension turned into a Kartka plugin (contracts §6).
 class ConvertedPlugin {
   /// Creates a converted plugin.
-  const ConvertedPlugin({
+  const new({
     required this.manifest,
     required this.source,
     required this.entry,

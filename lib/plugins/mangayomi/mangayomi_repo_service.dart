@@ -13,7 +13,7 @@ import 'package:kartka/plugins/runtime/plugin_registrar.dart';
 /// itself; both share the same adapter, so behaviour is identical.
 class MangayomiRepoService {
   /// Creates a service. [registrar] is resolved lazily (registry lookup).
-  MangayomiRepoService({
+  new({
     required this.http,
     required this.registrar,
     MangayomiRepoAdapter? adapter,

@@ -23,7 +23,13 @@ void main() {
   test('a source without DefaultExtension is rejected', () {
     expect(
       () => MangayomiConverter.convert(testEntry(), 'class Other {}'),
-      throwsA(isA<FormatException>().having((e) => e.message, 'message', contains('Test'))),
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          contains('Test'),
+        ),
+      ),
     );
   });
 
@@ -74,25 +80,28 @@ class DefaultExtension extends MProvider {
       expect(offers.single.url.toString(), 'https://repo.test/js/a.js');
     });
 
-    test('buildSource converts a parsed offer and refuses unknown ones', () async {
-      final a = MangayomiRepoAdapter();
-      final offer = a.parse([testEntry().raw], index).single;
-      final js = await a.buildSource(
-        offer,
-        'class DefaultExtension extends MProvider {}',
-      );
-      expect(js, contains('const __kmExtClass'));
-      final stranger = PluginIndexEntry(
-        manifest: const PluginManifest(
-          id: 'mangayomi-1',
-          name: 'n',
-          version: '1',
-          lang: 'en',
-          baseUrl: 'https://b.test',
-        ),
-        url: Uri.parse('https://b.test/x.js'),
-      );
-      await expectLater(a.buildSource(stranger, ''), throwsStateError);
-    });
+    test(
+      'buildSource converts a parsed offer and refuses unknown ones',
+      () async {
+        final a = MangayomiRepoAdapter();
+        final offer = a.parse([testEntry().raw], index).single;
+        final js = await a.buildSource(
+          offer,
+          'class DefaultExtension extends MProvider {}',
+        );
+        expect(js, contains('const __kmExtClass'));
+        final stranger = PluginIndexEntry(
+          manifest: const PluginManifest(
+            id: 'mangayomi-1',
+            name: 'n',
+            version: '1',
+            lang: 'en',
+            baseUrl: 'https://b.test',
+          ),
+          url: Uri.parse('https://b.test/x.js'),
+        );
+        await expectLater(a.buildSource(stranger, ''), throwsStateError);
+      },
+    );
   });
 }
