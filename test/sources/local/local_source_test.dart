@@ -89,6 +89,13 @@ void main() {
     );
   });
 
+  test('a series containing "/" stays readable', () async {
+    await lib.importFiles([picked('fz1.cbz', cbz('Fate/Zero', '1'))]);
+    final chapters = await source.chapters('fate/zero');
+    expect(chapters.single.url, 'fate/zero/fz1');
+    expect(await source.pages(chapters.single.url), hasLength(2));
+  });
+
   test('unknown manga or chapter throws LocalNotImportedException', () {
     expect(
       () => source.details('nope'),

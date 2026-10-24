@@ -67,7 +67,9 @@ class LocalIndex {
 
   /// The chapter with [chapterUrl], if imported.
   LocalChapter? findChapter(String chapterUrl) {
-    final slash = chapterUrl.indexOf('/');
+    // The chapter key is a file stem or folder basename and never holds a
+    // '/', while a series (ComicInfo `Fate/Zero`) may: split on the last one.
+    final slash = chapterUrl.lastIndexOf('/');
     final manga = slash < 0 ? null : find(chapterUrl.substring(0, slash));
     return manga?.chapters.where((c) => c.url == chapterUrl).firstOrNull;
   }
