@@ -7,7 +7,7 @@ import 'package:kartka/browse/browse_scope.dart';
 /// placeholder while loading, on failure, or when there is no cover.
 class CoverImage extends StatefulWidget {
   /// Creates a cover for [url].
-  const CoverImage(this.url, {super.key});
+  const new(this.url, {super.key});
 
   /// Cover url, or null for none.
   final String? url;

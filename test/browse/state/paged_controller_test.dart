@@ -80,9 +80,11 @@ void main() {
     final stale = Completer<PageResult<int>>();
     final c = PagedController<int>((_) => stale.future, keyOf: (i) => i);
     final pending = c.loadMore();
-    await c.reset(fetch: pagesOf([
-      [9],
-    ]));
+    await c.reset(
+      fetch: pagesOf([
+        [9],
+      ]),
+    );
     stale.complete((items: [1], hasNext: true));
     await pending;
     expect(c.items, [9]);
@@ -94,9 +96,11 @@ void main() {
     final stale = Completer<PageResult<int>>();
     final c = PagedController<int>((_) => stale.future, keyOf: (i) => i);
     final pending = c.loadMore();
-    await c.reset(fetch: pagesOf([
-      [4],
-    ]));
+    await c.reset(
+      fetch: pagesOf([
+        [4],
+      ]),
+    );
     stale.completeError(StateError('old'));
     await pending;
     expect(c.error, isNull);

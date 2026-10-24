@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +12,7 @@ import 'package:kartka/core/models/models.dart';
 /// keys walk the grid and the grid scrolls to the focused tile.
 class MangaTile extends StatelessWidget {
   /// Creates a tile for [manga].
-  const MangaTile(this.manga, {super.key});
+  const new(this.manga, {super.key});
 
   /// The manga shown.
   final MangaSummary manga;
@@ -22,7 +24,8 @@ class MangaTile extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.zero,
       child: InkWell(
-        onTap: () => context.push(mangaRoute(manga.sourceId, manga.url)),
+        onTap: () =>
+            unawaited(context.push(mangaRoute(manga.sourceId, manga.url))),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -48,7 +51,7 @@ class MangaTile extends StatelessWidget {
 /// focus alike). Failures show a Retry button instead of the spinner.
 class PagedMangaGrid extends StatefulWidget {
   /// Creates the grid; loads the first page if nothing is loaded yet.
-  const PagedMangaGrid(this.controller, {super.key});
+  const new(this.controller, {super.key});
 
   /// Paging state.
   final PagedController<MangaSummary> controller;
@@ -65,7 +68,9 @@ class _PagedMangaGridState extends State<PagedMangaGrid> {
     super.initState();
     _scroll.addListener(_maybeLoad);
     widget.controller.addListener(_afterChange);
-    if (widget.controller.items.isEmpty) widget.controller.loadMore();
+    if (widget.controller.items.isEmpty) {
+      unawaited(widget.controller.loadMore());
+    }
   }
 
   @override
@@ -86,7 +91,7 @@ class _PagedMangaGridState extends State<PagedMangaGrid> {
     final c = widget.controller;
     if (!mounted || !_scroll.hasClients || c.error != null) return;
     final pos = _scroll.position;
-    if (pos.extentAfter < 600) c.loadMore();
+    if (pos.extentAfter < 600) unawaited(c.loadMore());
   }
 
   @override
@@ -122,7 +127,7 @@ class _PagedMangaGridState extends State<PagedMangaGrid> {
 }
 
 class _Footer extends StatelessWidget {
-  const _Footer(this.c);
+  const new(this.c);
 
   final PagedController<MangaSummary> c;
 

@@ -4,8 +4,8 @@ import 'package:kartka/core/models/models.dart';
 
 /// Tracking's `ChapterUrlResolver` port: chapter number → chapter url.
 class BrowseChapterUrlResolver {
-  /// Creates the port over [store].
-  BrowseChapterUrlResolver(this._store);
+  /// Creates the port over `store`.
+  new(this._store);
 
   final ChapterStore _store;
 

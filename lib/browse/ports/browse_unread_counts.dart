@@ -9,8 +9,8 @@ import 'package:kartka/library/ports.dart';
 /// Never fetches: a manga whose chapters were not loaded yet reads as null
 /// (unknown) rather than triggering one request per library row.
 class BrowseUnreadCounts implements UnreadCounts {
-  /// Creates the port over [store] and [progress].
-  BrowseUnreadCounts(this._store, this._progress);
+  /// Creates the port over `store` and `progress`.
+  new(this._store, this._progress);
 
   final ChapterStore _store;
   final ProgressRepository _progress;
@@ -20,7 +20,6 @@ class BrowseUnreadCounts implements UnreadCounts {
   Stream<int?> watch(MangaKey key) => combineLatest2(
     _store.watch(key),
     _progress.readChapters(key),
-    (chapters, read) =>
-        chapters?.where((c) => !read.contains(c.url)).length,
+    (chapters, read) => chapters?.where((c) => !read.contains(c.url)).length,
   );
 }

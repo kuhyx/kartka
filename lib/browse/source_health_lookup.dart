@@ -23,7 +23,7 @@ enum HealthVerdict {
 @immutable
 class SourceHealthSummary {
   /// Creates a summary; [rank] is 1-based, null when the source is unranked.
-  const SourceHealthSummary({required this.verdict, this.rank});
+  const new({required this.verdict, this.rank});
 
   /// 1-based rank from the evaluator; lower is better. Null = unranked.
   final int? rank;

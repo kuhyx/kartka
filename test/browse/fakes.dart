@@ -7,15 +7,12 @@ import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/platform/key_value_store.dart';
 
 /// Manga summary in [source] numbered [i].
-MangaSummary manga(String source, int i) => MangaSummary(
-  sourceId: source,
-  url: '/m/$i?x=1#f',
-  title: 'Title $i',
-);
+MangaSummary manga(String source, int i) =>
+    MangaSummary(sourceId: source, url: '/m/$i?x=1#f', title: 'Title $i');
 
 /// Scriptable in-memory source.
 class FakeSource implements MangaSource {
-  FakeSource(
+  new(
     String id, {
     String? name,
     SourceOrigin origin = SourceOrigin.native,
@@ -35,7 +32,7 @@ class FakeSource implements MangaSource {
   final int pageCount;
   final int perPage;
   List<ChapterInfo> chapterList;
-  Object? failWith;
+  Error? failWith;
   Completer<void>? searchGate;
   final List<String> calls = [];
 
@@ -44,7 +41,8 @@ class FakeSource implements MangaSource {
     if (failWith != null) throw failWith!;
     return SearchPage(
       items: [
-        for (var i = 0; i < perPage; i++) manga(ref.id, (page - 1) * perPage + i),
+        for (var i = 0; i < perPage; i++)
+          manga(ref.id, (page - 1) * perPage + i),
       ],
       hasNext: page < pageCount,
     );
@@ -168,12 +166,11 @@ class FakeDownloads implements DownloadRepository {
       enqueued.add(chapter.url);
 
   @override
-  Stream<DownloadState> watch(MangaKey key, String chapterUrl) =>
-      Stream.value(
-        enqueued.contains(chapterUrl)
-            ? const DownloadState(status: DownloadStatus.queued)
-            : DownloadState.none,
-      );
+  Stream<DownloadState> watch(MangaKey key, String chapterUrl) => Stream.value(
+    enqueued.contains(chapterUrl)
+        ? const DownloadState(status: DownloadStatus.queued)
+        : DownloadState.none,
+  );
 
   @override
   Future<List<PageRef>?> offlinePages(MangaKey key, String chapterUrl) async =>

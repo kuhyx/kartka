@@ -4,6 +4,7 @@ import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/source_provider.dart';
 
 import '../fakes.dart';
 
@@ -22,7 +23,10 @@ void main() {
     progress = FakeProgress();
     downloads = FakeDownloads();
     provider = FakeSourceProvider();
-    final sources = SourceRegistry(staticSources: [src], providers: [provider]);
+    final sources = SourceRegistry([
+      StaticSourceProvider([src]),
+      provider,
+    ]);
     deps = BrowseDeps(
       sources: sources,
       chapters: ChapterStore(sources.byId),

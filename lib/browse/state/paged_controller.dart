@@ -8,14 +8,13 @@ typedef PageFetcher<T> = Future<PageResult<T>> Function(int page);
 
 /// Infinite-scroll state over a paged source call (popular/latest/search).
 ///
-/// Guarantees: at most one fetch in flight, items deduplicated by [keyOf]
+/// Guarantees: at most one fetch in flight, items deduplicated by `keyOf`
 /// (sources often repeat an entry across page boundaries), no fetch after a
 /// page reports `hasNext == false`, and results of a fetch started before
 /// [reset] are dropped rather than appended to the new list.
 class PagedController<T> extends ChangeNotifier {
   /// Creates a controller; nothing is fetched until [loadMore] is called.
-  PagedController(this._fetch, {required Object Function(T item) keyOf})
-    : _keyOf = keyOf;
+  new(this._fetch, {required this._keyOf});
 
   final Object Function(T item) _keyOf;
   PageFetcher<T> _fetch;

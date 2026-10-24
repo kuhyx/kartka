@@ -8,7 +8,12 @@ ChapterInfo ch(String url, [double? n]) =>
 void main() {
   group('readingOrder', () {
     test('sorts numbered chapters ascending, stable on ties', () {
-      final order = readingOrder([ch('c3', 3), ch('c1', 1), ch('c2a', 2), ch('c2b', 2)]);
+      final order = readingOrder([
+        ch('c3', 3),
+        ch('c1', 1),
+        ch('c2a', 2),
+        ch('c2b', 2),
+      ]);
       expect(order.map((c) => c.url), ['c1', 'c2a', 'c2b', 'c3']);
     });
 

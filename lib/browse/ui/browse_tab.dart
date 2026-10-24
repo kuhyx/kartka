@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -9,7 +11,7 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
 
 /// Section title per origin.
-const originLabels = {
+const Map<SourceOrigin, String> originLabels = {
   SourceOrigin.native: 'Built-in',
   SourceOrigin.suwayomi: 'Suwayomi',
   SourceOrigin.plugin: 'Plugins',
@@ -20,7 +22,7 @@ const originLabels = {
 /// origin and ordered by source-health rank (name order without it).
 class BrowseTab extends StatelessWidget {
   /// Creates the tab.
-  const BrowseTab({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +36,9 @@ class BrowseTab extends StatelessWidget {
             stream: health?.watch(),
             initialData: const {},
             builder: (context, ranks) => _SourceList(
-              groups: groupSources(
-                [for (final s in sources.data!) s.ref],
-                ranks.data ?? const {},
-              ),
+              groups: groupSources([
+                for (final s in sources.data!) s.ref,
+              ], ranks.data ?? const {}),
               ranks: ranks.data ?? const {},
               health: health,
             ),
@@ -47,11 +48,7 @@ class BrowseTab extends StatelessWidget {
 }
 
 class _SourceList extends StatelessWidget {
-  const _SourceList({
-    required this.groups,
-    required this.ranks,
-    required this.health,
-  });
+  const new({required this.groups, required this.ranks, required this.health});
 
   final List<SourceGroup> groups;
   final Map<String, SourceHealthSummary> ranks;
@@ -72,7 +69,9 @@ class _SourceList extends StatelessWidget {
             ),
             textInputAction: TextInputAction.search,
             onSubmitted: (q) {
-              if (q.trim().isNotEmpty) context.push(globalSearchRoute(q));
+              if (q.trim().isNotEmpty) {
+                unawaited(context.push(globalSearchRoute(q)));
+              }
             },
           ),
         ),
@@ -105,7 +104,7 @@ class _SourceList extends StatelessWidget {
 }
 
 class _SourceTile extends StatelessWidget {
-  const _SourceTile(this.source, this.summary, this.health);
+  const new(this.source, this.summary, this.health);
 
   final SourceRef source;
   final SourceHealthSummary? summary;
@@ -121,7 +120,7 @@ class _SourceTile extends StatelessWidget {
         [source.lang.toUpperCase(), if (rank != null) '#$rank'].join(' · '),
       ),
       trailing: health?.buildBadge(context, source.id, summary),
-      onTap: () => context.push(sourceRoute(source.id)),
+      onTap: () => unawaited(context.push(sourceRoute(source.id))),
     );
   }
 }

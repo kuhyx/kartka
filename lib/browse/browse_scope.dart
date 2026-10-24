@@ -16,7 +16,7 @@ class BrowseDeps {
   /// Creates the dependency set. Optional ports degrade gracefully: no
   /// [health] → name order and no badges; no [downloads] → no download
   /// buttons; no [coverLoader] → placeholder covers.
-  BrowseDeps({
+  new({
     required this.sources,
     required this.chapters,
     required this.library,
@@ -59,7 +59,7 @@ class BrowseDeps {
 /// Provides [BrowseDeps] to the browse screens.
 class BrowseScope extends InheritedWidget {
   /// Creates the scope.
-  const BrowseScope({required this.deps, required super.child, super.key});
+  const new({required this.deps, required super.child, super.key});
 
   /// The provided dependencies.
   final BrowseDeps deps;

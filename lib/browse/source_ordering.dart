@@ -6,7 +6,7 @@ import 'package:kartka/core/models/source_ref.dart';
 @immutable
 class SourceGroup {
   /// Creates a group.
-  const SourceGroup(this.origin, this.sources);
+  const new(this.origin, this.sources);
 
   /// The origin shared by every source in the group.
   final SourceOrigin origin;

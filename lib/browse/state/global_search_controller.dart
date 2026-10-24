@@ -9,7 +9,7 @@ import 'package:kartka/core/source/manga_source.dart';
 @immutable
 class SourceSearchState {
   /// Creates a state; a fresh search starts with [loading] true.
-  const SourceSearchState(
+  const new(
     this.source, {
     this.loading = false,
     this.items = const [],
@@ -34,10 +34,8 @@ class SourceSearchState {
 /// each has its own [timeout] and its own error.
 class GlobalSearchController extends ChangeNotifier {
   /// Creates a controller over [sources] (display order is kept).
-  GlobalSearchController(
-    List<MangaSource> sources, {
-    this.timeout = const Duration(seconds: 20),
-  }) : _sources = List.unmodifiable(sources);
+  new(List<MangaSource> sources, {this.timeout = const Duration(seconds: 20)})
+    : _sources = List.unmodifiable(sources);
 
   final List<MangaSource> _sources;
 

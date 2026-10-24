@@ -8,8 +8,11 @@ void main() {
     final a = StreamController<int>();
     final b = StreamController<String>();
     final out = <String>[];
-    final sub = combineLatest2(a.stream, b.stream, (x, y) => '$x$y')
-        .listen(out.add);
+    final sub = combineLatest2(
+      a.stream,
+      b.stream,
+      (x, y) => '$x$y',
+    ).listen(out.add);
     a.add(1);
     await pumpEvents();
     expect(out, isEmpty);
@@ -31,10 +34,14 @@ void main() {
       Stream<int>.error(StateError('x')),
       Stream.value(1),
       (x, y) => x + y,
-    ).listen((_) {}, onError: errors.add, onDone: () {
-      closed = true;
-      done.complete();
-    });
+    ).listen(
+      (_) {},
+      onError: errors.add,
+      onDone: () {
+        closed = true;
+        done.complete();
+      },
+    );
     await done.future;
     expect(errors.single, isA<StateError>());
     expect(closed, isTrue);

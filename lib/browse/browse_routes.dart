@@ -15,6 +15,7 @@ String sourceRoute(String sourceId, {String? query}) => Uri(
 ).toString();
 
 /// Path of the global search for [query].
-String globalSearchRoute(String query) =>
-    Uri(path: globalSearchRoutePattern, queryParameters: {'q': query})
-        .toString();
+String globalSearchRoute(String query) => Uri(
+  path: globalSearchRoutePattern,
+  queryParameters: {'q': query},
+).toString();

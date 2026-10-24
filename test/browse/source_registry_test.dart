@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/browse/source_registry.dart';
+import 'package:kartka/core/source/source_provider.dart';
 
 import 'fakes.dart';
 
@@ -11,8 +12,13 @@ void main() {
     final md = FakeSource('mangadex');
     final p1 = FakeSourceProvider();
     final p2 = FakeSourceProvider();
-    final reg = SourceRegistry(staticSources: [md], providers: [p1, p2]);
+    final reg = SourceRegistry([
+      StaticSourceProvider([md]),
+      p1,
+      p2,
+    ]);
     final seen = <List<String>>[];
+    await tick();
     final sub = reg.watch().listen(
       (l) => seen.add([for (final s in l) s.ref.id]),
     );
@@ -40,7 +46,7 @@ void main() {
 
   test('a provider error keeps its last list', () async {
     final p = FakeSourceProvider();
-    final reg = SourceRegistry(providers: [p]);
+    final reg = SourceRegistry([p]);
     p.controller.add([FakeSource('plugin:x')]);
     await tick();
     p.controller.addError(StateError('down'));
@@ -49,14 +55,19 @@ void main() {
     await reg.dispose();
   });
 
-  test('fromRegistry reads static sources and SourceProvider services', () {
-    final p = FakeSourceProvider();
+  test('fromRegistry reads SourceProvider services', () async {
     final reg = SourceRegistry.fromRegistry(
       KartkaRegistry([
-        KartkaFeature(id: 'a', sources: [FakeSource('mangadex')]),
-        KartkaFeature(id: 'b', services: [p, 'unrelated']),
+        KartkaFeature(
+          id: 'a',
+          services: [
+            StaticSourceProvider([FakeSource('mangadex')]),
+            'unrelated',
+          ],
+        ),
       ]),
     );
+    await tick();
     expect(reg.current.single.ref.id, 'mangadex');
   });
 }

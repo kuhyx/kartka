@@ -6,18 +6,14 @@ import 'package:kartka/core/source/source_provider.dart';
 
 /// Every [MangaSource] the registered features provide, as one live list.
 ///
-/// Combines the static `KartkaFeature.sources` with every [SourceProvider]
-/// stream (Suwayomi and plugin sources come and go at runtime). A provider
-/// that has not emitted yet counts as empty, so one slow provider never
-/// hides the others. Ids are unique: the first source with an id wins
-/// (static sources first, then providers in registry order).
+/// Merges every [SourceProvider] stream (Suwayomi and plugin sources come
+/// and go at runtime). A provider that has not emitted yet counts as empty,
+/// so one slow provider never hides the others. Ids are unique: the first
+/// source with an id wins, providers taken in registry order.
 class SourceRegistry {
   /// Creates a registry and subscribes to every provider immediately.
-  SourceRegistry({
-    List<MangaSource> staticSources = const [],
-    List<SourceProvider> providers = const [],
-  }) : _static = List.unmodifiable(staticSources),
-       _latest = List.filled(providers.length, const []) {
+  new(List<SourceProvider> providers)
+    : _latest = List.filled(providers.length, const []) {
     for (final (i, p) in providers.indexed) {
       _subs.add(
         p.watch().listen((sources) {
@@ -30,13 +26,9 @@ class SourceRegistry {
   }
 
   /// Builds the registry from every feature in [registry].
-  factory SourceRegistry.fromRegistry(KartkaRegistry registry) =>
-      SourceRegistry(
-        staticSources: registry.sources,
-        providers: registry.all<SourceProvider>(),
-      );
+  factory fromRegistry(KartkaRegistry registry) =>
+      SourceRegistry(registry.all<SourceProvider>());
 
-  final List<MangaSource> _static;
   final List<List<MangaSource>> _latest;
   final List<StreamSubscription<List<MangaSource>>> _subs = [];
   final _changes = StreamController<List<MangaSource>>.broadcast(sync: true);
@@ -65,7 +57,7 @@ class SourceRegistry {
 
   void _publish() {
     final byId = <String, MangaSource>{};
-    for (final s in [_static, ..._latest].expand((l) => l)) {
+    for (final s in _latest.expand((l) => l)) {
       byId.putIfAbsent(s.ref.id, () => s);
     }
     _byId = Map.unmodifiable(byId);

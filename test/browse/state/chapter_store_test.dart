@@ -66,7 +66,10 @@ void main() {
     final store = storeWith();
     final progress = FakeProgress();
     final counts = <int?>[];
-    final sub = BrowseUnreadCounts(store, progress).watch(key).listen(counts.add);
+    final sub = BrowseUnreadCounts(
+      store,
+      progress,
+    ).watch(key).listen(counts.add);
     await tick();
     await store.load(key);
     await progress.markRead(key, '/c/1');

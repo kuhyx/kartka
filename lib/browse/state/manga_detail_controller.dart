@@ -9,7 +9,7 @@ import 'package:kartka/core/source/manga_source.dart';
 /// State and actions of the manga detail screen.
 class MangaDetailController extends ChangeNotifier {
   /// Creates a controller for the manga at [mangaUrl] in [sourceId].
-  MangaDetailController(
+  new(
     this._deps, {
     required this.sourceId,
     required this.mangaUrl,
@@ -92,7 +92,10 @@ class MangaDetailController extends ChangeNotifier {
   /// Adds the manga to (or removes it from) the library.
   Future<void> setInLibrary({required bool add}) async {
     final d = details;
-    if (!add) return _deps.library.remove(key);
+    if (!add) {
+      await _deps.library.remove(key);
+      return;
+    }
     if (d == null) return;
     final now = _deps.clock();
     await _deps.library.upsert(
