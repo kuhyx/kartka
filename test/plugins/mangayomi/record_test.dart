@@ -12,8 +12,10 @@ import 'package:kartka/plugins/runtime/host_api.dart';
 import 'support.dart';
 
 /// Live smoke test AND fixture recorder (the only test touching the
-/// network). Re-record one extension with
-/// `fvm flutter test --run-skipped -t live test/plugins/mangayomi/record_test.dart --plain-name <name>`.
+/// network). As a smoke test it asserts every entry point answered; it
+/// rewrites `http/<name>.json` only when `RECORD=1` is set, e.g.
+/// `RECORD=1 fvm flutter test --run-skipped -t live test/plugins/mangayomi/record_test.dart --plain-name <name>`
+/// (re-recording changes the values `extension_cases.dart` asserts).
 /// Requests are spaced 2 s apart; Cloudflare challenges are recorded as-is.
 const pinnedRepo =
     'https://raw.githubusercontent.com/entityJY/mangayomi-extensions-eJ/'
@@ -127,12 +129,15 @@ Future<void> record(
     'entry': entry.raw,
     'exchanges': live.exchanges,
   };
-  File('$fixtureDir/http/$name.json')
-    ..createSync(recursive: true)
-    ..writeAsStringSync(const JsonEncoder.withIndent(' ').convert(out));
+  if (Platform.environment['RECORD'] == '1') {
+    File('$fixtureDir/http/$name.json')
+      ..createSync(recursive: true)
+      ..writeAsStringSync(const JsonEncoder.withIndent(' ').convert(out));
+  }
   // The recorder's job is to report live results to the person re-recording.
   // ignore: avoid_print
   print('$name: $results');
+  expect(results.values, everyElement('ok'));
 }
 
 void main() {

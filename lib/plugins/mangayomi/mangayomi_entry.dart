@@ -1,5 +1,10 @@
 import 'package:kartka/plugins/runtime/host_api.dart';
 
+/// Revision of the Mangayomi shim baked into converted plugins. Bump it when
+/// the shim changes: the plugin version becomes `<extension version>-km<rev>`,
+/// so installed plugins are offered the update.
+const int kMangayomiShimRevision = 1;
+
 /// One source listed in a Mangayomi repo `index.json`.
 ///
 /// Only the fields Kartka uses are typed; [raw] keeps the whole entry because
@@ -99,11 +104,12 @@ class MangayomiEntry {
   /// Kartka plugin id: `mangayomi-<id>`.
   String get pluginId => 'mangayomi-$id';
 
-  /// Manifest of the converted plugin (contracts §6).
+  /// Manifest of the converted plugin (contracts §6); its version carries
+  /// [kMangayomiShimRevision].
   PluginManifest toManifest() => PluginManifest(
     id: pluginId,
     name: name,
-    version: version,
+    version: '$version-km$kMangayomiShimRevision',
     lang: lang,
     baseUrl: baseUrl,
     icon: iconUrl,

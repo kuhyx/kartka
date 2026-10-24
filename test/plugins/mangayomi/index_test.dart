@@ -29,7 +29,7 @@ void main() {
       expect(asura.lang, 'en');
       expect(asura.toManifest().id, 'mangayomi-524070078');
       expect(asura.toManifest().sourceId, 'plugin:mangayomi-524070078');
-      expect(asura.toManifest().version, '0.1.7');
+      expect(asura.toManifest().version, '0.1.7-km1');
       expect(asura.toManifest().icon, endsWith('en.asurascans.png'));
       final dex = entries.where((e) => e.name == 'MangaDex');
       expect(dex.length, greaterThan(40));
