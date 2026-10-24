@@ -14,7 +14,7 @@ On the Pixel 6a (`23181JEGR08034`) AND the desktop Chrome-app build:
 2. Read a chapter **offline** (airplane mode) from every kept source and from a
    local CBZ.
 3. Progress made on one device shows on the other within 10 s (Firebase RTDB).
-4. Reading a chapter updates the AniList entry (and MAL when linked).
+4. Reading a chapter updates the AniList entry (and MAL / MangaUpdates when linked).
 5. Install a converted Mangayomi JS plugin from a repo URL and read with it.
 6. Read a chapter through the self-hosted Suwayomi server.
 7. Browse → Sources shows the source-health ranking (every metric, verdict, cut
@@ -35,7 +35,7 @@ On the Pixel 6a (`23181JEGR08034`) AND the desktop Chrome-app build:
   (runs Keiyoushi/Tachiyomi extensions), (d) local CBZ/folders, plus JS plugins.
 - Plugins: JS with kartka's own small API (QuickJS on Android, browser JS in a
   worker on web) + a converter for Mangayomi JS extensions.
-- Tracking: AniList + MyAnimeList (OAuth), two-way, progress never decreases.
+- Tracking: AniList + MyAnimeList (OAuth) + MangaUpdates (login), two-way, progress never decreases.
 - Source evaluator: Python (newest CPython, typed, pytest) in `tools/source_eval/`.
 - Suwayomi deploy: `deploy/suwayomi/` (install.sh, systemd unit, Caddy block
   with basic auth) on the host that already runs syncyomi.
