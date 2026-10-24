@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/tracking/common/chapter_url_resolver.dart';
 import 'package:kartka/tracking/common/tracker.dart';
 
@@ -75,6 +76,10 @@ class FakeResolver implements ChapterUrlResolver {
   @override
   Future<String?> resolve(MangaKey key, int chapterNumber) async =>
       known ? '/chapter/$chapterNumber' : null;
+
+  @override
+  Future<double?> numberOf(MangaKey key, String chapterUrl) async =>
+      double.tryParse(chapterUrl.replaceFirst('/chapter/', ''));
 }
 
 /// Progress at [chapter] for [key].
@@ -86,3 +91,13 @@ ReadingProgress progressAt(MangaKey key, double chapter, {int page = 0}) =>
       page: page,
       readAt: DateTime.utc(2026),
     );
+
+/// Reads chapter [chapter] to its end: progress, then the read mark.
+Future<void> finish(
+  ProgressRepository repo,
+  MangaKey key,
+  double chapter,
+) async {
+  await repo.record(progressAt(key, chapter));
+  await repo.markRead(key, '/chapter/$chapter');
+}

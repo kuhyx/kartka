@@ -6,6 +6,7 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/tracking/common/binding_store.dart';
 import 'package:kartka/tracking/common/chapter_url_resolver.dart';
+import 'package:kartka/tracking/common/finished_chapters.dart';
 import 'package:kartka/tracking/common/progress_rules.dart';
 import 'package:kartka/tracking/common/track_binding.dart';
 import 'package:kartka/tracking/common/tracker.dart';
@@ -17,8 +18,9 @@ void _ignore(Object _) {}
 
 /// Two-way progress tracking (contracts §9).
 ///
-/// Binds a `MangaKey` to remote ids, listens to [ProgressRepository.watch]
-/// for every bound key, pushes local progress up, and on [refresh] pulls
+/// Binds a `MangaKey` to remote ids, follows the finished-chapter count
+/// ([FinishedChapters]: read marks, like Mihon) of every bound key, pushes
+/// it up, and on [refresh] pulls
 /// remote progress forward. Nothing here lowers a count: pushes go through
 /// `Tracker.pushProgress` (never lowers), pulls go through
 /// `ProgressRepository.record` (ignored unless ahead), and the binding's
@@ -44,7 +46,11 @@ class TrackingService {
   final DateTime Function() _now;
   final TrackingErrorSink _onError;
 
-  final Map<MangaKey, StreamSubscription<ReadingProgress?>> _watching = {};
+  final Map<MangaKey, StreamSubscription<int>> _watching = {};
+  late final FinishedChapters _finished = FinishedChapters(
+    _progress,
+    resolver: _resolver,
+  );
   final Map<String, int> _pending = {};
   final Set<String> _draining = {};
   bool _started = false;
@@ -95,9 +101,7 @@ class TrackingService {
     if (bound.isEmpty) return;
     try {
       final repo = _progress();
-      var local = chaptersReadFrom(
-        (await repo.watch(key).first)?.chapterNumber,
-      );
+      var local = await _finished.current(key);
       for (final b in bound) {
         final t = tracker(b.service);
         if (t == null || !await t.isLoggedIn()) continue;
@@ -141,19 +145,12 @@ class TrackingService {
   }
 
   void _listen(MangaKey key) {
-    if (_watching.containsKey(key)) return;
-    try {
-      _watching[key] = _progress()
-          .watch(key)
-          .listen((p) => unawaited(_onProgress(key, p)), onError: _onError);
-    } on Object catch (e) {
-      _onError(e);
-    }
+    _watching[key] ??= _finished
+        .watch(key)
+        .listen((n) => unawaited(_onCount(key, n)), onError: _onError);
   }
 
-  Future<void> _onProgress(MangaKey key, ReadingProgress? p) async {
-    final local = chaptersReadFrom(p?.chapterNumber);
-    if (local == null) return;
+  Future<void> _onCount(MangaKey key, int local) async {
     for (final b in await _of(key)) {
       if (alreadyPushed(local: local, lastPushed: b.lastPushedChapter)) {
         continue;

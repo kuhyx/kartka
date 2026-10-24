@@ -43,16 +43,26 @@ void main() {
   Future<TrackBinding> binding() async => (await bindings.all()).single;
 
   test('bind pushes current local progress up', () async {
-    await progress.record(progressAt(_k, 5));
+    await finish(progress, _k, 5);
     await service.bind(_k, 'anilist', '30104');
     await pumpEvents();
     expect(anilist.remote['30104'], 5);
     expect((await binding()).lastPushedChapter, 5);
   });
 
+  test('opening a chapter does not push; finishing it does', () async {
+    await service.bind(_k, 'anilist', '1');
+    await progress.record(progressAt(_k, 4, page: 3));
+    await pumpEvents();
+    expect(anilist.pushes, isEmpty);
+    await progress.markRead(_k, '/chapter/4.0');
+    await pumpEvents();
+    expect(anilist.pushes, [('1', 4)]);
+  });
+
   test('reading forward pushes the floored chapter once', () async {
     await service.bind(_k, 'anilist', '1');
-    await progress.record(progressAt(_k, 3.5));
+    await finish(progress, _k, 3.5);
     await pumpEvents();
     await progress.record(progressAt(_k, 3.5, page: 9));
     await pumpEvents();
@@ -63,7 +73,7 @@ void main() {
   test('never lowers the remote count', () async {
     anilist.remote['1'] = 40;
     await service.bind(_k, 'anilist', '1');
-    await progress.record(progressAt(_k, 41));
+    await finish(progress, _k, 41);
     await pumpEvents();
     expect(anilist.remote['1'], 41);
     // The fake applies max() like real trackers; check no push went below.
@@ -73,10 +83,10 @@ void main() {
   test('bursts coalesce to the newest chapter', () async {
     await service.bind(_k, 'anilist', '1');
     anilist.gate = Completer();
-    await progress.record(progressAt(_k, 1));
+    await finish(progress, _k, 1);
     await pumpEvents();
     for (var c = 2.0; c <= 6; c++) {
-      await progress.record(progressAt(_k, c));
+      await finish(progress, _k, c);
       await pumpEvents();
     }
     anilist.gate!.complete();
@@ -117,7 +127,7 @@ void main() {
   test('logged-out trackers are left alone', () async {
     anilist.loggedIn = false;
     anilist.remote['1'] = 7;
-    await progress.record(progressAt(_k, 9));
+    await finish(progress, _k, 9);
     await service.bind(_k, 'anilist', '1');
     await pumpEvents();
     expect(anilist.pushes, isEmpty);
@@ -127,7 +137,7 @@ void main() {
 
   test('a binding to an unknown tracker is ignored', () async {
     await service.bind(_k, 'mal', '1');
-    await progress.record(progressAt(_k, 3));
+    await finish(progress, _k, 3);
     await pumpEvents();
     expect(anilist.pushes, isEmpty);
     expect(errors, isEmpty);
@@ -136,11 +146,11 @@ void main() {
   test('push errors go to onError and later pushes still run', () async {
     await service.bind(_k, 'anilist', '1');
     anilist.pushError = Exception('offline');
-    await progress.record(progressAt(_k, 2));
+    await finish(progress, _k, 2);
     await pumpEvents();
     expect(errors, hasLength(1));
     anilist.pushError = null;
-    await progress.record(progressAt(_k, 3));
+    await finish(progress, _k, 3);
     await pumpEvents();
     expect(anilist.remote['1'], 3);
   });
@@ -148,7 +158,7 @@ void main() {
   test('unbind stops pushing', () async {
     await service.bind(_k, 'anilist', '1');
     await service.unbind(_k, 'anilist');
-    await progress.record(progressAt(_k, 4));
+    await finish(progress, _k, 4);
     await pumpEvents();
     expect(anilist.pushes, isEmpty);
     expect(await bindings.all(), isEmpty);
@@ -160,7 +170,7 @@ void main() {
     );
     await service.start();
     await service.start();
-    await progress.record(progressAt(_k, 2));
+    await finish(progress, _k, 2);
     await pumpEvents();
     expect(anilist.pushes, [('1', 2)]);
   });
@@ -206,7 +216,7 @@ void main() {
     final p = (await progress.watch(_k).first)!;
     expect(p.readAt.year, greaterThanOrEqualTo(2026));
     anilist.pushError = Exception('dropped');
-    await progress.record(progressAt(_k, 5));
+    await finish(progress, _k, 5);
     await pumpEvents();
   });
 
@@ -222,6 +232,7 @@ void main() {
       onError: errors.add,
     );
     await service.start();
+    await pumpEvents();
     expect(errors.single, isA<StateError>());
   });
 }
