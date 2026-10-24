@@ -25,7 +25,7 @@ class PluginCancelToken {
 /// host dispatch. Every failure leaves as a [PluginException] naming the id.
 class PluginSession {
   /// Creates a session; the engine boots lazily on the first [call].
-  PluginSession({
+  new({
     required this.manifest,
     required this.source,
     required this.services,
@@ -91,7 +91,12 @@ class PluginSession {
         if (!done.isCompleted) done.completeError(_err('cancelled', m));
       }),
     );
-    final msg = jsonEncode({'t': 'call', 'id': id, 'method': m.name, 'args': args});
+    final msg = jsonEncode({
+      't': 'call',
+      'id': id,
+      'method': m.name,
+      'args': args,
+    });
     try {
       _engine!.post(msg);
       return await done.future;

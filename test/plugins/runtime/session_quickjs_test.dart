@@ -12,19 +12,18 @@ import 'support.dart';
 /// `test/plugins/runtime/run_quickjs_test.sh`. Skipped otherwise.
 final _hasLib = Platform.environment['LIBQUICKJSC_TEST_PATH'] != null;
 
-PluginSession _session(String source) =>
-    PluginSession(
-      manifest: const PluginManifest(
-        id: 'q',
-        name: 'Q',
-        version: '1',
-        lang: 'en',
-        baseUrl: 'https://q.test',
-      ),
-      source: source,
-      services: FakeServices(),
-      engineFactory: () => QuickJsEngine(),
-    );
+PluginSession _session(String source) => PluginSession(
+  manifest: const PluginManifest(
+    id: 'q',
+    name: 'Q',
+    version: '1',
+    lang: 'en',
+    baseUrl: 'https://q.test',
+  ),
+  source: source,
+  services: FakeServices(),
+  engineFactory: QuickJsEngine.new,
+);
 
 void main() {
   if (!_hasLib) {
@@ -42,7 +41,11 @@ function popular(p) {
 function latest(p) { console.log('hi', p); return null; }
 ''');
     expect(await s.call(PluginMethod.popular, [1]), [
-      'undefined', 'undefined', 'undefined', 'undefined', 'undefined',
+      'undefined',
+      'undefined',
+      'undefined',
+      'undefined',
+      'undefined',
       'function',
     ]);
     await s.call(PluginMethod.latest, [1]);

@@ -15,7 +15,7 @@ import 'package:kartka/plugins/runtime/prelude.dart';
 /// awaited work only; a plugin that spins synchronously blocks the isolate.
 class QuickJsEngine implements JsEngine {
   /// Creates an engine with the given limits.
-  QuickJsEngine({this.memoryLimit});
+  new({this.memoryLimit});
 
   /// Heap cap in bytes; null leaves it unset (the bundled Linux test library
   /// lacks `jsSetMemoryLimit`, so the default must not call it).
@@ -24,7 +24,7 @@ class QuickJsEngine implements JsEngine {
   QuickJsRuntime2? _rt;
 
   /// Captures `sendMessage` into a closure, then removes ambient globals.
-  static const String _bridgeJs = r'''
+  static const String _bridgeJs = '''
 (function (g) {
   var s = g.sendMessage;
   g.__kartka_send = function (j) { s('kartka', JSON.stringify(j)); };
@@ -66,3 +66,6 @@ class QuickJsEngine implements JsEngine {
     _rt = null;
   }
 }
+
+/// Platform hook for `engine_default.dart`.
+JsEngine createPlatformEngine() => QuickJsEngine();

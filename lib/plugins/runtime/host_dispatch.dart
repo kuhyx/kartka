@@ -6,7 +6,7 @@ import 'package:kartka/plugins/runtime/host_api.dart';
 /// every argument is type-checked because it comes from untrusted JS.
 class HostDispatcher {
   /// Creates a dispatcher over [services].
-  HostDispatcher(this.services);
+  new(this.services);
 
   /// The Dart-side implementation.
   final PluginHostServices services;
@@ -26,7 +26,7 @@ class HostDispatcher {
         return (await services.httpPost(
           _str(args, 0),
           headers: _headers(o['headers']),
-          body: body == null ? null : body.toString(),
+          body: body?.toString(),
         )).toJson();
       case 'html.select':
         return [
@@ -37,7 +37,7 @@ class HostDispatcher {
         services.log(_str(args, 0));
         return null;
       case 'prefs.get':
-        return services.prefsGet(_str(args, 0));
+        return await services.prefsGet(_str(args, 0));
       case 'prefs.set':
         await services.prefsSet(_str(args, 0), _str(args, 1));
         return null;
