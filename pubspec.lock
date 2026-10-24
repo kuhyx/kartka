@@ -58,7 +58,7 @@ packages:
     source: hosted
     version: "1.0.5"
   archive:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: archive
       sha256: "0d58d1fa1fddf6588251ccf2819f3fb3b6d0452c1b2813ac7413a05592bfbefe"
@@ -277,7 +277,7 @@ packages:
     source: hosted
     version: "2.0.2"
   file_picker_platform_interface:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: file_picker_platform_interface
       sha256: "336e7168306834a2b68e6168ed768e00d3fabeac23154d5793e277ca9f97cf20"
@@ -319,7 +319,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_secure_storage:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_secure_storage
       sha256: d4e1fb6b2cb524868929e78dc0282fa000554b22060fb53789dc481c9fc95bb8
@@ -721,7 +721,7 @@ packages:
     source: hosted
     version: "3.2.0"
   plugin_platform_interface:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: plugin_platform_interface
       sha256: "4820fbfdb9478b1ebae27888254d445073732dae3d6ea81f0b7e06d5dedc3f02"
