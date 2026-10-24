@@ -67,17 +67,24 @@ class SuwayomiSourceProvider implements SourceProvider, ImageHeaders {
     return settings.authHeaders;
   }
 
-  /// The server's sources; empty when unconfigured or unreachable, so
-  /// browsing keeps working offline with the other sources.
+  /// The server's sources; empty when unconfigured, unreachable or
+  /// answering nonsense, so browsing keeps working offline with the other
+  /// sources. Never throws: every watcher must get a list on subscribe, or
+  /// the library's "unavailable source" badges stay hidden.
   Future<List<MangaSource>> _load() async {
-    final settings = store.current ?? await store.load();
-    if (!settings.isConfigured) return _last = const [];
-    final Map<String, Object?> data;
     try {
-      data = await client.run(SuwayomiQueries.sources);
-    } on Exception {
+      return _last = await _fetch();
+    } on Object {
+      // Keystore read errors, HttpClient ArgumentErrors and shape errors
+      // (TypeError) all mean "no Suwayomi sources right now".
       return _last = const [];
     }
+  }
+
+  Future<List<MangaSource>> _fetch() async {
+    final settings = store.current ?? await store.load();
+    if (!settings.isConfigured) return const [];
+    final data = await client.run(SuwayomiQueries.sources);
     final nodes = (data['sources']! as Map<String, Object?>)['nodes']!;
     final sources = <MangaSource>[];
     for (final node in nodes as List<Object?>) {
@@ -92,6 +99,6 @@ class SuwayomiSourceProvider implements SourceProvider, ImageHeaders {
         ),
       );
     }
-    return _last = List.unmodifiable(sources);
+    return List.unmodifiable(sources);
   }
 }
