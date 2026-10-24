@@ -11,6 +11,10 @@ abstract interface class ProgressRepository {
   /// Marks one chapter read.
   Future<void> markRead(MangaKey key, String chapterUrl);
 
+  /// Marks many chapters of [key] read in one batch (backup import marks
+  /// tens of thousands; one write per chapter is far too slow).
+  Future<void> markReadMany(MangaKey key, Iterable<String> chapterUrls);
+
   /// Clears an explicit read mark (a `read: false` tombstone, §4).
   Future<void> markUnread(MangaKey key, String chapterUrl);
 

@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/library/data/local_progress_repository.dart';
 
-import '../support/memory_kv.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 
 final _t0 = DateTime.utc(2026, 10, 24);
 const _k = 'mangadex|/m';
@@ -16,10 +16,10 @@ ReadingProgress _p(double ch, int page, {String key = _k}) => ReadingProgress(
 );
 
 void main() {
-  late MemoryKv kv;
+  late MemoryKeyValueStore kv;
   late LocalProgressRepository repo;
   setUp(() {
-    kv = MemoryKv();
+    kv = MemoryKeyValueStore();
     repo = LocalProgressRepository(kv, now: () => _t0);
   });
 
@@ -35,7 +35,7 @@ void main() {
     expect(await repo.watch(_k).first, _p(2, 5));
     await repo.record(_p(2, 6));
     expect(await repo.watch(_k).first, _p(2, 6));
-    expect(kv.data.keys.single, 'progress/${mangaKeyHash(_k)}');
+    expect((await kv.entries()).keys.single, 'progress/${mangaKeyHash(_k)}');
   });
 
   test('watch emits per key and only when that key changes', () async {
@@ -60,9 +60,33 @@ void main() {
     expect(await repo.readChapters(_k).first, {'/c1', '/c2'});
   });
 
+  test('readMarks reports reads and unread tombstones per key', () async {
+    await repo.markRead(_k, '/c1');
+    await repo.markRead(_k, '/c2');
+    await repo.markUnread(_k, '/c2');
+    await repo.markRead('other|/x', '/c9');
+    expect(await repo.readMarks(_k).first, {'/c1': true, '/c2': false});
+  });
+
+  test('markReadMany marks many chapters in one store row', () async {
+    await repo.markUnread(_k, '/c0');
+    await repo.markReadMany(_k, ['/c1', '/c2', '/c1']);
+    await repo.markReadMany(_k, const []);
+    await repo.markReadMany('other|/x', ['/c9']);
+    expect(await repo.readChapters(_k).first, {'/c1', '/c2'});
+    final rows = await kv.entries(prefix: 'read/');
+    expect(
+      rows.keys,
+      unorderedEquals([
+        'read/${mangaKeyHash(_k)}',
+        'read/${mangaKeyHash('other|/x')}',
+      ]),
+    );
+  });
+
   test('unmarking an unknown chapter writes nothing', () async {
     await repo.markUnread(_k, '/c1');
-    expect(kv.data, isEmpty);
+    expect(await kv.entries(), isEmpty);
   });
 
   test('state survives a restart over the same store', () async {
