@@ -5,10 +5,13 @@ import 'package:kartka/plugins/runtime/engine.dart';
 import 'package:kartka/plugins/runtime/worker_script.dart';
 import 'package:web/web.dart' as web;
 
-/// Web engine: the plugin runs in a blob Web Worker inside a hidden iframe
-/// with `sandbox="allow-scripts"` (opaque origin) and a CSP of
+/// Web engine for JS plugins: the plugin runs in a blob Web Worker inside a
+/// hidden iframe with `sandbox="allow-scripts"` (opaque origin) and a CSP of
 /// `connect-src 'none'`. The only way out is a `MessageChannel` whose Dart end
 /// carries the prelude protocol, so HTTP goes through `KartkaHttp` only.
+///
+/// Owned by the plugins-runtime part; it lives here because the platform seam
+/// allows web-only imports only under `lib/platform/web/`.
 ///
 /// [dispose] removes the iframe, which kills the worker even in a
 /// synchronous infinite loop.

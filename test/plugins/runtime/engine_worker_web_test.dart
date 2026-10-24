@@ -2,9 +2,12 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kartka/plugins/runtime/engine_worker.dart';
+import 'package:kartka/platform/web/plugin_worker_engine.dart';
+import 'package:kartka/plugins/runtime/engine_default.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
 import 'package:kartka/plugins/runtime/plugin_session.dart';
+
+import 'package:kartka/plugins/runtime/plugins_feature.dart' as feature;
 
 import 'web_services.dart';
 
@@ -23,6 +26,14 @@ PluginSession _session(String source) => PluginSession(
 
 /// Run with `fvm flutter test --platform chrome <this file>` (headless).
 void main() {
+  test(
+    'the whole plugins feature compiles for the web and picks the worker',
+    () {
+      expect(createDefaultEngine(), isA<WorkerEngine>());
+      expect(feature.pluginsRoute, '/plugins');
+    },
+  );
+
   test(
     'a plugin runs in the sandboxed worker and uses the host bridge',
     () async {
