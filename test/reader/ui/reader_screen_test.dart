@@ -154,4 +154,15 @@ void main() {
     await key(tester, LogicalKeyboardKey.arrowUp);
     expect(find.text('Previous: Ch. 1'), findsOneWidget);
   });
+
+  testWidgets('fullscreen follows the state the platform reports', (
+    tester,
+  ) async {
+    await ltr(tester);
+    h.system.reported = true;
+    await key(tester, LogicalKeyboardKey.keyF);
+    h.system.reported = false;
+    await key(tester, LogicalKeyboardKey.keyF);
+    expect(h.system.fullscreen, [false, true]);
+  });
 }

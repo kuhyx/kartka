@@ -134,10 +134,16 @@ class ReaderSession extends ChangeNotifier {
 
   Future<ChapterNeighbours> _neighbours(MangaSource? source) async {
     try {
-      final list = await source?.chapters(mangaUrl) ?? const <ChapterInfo>[];
-      return neighboursOf(list, chapterUrl);
+      if (source != null) {
+        return neighboursOf(await source.chapters(mangaUrl), chapterUrl);
+      }
     } on Object {
-      // Offline reading must not depend on the chapter list.
+      // Offline: fall back to what downloads knows.
+    }
+    try {
+      final downloaded = await deps.downloads?.downloadedChapters(key);
+      return neighboursOf(downloaded ?? const [], chapterUrl);
+    } on Object {
       return neighboursOf(const [], chapterUrl);
     }
   }

@@ -99,7 +99,9 @@ class _ReaderScreenState extends State<ReaderScreen> {
   }
 
   void _toggleFullscreen() {
-    _fullscreen = !_fullscreen;
+    // Prefer the platform's answer: the browser leaves fullscreen on its own
+    // Esc, which would otherwise leave this flag stale.
+    _fullscreen = !(widget.system.isFullscreen ?? _fullscreen);
     unawaited(widget.system.setFullscreen(on: _fullscreen));
   }
 

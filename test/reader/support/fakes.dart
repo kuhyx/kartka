@@ -87,9 +87,13 @@ class FakeProgress implements ProgressRepository {
 
 /// Serves offline pages for the chapters in [offline].
 class FakeDownloads implements DownloadRepository {
-  new([this.offline = const {}]);
+  new([this.offline = const {}, this.chapters = const []]);
 
   final Map<String, List<PageRef>> offline;
+  final List<ChapterInfo> chapters;
+
+  @override
+  Future<List<ChapterInfo>> downloadedChapters(MangaKey key) async => chapters;
 
   @override
   Future<void> enqueue(MangaKey key, ChapterInfo chapter) async {}
@@ -127,6 +131,12 @@ final onePixelPng = Uint8List.fromList(const [
 class FakeReaderSystem implements ReaderSystem {
   final List<bool> awake = [];
   final List<bool> fullscreen = [];
+
+  /// What the platform reports; null means "cannot tell".
+  bool? reported;
+
+  @override
+  bool? get isFullscreen => reported;
 
   @override
   Future<void> keepAwake({required bool on}) async => awake.add(on);

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kartka/reader/platform/browser_fullscreen_stub.dart';
+import 'package:kartka/platform/fullscreen.dart';
 import 'package:kartka/reader/platform/reader_system.dart';
 
 void main() {
@@ -76,5 +76,17 @@ void main() {
   test('the non-web fullscreen hook is a no-op', () async {
     await setBrowserFullscreen(on: true);
     expect(calls, isEmpty);
+    final web = PlatformReaderSystem(
+      isAndroid: false,
+      isWeb: true,
+      wakelock: ({required on}) async {},
+    );
+    expect(web.isFullscreen, isFalse);
+    final android = PlatformReaderSystem(
+      isAndroid: true,
+      isWeb: false,
+      wakelock: ({required on}) async {},
+    );
+    expect(android.isFullscreen, isNull);
   });
 }

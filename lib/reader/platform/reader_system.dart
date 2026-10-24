@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-// TODO(reader): swap for foundation's web fullscreen seam once it exists;
-// package:web may only be imported under lib/platform/web/.
-import 'package:kartka/reader/platform/browser_fullscreen_stub.dart';
+import 'package:kartka/platform/fullscreen.dart' as fullscreen;
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 /// Device integration the reader needs: screen wake lock and fullscreen.
@@ -12,6 +10,10 @@ abstract interface class ReaderSystem {
 
   /// Enters or leaves fullscreen.
   Future<void> setFullscreen({required bool on});
+
+  /// The real fullscreen state when the platform can report it (web, where
+  /// the browser's own Esc leaves fullscreen), else null.
+  bool? get isFullscreen;
 }
 
 /// Toggles a platform capability.
@@ -25,7 +27,8 @@ class PlatformReaderSystem implements ReaderSystem {
     required this.isAndroid,
     required this.isWeb,
     required this.wakelock,
-    this.browserFullscreen = setBrowserFullscreen,
+    this.browserFullscreen = fullscreen.setBrowserFullscreen,
+    this.browserIsFullscreen = _browserIsFullscreen,
   });
 
   /// The system for the platform the app is running on.
@@ -46,6 +49,14 @@ class PlatformReaderSystem implements ReaderSystem {
 
   /// Requests or exits browser fullscreen.
   final Toggle browserFullscreen;
+
+  /// Whether the browser is in fullscreen now.
+  final bool Function() browserIsFullscreen;
+
+  static bool _browserIsFullscreen() => fullscreen.browserFullscreen;
+
+  @override
+  bool? get isFullscreen => isWeb ? browserIsFullscreen() : null;
 
   // Plugin channel glue; behaviour is covered through the injected hook.
   // coverage:ignore-start

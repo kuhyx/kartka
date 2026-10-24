@@ -264,4 +264,40 @@ void main() {
       expect(progress.markedRead, ['/c/2']);
     },
   );
+
+  test(
+    'offline, downloaded chapters supply neighbours and the number',
+    () async {
+      final s = make(
+        source: FakeSource(id: 'other'),
+        downloads: FakeDownloads({'/c/2': fakePages('/c/2', 2)}, _chapters),
+      );
+      await s.open();
+      expect(s.chapterName, 'Ch. 2');
+      expect(s.neighbours.next?.url, '/c/3');
+      s.onItem(2);
+      await Future<void>.delayed(Duration.zero);
+      expect(progress.recorded.single.chapterNumber, 2);
+      s.dispose();
+    },
+  );
+
+  test('a failing downloads lookup still opens the chapter', () async {
+    final s = make(
+      source: FakeSource(
+        failChapters: true,
+        pageMap: {'/c/2': fakePages('/c/2', 2)},
+      ),
+      downloads: _ThrowingChapters(),
+    );
+    await s.open();
+    expect(s.phase, ReaderPhase.ready);
+    expect(s.neighbours.current, isNull);
+  });
+}
+
+class _ThrowingChapters extends FakeDownloads {
+  @override
+  Future<List<ChapterInfo>> downloadedChapters(MangaKey key) =>
+      Future.error(StateError('db'));
 }
