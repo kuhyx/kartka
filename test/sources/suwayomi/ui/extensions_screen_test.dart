@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
@@ -100,6 +103,8 @@ void main() {
     );
     await pump(tester, api(http));
     expect(find.text('Update'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 4)); // toast expires
+    await tester.pumpAndSettle();
     expect(find.textContaining('update available'), findsOneWidget);
     expect(find.textContaining('obsolete'), findsOneWidget);
   });
@@ -120,5 +125,61 @@ void main() {
     await tester.tap(find.text('Retry'));
     await tester.pumpAndSettle();
     expect(find.text('Retry'), findsOneWidget);
+  });
+
+  testWidgets('updates and uninstalls, then Escape goes back', (tester) async {
+    String ext(String pkg, String name) =>
+        '{"pkgName":"eu.kanade.tachiyomi.extension.$pkg","name":"$name",'
+        '"lang":"en","versionName":"1","iconUrl":"/i","isInstalled":true,'
+        '"hasUpdate":true,"isObsolete":false}';
+    String body(String name) => jsonEncode(fixture(name)['response']);
+    final http = FakeKartkaHttp((r) {
+      final req = jsonDecode(r.body!) as Map<String, Object?>;
+      final patch = (req['variables']! as Map)['patch'] as Map?;
+      return FakeKartkaHttp.text(switch (patch?.keys.single) {
+        null =>
+          '{"data":{"fetchExtensions":{"extensions":['
+              '${ext('all.mangadex', 'MangaDex')},'
+              '${ext('en.weebcentral', 'Weeb Central')}]}}}',
+        'update' => body('ext_update'),
+        _ => body('ext_uninstall'),
+      });
+    });
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildDarkTheme(),
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => ExtensionsScreen(api: api(http)),
+              ),
+            ),
+            child: const Text('open'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Update').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Updated MangaDex'), findsOneWidget);
+    expect(find.text('Update'), findsOneWidget);
+    await tester.tap(
+      find.descendant(
+        of: find.widgetWithText(ListTile, 'Weeb Central'),
+        matching: find.text('Uninstall'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Uninstall').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Uninstalled Weeb Central'), findsOneWidget);
+    expect(find.text('Available'), findsOneWidget);
+    expect(changes, 2);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    expect(find.byType(ExtensionsScreen), findsNothing);
   });
 }

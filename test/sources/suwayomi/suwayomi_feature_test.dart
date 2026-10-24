@@ -4,6 +4,7 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_feature.dart';
+import 'package:kartka/sources/suwayomi/suwayomi_source_provider.dart';
 
 void main() {
   test('the registry entry looks titles up in the library', () async {
@@ -31,5 +32,7 @@ void main() {
     expect(await libraryTitle(repos, key), 'X');
     expect(await libraryTitle(repos, 'missing'), isNull);
     expect(await libraryTitle(null, key), isNull);
+    final provider = registry.all<SuwayomiSourceProvider>().single;
+    expect(await provider.titleOf!(key), 'X');
   });
 }
