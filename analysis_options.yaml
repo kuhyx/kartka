@@ -1,0 +1,31 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    # Promote key lints to errors so they fail CI, not just warn.
+    missing_required_param: error
+    unnecessary_null_comparison: error
+    dead_code: error
+    invalid_annotation_target: error
+  exclude:
+    - build/**
+    - "**/*.g.dart"
+    - android/**
+    - web/**
+    - desktop/**
+    - tools/**
+    - deploy/**
+
+linter:
+  rules:
+    # The core models are immutable by construction (every field final, lists
+    # and maps unmodifiable when decoded). Marking them @immutable needs
+    # package:meta, which Flutter 3.47.7 pins at 1.18.3 while newest stable is
+    # 1.19.0, so the exact-pin rule makes it unsatisfiable; importing it from
+    # flutter/foundation would make lib/core depend on Flutter (SPEC: pure
+    # Dart). Revisit when Flutter's pin catches up.
+    avoid_equals_and_hash_code_on_mutable_classes: false
