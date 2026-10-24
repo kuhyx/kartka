@@ -82,7 +82,7 @@ class FakeFilePicker implements FilePicker {
 /// [OAuthRedirect] that answers each authorization with a callback.
 class FakeOAuthRedirect implements OAuthRedirect {
   /// Creates the fake for [redirectUri] (default `kartka://oauth`; pass
-  /// `http://127.0.0.1:8791/oauth` to test the web flow). The default
+  /// `http://127.0.0.1:47391/oauth` to test the web flow). The default
   /// response echoes the bare redirect URI.
   new([Uri Function(Uri authorizationUrl)? respond, Uri? redirectUri])
     : redirectUri = redirectUri ?? Uri.parse('kartka://oauth'),

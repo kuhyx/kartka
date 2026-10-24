@@ -9,7 +9,7 @@ String profileDir(String home) =>
     p.join(home, '.local', 'share', 'kartka-desktop', 'profile');
 
 /// The URL the window opens. `127.0.0.1`, not `localhost`: the OAuth
-/// redirect registered at AniList/MAL is `http://127.0.0.1:8791/oauth`, and
+/// redirect registered at AniList/MAL is `http://127.0.0.1:47391/oauth`, and
 /// the result page must share the app's origin.
 const appUrl = 'http://127.0.0.1:$kartkaPort';
 

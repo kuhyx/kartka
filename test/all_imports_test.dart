@@ -33,6 +33,8 @@ import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/platform/blob_store.dart';
 import 'package:kartka/platform/create_platform.dart';
 import 'package:kartka/platform/file_picker.dart';
+import 'package:kartka/platform/fullscreen.dart';
+import 'package:kartka/platform/fullscreen_stub.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/http_kartka.dart';
 import 'package:kartka/platform/image_headers.dart';

@@ -57,7 +57,7 @@ void main() {
   });
 
   group('WrapperOAuthRedirect', () {
-    final base = Uri.parse('http://127.0.0.1:8791/');
+    final base = Uri.parse('http://127.0.0.1:47391/');
 
     test('clears, opens, then polls /oauth/result until it lands', () async {
       var polls = 0;
@@ -71,7 +71,7 @@ void main() {
         return polls < 3
             ? http.Response('', 204)
             : http.Response(
-                'http://127.0.0.1:8791/oauth#access_token=t&state=s',
+                'http://127.0.0.1:47391/oauth#access_token=t&state=s',
                 200,
               );
       });
@@ -82,7 +82,7 @@ void main() {
         open: opened.add,
         pollInterval: Duration.zero,
       );
-      expect(oauth.redirectUri, Uri.parse('http://127.0.0.1:8791/oauth'));
+      expect(oauth.redirectUri, Uri.parse('http://127.0.0.1:47391/oauth'));
       final back = await oauth.authorize(Uri.parse('https://anilist.co/x'));
       expect(back.fragment, 'access_token=t&state=s');
       expect(opened, [Uri.parse('https://anilist.co/x')]);

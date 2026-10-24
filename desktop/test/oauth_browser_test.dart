@@ -52,9 +52,9 @@ void main() {
       expect(findBrowser(override: '', exists: (_) => false), '');
     });
 
-    test('opens 127.0.0.1:8791 in a fixed profile with WM class kartka', () {
+    test('opens 127.0.0.1:47391 in a fixed profile with WM class kartka', () {
       final args = browserArgs('/home/u');
-      expect(args, contains('--app=http://127.0.0.1:8791'));
+      expect(args, contains('--app=http://127.0.0.1:47391'));
       expect(
         args,
         contains('--user-data-dir=/home/u/.local/share/kartka-desktop/profile'),

@@ -1,7 +1,7 @@
 /// Completes an OAuth authorization in the system browser (DOCS-contracts §7).
 ///
 /// Android: deep link `kartka://oauth`. Web: the desktop wrapper catches
-/// `http://127.0.0.1:8791/oauth` (registered at AniList and MAL, so the port
+/// `http://127.0.0.1:47391/oauth` (registered at AniList and MAL, so the port
 /// is fixed) and hands the redirect back to the page.
 abstract interface class OAuthRedirect {
   /// The redirect URI to register with the provider and send as
