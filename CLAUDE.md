@@ -65,6 +65,20 @@ cannot add it without a preflight, and OPTIONS is never granted), no
 headers, never `Via` / `X-Forwarded-*`, always the Kartka UA. Secrets live in
 `~/.config/kartka/secrets.json` at 0600, never in browser storage.
 
+## Agent instance (headless E2E, never kuhy's screen)
+
+`tools/agent/kartka_agent.sh start|stop|status|<verb>` runs an isolated
+wrapper on 47392 and a headless chromium (CDP 9342) as `systemd-run --user`
+units, with data in `~/.local/share/kartka-agent/`. Other verbs pass through
+to `flutter_web_drive` (kuhyx/utils; README there): `tree`, `tap "<label>"`,
+`text --file`, `key`, `scroll`, `wait`, `shot`, `console`. It serves the
+existing `build/web`, so rebuild that first when lib/ changed. Flows in
+`tools/agent/flows/` log numbered steps and exit non-zero with the failing
+step and a screenshot: `f0_smoke.sh` (shell + tab switch + non-blank shot),
+`f3_sync.sh [title chapter [trigger_epoch]]` (password sign-in to the real
+/kartka RTDB, then the chapter reads as read within 10 s). Never point the
+agent at 47391 or `~/.local/share/kartka-desktop/`.
+
 ## Conventions
 
 - Dart 3.13 constructor syntax (`const new(...)`, `factory fromJson(...)`):
