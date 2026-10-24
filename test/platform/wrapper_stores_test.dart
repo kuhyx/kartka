@@ -49,7 +49,7 @@ MockClient fakeWrapper(Map<String, List<int>> files, List<http.Request> log) =>
     });
 
 void main() {
-  final base = Uri.parse('http://127.0.0.1:8791/');
+  final base = Uri.parse('http://127.0.0.1:47391/');
 
   test('WrapperBlobStore round-trips through /files', () async {
     final files = <String, List<int>>{};

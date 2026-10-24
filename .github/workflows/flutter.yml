@@ -1,0 +1,63 @@
+name: flutter
+
+# analyze + format + tests with 100 % line coverage, for the app and the
+# desktop wrapper package. Separate from the gate workflows so a stale
+# dependency or a long file never hides a broken build (and vice versa).
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  app:
+    name: app (analyze, format, test, coverage)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.7
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Format
+        run: dart format --set-exit-if-changed lib test desktop
+
+      - name: Analyze
+        run: dart analyze --fatal-infos
+
+      - name: Test with coverage
+        run: flutter test --coverage --reporter=compact
+
+      - name: 100 % line coverage of lib/
+        run: python3 scripts/check_coverage.py coverage/lcov.info
+
+  desktop:
+    name: desktop wrapper (analyze, test, coverage)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.7
+          channel: stable
+          cache: true
+
+      - run: dart pub get
+
+      - name: Analyze
+        run: dart analyze --fatal-infos
+
+      - name: Test with coverage
+        run: dart test --coverage-path=coverage/lcov.info --reporter=compact
+
+      - name: 100 % line coverage
+        run: python3 ../scripts/check_coverage.py coverage/lcov.info

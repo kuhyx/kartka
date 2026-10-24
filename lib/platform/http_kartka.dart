@@ -43,7 +43,7 @@ class ProxyKartkaHttp extends KartkaHttp {
   /// The underlying (browser) client.
   final http.Client client;
 
-  /// The wrapper's origin, e.g. `http://127.0.0.1:8791/`.
+  /// The wrapper's origin, e.g. `http://127.0.0.1:47391/`.
   final Uri base;
 
   @override

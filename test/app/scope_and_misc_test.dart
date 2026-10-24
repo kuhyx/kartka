@@ -52,9 +52,9 @@ void main() {
     expect(back, Uri.parse('kartka://oauth'));
     final web = FakeOAuthRedirect(
       null,
-      Uri.parse('http://127.0.0.1:8791/oauth'),
+      Uri.parse('http://127.0.0.1:47391/oauth'),
     );
-    expect(web.redirectUri.port, 8791);
+    expect(web.redirectUri.port, 47391);
     expect(await web.authorize(Uri.parse('https://a/')), web.redirectUri);
     // A runtime (non-const) instance, so the constructor itself runs.
     final cancelled = [OAuthCancelled.new][0]();

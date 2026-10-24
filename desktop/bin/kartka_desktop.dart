@@ -27,17 +27,20 @@ Future<void> main(List<String> args) async {
         _arg(args, '--secrets-path') ??
         p.join(home, '.config', 'kartka', 'secrets.json'),
   );
+  // --port is for headless verification only: the app's IndexedDB and the
+  // OAuth redirect registered at AniList/MAL are keyed to kartkaPort.
+  final port = int.tryParse(_arg(args, '--port') ?? '') ?? kartkaPort;
   try {
-    await server.start();
+    await server.start(port);
   } on SocketException catch (e) {
     // Never fall back to another port: the OAuth redirect registered at
-    // AniList/MAL and the browser's IndexedDB are both keyed to 8791.
+    // AniList/MAL and the browser's IndexedDB are both keyed to 47391.
     stderr
-      ..writeln('kartka-desktop: cannot bind 127.0.0.1:$kartkaPort: $e')
+      ..writeln('kartka-desktop: cannot bind 127.0.0.1:$port: $e')
       ..writeln('Free the port (is Kartka already running?) and retry.');
     exit(1);
   }
-  stdout.writeln('kartka-desktop serving on $appUrl');
+  stdout.writeln('kartka-desktop serving on http://127.0.0.1:${server.port}');
   if (args.contains('--no-browser')) return;
   if (!await launchBrowser(home)) {
     stdout.writeln(
