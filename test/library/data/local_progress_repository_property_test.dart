@@ -2,7 +2,7 @@ import 'package:glados/glados.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/library/data/local_progress_repository.dart';
 
-import '../support/memory_kv.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 
 final _t0 = DateTime.utc(2026, 10, 24);
 const _k = 'mangadex|/m';
@@ -30,7 +30,7 @@ void main() {
   Glados(any.list(any.progress)).test(
     'never decreases: every emission is ahead of the previous one',
     (writes) async {
-      final repo = LocalProgressRepository(MemoryKv());
+      final repo = LocalProgressRepository(MemoryKeyValueStore());
       final seen = <ReadingProgress?>[];
       final sub = repo.watch(_k).listen(seen.add);
       for (final w in writes) {
@@ -69,7 +69,7 @@ void main() {
     var tick = 0;
     // A lagging clock: marks must still order by call sequence.
     final repo = LocalProgressRepository(
-      MemoryKv(),
+      MemoryKeyValueStore(),
       now: () => _t0.add(Duration(milliseconds: -tick++)),
     );
     final expected = <String>{};
@@ -82,7 +82,7 @@ void main() {
 }
 
 Future<ReadingProgress?> _final(List<ReadingProgress> writes) async {
-  final repo = LocalProgressRepository(MemoryKv());
+  final repo = LocalProgressRepository(MemoryKeyValueStore());
   for (final w in writes) {
     await repo.record(w);
   }

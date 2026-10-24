@@ -2,7 +2,7 @@ import 'package:glados/glados.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/library/data/local_library_repository.dart';
 
-import '../support/memory_kv.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 
 final _t0 = DateTime.utc(2026, 10, 24);
 
@@ -26,7 +26,7 @@ extension on Any {
 }
 
 Future<Set<LibraryEntry>> _replay(Iterable<LibraryEntry> writes) async {
-  final kv = MemoryKv();
+  final kv = MemoryKeyValueStore();
   final repo = LocalLibraryRepository(kv);
   for (final w in writes) {
     await repo.upsert(w);

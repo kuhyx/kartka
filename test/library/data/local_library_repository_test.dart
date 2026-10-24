@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/library/data/local_library_repository.dart';
 
-import '../support/memory_kv.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 
 final _t0 = DateTime.utc(2026, 10, 24);
 
@@ -22,10 +22,10 @@ LibraryEntry _entry(
 );
 
 void main() {
-  late MemoryKv kv;
+  late MemoryKeyValueStore kv;
   late LocalLibraryRepository repo;
   setUp(() {
-    kv = MemoryKv();
+    kv = MemoryKeyValueStore();
     repo = LocalLibraryRepository(
       kv,
       now: () => _t0.add(const Duration(seconds: 5)),
@@ -34,7 +34,9 @@ void main() {
 
   test('upsert stores under library/<hash> and watch emits it', () async {
     await repo.upsert(_entry('/a'));
-    expect(kv.data.keys, ['library/${mangaKeyHash('mangadex|/a')}']);
+    expect((await kv.entries()).keys, [
+      'library/${mangaKeyHash('mangadex|/a')}',
+    ]);
     expect(await repo.watch().first, [_entry('/a')]);
   });
 
@@ -50,7 +52,7 @@ void main() {
     await repo.upsert(_entry('/a'));
     await repo.remove(mangaKeyOf('mangadex', '/a'));
     expect(await repo.watch().first, isEmpty);
-    expect(kv.data, hasLength(1));
+    expect(await kv.entries(), hasLength(1));
     await repo.upsert(_entry('/a', at: 9));
     expect(await repo.watch().first, [_entry('/a', at: 9)]);
   });
@@ -63,11 +65,11 @@ void main() {
 
   test('remove of an unknown or removed key writes nothing', () async {
     await repo.remove('mangadex|/nope');
-    expect(kv.data, isEmpty);
+    expect(await kv.entries(), isEmpty);
     await repo.upsert(_entry('/a', removed: true));
-    final before = Map.of(kv.data);
+    final before = await kv.entries();
     await repo.remove(mangaKeyOf('mangadex', '/a'));
-    expect(kv.data, before);
+    expect(await kv.entries(), before);
   });
 
   test('state survives a restart over the same store', () async {
