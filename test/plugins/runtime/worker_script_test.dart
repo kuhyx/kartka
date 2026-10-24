@@ -43,7 +43,7 @@ self.XMLHttpRequest = function () {};
     posted.clear();
     const call = '{"t":"call","id":1,"method":"popular","args":[41]}';
     js
-      ..eval('self.onmessage({data: \'$call\'})')
+      ..eval("self.onmessage({data: '$call'})")
       ..runPendingAsyncTasks();
     expect(posted.single, '{"t":"result","id":1,"ok":true,"value":42}');
   });

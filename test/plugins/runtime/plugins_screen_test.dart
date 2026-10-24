@@ -1,0 +1,166 @@
+import 'package:design_system/design_system.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kartka/app/registry.dart';
+import 'package:kartka/core/source/source_provider.dart';
+import 'package:kartka/plugins/runtime/engine_interpreter.dart';
+import 'package:kartka/plugins/runtime/plugin_manager.dart';
+import 'package:kartka/plugins/runtime/plugin_registrar.dart';
+import 'package:kartka/plugins/runtime/plugin_store.dart';
+import 'package:kartka/plugins/runtime/plugins_feature.dart';
+import 'package:kartka/plugins/runtime/plugins_screen.dart';
+
+import 'support.dart';
+
+void main() {
+  const repo = 'https://repo.test/index.json';
+  late FakeHttp http;
+  late MemoryKeyValueStore kv;
+  late PluginManager manager;
+
+  setUp(() {
+    http = FakeHttp();
+    kv = MemoryKeyValueStore();
+    manager = PluginManager(http: http.client, store: PluginStore(kv));
+  });
+
+  Future<void> open(WidgetTester t) async {
+    await t.pumpWidget(
+      MaterialApp(
+        theme: buildDarkTheme(),
+        home: PluginsScreen(manager: manager),
+      ),
+    );
+    await t.pumpAndSettle();
+  }
+
+  Future<void> addRepo(WidgetTester t, String url) async {
+    await t.enterText(find.byType(TextField), url);
+    await t.tap(find.byTooltip('Add repository'));
+    await t.pumpAndSettle();
+  }
+
+  testWidgets('empty state explains what to do', (t) async {
+    await open(t);
+    expect(find.text('Add a repository URL to find plugins.'), findsOneWidget);
+    expect(find.text('No plugins installed.'), findsOneWidget);
+  });
+
+  testWidgets('add repo, install, see it installed, uninstall', (t) async {
+    await open(t);
+    await addRepo(t, repo);
+    expect(find.text(repo), findsOneWidget);
+    expect(find.text('Demo Site'), findsOneWidget);
+    expect(find.text('Install'), findsNWidgets(2));
+
+    await t.tap(find.text('Install').first);
+    await t.pumpAndSettle();
+    expect(find.text('plugin:demo · 1.0.0 · $repo'), findsOneWidget);
+    expect(find.byIcon(Icons.check), findsOneWidget);
+
+    await t.tap(find.byTooltip('Uninstall Demo Site'));
+    await t.pumpAndSettle();
+    expect(find.text('Uninstall Demo Site?'), findsOneWidget);
+    await t.tap(find.text('Uninstall'));
+    await t.pumpAndSettle();
+    expect(find.text('No plugins installed.'), findsOneWidget);
+  });
+
+  testWidgets('cancelling the uninstall dialog keeps the plugin', (t) async {
+    await open(t);
+    await addRepo(t, repo);
+    await t.tap(find.text('Install').first);
+    await t.pumpAndSettle();
+    await t.tap(find.byTooltip('Uninstall Demo Site'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Cancel'));
+    await t.pumpAndSettle();
+    expect(find.text('No plugins installed.'), findsNothing);
+  });
+
+  testWidgets('a newer version shows Update', (t) async {
+    await PluginStore(kv).setRepos([repo]);
+    await PluginStore(kv).put(
+      InstalledPlugin(
+        manifest: (await manager.available()).plugins.first.entry.manifest,
+        source: 'x',
+        origin: repo,
+      ),
+    );
+    http.overrides['https://repo.test/index.json'] = (
+      status: 200,
+      body: fixture('index.json').replaceFirst('"1.0.0"', '"2.0.0"'),
+    );
+    await open(t);
+    expect(find.text('Update'), findsOneWidget);
+  });
+
+  testWidgets('a failing repo shows its error and can be removed', (t) async {
+    await PluginStore(kv).setRepos(['https://repo.test/gone.json']);
+    await open(t);
+    expect(find.byIcon(Icons.error_outline), findsOneWidget);
+    await t.tap(find.byTooltip('Remove repository'));
+    await t.pumpAndSettle();
+    expect(find.byIcon(Icons.error_outline), findsNothing);
+  });
+
+  testWidgets('an empty repo says so', (t) async {
+    http.overrides['https://repo.test/empty.json'] = (
+      status: 200,
+      body: '{"plugins":[]}',
+    );
+    await PluginStore(kv).setRepos(['https://repo.test/empty.json']);
+    await open(t);
+    expect(find.text('These repositories offer no plugins.'), findsOneWidget);
+  });
+
+  testWidgets('install errors name the plugin in a toast', (t) async {
+    await open(t);
+    await addRepo(t, repo);
+    http.overrides['https://repo.test/demo.js'] = (status: 200, body: 'evil()');
+    await t.tap(find.text('Install').first);
+    await t.pumpAndSettle();
+    expect(find.textContaining('Plugin "demo"'), findsOneWidget);
+    expect(find.textContaining('sha256 mismatch'), findsOneWidget);
+  });
+
+  testWidgets('an invalid repo url is rejected and kept in the field', (
+    t,
+  ) async {
+    await open(t);
+    await addRepo(t, 'ftp://nope');
+    expect(find.textContaining('repo URL must be http'), findsOneWidget);
+    expect(find.text('ftp://nope'), findsOneWidget);
+  });
+
+  testWidgets('feature wires route, settings tile and services', (t) async {
+    final env = KartkaEnv(memoryPlatform(http: http.client, kv: kv))
+      ..registry = KartkaRegistry([]);
+    final feature = pluginsFeature(env, engineFactory: InterpreterEngine.new);
+    expect(feature.id, 'plugins');
+    final registry = KartkaRegistry([feature]);
+    expect(registry.all<SourceProvider>(), hasLength(1));
+    expect(registry.maybe<PluginRegistrar>(), isA<PluginManager>());
+    expect(
+      await t.runAsync(
+        () => registry.all<SourceProvider>().single.watch().first,
+      ),
+      isEmpty,
+    );
+
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (c, s) => Scaffold(body: feature.settingsTiles.single(c)),
+        ),
+        ...feature.routes,
+      ],
+    );
+    await t.pumpWidget(MaterialApp.router(routerConfig: router));
+    await t.tap(find.text('Plugins'));
+    await t.pumpAndSettle();
+    expect(find.byType(PluginsScreen), findsOneWidget);
+  });
+}
