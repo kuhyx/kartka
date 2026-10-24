@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:kartka/core/source/source_provider.dart';
+import 'package:kartka/library/data/lww.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
 
@@ -16,6 +18,7 @@ class LibraryDeps {
     this.tracked = const NoTrackedLookup(),
     this.clock = utcNow,
     this.coverLoader,
+    this.sourceProviders = const [],
   });
 
   /// Decorated repositories (always through the accessor, so sync sees UI
@@ -36,7 +39,8 @@ class LibraryDeps {
 
   /// Cover loader; `null` shows placeholders.
   final CoverLoader? coverLoader;
-}
 
-/// The current instant in UTC.
-DateTime utcNow() => DateTime.now().toUtc();
+  /// Every registered source provider; entries whose source none of them
+  /// offers get the "source unavailable" badge.
+  final List<SourceProvider> sourceProviders;
+}

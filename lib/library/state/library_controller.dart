@@ -7,6 +7,7 @@ import 'package:kartka/library/state/entry_facts.dart';
 import 'package:kartka/library/state/library_deps.dart';
 import 'package:kartka/library/state/library_item.dart';
 import 'package:kartka/library/state/library_query.dart';
+import 'package:kartka/library/state/source_availability.dart';
 
 /// Entries removed together, kept for undo.
 typedef RemovedBatch = ({List<LibraryEntry> entries, DateTime at});
@@ -22,6 +23,7 @@ class LibraryController extends ChangeNotifier {
   /// Repositories, ports and clock.
   final LibraryDeps deps;
   late final FactsTracker _facts;
+  SourceAvailability? _sources;
   final _subs = <StreamSubscription<Object?>>[];
 
   Map<MangaKey, LibraryEntry> _entries = {};
@@ -60,6 +62,7 @@ class LibraryController extends ChangeNotifier {
   /// Subscribes to the repositories.
   void start() {
     final repos = deps.repos;
+    _sources = SourceAvailability(deps.sourceProviders, notifyListeners);
     _subs
       ..add(repos.library.watch().listen(_onEntries))
       ..add(repos.categories.watch().listen(_onCategories))
@@ -102,6 +105,7 @@ class LibraryController extends ChangeNotifier {
       downloaded: f.downloaded,
       tracked: f.tracked,
       categoryIds: _membership[e.key] ?? const {},
+      sourceAvailable: _sources?.isAvailable(e.sourceId) ?? true,
     );
   }
 
@@ -183,6 +187,7 @@ class LibraryController extends ChangeNotifier {
       unawaited(s.cancel());
     }
     unawaited(_facts.dispose());
+    unawaited(_sources?.dispose());
     super.dispose();
   }
 }

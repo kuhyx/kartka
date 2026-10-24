@@ -11,7 +11,7 @@ import 'package:kartka/platform/key_value_store.dart';
 class LocalLibraryRepository implements LibraryRepository {
   /// Creates the repository; [now] is the clock for tombstones.
   new(KeyValueStore store, {DateTime Function()? now})
-    : _now = now ?? _utcNow,
+    : _now = now ?? utcNow,
       _rows = KvTable(
         store,
         'library/',
@@ -49,5 +49,3 @@ class LocalLibraryRepository implements LibraryRepository {
   static DateTime _at(LibraryEntry e) => e.updatedAt;
   static String _tie(LibraryEntry e) => jsonEncode(e.toJson());
 }
-
-DateTime _utcNow() => DateTime.now().toUtc();

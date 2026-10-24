@@ -5,6 +5,7 @@
 library;
 
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/library/library_feature.dart';
 import 'package:kartka/reader/reader_feature.dart';
 
 export 'package:kartka/app/feature.dart';
@@ -12,5 +13,6 @@ export 'package:kartka/app/feature.dart';
 /// Every part's feature factory, in registry order.
 final List<KartkaFeatureFactory> kartkaFeatureFactories = [
   // Parts append below this line, one entry each.
+  libraryFeature,
   readerFeature,
 ];
