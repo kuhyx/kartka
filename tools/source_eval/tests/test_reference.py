@@ -155,8 +155,17 @@ def test_build_resumes_and_merges_sy(tmp_path: Path) -> None:
     ref = Reference(path, clock)
     sy = ["Yotsuba&!", "Chainsaw Man", "Unknown Thing"]
     assert build(client, ref, sy, Deadline(clock, None), top=5, per_page=3)
-    assert build(client, Reference(path, clock), sy, Deadline(clock, 0))
+    assert build(
+        client, Reference(path, clock), sy, Deadline(clock, 0), top=5, per_page=3
+    )
+    later = [*sy, "Chainsaw Man", "Late Addition A", "Late Addition B"]
+    assert build(
+        client, Reference(path, clock), later, Deadline(clock, None), top=5, per_page=3
+    )
     saved = json.loads(path.read_text())
+    assert {"sy:late addition a", "sy:late addition b"} <= {
+        x["key"] for x in saved["titles"]
+    }
     keys = [x["key"] for x in saved["titles"]]
     assert keys[:3] == ["anilist:105778", "anilist:105398", keys[2]]
     assert saved["referenceSize"] == len(keys)

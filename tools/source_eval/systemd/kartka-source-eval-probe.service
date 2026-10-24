@@ -8,6 +8,8 @@ Type=oneshot
 WorkingDirectory=%h/src/kartka/tools/source_eval
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin
 Environment=KARTKA_SUWAYOMI_URL=http://127.0.0.1:4567
+# A probe during the weekly run would pace hosts separately from it; skip.
+ExecCondition=/bin/sh -c '! systemctl --user is-active --quiet kartka-source-eval-full.service'
 ExecStart=%h/.local/bin/uv run --frozen source-eval probe --workers 16
 Nice=19
 IOSchedulingClass=idle

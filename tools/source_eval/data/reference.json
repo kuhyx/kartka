@@ -2,10 +2,10 @@
  "complete": true,
  "generatedAt": 1792844823.3387177,
  "progress": {
-  "anilistPage": 10,
-  "syDone": 0
+  "anilistPage": 10
  },
  "referenceSize": 500,
+ "syProcessed": [],
  "titles": [
   {
    "anilistId": 105778,

@@ -31,9 +31,10 @@ class Reference:
         self.path = path
         self._clock = clock
         data = cast("dict[str, object]", read_json(path, {}))
-        self.progress = cast(
-            "dict[str, int]", data.get("progress", {"anilistPage": 0, "syDone": 0})
-        )
+        self.progress = cast("dict[str, int]", data.get("progress", {"anilistPage": 0}))
+        # SY titles by normalised name, not list position: a newer backup can
+        # reorder or insert titles and an index cursor would skip some.
+        self.sy_done = set(cast("list[str]", data.get("syProcessed", [])))
         self.complete = bool(data.get("complete", False))
         raw = cast("list[dict[str, object]]", data.get("titles", []))
         self.titles = [RefTitle.from_json(t) for t in raw]
@@ -46,6 +47,7 @@ class Reference:
                 "generatedAt": self._clock.now(),
                 "complete": self.complete,
                 "progress": self.progress,
+                "syProcessed": sorted(self.sy_done),
                 "referenceSize": len(self.titles),
                 "titles": [t.to_json() for t in self.titles],
             },
@@ -81,9 +83,11 @@ def build(  # noqa: PLR0913 -- explicit knobs beat a config object here
     top: int = 500,
     per_page: int = 50,
 ) -> bool:
-    """Advance the build; True once every step is done."""
-    if ref.complete:
-        return True
+    """Advance the build; True once every step is done.
+
+    Never short-circuits on ``complete``: SY titles added after the AniList
+    part finished (a new ``sy_titles.json``) are still picked up.
+    """
     while ref.progress["anilistPage"] * per_page < top:
         if deadline.expired():
             return False
@@ -93,16 +97,17 @@ def build(  # noqa: PLR0913 -- explicit knobs beat a config object here
             ref.add(entry)
         ref.progress["anilistPage"] = page if has_next else top
         ref.save()
-    while ref.progress["syDone"] < len(sy_titles):
+    for title in sy_titles:
+        if normalize(title) in ref.sy_done:
+            continue
         if deadline.expired():
             return False
-        title = sy_titles[ref.progress["syDone"]]
         found = anilist.search(client, title)
         ref.add(
             found
             or RefTitle(key=f"sy:{normalize(title)}", titles=(title,), origins=("sy",))
         )
-        ref.progress["syDone"] += 1
+        ref.sy_done.add(normalize(title))
         ref.save()
     ref.complete = True
     ref.save()
