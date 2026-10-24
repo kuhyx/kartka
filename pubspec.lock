@@ -161,6 +161,24 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.15.1"
+  crdt_sync:
+    dependency: "direct main"
+    description:
+      path: crdt_sync_dart
+      ref: "crdt_sync_dart-v0.11.1"
+      resolved-ref: "978d32af3af66f0d6500c4c6c0c6df5370ebe9a2"
+      url: "https://github.com/kuhyx/utils"
+    source: git
+    version: "0.11.1"
+  crdt_sync_flutter:
+    dependency: "direct main"
+    description:
+      path: crdt_sync_flutter
+      ref: "crdt_sync_flutter-v0.3.3"
+      resolved-ref: "96e52d6c2ab99e96f6995db0eb9cd3ac3b656337"
+      url: "https://github.com/kuhyx/utils"
+    source: git
+    version: "0.3.3"
   cross_file:
     dependency: transitive
     description:
@@ -274,6 +292,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.0"
+  fixnum:
+    dependency: transitive
+    description:
+      name: fixnum
+      sha256: b6dc7065e46c974bc7c5f143080a6764ec7a4be6da1285ececdc37be96de53be
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -390,6 +416,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "18.1.1"
+  google_identity_services_web:
+    dependency: transitive
+    description:
+      name: google_identity_services_web
+      sha256: "5d187c46dc59e02646e10fe82665fc3884a9b71bc1c90c2b8b749316d33ee454"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.3+1"
+  google_sign_in:
+    dependency: transitive
+    description:
+      name: google_sign_in
+      sha256: "521031b65853b4409b8213c0387d57edaad7e2a949ce6dea0d8b2afc9cb29763"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.2.0"
+  google_sign_in_android:
+    dependency: transitive
+    description:
+      name: google_sign_in_android
+      sha256: "312e74b3e839896ff30ed98310da4cc24dbfa19ad060b1612f7718d5afa66480"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.2.18"
+  google_sign_in_ios:
+    dependency: transitive
+    description:
+      name: google_sign_in_ios
+      sha256: b8efb315c778390f1b1c4fc14d74c42784dd9ee0c1d0c26b13f30b46826319ad
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.3.8"
+  google_sign_in_platform_interface:
+    dependency: transitive
+    description:
+      name: google_sign_in_platform_interface
+      sha256: "7f59208c42b415a3cca203571128d6f84f885fead2d5b53eb65a9e27f2965bb5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
+  google_sign_in_web:
+    dependency: transitive
+    description:
+      name: google_sign_in_web
+      sha256: d473003eeca892f96a01a64fc803378be765071cb0c265ee872c7f8683245d14
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.3"
   hooks:
     dependency: transitive
     description:
@@ -702,6 +776,62 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.9.0"
+  shared_preferences:
+    dependency: "direct dev"
+    description:
+      name: shared_preferences
+      sha256: "1e85e0dccf5b4a016077fea7dfbb4a7cb39c759ac1596fcf60c06deadb7da91f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.6"
+  shared_preferences_android:
+    dependency: transitive
+    description:
+      name: shared_preferences_android
+      sha256: "593034a16e82953ca31145db6c85174286262715f9c5e6a9d8c65ffd9fcdce09"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.3"
+  shared_preferences_foundation:
+    dependency: transitive
+    description:
+      name: shared_preferences_foundation
+      sha256: "2ec3934efa51e46117f23031cc141b8fc878e8525b94ec1ea4f7f586cf1b47ea"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.7"
+  shared_preferences_linux:
+    dependency: transitive
+    description:
+      name: shared_preferences_linux
+      sha256: "580abfd40f415611503cae30adf626e6656dfb2f0cee8f465ece7b6defb40f2f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.1"
+  shared_preferences_platform_interface:
+    dependency: transitive
+    description:
+      name: shared_preferences_platform_interface
+      sha256: "649dc798a33931919ea356c4305c2d1f81619ea6e92244070b520187b5140ef9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.2"
+  shared_preferences_web:
+    dependency: transitive
+    description:
+      name: shared_preferences_web
+      sha256: c49bd060261c9a3f0ff445892695d6212ff603ef3115edbb448509d407600019
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.3"
+  shared_preferences_windows:
+    dependency: transitive
+    description:
+      name: shared_preferences_windows
+      sha256: "94ef0f72b2d71bc3e700e025db3710911bd51a71cefb65cc609dd0d9a982e3c1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.1"
   shelf:
     dependency: transitive
     description:
@@ -795,6 +925,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.1"
+  sync_settings_ui:
+    dependency: "direct main"
+    description:
+      path: sync_settings_ui
+      ref: "sync_settings_ui-v0.4.1"
+      resolved-ref: "51700aa89eaf1789ae98491aaa854c54d35b4170"
+      url: "https://github.com/kuhyx/utils"
+    source: git
+    version: "0.4.1"
   synchronized:
     dependency: transitive
     description:
@@ -907,6 +1046,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.6"
+  uuid:
+    dependency: transitive
+    description:
+      name: uuid
+      sha256: "9b129329f58692f6e6578329498a8fe9fbe98f090beb764ffbb8ee2eadd01dcd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.6.0"
   vector_math:
     dependency: transitive
     description:

@@ -11,12 +11,24 @@ environment:
 # (pre-commit) and the dependency-freshness workflow (CI). Only the carve-out
 # packages (very_good_analysis, the SDK ones) keep a caret.
 dependencies:
+  # gzip for .tachibk and CBZ/ZIP for the local source (pure Dart, web too).
+  archive: 4.5.2
   # Android deep link kartka://oauth for OAuthRedirect.
   app_links: 7.2.2
-  # CBZ/ZIP reading for the local source (pure Dart, works on web).
-  archive: 4.5.2
   # Deep ==/hashCode for the list and map fields of the core models.
   collection: 1.19.1
+  # Merge primitives (Hlc) and the Firebase RTDB client for sync (lib/sync/).
+  crdt_sync:
+    git:
+      url: https://github.com/kuhyx/utils
+      ref: crdt_sync_dart-v0.11.1
+      path: crdt_sync_dart
+  # Keystore session, per-install device id and openSync for sync.
+  crdt_sync_flutter:
+    git:
+      url: https://github.com/kuhyx/utils
+      ref: crdt_sync_flutter-v0.3.3
+      path: crdt_sync_flutter
   # SHA-1 for mangaKeyHash (RTDB-safe keys, DOCS-contracts §4).
   crypto: 3.0.7
   # The shared palette, scales and theme builders. Owns the tokens: there is
@@ -42,6 +54,12 @@ dependencies:
   idb_shim: 2.10.1+1
   path: 1.9.1
   path_provider: 2.1.6
+  # The shared sign-in / sign-out screen body for the sync account page.
+  sync_settings_ui:
+    git:
+      url: https://github.com/kuhyx/utils
+      ref: sync_settings_ui-v0.4.1
+      path: sync_settings_ui
   url_launcher: 6.3.3
   web: 1.1.2
   # ComicInfo.xml metadata in local CBZs and folders.
@@ -58,6 +76,8 @@ dev_dependencies:
   # Property-based tests for models, parsers and merge rules.
   glados: 1.1.7
   plugin_platform_interface: 2.1.8
+  # Mocked in sync tests to prove the device id persists (crdt.nodeId).
+  shared_preferences: 2.5.6
   very_good_analysis: ^11.0.0
 
 flutter:
