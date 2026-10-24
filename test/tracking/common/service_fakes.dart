@@ -15,6 +15,9 @@ class FakeTracker implements Tracker {
   final List<(String, int)> pushes = [];
   int fetches = 0;
   Exception? pushError;
+  Exception? loginError;
+  Exception? searchError;
+  bool emptySearch = false;
   Completer<void>? gate;
 
   @override
@@ -24,15 +27,22 @@ class FakeTracker implements Tracker {
   Future<bool> isLoggedIn() async => loggedIn;
 
   @override
-  Future<void> login() async => loggedIn = true;
+  Future<void> login() async {
+    final e = loginError;
+    if (e != null) throw e;
+    loggedIn = true;
+  }
 
   @override
   Future<void> logout() async => loggedIn = false;
 
   @override
-  Future<List<TrackSearchResult>> search(String title) async => [
-    TrackSearchResult(remoteId: '1', title: title),
-  ];
+  Future<List<TrackSearchResult>> search(String title) async {
+    final e = searchError;
+    if (e != null) throw e;
+    if (emptySearch) return const [];
+    return [TrackSearchResult(remoteId: '1', title: title, chapters: 4)];
+  }
 
   @override
   Future<TrackStatus?> fetch(String remoteId) async {
@@ -63,7 +73,7 @@ class FakeResolver implements ChapterUrlResolver {
   bool known = true;
 
   @override
-  Future<String?> chapterUrlFor(MangaKey key, int chapterNumber) async =>
+  Future<String?> resolve(MangaKey key, int chapterNumber) async =>
       known ? '/chapter/$chapterNumber' : null;
 }
 

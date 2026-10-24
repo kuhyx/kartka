@@ -98,3 +98,31 @@ class KvBindingStore implements BindingStore {
     }
   }
 }
+
+/// [BindingStore] that wraps [_base] with every [BindingStoreDecorator] on
+/// first use: the registry is complete only after every feature factory ran.
+class LazyBindingStore implements BindingStore {
+  /// Creates the store; [_decorators] is read once, lazily.
+  new(this._base, this._decorators);
+
+  final BindingStore _base;
+  final List<BindingStoreDecorator> Function() _decorators;
+
+  late final BindingStore _store = _decorators().fold(
+    _base,
+    (inner, d) => d.decorate(inner),
+  );
+
+  @override
+  Future<List<TrackBinding>> all() => _store.all();
+
+  @override
+  Stream<List<TrackBinding>> watch(MangaKey key) => _store.watch(key);
+
+  @override
+  Future<void> put(TrackBinding binding) => _store.put(binding);
+
+  @override
+  Future<void> remove(MangaKey key, String service) =>
+      _store.remove(key, service);
+}

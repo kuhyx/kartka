@@ -8,5 +8,5 @@ import 'package:kartka/core/models/manga_key.dart';
 /// URL ever reaches the synced `progress/` path.
 abstract interface class ChapterUrlResolver {
   /// The URL of chapter [chapterNumber] of [key], or `null` when unknown.
-  Future<String?> chapterUrlFor(MangaKey key, int chapterNumber);
+  Future<String?> resolve(MangaKey key, int chapterNumber);
 }

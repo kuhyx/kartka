@@ -72,4 +72,9 @@ void main() {
     await pumpEvents();
     expect(anilist.pushes, [('1', 4)]);
   });
+
+  test('any tracker id is accepted, e.g. mangaupdates', () async {
+    expect(await sink.bind(_k, 'mangaupdates', '55'), isTrue);
+    expect((await store.all()).single.service, 'mangaupdates');
+  });
 }

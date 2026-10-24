@@ -125,7 +125,7 @@ class TrackingService {
   }
 
   Future<bool> _pull(ProgressRepository repo, MangaKey key, int count) async {
-    final url = await _resolver()?.chapterUrlFor(key, count);
+    final url = await _resolver()?.resolve(key, count);
     if (url == null) return false;
     await repo.record(
       ReadingProgress(
