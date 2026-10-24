@@ -11,6 +11,7 @@ import 'package:kartka/downloads/downloads_feature.dart';
 import 'package:kartka/library/library_feature.dart';
 import 'package:kartka/plugins/mangayomi/mangayomi_feature.dart';
 import 'package:kartka/plugins/runtime/plugins_feature.dart';
+import 'package:kartka/reader/reader_feature.dart';
 import 'package:kartka/sources/local/local_feature.dart';
 import 'package:kartka/sources/mangadex/mangadex_feature.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_feature.dart';
@@ -33,4 +34,5 @@ final List<KartkaFeatureFactory> kartkaFeatureFactories = [
   trackingFeature,
   syncFeature,
   browseFeature,
+  readerFeature,
 ];

@@ -54,6 +54,7 @@ dependencies:
   idb_shim: 2.10.1+1
   path: 1.9.1
   path_provider: 2.1.6
+  scrollable_positioned_list: 0.3.8
   # The shared sign-in / sign-out screen body for the sync account page.
   sync_settings_ui:
     git:
@@ -61,11 +62,13 @@ dependencies:
       ref: sync_settings_ui-v0.4.1
       path: sync_settings_ui
   url_launcher: 6.3.3
+  wakelock_plus: 1.8.2
   web: 1.1.2
   # ComicInfo.xml metadata in local CBZs and folders.
   xml: 7.1.0
 
 dev_dependencies:
+  fake_async: 1.3.3
   # Depended on directly so tests can swap in a fake file picker.
   file_picker_platform_interface: 4.2.0
   # Generates the Android launcher icons from assets/icon/ (shared generator:
