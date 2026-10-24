@@ -48,6 +48,6 @@ List<String>? _segments(String location, String head, int count) {
   if (raw.length != count + 2 || raw[0].isNotEmpty || raw[1] != head) {
     return null;
   }
-  // Uri.parse already rejected malformed %-escapes, so decoding cannot fail.
+  // Uri.parse re-escapes malformed %-sequences, so decoding cannot fail.
   return [for (final s in raw.skip(2)) Uri.decodeComponent(s)];
 }
