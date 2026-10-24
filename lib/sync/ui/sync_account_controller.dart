@@ -21,6 +21,9 @@ abstract interface class SyncAccountController {
   /// Full pull + push now.
   Future<void> syncNow();
 
+  /// Cheap status check when the screen opens.
+  Future<void> refresh();
+
   /// Opens the sign-in / sign-out screen; resyncs when it closes.
   Future<void> manageAccount(BuildContext context);
 }
@@ -44,6 +47,9 @@ class EngineAccountController implements SyncAccountController {
 
   @override
   Future<void> syncNow() => engine.syncNow();
+
+  @override
+  Future<void> refresh() => engine.poll();
 
   @override
   Future<void> manageAccount(BuildContext context) async {

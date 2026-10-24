@@ -5,7 +5,7 @@ library;
 import 'dart:async';
 
 import 'package:crdt_sync/crdt_sync.dart'
-    show FirebaseSyncError, RemoteSyncError;
+    show FirebaseRestClient, FirebaseSyncError, RemoteSyncError;
 import 'package:crdt_sync_flutter/crdt_sync_flutter.dart'
     show loadDeviceIdentity, openSync;
 import 'package:kartka/platform/http_client.dart';
@@ -18,9 +18,14 @@ import 'package:kartka/sync/sync_scheduler.dart';
 import 'package:kartka/sync/sync_shadow.dart';
 
 /// Opens the production transport: a signed-in crdt_sync client, or null.
-Future<RtdbTransport?> openFirebaseTransport(KartkaHttp http) async {
+///
+/// [open] defaults to crdt_sync_flutter's `openSync`; tests inject a fake.
+Future<RtdbTransport?> openFirebaseTransport(
+  KartkaHttp http, {
+  Future<FirebaseRestClient?> Function()? open,
+}) async {
   try {
-    final client = await openSync(kKartkaSync);
+    final client = await (open ?? () => openSync(kKartkaSync))();
     if (client == null) return null;
     return FirebaseTransport(
       writer: FirebaseRestWriter(client),

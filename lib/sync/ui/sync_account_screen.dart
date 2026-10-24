@@ -27,6 +27,7 @@ class _SyncAccountScreenState extends State<SyncAccountScreen> {
   @override
   void initState() {
     super.initState();
+    unawaited(widget.controller.refresh());
     _sub = widget.controller.changes.listen((s) => setState(() => _status = s));
   }
 
