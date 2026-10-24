@@ -1,14 +1,13 @@
 import 'dart:convert';
 
 import 'package:kartka/core/models/json_fields.dart';
-import 'package:kartka/core/models/manga_key.dart';
+import 'package:kartka/core/models/models.dart';
 
 /// One fully downloaded chapter: how many page blobs and how big.
 class OfflineChapter {
   /// Creates a record.
   const new({
-    required this.chapterUrl,
-    required this.chapterName,
+    required this.chapter,
     required this.pageCount,
     required this.bytes,
     required this.downloadedAt,
@@ -16,18 +15,20 @@ class OfflineChapter {
 
   /// Decodes [toJson].
   factory fromJson(Map<String, Object?> json) => OfflineChapter(
-    chapterUrl: readString(json, 'chapterUrl'),
-    chapterName: readString(json, 'chapterName'),
+    chapter: ChapterInfo.fromJson(readObject(json['chapter'])),
     pageCount: readInt(json, 'pageCount'),
     bytes: readInt(json, 'bytes'),
     downloadedAt: readDate(json, 'downloadedAt'),
   );
 
+  /// The chapter as it was enqueued (what offline chapter lists show).
+  final ChapterInfo chapter;
+
   /// Chapter identifier in its source.
-  final String chapterUrl;
+  String get chapterUrl => chapter.url;
 
   /// Display name at download time.
-  final String chapterName;
+  String get chapterName => chapter.name;
 
   /// Number of page blobs (indexes `0..pageCount-1`).
   final int pageCount;
@@ -40,8 +41,7 @@ class OfflineChapter {
 
   /// JSON shape.
   Map<String, Object?> toJson() => {
-    'chapterUrl': chapterUrl,
-    'chapterName': chapterName,
+    'chapter': chapter.toJson(),
     'pageCount': pageCount,
     'bytes': bytes,
     'downloadedAt': writeDate(downloadedAt),
@@ -50,20 +50,14 @@ class OfflineChapter {
   @override
   bool operator ==(Object other) =>
       other is OfflineChapter &&
-      other.chapterUrl == chapterUrl &&
-      other.chapterName == chapterName &&
+      other.chapter == chapter &&
       other.pageCount == pageCount &&
       other.bytes == bytes &&
       sameInstant(other.downloadedAt, downloadedAt);
 
   @override
-  int get hashCode => Object.hash(
-    chapterUrl,
-    chapterName,
-    pageCount,
-    bytes,
-    instantHash(downloadedAt),
-  );
+  int get hashCode =>
+      Object.hash(chapter, pageCount, bytes, instantHash(downloadedAt));
 }
 
 /// Which chapters are stored offline, per manga (persisted in KeyValueStore).
@@ -124,4 +118,18 @@ class DownloadIndex {
     for (final e in _byManga.entries)
       e.key: [for (final c in e.value.values) c.toJson()],
   });
+}
+
+/// Orders chapters newest first: by number, then upload time (unknown
+/// values last), then url so the order is total.
+int newestFirst(ChapterInfo a, ChapterInfo b) {
+  final byNumber = _desc(a.number, b.number);
+  if (byNumber != 0) return byNumber;
+  final byDate = _desc(a.uploadedAt, b.uploadedAt);
+  return byDate != 0 ? byDate : a.url.compareTo(b.url);
+}
+
+int _desc<T extends Comparable<Object>>(T? a, T? b) {
+  if (a == null || b == null) return a == null ? (b == null ? 0 : 1) : -1;
+  return b.compareTo(a);
 }

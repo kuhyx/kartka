@@ -107,8 +107,7 @@ class DownloadEngine {
         }),
     ]);
     return OfflineChapter(
-      chapterUrl: url,
-      chapterName: task.chapter.name,
+      chapter: task.chapter,
       pageCount: pages.length,
       bytes: bytes,
       downloadedAt: _now(),

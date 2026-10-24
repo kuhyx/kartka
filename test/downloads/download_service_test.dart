@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/downloads/keys.dart';
+import 'package:kartka/downloads/queue/download_index.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/platform/platform.dart';
 
@@ -29,6 +30,46 @@ void main() {
     );
     expect(await s.hasDownloads(mangaKey).first, isTrue);
     expect((await s.watchAll().first).queue, isEmpty);
+  });
+
+  test('downloadedChapters: completed only, newest first, full info', () async {
+    final h = Harness(loader: FakeLoader(gate: Completer<void>()));
+    final s = h.service(maxChapters: 1);
+    final ch3 = ChapterInfo(
+      url: '/chapter/3',
+      name: 'Ch. 3',
+      number: 3,
+      uploadedAt: DateTime.utc(2026, 10),
+      scanlator: 'Team X',
+    );
+    const extra = ChapterInfo(url: '/extra', name: 'Extra');
+    expect(await s.downloadedChapters(mangaKey), isEmpty);
+    for (final c in [ch1, ch3, extra, ch2]) {
+      await s.enqueue(mangaKey, c);
+    }
+    h.loader.gate!.complete();
+    await waitFor(s, ch2, DownloadStatus.done);
+    expect(await s.downloadedChapters(mangaKey), [ch3, ch2, ch1, extra]);
+    await s.deleteChapter(mangaKey, ch3.url);
+    expect(await s.downloadedChapters(mangaKey), [ch2, ch1, extra]);
+  });
+
+  test('downloadedChapters breaks number ties by upload date', () {
+    final old = ChapterInfo(
+      url: '/a',
+      name: 'a',
+      number: 1,
+      uploadedAt: DateTime.utc(2026),
+    );
+    final fresh = ChapterInfo(
+      url: '/b',
+      name: 'b',
+      number: 1,
+      uploadedAt: DateTime.utc(2026, 2),
+    );
+    const undated = ChapterInfo(url: '/c', name: 'c', number: 1);
+    final sorted = [old, undated, fresh]..sort(newestFirst);
+    expect(sorted, [fresh, old, undated]);
   });
 
   test('re-enqueueing a downloaded chapter does nothing', () async {

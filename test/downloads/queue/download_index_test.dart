@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/core/models/models.dart';
 import 'package:kartka/downloads/queue/download_index.dart';
 
 void main() {
   final at = DateTime.utc(2026, 10, 24);
   OfflineChapter rec(String url, int bytes) => OfflineChapter(
-    chapterUrl: url,
-    chapterName: 'Ch $url',
+    chapter: ChapterInfo(url: url, name: 'Ch $url', number: 2),
     pageCount: 3,
     bytes: bytes,
     downloadedAt: at,
@@ -49,6 +49,8 @@ void main() {
     expect(back.chapter('a|1', '/1'), rec('/1', 10));
     expect(rec('/1', 10).hashCode, back.chapter('a|1', '/1').hashCode);
     expect(rec('/1', 10), isNot(rec('/1', 11)));
+    expect(back.chapter('a|1', '/1')?.chapter.number, 2);
+    expect(back.chapter('a|1', '/1')?.chapterName, 'Ch /1');
     expect(DownloadIndex.decode(null).totalBytes, 0);
   });
 }
