@@ -55,6 +55,12 @@ class TrackingService {
   /// The tracker with [id], or `null`.
   Tracker? tracker(String id) => trackers.firstWhereOrNull((t) => t.id == id);
 
+  /// The binding store behind this service.
+  BindingStore get bindings => _bindings;
+
+  /// Starts pushing progress of [key] (bindings written by someone else).
+  void follow(MangaKey key) => _listen(key);
+
   /// Bindings of [key], current list first.
   Stream<List<TrackBinding>> watchBindings(MangaKey key) =>
       _bindings.watch(key);
