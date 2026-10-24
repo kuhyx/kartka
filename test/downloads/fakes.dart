@@ -69,6 +69,7 @@ class FakeSource implements MangaSource {
   List<ChapterInfo>? chapterList;
   int pageCalls = 0;
   int chapterCalls = 0;
+  bool failChapters = false;
 
   @override
   SourceRef get ref =>
@@ -83,6 +84,7 @@ class FakeSource implements MangaSource {
   @override
   Future<List<ChapterInfo>> chapters(String mangaUrl) async {
     chapterCalls++;
+    if (failChapters) throw StateError('source down');
     return chapterList ?? const [];
   }
 

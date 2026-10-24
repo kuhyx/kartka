@@ -1,0 +1,113 @@
+import 'dart:async';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/core/models/models.dart';
+import 'package:kartka/downloads/auto/auto_downloader.dart';
+
+import '../fakes.dart';
+
+LibraryEntry _entry(String url, {bool removed = false}) => LibraryEntry(
+  key: mangaKeyOf('mangadex', url),
+  sourceId: 'mangadex',
+  mangaUrl: url,
+  title: url,
+  addedAt: DateTime.utc(2026),
+  updatedAt: DateTime.utc(2026),
+  removed: removed,
+);
+
+ChapterInfo _ch(String url) => ChapterInfo(url: url, name: url);
+
+void main() {
+  late MemoryKv kv;
+  late FakeSource source;
+  late List<(String, String)> queued;
+  late List<LibraryEntry> library;
+
+  AutoDownloader auto() => AutoDownloader(
+    kv: kv,
+    library: () => Stream.value(library),
+    findSource: (id) async => id == 'mangadex' ? source : null,
+    enqueue: (key, c) async => queued.add((key, c.url)),
+  );
+
+  setUp(() {
+    kv = MemoryKv();
+    source = FakeSource(chapterList: [_ch('/c1')]);
+    queued = [];
+    library = [_entry('/m1')];
+  });
+
+  test('disabled by default: check does nothing', () async {
+    final a = auto();
+    expect(await a.enabled(), isFalse);
+    expect(await a.check(), 0);
+    expect(source.chapterCalls, 0);
+  });
+
+  test('first sight is a baseline; later new chapters are queued', () async {
+    final a = auto();
+    await a.setEnabled(enabled: true);
+    expect(await a.enabled(), isTrue);
+    expect(await a.check(), 0);
+    expect(queued, isEmpty);
+    source.chapterList = [_ch('/c1'), _ch('/c2'), _ch('/c3')];
+    expect(await a.check(), 2);
+    expect(queued.map((q) => q.$2), ['/c2', '/c3']);
+    expect(await a.check(), 0);
+  });
+
+  test('skips removed entries, missing sources and failing sources', () async {
+    library = [
+      _entry('/gone', removed: true),
+      LibraryEntry(
+        key: mangaKeyOf('nosuch', '/x'),
+        sourceId: 'nosuch',
+        mangaUrl: '/x',
+        title: 'x',
+        addedAt: DateTime.utc(2026),
+        updatedAt: DateTime.utc(2026),
+      ),
+      _entry('/m1'),
+    ];
+    final a = auto();
+    await a.setEnabled(enabled: true);
+    source.failChapters = true;
+    expect(await a.check(), 0);
+    expect(source.chapterCalls, 1);
+  });
+
+  test('schedule runs check periodically until disposed', () async {
+    final a = auto();
+    await a.setEnabled(enabled: true);
+    void Function(Timer)? tick;
+    final timer = _FakeTimer();
+    a.schedule(
+      every: const Duration(hours: 6),
+      periodic: (d, cb) {
+        tick = cb;
+        return timer;
+      },
+    );
+    await pumpEventQueue(); // the immediate first check
+    expect(source.chapterCalls, 1);
+    tick!(timer);
+    await pumpEventQueue();
+    expect(source.chapterCalls, 2);
+    a.dispose();
+    expect(timer.cancelled, isTrue);
+  });
+}
+
+class _FakeTimer implements Timer {
+  bool cancelled = false;
+
+  @override
+  void cancel() => cancelled = true;
+
+  @override
+  bool get isActive => !cancelled;
+
+  @override
+  int get tick => 0;
+}
