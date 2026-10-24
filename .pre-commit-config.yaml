@@ -1,0 +1,37 @@
+# Pre-commit hooks for kartka. Only non-mutating checks: pre-commit stashes
+# unstaged changes and restores them with `git apply`, so a hook that rewrote
+# a tracked file could drop an uncommitted edit. Every gate is a thin shim
+# over the shared implementation in ~/src/utils, so repos cannot drift.
+# Install: pre-commit install
+fail_fast: true
+repos:
+  - repo: local
+    hooks:
+      # The shared 250-line cap, code and prose alike. No allowlist.
+      - id: file-length
+        name: file length <= 250 lines
+        entry: scripts/check_file_length.sh
+        language: system
+
+      # README / CLAUDE* / DOCS* / TODO* (+ the TODO marker rule).
+      - id: md-naming
+        name: markdown naming convention
+        entry: scripts/check_md_naming.sh
+        language: system
+        files: \.(md|markdown)$
+
+      # Newest stable, exact pins. Offline it degrades to a cached answer with
+      # a DEGRADED banner; CI (--strict) is the authority.
+      - id: dependency-freshness
+        name: dependencies on newest stable
+        entry: scripts/check_dependency_freshness.sh
+        language: system
+        pass_filenames: true
+        files: (^|/)(pubspec\.(yaml|lock)|\.fvmrc)$
+
+      - id: repo-contract
+        name: repo contract (CLAUDE.md Commands + test_changed)
+        entry: scripts/check_repo_contract.sh
+        language: system
+        pass_filenames: false
+        files: ^(CLAUDE\.md|AGENTS\.md|scripts/test_changed\.sh)$|(^|/)(AndroidManifest\.xml|build\.gradle(\.kts)?|strings\.xml|pubspec\.yaml|repo-contract\.toml|[^/]+\.desktop|assets/icon/[^/]+\.png)$

@@ -1,17 +1,36 @@
-# kartka
+# Kartka
 
-A new Flutter project.
+A small manga reader for Android and the desktop (a Flutter web build in a
+Chrome app window, served by a local wrapper). "Kartka" is Polish for a page.
 
-## Getting Started
+- Goal, stack and boundaries: [`SPEC.md`](SPEC.md)
+- Interfaces between parts: [`docs/DOCS-contracts.md`](docs/DOCS-contracts.md)
+- Working on it: [`CLAUDE.md`](CLAUDE.md)
 
-This project is a starting point for a Flutter application.
+## Run
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+./run.sh            # desktop: build web, start the wrapper, open the app window
+./run.sh android    # release APK, adb install -r, launch
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Needs `fvm` (Flutter 3.47.7 is pinned in `.fvmrc`; `run.sh` installs both
+when missing) and a Chrome-family browser (`KARTKA_BROWSER` overrides the
+lookup). OAuth client ids, when you have them, go in
+`~/.config/kartka/oauth.json` and are passed as `--dart-define-from-file`.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The wrapper listens on `127.0.0.1:47391` and refuses to start when that port
+is taken (the app's browser data and the OAuth redirect are tied to it).
+
+## Test
+
+```bash
+fvm flutter test               # app
+(cd desktop && fvm dart test)  # wrapper
+scripts/coverage.sh            # both, 100 % line coverage required
+```
+
+## Desktop launcher
+
+`desktop/install_desktop_entry.sh` installs the icon and a `.desktop` entry
+(WM class `kartka`).
