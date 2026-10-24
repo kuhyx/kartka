@@ -24,9 +24,6 @@ readonly HERE
 # shellcheck source=oauth_common.sh
 source "$HERE/oauth_common.sh"
 
-readonly WRAPPER_PORT="${KARTKA_WRAPPER_PORT:-8791}"
-readonly ANDROID_REDIRECT="kartka://oauth"
-readonly WEB_REDIRECT="http://127.0.0.1:${WRAPPER_PORT}/oauth"
 readonly KEY_ANDROID="KARTKA_ANILIST_CLIENT_ID_ANDROID"
 readonly KEY_WEB="KARTKA_ANILIST_CLIENT_ID_WEB"
 readonly DEV_PAGE="https://anilist.co/settings/developer"

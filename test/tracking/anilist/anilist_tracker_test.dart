@@ -9,7 +9,7 @@ import 'package:kartka/tracking/common/tracker.dart';
 
 import '../fakes.dart';
 
-final Uri _web = Uri.parse('http://127.0.0.1:8791/oauth');
+final Uri _web = Uri.parse('http://127.0.0.1:47391/oauth');
 
 void main() {
   late QueuedHttp http;

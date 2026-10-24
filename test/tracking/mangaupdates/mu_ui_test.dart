@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/library/data/local_progress_repository.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
+import 'package:kartka/tracking/common/binding_store.dart';
+import 'package:kartka/tracking/common/tracking_service.dart';
+import 'package:kartka/tracking/common/ui/tracker_section.dart';
 import 'package:kartka/tracking/mangaupdates/mu_login_sheet.dart';
 import 'package:kartka/tracking/mangaupdates/mu_models.dart';
 import 'package:kartka/tracking/mangaupdates/mu_session.dart';
@@ -127,6 +131,42 @@ void main() {
       expect(find.text('Not logged in'), findsOneWidget);
       expect(await store.read(), isNull);
     });
+  });
+
+  // The track sheet opens the credentials sheet for a CredentialsLogin
+  // tracker; the plain login() branch is covered by track_sheet_test.dart.
+  testWidgets('TrackerSection logs MangaUpdates in through the sheet', (
+    t,
+  ) async {
+    final s = buildStack(
+      FakeKartkaHttp((_) => fx('login_ok.json')),
+      FakeClock(),
+    );
+    final tracker = MangaUpdatesTracker(api: s.api, store: s.store);
+    final service = TrackingService(
+      trackers: () => [tracker],
+      bindings: KvBindingStore(MemoryKeyValueStore()),
+      progress: () => LocalProgressRepository(MemoryKeyValueStore()),
+    );
+    await t.pumpWidget(
+      _app(
+        TrackerSection(
+          service: service,
+          tracker: tracker,
+          mangaKey: 'mangadex|/manga/abc',
+          title: 'Yotsuba',
+        ),
+      ),
+    );
+    await t.pumpAndSettle();
+    await t.tap(find.text('Log in to MangaUpdates'));
+    await t.pumpAndSettle();
+    expect(find.byType(MuLoginForm), findsOneWidget);
+    await _type(t, 'kuhy', 'pw');
+    await t.tap(find.text('Log in'));
+    await t.pumpAndSettle();
+    expect(find.byType(MuLoginForm), findsNothing);
+    expect(find.text('Log out'), findsOneWidget);
   });
 
   testWidgets('showMuLoginSheet returns false when dismissed', (t) async {

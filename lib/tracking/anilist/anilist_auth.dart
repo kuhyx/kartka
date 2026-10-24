@@ -24,7 +24,7 @@ class AniListClientIds {
   /// Client registered for `kartka://oauth`.
   final String android;
 
-  /// Client registered for `http://127.0.0.1:8791/oauth`.
+  /// Client registered for `http://127.0.0.1:47391/oauth`.
   final String web;
 
   /// The id registered for [redirect], or `null` when not configured.

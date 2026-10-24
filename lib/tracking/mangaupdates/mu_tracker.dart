@@ -1,8 +1,11 @@
 /// MangaUpdates as a [Tracker] (contracts §9).
 library;
 
+import 'package:flutter/widgets.dart';
+import 'package:kartka/tracking/common/credentials_login.dart';
 import 'package:kartka/tracking/common/tracker.dart';
 import 'package:kartka/tracking/mangaupdates/mu_api.dart';
+import 'package:kartka/tracking/mangaupdates/mu_login_sheet.dart';
 import 'package:kartka/tracking/mangaupdates/mu_models.dart';
 import 'package:kartka/tracking/mangaupdates/mu_session.dart';
 
@@ -14,9 +17,9 @@ typedef MuCredentialsPrompt = Future<MuCredentials?> Function();
 
 /// MangaUpdates tracker. Remote ids are API v1 series ids as decimal
 /// strings, the same value a Mihon/SY `.tachibk` stores as `mediaId`.
-class MangaUpdatesTracker implements Tracker {
+class MangaUpdatesTracker implements Tracker, CredentialsLogin {
   /// Creates the tracker. `prompt` makes [login] work without a
-  /// `BuildContext`; without it, UIs call [loginWith] from the login sheet.
+  /// `BuildContext`; UIs with one call [showLogin] instead.
   new({required this._api, required this._store, this._prompt});
 
   final MuApi _api;
@@ -49,6 +52,11 @@ class MangaUpdatesTracker implements Tracker {
     final c = await prompt();
     if (c != null) await loginWith(c.username, c.password);
   }
+
+  /// The track sheet's login: the username + password sheet.
+  @override
+  Future<void> showLogin(BuildContext context) =>
+      showMuLoginSheet(context, loginWith);
 
   /// Logs in with [username] and [password]; only the session token is kept.
   Future<void> loginWith(String username, String password) =>

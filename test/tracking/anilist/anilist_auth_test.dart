@@ -7,7 +7,7 @@ import 'package:kartka/tracking/anilist/anilist_auth.dart';
 
 import '../fakes.dart';
 
-final Uri _web = Uri.parse('http://127.0.0.1:8791/oauth');
+final Uri _web = Uri.parse('http://127.0.0.1:47391/oauth');
 final Uri _android = Uri.parse('kartka://oauth');
 final _t0 = DateTime.utc(2026, 10, 24, 12);
 

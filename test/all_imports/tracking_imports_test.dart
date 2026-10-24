@@ -11,6 +11,7 @@ import 'package:kartka/tracking/anilist/anilist_tracker.dart';
 import 'package:kartka/tracking/anilist/tracking_feature.dart';
 import 'package:kartka/tracking/common/binding_store.dart';
 import 'package:kartka/tracking/common/chapter_url_resolver.dart';
+import 'package:kartka/tracking/common/credentials_login.dart';
 import 'package:kartka/tracking/common/finished_chapters.dart';
 import 'package:kartka/tracking/common/import_binding_sink.dart';
 import 'package:kartka/tracking/common/progress_rules.dart';
