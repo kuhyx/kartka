@@ -1,0 +1,22 @@
+{
+  "request": {
+    "operationName": "KartkaMangaId",
+    "query": "query KartkaMangaId($source: LongString!, $url: String!) { mangas(condition: {sourceId: $source, url: $url}, first: 1) { nodes { id } } }",
+    "variables": {
+      "source": "2499283573021220255",
+      "url": "/manga/cfef125c-7ca2-4c58-a5e8-e695a1ec9226"
+    }
+  },
+  "status": 200,
+  "response": {
+    "data": {
+      "mangas": {
+        "nodes": [
+          {
+            "id": 1
+          }
+        ]
+      }
+    }
+  }
+}

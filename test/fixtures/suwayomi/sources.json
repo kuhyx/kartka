@@ -1,0 +1,37 @@
+{
+  "request": {
+    "operationName": "KartkaSources",
+    "query": "query KartkaSources { sources { nodes { id name lang displayName supportsLatest } } }",
+    "variables": {}
+  },
+  "status": 200,
+  "response": {
+    "data": {
+      "sources": {
+        "nodes": [
+          {
+            "id": "0",
+            "name": "Local source",
+            "lang": "localsourcelang",
+            "displayName": "Local source",
+            "supportsLatest": true
+          },
+          {
+            "id": "1411768577036936240",
+            "name": "MangaDex",
+            "lang": "ja",
+            "displayName": "MangaDex (JA)",
+            "supportsLatest": true
+          },
+          {
+            "id": "2499283573021220255",
+            "name": "MangaDex",
+            "lang": "en",
+            "displayName": "MangaDex (EN)",
+            "supportsLatest": true
+          }
+        ]
+      }
+    }
+  }
+}

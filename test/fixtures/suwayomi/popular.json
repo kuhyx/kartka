@@ -1,0 +1,141 @@
+{
+  "request": {
+    "operationName": "KartkaSourceManga",
+    "query": "mutation KartkaSourceManga($source: LongString!, $type: FetchSourceMangaType!, $page: Int!, $query: String) { fetchSourceManga(input: {source: $source, type: $type, page: $page, query: $query}) { hasNextPage mangas { id url title thumbnailUrl } } }",
+    "variables": {
+      "source": "2499283573021220255",
+      "type": "POPULAR",
+      "page": 1
+    }
+  },
+  "status": 200,
+  "response": {
+    "data": {
+      "fetchSourceManga": {
+        "hasNextPage": true,
+        "mangas": [
+          {
+            "id": 1,
+            "url": "/manga/cfef125c-7ca2-4c58-a5e8-e695a1ec9226",
+            "title": "No Taste for Gyaru and Vegetables",
+            "thumbnailUrl": "/api/v1/manga/1/thumbnail"
+          },
+          {
+            "id": 2,
+            "url": "/manga/93704d83-322c-4214-99bc-6984cf536795",
+            "title": "Kirara Hoshikita Wants to Shine!",
+            "thumbnailUrl": "/api/v1/manga/2/thumbnail"
+          },
+          {
+            "id": 3,
+            "url": "/manga/7d425c5c-2bc0-4f50-b3e5-eebb0e222cf0",
+            "title": "My Childhood Friend Is Always Down Whenever I Make a Move",
+            "thumbnailUrl": "/api/v1/manga/3/thumbnail"
+          },
+          {
+            "id": 4,
+            "url": "/manga/af6667a4-ae4c-4baa-9283-a01f56d7f489",
+            "title": "Since I'm Interested In Your Hair",
+            "thumbnailUrl": "/api/v1/manga/4/thumbnail"
+          },
+          {
+            "id": 5,
+            "url": "/manga/b61247ba-cfa3-452a-a897-d5cbac864e0a",
+            "title": "Even Though You Lost Your Virginity to Me",
+            "thumbnailUrl": "/api/v1/manga/5/thumbnail"
+          },
+          {
+            "id": 6,
+            "url": "/manga/8b429d8e-0b9c-404c-b65b-82e4eab9321f",
+            "title": "A Necromancer Betrayed by His Comrades and Executed Revives 10,000 Heroes Who Had Become Undead, Builds the Most Powerful Kingdom, and Begins His Quest for Revenge.: Heroic Spirits Gather at the Throne of Darkness",
+            "thumbnailUrl": "/api/v1/manga/6/thumbnail"
+          },
+          {
+            "id": 7,
+            "url": "/manga/de98c0aa-9539-4e95-9975-c2974848dbc6",
+            "title": "Reincarnated as the Villainous Orphanage Director Destined to Be Defeated, I Ended Up Being Loved by the Main Heroines’ Daughters",
+            "thumbnailUrl": "/api/v1/manga/7/thumbnail"
+          },
+          {
+            "id": 8,
+            "url": "/manga/99e912e1-ca9d-4019-8fe8-349bf814b75e",
+            "title": "Why Did I, An Older Women Guy, Fall In Love With The Teeny You?",
+            "thumbnailUrl": "/api/v1/manga/8/thumbnail"
+          },
+          {
+            "id": 9,
+            "url": "/manga/26d2e5bb-e69b-4165-a03c-855a3765bbbb",
+            "title": "Looks Can Be Deceiving",
+            "thumbnailUrl": "/api/v1/manga/9/thumbnail"
+          },
+          {
+            "id": 10,
+            "url": "/manga/f4e7f2b9-9baf-488c-a0f9-e0f4d44fb0b3",
+            "title": "An Alchemist Who Started Working as a Handyman at an Inn Ends Up Living with the Inn's Lovely Girls",
+            "thumbnailUrl": "/api/v1/manga/10/thumbnail"
+          },
+          {
+            "id": 11,
+            "url": "/manga/75d828f0-e88c-40fb-ab71-4accce9069e0",
+            "title": "Guilty Library",
+            "thumbnailUrl": "/api/v1/manga/11/thumbnail"
+          },
+          {
+            "id": 12,
+            "url": "/manga/31d5534e-4a74-4952-8f37-2701d6353c98",
+            "title": "The Guild Receptionist Lilina-san Is Cold Only To Me",
+            "thumbnailUrl": "/api/v1/manga/12/thumbnail"
+          },
+          {
+            "id": 13,
+            "url": "/manga/75f8931e-380d-4354-81fc-3f252d104c20",
+            "title": "I Made the Girl I Liked My Maid, and Now She’s Secretly Doing Something in My Room",
+            "thumbnailUrl": "/api/v1/manga/13/thumbnail"
+          },
+          {
+            "id": 14,
+            "url": "/manga/e7e74a3a-dd8d-40cd-ac59-8d633ff9e88f",
+            "title": "The Record of the Outcasts' Development of the Demon King's Castle",
+            "thumbnailUrl": "/api/v1/manga/14/thumbnail"
+          },
+          {
+            "id": 15,
+            "url": "/manga/30a46494-ee27-4ed8-9008-ca72b0ad2f80",
+            "title": "The Girl Who's Bad at Expressing Herself",
+            "thumbnailUrl": "/api/v1/manga/15/thumbnail"
+          },
+          {
+            "id": 16,
+            "url": "/manga/b02a8869-44ab-4ed9-836e-be69a5407518",
+            "title": "Playful Relationships",
+            "thumbnailUrl": "/api/v1/manga/16/thumbnail"
+          },
+          {
+            "id": 17,
+            "url": "/manga/f8a557fe-2d23-49da-88b0-fb50cefa5f94",
+            "title": "On My Fifth Life, I Was Reincarnated as an Orphan on the Verge of Death",
+            "thumbnailUrl": "/api/v1/manga/17/thumbnail"
+          },
+          {
+            "id": 18,
+            "url": "/manga/1267bf7e-65a9-4747-9aa4-e7ad1564f83e",
+            "title": "Copying Skills With Affinity",
+            "thumbnailUrl": "/api/v1/manga/18/thumbnail"
+          },
+          {
+            "id": 19,
+            "url": "/manga/307eb683-057a-453a-90c9-b7454409691b",
+            "title": "Animagod",
+            "thumbnailUrl": "/api/v1/manga/19/thumbnail"
+          },
+          {
+            "id": 20,
+            "url": "/manga/2e3d6fd1-6cd3-4497-bff7-f749c26e4497",
+            "title": "Former Holy Knight, Now a Mid-Level Adventurer: I Fed an Abandoned Slave in a Dungeon, and Now She’s Attached to Me",
+            "thumbnailUrl": "/api/v1/manga/20/thumbnail"
+          }
+        ]
+      }
+    }
+  }
+}

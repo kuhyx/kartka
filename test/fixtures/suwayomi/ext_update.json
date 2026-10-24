@@ -1,0 +1,29 @@
+{
+  "request": {
+    "operationName": "KartkaUpdateExtension",
+    "query": "mutation KartkaUpdateExtension($id: String!, $patch: UpdateExtensionPatchInput!) { updateExtension(input: {id: $id, patch: $patch}) { extension { pkgName name lang versionName iconUrl isInstalled hasUpdate isObsolete } } }",
+    "variables": {
+      "id": "eu.kanade.tachiyomi.extension.all.mangadex",
+      "patch": {
+        "update": true
+      }
+    }
+  },
+  "status": 200,
+  "response": {
+    "data": {
+      "updateExtension": {
+        "extension": {
+          "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex",
+          "name": "MangaDex",
+          "lang": "all",
+          "versionName": "1.6.0",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "isInstalled": true,
+          "hasUpdate": false,
+          "isObsolete": false
+        }
+      }
+    }
+  }
+}
