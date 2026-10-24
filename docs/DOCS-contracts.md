@@ -83,7 +83,7 @@ markUnread is a `read: false` tombstone).
   "imageQuality": {"sampledPages": 120, "medianWidthPx": 1100,
                    "medianJpegQuality": 88},
   "subsetOf": {"sourceId": "mangadex", "overlap": 0.93},
-  "score": 0.81, "rank": 3,
+  "score": 0.852, "rank": 3,
   "verdict": "keep|cut|pending",
   "cutReasons": ["uptime<0.95", "blocking", "coverage<0.60", "subset"]
 }
