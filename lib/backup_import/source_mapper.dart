@@ -59,6 +59,12 @@ final Set<String> mangaDexSourceIds = {
   for (final lang in mangaDexLanguages) tachiyomiSourceId('MangaDex', lang),
 };
 
+/// The old MangaDex source id ("MangaDex (Revived)", 269 entries in kuhy's
+/// SY backup). Not in Keiyoushi, but its URLs have the same `/manga/<uuid>`
+/// shape, so it is claimed by the native source exactly like
+/// [mangaDexSourceIds].
+const String legacyMangaDexId = '3091964041986261235';
+
 /// Tachiyomi's local source id.
 const String _localId = '0';
 
@@ -81,7 +87,8 @@ class SourceMapper {
   MappedSource map(String tachiyomiId) {
     final override = overrides[tachiyomiId];
     if (override != null) return MappedSource(override, SourceKind.native);
-    if (mangaDexSourceIds.contains(tachiyomiId)) {
+    if (mangaDexSourceIds.contains(tachiyomiId) ||
+        tachiyomiId == legacyMangaDexId) {
       return const MappedSource('mangadex', SourceKind.native);
     }
     if (tachiyomiId == _localId) {

@@ -21,6 +21,14 @@ void main() {
     }
   });
 
+  test('the old MangaDex id (269 entries in the real backup) is native', () {
+    final m = mapper.map(legacyMangaDexId);
+    expect(legacyMangaDexId, '3091964041986261235');
+    expect((m.sourceId, m.kind), ('mangadex', SourceKind.native));
+    const custom = SourceMapper(overrides: {legacyMangaDexId: 'plugin:dex'});
+    expect(custom.map(legacyMangaDexId).sourceId, 'plugin:dex');
+  });
+
   test('id formula matches a non-MangaDex source from the real backup', () {
     // Mangakakalot (en), version 1.
     expect(tachiyomiSourceId('Mangakakalot', 'en'), '2528986671771677900');
@@ -61,7 +69,10 @@ void main() {
       expect(mapper.map(id).sourceId, 'sy-builtin:$id');
     }
     for (final id in (data['notInKeiyoushi']! as List).cast<String>()) {
-      expect(mapper.map(id).sourceId, 'suwayomi:$id');
+      expect(
+        mapper.map(id).sourceId,
+        id == legacyMangaDexId ? 'mangadex' : 'suwayomi:$id',
+      );
     }
   });
 
