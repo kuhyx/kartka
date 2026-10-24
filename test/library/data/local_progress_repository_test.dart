@@ -60,6 +60,14 @@ void main() {
     expect(await repo.readChapters(_k).first, {'/c1', '/c2'});
   });
 
+  test('readMarks reports reads and unread tombstones per key', () async {
+    await repo.markRead(_k, '/c1');
+    await repo.markRead(_k, '/c2');
+    await repo.markUnread(_k, '/c2');
+    await repo.markRead('other|/x', '/c9');
+    expect(await repo.readMarks(_k).first, {'/c1': true, '/c2': false});
+  });
+
   test('unmarking an unknown chapter writes nothing', () async {
     await repo.markUnread(_k, '/c1');
     expect(kv.data, isEmpty);
