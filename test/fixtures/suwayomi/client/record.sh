@@ -1,5 +1,5 @@
 #!/bin/bash
-# Re-record the Suwayomi GraphQL fixtures from a local Suwayomi-Server.
+# Re-record the client fixtures (this dir) from a local Suwayomi-Server.
 #
 # Usage: SUWAYOMI_URL=http://127.0.0.1:4599 SUWAYOMI_AUTH=user:pass ./record.sh
 # The server needs the Keiyoushi store and the MangaDex extension installed.
@@ -46,7 +46,7 @@ post() {
   rm -f "$tmp"
 }
 
-# rec <name> <query> <variables-json> [jq-trim] -> test/fixtures/suwayomi/<name>.json
+# rec <name> <query> <variables-json> [jq-trim] -> test/fixtures/suwayomi/client/<name>.json
 # ONLY="a b" re-records just those fixtures (the unseen-manga ones need a fresh root).
 rec() {
   if [[ -n "${ONLY:-}" && " ${ONLY} " != *" $1 "* ]]; then return 0; fi

@@ -1,37 +1,2361 @@
 {
-  "request": {
-    "operationName": "KartkaSources",
-    "query": "query KartkaSources { sources { nodes { id name lang displayName supportsLatest } } }",
-    "variables": {}
-  },
-  "status": 200,
-  "response": {
-    "data": {
-      "sources": {
-        "nodes": [
-          {
-            "id": "0",
-            "name": "Local source",
-            "lang": "localsourcelang",
-            "displayName": "Local source",
-            "supportsLatest": true
-          },
-          {
-            "id": "1411768577036936240",
-            "name": "MangaDex",
-            "lang": "ja",
-            "displayName": "MangaDex (JA)",
-            "supportsLatest": true
-          },
-          {
-            "id": "2499283573021220255",
-            "name": "MangaDex",
-            "lang": "en",
-            "displayName": "MangaDex (EN)",
-            "supportsLatest": true
+  "data": {
+    "sources": {
+      "nodes": [
+        {
+          "id": "0",
+          "name": "Local source",
+          "lang": "localsourcelang",
+          "displayName": "Local source",
+          "supportsLatest": true,
+          "isConfigurable": false,
+          "contentWarning": "SAFE",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.source.local",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.source.local"
           }
-        ]
-      }
+        },
+        {
+          "id": "72800122520214493",
+          "name": "MangaDex",
+          "lang": "ur",
+          "displayName": "MangaDex (UR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "182506561627032263",
+          "name": "MangaDot",
+          "lang": "cs",
+          "displayName": "MangaDot (CS)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "403504858442756278",
+          "name": "MangaDot",
+          "lang": "fo",
+          "displayName": "MangaDot (FO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "425785191804166217",
+          "name": "MangaDex",
+          "lang": "da",
+          "displayName": "MangaDex (DA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "466560170889971500",
+          "name": "MangaDot",
+          "lang": "cv",
+          "displayName": "MangaDot (CV)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "516446519459282312",
+          "name": "MangaDot",
+          "lang": "pl",
+          "displayName": "MangaDot (PL)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "522919629093846860",
+          "name": "MangaDot",
+          "lang": "da",
+          "displayName": "MangaDot (DA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "626361877295636066",
+          "name": "MangaDot",
+          "lang": "af",
+          "displayName": "MangaDot (AF)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "642272481774520917",
+          "name": "MangaDot",
+          "lang": "ku",
+          "displayName": "MangaDot (KU)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "667651300545386994",
+          "name": "MangaDot",
+          "lang": "sn",
+          "displayName": "MangaDot (SN)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "735891950196570992",
+          "name": "MangaDot",
+          "lang": "kn",
+          "displayName": "MangaDot (KN)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "737986167355114438",
+          "name": "MangaDex",
+          "lang": "lt",
+          "displayName": "MangaDex (LT)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "763520574319176694",
+          "name": "MangaDot",
+          "lang": "mt",
+          "displayName": "MangaDot (MT)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "764587568075398530",
+          "name": "MangaDex",
+          "lang": "la",
+          "displayName": "MangaDex (LA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "852113960420602047",
+          "name": "MangaDot",
+          "lang": "ps",
+          "displayName": "MangaDot (PS)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "906841171861851373",
+          "name": "MangaDot",
+          "lang": "sk",
+          "displayName": "MangaDot (SK)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "932564577108614127",
+          "name": "MANGA Plus by SHUEISHA",
+          "lang": "id",
+          "displayName": "MANGA Plus by SHUEISHA (ID)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "SAFE",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangaplus",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangaplus"
+          }
+        },
+        {
+          "id": "954368055061084457",
+          "name": "MangaDex",
+          "lang": "ne",
+          "displayName": "MangaDex (NE)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "987803387023224960",
+          "name": "MangaDex",
+          "lang": "sq",
+          "displayName": "MangaDex (SQ)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "1104434747623062236",
+          "name": "MangaDot",
+          "lang": "ceb",
+          "displayName": "MangaDot (CEB)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "1145824452519314725",
+          "name": "MangaDex",
+          "lang": "sv",
+          "displayName": "MangaDex (SV)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "1212617635525738382",
+          "name": "MangaDot",
+          "lang": "ig",
+          "displayName": "MangaDot (IG)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "1214640310680383515",
+          "name": "MangaDot",
+          "lang": "am",
+          "displayName": "MangaDot (AM)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "1243113298307153697",
+          "name": "MangaDot",
+          "lang": "mi",
+          "displayName": "MangaDot (MI)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "1286073245950890830",
+          "name": "MANGA Plus by SHUEISHA",
+          "lang": "es",
+          "displayName": "MANGA Plus by SHUEISHA (ES)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "SAFE",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangaplus",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangaplus"
+          }
+        },
+        {
+          "id": "1347402746269051958",
+          "name": "MangaDex",
+          "lang": "my",
+          "displayName": "MangaDex (MY)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "1356109540530417190",
+          "name": "MangaDot",
+          "lang": "es",
+          "displayName": "MangaDot (ES)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "1374245104599191336",
+          "name": "MangaDot",
+          "lang": "pt",
+          "displayName": "MangaDot (PT)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "1388001857060182903",
+          "name": "MangaDot",
+          "lang": "ne",
+          "displayName": "MangaDot (NE)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "1411768577036936240",
+          "name": "MangaDex",
+          "lang": "ja",
+          "displayName": "MangaDex (JA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "1424273154577029558",
+          "name": "MangaDex",
+          "lang": "he",
+          "displayName": "MangaDex (HE)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "1437553406755071980",
+          "name": "MangaDot",
+          "lang": "st",
+          "displayName": "MangaDot (ST)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "1471784905273036181",
+          "name": "MangaDex",
+          "lang": "ms",
+          "displayName": "MangaDex (MS)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "1493666528525752601",
+          "name": "MangaDex",
+          "lang": "zh-Hant",
+          "displayName": "MangaDex (ZH-HANT)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "1532736845269879240",
+          "name": "MangaDot",
+          "lang": "ta",
+          "displayName": "MangaDot (TA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "1553736397938752611",
+          "name": "MangaDex",
+          "lang": "eu",
+          "displayName": "MangaDex (EU)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "1573550798452063564",
+          "name": "MangaDex",
+          "lang": "jv",
+          "displayName": "MangaDex (JV)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "1713554459881080228",
+          "name": "MangaDex",
+          "lang": "th",
+          "displayName": "MangaDex (TH)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "1739134904773959471",
+          "name": "MangaDot",
+          "lang": "de",
+          "displayName": "MangaDot (DE)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "1893513843840146580",
+          "name": "MANGA Plus by SHUEISHA",
+          "lang": "de",
+          "displayName": "MANGA Plus by SHUEISHA (DE)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "SAFE",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangaplus",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangaplus"
+          }
+        },
+        {
+          "id": "1952071260038453057",
+          "name": "MangaDex",
+          "lang": "it",
+          "displayName": "MangaDex (IT)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "1990999442874191049",
+          "name": "MangaDot",
+          "lang": "ga",
+          "displayName": "MangaDot (GA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "1998944621602463790",
+          "name": "MANGA Plus by SHUEISHA",
+          "lang": "en",
+          "displayName": "MANGA Plus by SHUEISHA (EN)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "SAFE",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangaplus",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangaplus"
+          }
+        },
+        {
+          "id": "2065097680931770063",
+          "name": "MangaDot",
+          "lang": "ml",
+          "displayName": "MangaDot (ML)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2072928884077964642",
+          "name": "MangaDex",
+          "lang": "cv",
+          "displayName": "MangaDex (CV)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "2076066796458496830",
+          "name": "MangaDot",
+          "lang": "zh-Hant",
+          "displayName": "MangaDot (ZH-HANT)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2098905203823335614",
+          "name": "MangaDex",
+          "lang": "ru",
+          "displayName": "MangaDex (RU)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "2106727426891515868",
+          "name": "MangaDot",
+          "lang": "bs",
+          "displayName": "MangaDot (BS)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2111970709663576933",
+          "name": "MangaDot",
+          "lang": "no",
+          "displayName": "MangaDot (NO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2305771977147956314",
+          "name": "MangaDot",
+          "lang": "ja",
+          "displayName": "MangaDot (JA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2365190675047124388",
+          "name": "MangaDot",
+          "lang": "eu",
+          "displayName": "MangaDot (EU)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2379671138411944871",
+          "name": "MangaDot",
+          "lang": "ms",
+          "displayName": "MangaDot (MS)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2403752440512665902",
+          "name": "MangaDot",
+          "lang": "mr",
+          "displayName": "MangaDot (MR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2441838299826051230",
+          "name": "MangaDot",
+          "lang": "zu",
+          "displayName": "MangaDot (ZU)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2450590764399511282",
+          "name": "MangaDot",
+          "lang": "jv",
+          "displayName": "MangaDot (JV)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2499283573021220255",
+          "name": "MangaDex",
+          "lang": "en",
+          "displayName": "MangaDex (EN)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "2528986671771677900",
+          "name": "Mangakakalot",
+          "lang": "en",
+          "displayName": "Mangakakalot (EN)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangakakalot",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangakakalot"
+          }
+        },
+        {
+          "id": "2649563537157849825",
+          "name": "MangaDot",
+          "lang": "gn",
+          "displayName": "MangaDot (GN)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2655149515337070132",
+          "name": "MangaDex",
+          "lang": "pt-BR",
+          "displayName": "MangaDex (PT-BR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "2687394203984331406",
+          "name": "MangaDot",
+          "lang": "ti",
+          "displayName": "MangaDot (TI)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2744567066632059507",
+          "name": "MangaDot",
+          "lang": "hu",
+          "displayName": "MangaDot (HU)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2817234851765014214",
+          "name": "MangaDot",
+          "lang": "lo",
+          "displayName": "MangaDot (LO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "2819252027406613931",
+          "name": "MangaDex",
+          "lang": "eo",
+          "displayName": "MangaDex (EO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "2838715564514827672",
+          "name": "MangaDex",
+          "lang": "uz",
+          "displayName": "MangaDex (UZ)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "2875503798326600410",
+          "name": "MangaDex",
+          "lang": "sk",
+          "displayName": "MangaDex (SK)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "2958846473073557482",
+          "name": "MangaDot",
+          "lang": "sr",
+          "displayName": "MangaDot (SR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "3095899732404101103",
+          "name": "MangaDot",
+          "lang": "mg",
+          "displayName": "MangaDot (MG)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "3260701926561129943",
+          "name": "MangaDex",
+          "lang": "el",
+          "displayName": "MangaDex (EL)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "3285208643537017688",
+          "name": "MangaDex",
+          "lang": "ko",
+          "displayName": "MangaDex (KO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "3300379104794255539",
+          "name": "MangaDot",
+          "lang": "tg",
+          "displayName": "MangaDot (TG)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "3339599426223341161",
+          "name": "MangaDex",
+          "lang": "ar",
+          "displayName": "MangaDex (AR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "3378671539429193821",
+          "name": "MangaDot",
+          "lang": "mk",
+          "displayName": "MangaDot (MK)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "3389751853142685462",
+          "name": "MangaDot",
+          "lang": "hy",
+          "displayName": "MangaDot (HY)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "3424023259825994677",
+          "name": "MangaDot",
+          "lang": "so",
+          "displayName": "MangaDot (SO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "3444662672352788181",
+          "name": "MANGA Plus by SHUEISHA",
+          "lang": "pt-BR",
+          "displayName": "MANGA Plus by SHUEISHA (PT-BR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "SAFE",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangaplus",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangaplus"
+          }
+        },
+        {
+          "id": "3456620422576095825",
+          "name": "MangaDot",
+          "lang": "lt",
+          "displayName": "MangaDot (LT)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "3501653098098324330",
+          "name": "MangaDot",
+          "lang": "kk",
+          "displayName": "MangaDot (KK)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "3507378005483435886",
+          "name": "MangaDex",
+          "lang": "sr",
+          "displayName": "MangaDex (SR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "3520485566708512181",
+          "name": "MANGA Plus by SHUEISHA",
+          "lang": "ru",
+          "displayName": "MANGA Plus by SHUEISHA (RU)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "SAFE",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangaplus",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangaplus"
+          }
+        },
+        {
+          "id": "3578612018159256808",
+          "name": "MangaDex",
+          "lang": "cs",
+          "displayName": "MangaDex (CS)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "3578850460057110410",
+          "name": "MangaDot",
+          "lang": "uk",
+          "displayName": "MangaDot (UK)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "3601180820582582605",
+          "name": "MangaDex",
+          "lang": "be",
+          "displayName": "MangaDex (BE)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "3686775439235747344",
+          "name": "MangaDex",
+          "lang": "ga",
+          "displayName": "MangaDex (GA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "3741155905873931805",
+          "name": "MangaDot",
+          "lang": "vi",
+          "displayName": "MangaDot (VI)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "3781216447842245147",
+          "name": "MangaDex",
+          "lang": "fa",
+          "displayName": "MangaDex (FA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "3807502156582598786",
+          "name": "MangaDex",
+          "lang": "id",
+          "displayName": "MangaDex (ID)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "3846770256925560569",
+          "name": "MangaDex",
+          "lang": "tr",
+          "displayName": "MangaDex (TR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "3900938574086240284",
+          "name": "MangaDot",
+          "lang": "eo",
+          "displayName": "MangaDot (EO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "4126429070202050423",
+          "name": "MangaDot",
+          "lang": "ca",
+          "displayName": "MangaDot (CA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "4150470519566206911",
+          "name": "MangaDex",
+          "lang": "bn",
+          "displayName": "MangaDex (BN)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "4273071356706429527",
+          "name": "MangaDex",
+          "lang": "ta",
+          "displayName": "MangaDex (TA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "4284949320785450865",
+          "name": "MangaDex",
+          "lang": "hu",
+          "displayName": "MangaDex (HU)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "4385496560007026082",
+          "name": "MangaDot",
+          "lang": "mo",
+          "displayName": "MangaDot (MO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "4505830566611664829",
+          "name": "MangaDex",
+          "lang": "fr",
+          "displayName": "MangaDex (FR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "4524523410546767783",
+          "name": "MangaDot",
+          "lang": "sl",
+          "displayName": "MangaDot (SL)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "4593442970144109426",
+          "name": "MangaDot",
+          "lang": "zh",
+          "displayName": "MangaDot (ZH)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "4621039982977056475",
+          "name": "MangaDot",
+          "lang": "bg",
+          "displayName": "MangaDot (BG)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "4638673959522768501",
+          "name": "MangaDex",
+          "lang": "af",
+          "displayName": "MangaDex (AF)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "4686432307246610016",
+          "name": "MangaDot",
+          "lang": "hi",
+          "displayName": "MangaDot (HI)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "4696259977267090434",
+          "name": "MANGA Plus by SHUEISHA",
+          "lang": "vi",
+          "displayName": "MANGA Plus by SHUEISHA (VI)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "SAFE",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangaplus",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangaplus"
+          }
+        },
+        {
+          "id": "4709139914729853090",
+          "name": "AllManga",
+          "lang": "en",
+          "displayName": "AllManga (EN)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.allanime",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.allanime"
+          }
+        },
+        {
+          "id": "4728703871864086205",
+          "name": "MangaDot",
+          "lang": "bn",
+          "displayName": "MangaDot (BN)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "4735885360393755385",
+          "name": "MangaDot",
+          "lang": "ab",
+          "displayName": "MangaDot (AB)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "4774459486579224459",
+          "name": "MangaDex",
+          "lang": "ro",
+          "displayName": "MangaDex (RO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "4791489272679823459",
+          "name": "MangaDot",
+          "lang": "sd",
+          "displayName": "MangaDot (SD)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "4872213291993424667",
+          "name": "MangaDex",
+          "lang": "no",
+          "displayName": "MangaDex (NO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "4906990011623468194",
+          "name": "MangaDot",
+          "lang": "ht",
+          "displayName": "MangaDot (HT)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "4921151708715305490",
+          "name": "MangaDot",
+          "lang": "yo",
+          "displayName": "MangaDot (YO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "4938773340256184018",
+          "name": "MangaDex",
+          "lang": "es-419",
+          "displayName": "MangaDex (ES-419)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "4958143963089747877",
+          "name": "MangaDot",
+          "lang": "sv",
+          "displayName": "MangaDot (SV)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5004953853361383266",
+          "name": "MangaDot",
+          "lang": "sq",
+          "displayName": "MangaDot (SQ)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5046796980408019790",
+          "name": "MangaDot",
+          "lang": "es-419",
+          "displayName": "MangaDot (ES-419)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5098537545549490547",
+          "name": "MangaDex",
+          "lang": "de",
+          "displayName": "MangaDex (DE)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "5128179410899824788",
+          "name": "MangaDot",
+          "lang": "sw",
+          "displayName": "MangaDot (SW)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5133570518916566066",
+          "name": "MangaDot",
+          "lang": "ar",
+          "displayName": "MangaDot (AR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5148895169070562838",
+          "name": "MangaDex",
+          "lang": "zh-Hans",
+          "displayName": "MangaDex (ZH-HANS)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "5151209771353483688",
+          "name": "MangaDot",
+          "lang": "si",
+          "displayName": "MangaDot (SI)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5189216366882819742",
+          "name": "MangaDex",
+          "lang": "pt",
+          "displayName": "MangaDex (PT)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "5231909047029777422",
+          "name": "MangaDot",
+          "lang": "to",
+          "displayName": "MangaDot (TO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5247335489585035333",
+          "name": "MangaDot",
+          "lang": "sh",
+          "displayName": "MangaDot (SH)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5339181991315919474",
+          "name": "MangaDot",
+          "lang": "nl",
+          "displayName": "MangaDot (NL)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5463447640980279236",
+          "name": "MangaDex",
+          "lang": "bg",
+          "displayName": "MangaDex (BG)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "5536176722691621839",
+          "name": "MangaDot",
+          "lang": "tl",
+          "displayName": "MangaDot (TL)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5594683159745082451",
+          "name": "MangaDot",
+          "lang": "ny",
+          "displayName": "MangaDot (NY)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5601626490491985162",
+          "name": "MangaDot",
+          "lang": "uz",
+          "displayName": "MangaDot (UZ)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5779037855201976894",
+          "name": "MangaDex",
+          "lang": "uk",
+          "displayName": "MangaDex (UK)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "5860541308324630662",
+          "name": "MangaDex",
+          "lang": "ca",
+          "displayName": "MangaDex (CA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "5900936305360403385",
+          "name": "MangaDot",
+          "lang": "en",
+          "displayName": "MangaDot (EN)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5964430973280552505",
+          "name": "MangaDot",
+          "lang": "tr",
+          "displayName": "MangaDot (TR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "5967745367608513818",
+          "name": "MangaDex",
+          "lang": "mn",
+          "displayName": "MangaDex (MN)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "5980076819966447323",
+          "name": "MangaDot",
+          "lang": "la",
+          "displayName": "MangaDot (LA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "6280808899001059050",
+          "name": "MangaDot",
+          "lang": "el",
+          "displayName": "MangaDot (EL)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "6345211913721743017",
+          "name": "MANGA Plus by SHUEISHA",
+          "lang": "th",
+          "displayName": "MANGA Plus by SHUEISHA (TH)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "SAFE",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangaplus",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangaplus"
+          }
+        },
+        {
+          "id": "6349207918477337222",
+          "name": "MangaDot",
+          "lang": "be",
+          "displayName": "MangaDot (BE)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "6400665728063187402",
+          "name": "MangaDex",
+          "lang": "es",
+          "displayName": "MangaDex (ES)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "6432074668689969261",
+          "name": "MangaDot",
+          "lang": "ky",
+          "displayName": "MangaDot (KY)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "6438885774622850088",
+          "name": "MangaDot",
+          "lang": "sm",
+          "displayName": "MangaDot (SM)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "6496021153361901915",
+          "name": "MangaDot",
+          "lang": "lv",
+          "displayName": "MangaDot (LV)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "6544312035114371248",
+          "name": "MangaDot",
+          "lang": "fr",
+          "displayName": "MangaDot (FR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "6558905765171140287",
+          "name": "MangaDot",
+          "lang": "km",
+          "displayName": "MangaDot (KM)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "6750440049024086587",
+          "name": "MangaDex",
+          "lang": "nl",
+          "displayName": "MangaDex (NL)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "6840185760082019759",
+          "name": "MangaDot",
+          "lang": "fa",
+          "displayName": "MangaDot (FA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "6840513937945146538",
+          "name": "MangaDex",
+          "lang": "hi",
+          "displayName": "MangaDex (HI)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "6883842335519142390",
+          "name": "MangaDot",
+          "lang": "pt-BR",
+          "displayName": "MangaDot (PT-BR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "6886894829142702925",
+          "name": "MangaDex",
+          "lang": "te",
+          "displayName": "MangaDex (TE)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "6919139667129890361",
+          "name": "MangaDot",
+          "lang": "hr",
+          "displayName": "MangaDot (HR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "7085366320872721673",
+          "name": "MangaDot",
+          "lang": "et",
+          "displayName": "MangaDot (ET)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "7223291528565862680",
+          "name": "MangaDot",
+          "lang": "ro",
+          "displayName": "MangaDot (RO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "7370016116750489216",
+          "name": "MangaDot",
+          "lang": "ha",
+          "displayName": "MangaDot (HA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "7371980305504255093",
+          "name": "MangaDot",
+          "lang": "lb",
+          "displayName": "MangaDot (LB)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "7457818185508918624",
+          "name": "MangaDot",
+          "lang": "is",
+          "displayName": "MangaDot (IS)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "7524478288761759786",
+          "name": "MangaDot",
+          "lang": "he",
+          "displayName": "MangaDot (HE)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "7568879765052968178",
+          "name": "MangaDot",
+          "lang": "fi",
+          "displayName": "MangaDot (FI)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "7589823463254376799",
+          "name": "MangaDot",
+          "lang": "ur",
+          "displayName": "MangaDot (UR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "7642759409549978864",
+          "name": "MANGA Plus by SHUEISHA",
+          "lang": "fr",
+          "displayName": "MANGA Plus by SHUEISHA (FR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "SAFE",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangaplus",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangaplus"
+          }
+        },
+        {
+          "id": "7682832424883392487",
+          "name": "MangaDot",
+          "lang": "rm",
+          "displayName": "MangaDot (RM)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "7777361906352556467",
+          "name": "MangaDot",
+          "lang": "gu",
+          "displayName": "MangaDot (GU)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "7781185259229560796",
+          "name": "MangaDot",
+          "lang": "ka",
+          "displayName": "MangaDot (KA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "7865090004429530491",
+          "name": "MangaDot",
+          "lang": "zh-tw",
+          "displayName": "MangaDot (ZH-TW)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "8033579885162383068",
+          "name": "MangaDex",
+          "lang": "pl",
+          "displayName": "MangaDex (PL)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "8254121249433835847",
+          "name": "MangaDex",
+          "lang": "fi",
+          "displayName": "MangaDex (FI)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "8348427309728988846",
+          "name": "MangaDot",
+          "lang": "th",
+          "displayName": "MangaDot (TH)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "8548374501079910130",
+          "name": "MangaDex",
+          "lang": "hr",
+          "displayName": "MangaDex (HR)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "8578871918181236609",
+          "name": "MangaDex",
+          "lang": "fil",
+          "displayName": "MangaDex (FIL)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "8591108444263884327",
+          "name": "MangaDot",
+          "lang": "id",
+          "displayName": "MangaDot (ID)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "8689086897953658974",
+          "name": "MangaDot",
+          "lang": "my",
+          "displayName": "MangaDot (MY)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "8728081113036876931",
+          "name": "MangaDot",
+          "lang": "tk",
+          "displayName": "MangaDot (TK)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "8733946525904795862",
+          "name": "MangaDot",
+          "lang": "ko",
+          "displayName": "MangaDot (KO)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "8740468699151734392",
+          "name": "MangaDot",
+          "lang": "az",
+          "displayName": "MangaDot (AZ)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "8773024089257004344",
+          "name": "MangaDex",
+          "lang": "et",
+          "displayName": "MangaDex (ET)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "8788147393700258423",
+          "name": "MangaDot",
+          "lang": "it",
+          "displayName": "MangaDot (IT)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "8884149958776527952",
+          "name": "MangaDex",
+          "lang": "kk",
+          "displayName": "MangaDex (KK)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "8911989140118399619",
+          "name": "MangaDot",
+          "lang": "ru",
+          "displayName": "MangaDot (RU)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "8952567078513962586",
+          "name": "MangaDex",
+          "lang": "ka",
+          "displayName": "MangaDex (KA)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "8979608222684527323",
+          "name": "MangaDot",
+          "lang": "te",
+          "displayName": "MangaDot (TE)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "9084839605166631973",
+          "name": "MangaDot",
+          "lang": "ss",
+          "displayName": "MangaDot (SS)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "9127464796236242233",
+          "name": "MangaDex",
+          "lang": "az",
+          "displayName": "MangaDex (AZ)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        },
+        {
+          "id": "9161576604389142963",
+          "name": "MangaDot",
+          "lang": "gl",
+          "displayName": "MangaDot (GL)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "9192319104809604483",
+          "name": "MangaDot",
+          "lang": "mn",
+          "displayName": "MangaDot (MN)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.mangadotnet",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+          }
+        },
+        {
+          "id": "9194073792736219759",
+          "name": "MangaDex",
+          "lang": "vi",
+          "displayName": "MangaDex (VI)",
+          "supportsLatest": true,
+          "isConfigurable": true,
+          "contentWarning": "MIXED",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "extension": {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+          }
+        }
+      ]
     }
   }
 }

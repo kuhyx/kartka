@@ -1,0 +1,4 @@
+# Refreshes the extension list from every configured store (Keiyoushi).
+mutation FetchExtensions {
+  fetchExtensions(input: {}) { extensions { pkgName } }
+}

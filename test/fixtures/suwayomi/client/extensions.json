@@ -1,0 +1,76 @@
+{
+  "request": {
+    "operationName": "KartkaExtensions",
+    "query": "mutation KartkaExtensions { fetchExtensions(input: {}) { extensions { pkgName name lang versionName iconUrl isInstalled hasUpdate isObsolete } } }",
+    "variables": {}
+  },
+  "status": 200,
+  "response": {
+    "data": {
+      "fetchExtensions": {
+        "extensions": [
+          {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex",
+            "name": "MangaDex",
+            "lang": "all",
+            "versionName": "1.6.0",
+            "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+            "isInstalled": true,
+            "hasUpdate": false,
+            "isObsolete": false
+          },
+          {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangaplus",
+            "name": "MANGA Plus by SHUEISHA",
+            "lang": "all",
+            "versionName": "1.6.67",
+            "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangaplus",
+            "isInstalled": false,
+            "hasUpdate": false,
+            "isObsolete": false
+          },
+          {
+            "pkgName": "eu.kanade.tachiyomi.extension.all.mangapluscreators",
+            "name": "MANGA Plus Creators by SHUEISHA",
+            "lang": "all",
+            "versionName": "1.6.0",
+            "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangapluscreators",
+            "isInstalled": false,
+            "hasUpdate": false,
+            "isObsolete": false
+          },
+          {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.asurascans",
+            "name": "Asura Scans",
+            "lang": "en",
+            "versionName": "1.6.69",
+            "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.asurascans",
+            "isInstalled": false,
+            "hasUpdate": false,
+            "isObsolete": false
+          },
+          {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.comickfan",
+            "name": "ComicK Fanmade",
+            "lang": "en",
+            "versionName": "1.6.3",
+            "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.comickfan",
+            "isInstalled": false,
+            "hasUpdate": false,
+            "isObsolete": false
+          },
+          {
+            "pkgName": "eu.kanade.tachiyomi.extension.en.weebcentral",
+            "name": "Weeb Central",
+            "lang": "en",
+            "versionName": "1.6.25",
+            "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.weebcentral",
+            "isInstalled": false,
+            "hasUpdate": false,
+            "isObsolete": false
+          }
+        ]
+      }
+    }
+  }
+}

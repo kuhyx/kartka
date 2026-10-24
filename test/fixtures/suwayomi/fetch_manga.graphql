@@ -1,0 +1,6 @@
+# Details for a manga Suwayomi already knows ($id from fetchSourceManga).
+mutation FetchManga($id: Int!) {
+  fetchMangaAndChapters(input: { id: $id, fetchManga: true, fetchChapters: false }) {
+    manga { id sourceId url realUrl title author artist description genre status thumbnailUrl initialized }
+  }
+}

@@ -1,0 +1,5 @@
+mutation FetchChapters($id: Int!) {
+  fetchMangaAndChapters(input: { id: $id, fetchManga: false, fetchChapters: true }) {
+    chapters { id mangaId url realUrl name chapterNumber scanlator uploadDate sourceOrder pageCount isRead }
+  }
+}

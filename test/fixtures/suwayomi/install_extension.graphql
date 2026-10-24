@@ -1,0 +1,6 @@
+# $pkgName e.g. "eu.kanade.tachiyomi.extension.all.mangadex".
+mutation InstallExtension($pkgName: String!) {
+  updateExtension(input: { id: $pkgName, patch: { install: true } }) {
+    extension { pkgName name versionName isInstalled source { nodes { id name lang } } }
+  }
+}
