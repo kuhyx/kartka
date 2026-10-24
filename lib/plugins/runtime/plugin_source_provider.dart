@@ -61,7 +61,12 @@ class PluginSourceProvider implements SourceProvider {
           now.manifest.version != old.plugin.manifest.version ||
           now.source != old.plugin.source) {
         _live.remove(id);
-        await old.source.session.dispose();
+        try {
+          await old.source.session.dispose();
+        } on Object {
+          // A hung engine must not keep its removed plugin listed: the
+          // session is already detached, so the sync goes on.
+        }
       }
     }
     for (final p in installed) {

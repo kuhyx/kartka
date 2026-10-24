@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/plugins/runtime/engine.dart';
 import 'package:kartka/plugins/runtime/engine_quickjs.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
 import 'package:kartka/plugins/runtime/kartka_host_services.dart';
@@ -28,9 +30,22 @@ class _Registrar implements PluginRegistrar {
   Future<void> uninstall(String id) async {}
 }
 
+/// An engine that starts fine and fails to shut down.
+class _StuckEngine implements JsEngine {
+  @override
+  Future<void> start(String pluginSource, EngineMessageSink onMessage) async {}
+
+  @override
+  void post(String json) {}
+
+  @override
+  Future<void> dispose() async => throw StateError('worker hung');
+}
+
 void main() {
   late _Registrar registrar;
   late PluginSourceProvider provider;
+  JsEngineFactory engineFactory = QuickJsEngine.new;
   setUp(() {
     final http = FakeHttp();
     final store = PluginStore(MemoryKeyValueStore());
@@ -39,9 +54,10 @@ void main() {
       registrar: registrar,
       services: (id) =>
           KartkaHostServices(pluginId: id, http: http.client, store: store),
-      engineFactory: QuickJsEngine.new,
+      engineFactory: () => engineFactory(),
     );
   });
+  tearDown(() => engineFactory = QuickJsEngine.new);
 
   const demo = InstalledPlugin(
     manifest: PluginManifest(
@@ -77,4 +93,21 @@ void main() {
       ['plugin:demo'],
     ]);
   });
+
+  test(
+    'a session that fails to dispose does not keep its plugin listed',
+    () async {
+      engineFactory = _StuckEngine.new;
+      final emitted = <List<MangaSource>>[];
+      provider.watch().listen(emitted.add);
+      registrar.installed.add([demo]);
+      await pumpEventQueue();
+      // Boot the engine with a call that never answers.
+      emitted.single.single.popular(1).ignore();
+      await pumpEventQueue();
+      registrar.installed.add([]);
+      await pumpEventQueue();
+      expect(emitted.last, isEmpty);
+    },
+  );
 }

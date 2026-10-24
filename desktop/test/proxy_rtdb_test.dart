@@ -88,7 +88,11 @@ void main() {
       await h.close();
       await fake.close();
     });
-    await h.call('GET', _proxied(_rtdb)).then<void>((_) {}, onError: (_) {});
+    // The client sees a broken response, never a clean truncated 200.
+    await expectLater(
+      h.call('GET', _proxied(_rtdb)),
+      throwsA(isA<HttpException>()),
+    );
     await Future<void>.delayed(const Duration(milliseconds: 50));
     expect(logs, isNotEmpty, reason: 'the failure path was exercised');
     expect(logs.join('\n'), isNot(contains(_token)));
