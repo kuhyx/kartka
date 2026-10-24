@@ -17,6 +17,7 @@ import 'package:kartka/browse/ui/source_screen.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
+import 'package:kartka/downloads/download_service.dart';
 
 import '../fakes.dart';
 
@@ -61,6 +62,7 @@ class Harness {
     this.health,
     bool withDownloads = true,
     bool withCovers = true,
+    this.downloadService,
   }) : provider = FakeSourceProvider() {
     final registry = SourceRegistry([
       StaticSourceProvider(sources ?? [FakeSource('mangadex')]),
@@ -71,7 +73,8 @@ class Harness {
       chapters: ChapterStore(registry.byId),
       library: library,
       progress: progress,
-      downloads: withDownloads ? downloads : null,
+      downloads: withDownloads ? (downloadService ?? downloads) : null,
+      downloadService: downloadService,
       health: health,
       detailSlots: [FakeSlot()],
       coverLoader: withCovers ? (_) async => onePixelPng : null,
@@ -81,6 +84,7 @@ class Harness {
 
   final FakeSourceProvider provider;
   final SourceHealthLookup? health;
+  final DownloadService? downloadService;
   final library = FakeLibrary();
   final progress = FakeProgress();
   final downloads = FakeDownloads();

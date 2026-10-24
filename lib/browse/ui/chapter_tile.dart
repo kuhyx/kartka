@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
+import 'package:kartka/browse/ui/chapter_download_button.dart';
 import 'package:kartka/core/models/models.dart';
 
 /// One chapter row: opens the reader; explicit buttons (focus stops, no
-/// long-press) toggle the read mark and queue a download.
+/// long-press) toggle the read mark and download, cancel or delete it.
 class ChapterTile extends StatelessWidget {
   /// Creates the row.
   const new({
@@ -59,10 +60,10 @@ class ChapterTile extends StatelessWidget {
                 unawaited(controller.setRead(chapter, read: !read)),
           ),
           if (canDownload)
-            IconButton(
-              tooltip: 'Download',
-              icon: const Icon(Icons.download_outlined),
-              onPressed: () => unawaited(controller.download([chapter])),
+            ChapterDownloadButton(
+              key: ValueKey('download-${chapter.url}'),
+              controller: controller,
+              chapter: chapter,
             ),
         ],
       ),

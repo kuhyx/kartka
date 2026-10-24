@@ -6,6 +6,7 @@ import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/core/repositories/repositories.dart';
+import 'package:kartka/downloads/download_service.dart';
 
 /// Loads cover image bytes for a cover url (web needs the wrapper proxy, so
 /// covers never go through `Image.network`).
@@ -15,13 +16,15 @@ typedef CoverLoader = Future<Uint8List> Function(String url);
 class BrowseDeps {
   /// Creates the dependency set. Optional ports degrade gracefully: no
   /// [health] → name order and no badges; no [downloads] → no download
-  /// buttons; no [coverLoader] → placeholder covers.
+  /// buttons; no [downloadService] → no cancel / delete buttons; no
+  /// [coverLoader] → placeholder covers.
   new({
     required this.sources,
     required this.chapters,
     required this.library,
     required this.progress,
     this.downloads,
+    this.downloadService,
     this.health,
     this.detailSlots = const [],
     this.coverLoader,
@@ -42,6 +45,10 @@ class BrowseDeps {
 
   /// Offline downloads, when the downloads part is registered.
   final DownloadRepository? downloads;
+
+  /// Cancel and delete per chapter (DOCS-contracts-runtime §15), when the
+  /// downloads part is registered; usually the same object as [downloads].
+  final DownloadService? downloadService;
 
   /// Source-health ranking, when the source_health part is registered.
   final SourceHealthLookup? health;

@@ -146,6 +146,23 @@ class MangaDetailController extends ChangeNotifier {
     }
   }
 
+  /// Live download state of [chapterUrl]; null without a downloads part.
+  Stream<DownloadState>? downloadState(String chapterUrl) =>
+      _deps.downloads?.watch(key, chapterUrl);
+
+  /// Whether queued chapters can be cancelled and downloaded ones deleted.
+  bool get canManageDownloads => _deps.downloadService != null;
+
+  /// Drops [chapter] from the download queue (no-op without the service).
+  Future<void> cancelDownload(ChapterInfo chapter) async {
+    await _deps.downloadService?.cancel(key, chapter.url);
+  }
+
+  /// Deletes [chapter]'s offline pages (no-op without the service).
+  Future<void> deleteDownload(ChapterInfo chapter) async {
+    await _deps.downloadService?.deleteChapter(key, chapter.url);
+  }
+
   void _notify() {
     if (!_disposed) notifyListeners();
   }
