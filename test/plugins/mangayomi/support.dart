@@ -137,7 +137,7 @@ PluginSession sessionFor(
 String probeExtension(String probeBody) =>
     '''
 const mangayomiSources = [];
-function probe(arg) { $probeBody }
+async function probe(arg) { $probeBody }
 class DefaultExtension extends MProvider {
   async getPopular(page) {
     const v = await probe(page);

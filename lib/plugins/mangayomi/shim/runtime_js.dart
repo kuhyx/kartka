@@ -10,13 +10,14 @@ library;
 
 /// JS source defining the Mangayomi runtime globals.
 const String kShimRuntimeJs = r'''
-if (typeof console === "undefined" || !console || !console.log) {
-  globalThis.console = {
-    log: (...a) => kartka.log(...a),
-    warn: (...a) => kartka.log(...a),
-    error: (...a) => kartka.log(...a),
-  };
-}
+// Extension logging always reaches the plugin log, whatever the engine has.
+globalThis.console = {
+  log: (...a) => kartka.log(...a),
+  warn: (...a) => kartka.log(...a),
+  error: (...a) => kartka.log(...a),
+  info: (...a) => kartka.log(...a),
+  debug: (...a) => kartka.log(...a),
+};
 
 function __kmFormEncode(map) {
   return Object.keys(map).map((k) => encodeURIComponent(k) + "=" +
@@ -38,8 +39,12 @@ async function __kmRequest(method, url, headers, body) {
     if (body != null && typeof body !== "string") {
       const type = Object.keys(h).find((k) => k.toLowerCase() === "content-type");
       const json = type && h[type].indexOf("application/json") >= 0;
-      text = json || Array.isArray(body) ? JSON.stringify(body) : __kmFormEncode(body);
-      if (!type && !json) h["Content-Type"] = "application/x-www-form-urlencoded";
+      if (json || Array.isArray(body)) {
+        text = JSON.stringify(body);
+      } else {
+        text = __kmFormEncode(body);
+        if (!type) h["Content-Type"] = "application/x-www-form-urlencoded";
+      }
     }
     res = await kartka.http.post(String(url), { headers: h, body: text == null ? "" : text });
   }

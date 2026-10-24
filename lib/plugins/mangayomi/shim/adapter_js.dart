@@ -25,6 +25,12 @@ const __kmSeen = new Map();
 const __kmDetails = new Map();
 let __kmInstance = null;
 
+// Synchronous call with a fallback; a helper because js_interpreter does not
+// catch a getter's throw in an inline try inside an async function.
+function __kmTry(fn, fallback) {
+  try { return fn(); } catch (_) { return fallback; }
+}
+
 async function __kmExt() {
   if (__kmInstance === null) __kmInstance = new __kmExtClass();
   await __kmLoadPrefs(__kmInstance);
@@ -56,9 +62,9 @@ async function popular(page) {
 
 async function latest(page) {
   const ext = await __kmExt();
-  let supported = true;
-  try { supported = ext.supportsLatest !== false; } catch (_) { supported = true; }
-  if (!supported) return { items: [], hasNext: false };
+  if (__kmTry(() => ext.supportsLatest, true) === false) {
+    return { items: [], hasNext: false };
+  }
   return __kmPage(await ext.getLatestUpdates(page));
 }
 
@@ -107,7 +113,7 @@ async function details(url) {
 // otherwise the first number that is not a volume number.
 function __kmChapterNumber(name) {
   const s = String(name || "");
-  const m = /(?:chapter|chap|ch|episode|ep)\.?\s*#?\s*(\d+(?:\.\d+)?)/i.exec(s) ||
+  const m = /\b(?:chapter|chap|ch|episode|ep)\.?\s*#?\s*(\d+(?:\.\d+)?)/i.exec(s) ||
     /#\s*(\d+(?:\.\d+)?)/.exec(s) ||
     /(\d+(?:\.\d+)?)/.exec(s.replace(/(?:volume|vol)\.?\s*\d+/ig, ""));
   return m ? parseFloat(m[1]) : null;
