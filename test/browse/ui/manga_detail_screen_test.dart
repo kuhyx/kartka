@@ -7,7 +7,7 @@ import '../fakes.dart';
 import 'harness.dart';
 
 const _url = '/manga/a b?c=1#d';
-final _key = mangaKeyOf('mangadex', _url);
+final MangaKey _key = mangaKeyOf('mangadex', _url);
 
 Future<Harness> _open(WidgetTester t, {bool downloads = true}) async {
   t.view.physicalSize = const Size(1200, 2400);

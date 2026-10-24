@@ -63,7 +63,8 @@ void main() {
   });
 
   testWidgets('a failing page offers Retry', (t) async {
-    final src = FakeSource('mangadex', pageCount: 1)..failWith = StateError('x');
+    final src = FakeSource('mangadex', pageCount: 1)
+      ..failWith = StateError('x');
     final h = Harness(sources: [src]);
     await h.pump(t, const SizedBox(), at: sourceRoute('mangadex'));
     expect(find.textContaining('Could not load'), findsOneWidget);

@@ -14,6 +14,7 @@ import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/ui/global_search_screen.dart';
 import 'package:kartka/browse/ui/manga_detail_screen.dart';
 import 'package:kartka/browse/ui/source_screen.dart';
+import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
 
@@ -49,7 +50,7 @@ class FakeHealth implements SourceHealthLookup {
 /// Detail slot rendering a marker text.
 class FakeSlot implements MangaDetailSlot {
   @override
-  Widget build(BuildContext context, String key, details) =>
+  Widget build(BuildContext context, String key, MangaDetails details) =>
       Text('slot:$key');
 }
 
@@ -96,7 +97,10 @@ class Harness {
     final router = GoRouter(
       initialLocation: at,
       routes: [
-        GoRoute(path: '/', builder: (_, _) => Scaffold(body: home)),
+        GoRoute(
+          path: '/',
+          builder: (_, _) => Scaffold(body: home),
+        ),
         GoRoute(
           path: mangaRoutePattern,
           builder: (_, s) {

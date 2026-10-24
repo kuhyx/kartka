@@ -9,9 +9,8 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
-import 'package:kartka/platform/memory/memory_fakes.dart';
+import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
-import 'package:kartka/platform/memory/memory_stores.dart';
 
 import 'fakes.dart';
 import 'ui/harness.dart';
@@ -84,21 +83,8 @@ void main() {
   });
 
   testWidgets('without the library feature the tab fails loudly', (t) async {
-    final reg = _registry(withLibrary: false);
-    final tab = reg.tab(KartkaTab.browse)!;
-    late Object error;
-    await t.pumpWidget(
-      Builder(
-        builder: (context) {
-          try {
-            return tab(context);
-          } on StateError catch (e) {
-            error = e;
-            return const SizedBox();
-          }
-        },
-      ),
-    );
-    expect('$error', contains('library'));
+    final tab = _registry(withLibrary: false).tab(KartkaTab.browse)!;
+    await t.pumpWidget(Builder(builder: tab));
+    expect('${t.takeException()}', contains('library'));
   });
 }
