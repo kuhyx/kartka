@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/source_health/feed/fixture_feed.dart';
 import 'package:kartka/source_health/feed/rtdb_feed.dart';
@@ -65,9 +63,7 @@ void main() {
       await pumpEventQueue();
       reader.replace(<String, Object?>{});
       await pumpEventQueue();
-      // Not awaited: InMemoryRtdbReader.watch is an async* parked in
-      // `await for`, so its cancel() only completes on the next change.
-      unawaited(sub.cancel());
+      await sub.cancel();
       expect(seen, [6, 1, 0]);
     });
 

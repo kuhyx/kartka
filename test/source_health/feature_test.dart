@@ -43,6 +43,9 @@ void main() {
     });
     await pumpSourcesTab(tester, registryWith([reader]));
     expect(find.byKey(const ValueKey('source-mangadex')), findsOne);
+    final lookup = registryWith([reader]).maybe<SourceHealthLookup>()!;
+    final summaries = await tester.runAsync(() => lookup.watch().first);
+    expect(summaries!['mangadex']?.rank, 1);
   });
 
   testWidgets('without sync the tab says so', (tester) async {

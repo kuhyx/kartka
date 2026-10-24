@@ -12,23 +12,24 @@ import 'package:kartka/sync/sync_engine.dart';
 
 /// Wraps the three synced repositories around one [SyncEngine].
 class SyncRepositoryDecorator implements RepositoryDecorator {
-  /// Creates the decorator. [engine] completes once the engine has started
-  /// (device id and persisted shadow load asynchronously), so repos can be
-  /// handed out synchronously before that.
+  /// Creates the decorator. [engine] is called only when a repository is
+  /// first wrapped (never while the registry is built), and its future
+  /// completes once the device id and persisted shadow have loaded, so repos
+  /// are handed out synchronously before that.
   new(this.engine);
 
-  /// The engine, once started.
-  final Future<SyncEngine> engine;
+  /// Starts (or returns) the engine.
+  final Future<SyncEngine> Function() engine;
 
   @override
   LibraryRepository library(LibraryRepository inner) =>
-      SyncedLibraryRepository(inner, engine);
+      SyncedLibraryRepository(inner, engine());
 
   @override
   CategoryRepository categories(CategoryRepository inner) =>
-      SyncedCategoryRepository(inner, engine);
+      SyncedCategoryRepository(inner, engine());
 
   @override
   ProgressRepository progress(ProgressRepository inner) =>
-      SyncedProgressRepository(inner, engine);
+      SyncedProgressRepository(inner, engine());
 }

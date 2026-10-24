@@ -6,6 +6,7 @@ library;
 
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/source_health/source_health_feature.dart';
+import 'package:kartka/sync/sync_feature.dart';
 
 export 'package:kartka/app/feature.dart';
 
@@ -13,4 +14,5 @@ export 'package:kartka/app/feature.dart';
 final List<KartkaFeatureFactory> kartkaFeatureFactories = [
   // Parts append below this line, one entry each.
   sourceHealthFeature,
+  syncFeature,
 ];

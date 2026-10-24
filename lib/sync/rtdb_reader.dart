@@ -12,6 +12,8 @@ library;
 
 import 'dart:async';
 
+import 'package:kartka/sync/merge/merge_rules.dart' show canon;
+
 /// Reads decoded JSON from the `/kartka` RTDB root. Never writes.
 abstract interface class RtdbReader {
   /// The value at [path], or null when absent.
@@ -45,15 +47,28 @@ class InMemoryRtdbReader implements RtdbReader {
   Future<Object?> get(String path) async => _lookup(path);
 
   @override
-  Stream<Object?> watch(String path) async* {
-    var last = _lookup(path);
-    yield last;
-    await for (final _ in _changes.stream) {
-      final next = _lookup(path);
-      if (_jsonEquals(next, last)) continue;
-      last = next;
-      yield next;
+  Stream<Object?> watch(String path) {
+    // A plain controller, not `async*`: cancelling an async* generator
+    // parked in `await for` on a silent stream never completes.
+    StreamSubscription<void>? sub;
+    String? last;
+    late final StreamController<Object?> out;
+    void emit() {
+      final value = _lookup(path);
+      final text = canon(value);
+      if (text == last) return;
+      last = text;
+      out.add(value);
     }
+
+    out = StreamController<Object?>(
+      onListen: () {
+        emit();
+        sub = _changes.stream.listen((_) => emit());
+      },
+      onCancel: () => sub?.cancel(),
+    );
+    return out.stream;
   }
 
   Object? _lookup(String path) {
@@ -64,23 +79,4 @@ class InMemoryRtdbReader implements RtdbReader {
     }
     return node;
   }
-}
-
-/// Deep structural equality over decoded JSON values.
-bool _jsonEquals(Object? a, Object? b) {
-  if (a is Map && b is Map) {
-    if (a.length != b.length) return false;
-    for (final key in a.keys) {
-      if (!b.containsKey(key) || !_jsonEquals(a[key], b[key])) return false;
-    }
-    return true;
-  }
-  if (a is List && b is List) {
-    if (a.length != b.length) return false;
-    for (var i = 0; i < a.length; i++) {
-      if (!_jsonEquals(a[i], b[i])) return false;
-    }
-    return true;
-  }
-  return a == b;
 }

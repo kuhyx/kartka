@@ -10,7 +10,7 @@ import 'package:kartka/sync/sync_engine.dart';
 
 import '../device_harness.dart';
 
-final _key = mangaKeyOf('mangadex', '/manga/1');
+final MangaKey _key = mangaKeyOf('mangadex', '/manga/1');
 
 ReadingProgress _at(String chapter, int page) => ReadingProgress(
   key: _key,
@@ -55,7 +55,7 @@ void main() {
   test('if the engine never starts, local writes still work', () async {
     final kv = MemoryKeyValueStore();
     final decorator = SyncRepositoryDecorator(
-      Future<SyncEngine>.error(StateError('no prefs plugin')),
+      () => Future<SyncEngine>.error(StateError('no prefs plugin')),
     );
     final library = decorator.library(LocalLibraryRepository(kv));
     final categories = decorator.categories(LocalCategoryRepository(kv));
