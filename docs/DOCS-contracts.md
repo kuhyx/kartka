@@ -65,7 +65,8 @@ edit each other's files.
 
 `mangaKeyHash` = lowercase hex SHA-1 of `MangaKey` (RTDB-safe key).
 Read chapters set = derived from progress + explicit per-chapter marks in
-`read/<mangaKeyHash>/<chapterUrlHash>: true` (grow-only set).
+`read/<mangaKeyHash>/<chapterUrlHash>: {read: bool, at: ms}` (LWW per chapter, so
+markUnread is a `read: false` tombstone).
 
 ## 5. Source-health record (evaluator → RTDB → app UI)
 
@@ -121,7 +122,7 @@ wrapper files on web), `KeyValueStore`, `FilePicker` (CBZ import),
 `OAuthRedirect` (Android deep link `kartka://oauth`, web
 `http://127.0.0.1:<wrapperPort>/oauth`).
 
-## 8. Repositories (`lib/core/repositories/`, interfaces only; owner: library part)
+## 8. Repositories (`lib/core/repositories/`, interfaces written by foundation; local impls by library part)
 
 ```dart
 abstract interface class LibraryRepository {
@@ -133,11 +134,13 @@ abstract interface class CategoryRepository {
   Stream<List<Category>> watch();
   Future<void> upsert(Category c);
   Future<void> setMembership(MangaKey key, String categoryId, bool member);
+  Stream<Map<MangaKey, Set<String>>> watchMembership(); // true values only
 }
 abstract interface class ProgressRepository {
   Stream<ReadingProgress?> watch(MangaKey key);
   Future<void> record(ReadingProgress p);       // ignored if not > current
   Future<void> markRead(MangaKey key, String chapterUrl);
+  Future<void> markUnread(MangaKey key, String chapterUrl);
   Stream<Set<String>> readChapters(MangaKey key);
 }
 abstract interface class DownloadRepository {   // owner: downloads part
@@ -174,3 +177,35 @@ class TrackStatus { String remoteId; int chaptersRead; int? totalChapters; Strin
 `TrackingService` (common) binds a `MangaKey` to `remoteId`s (stored in sync
 path `trackers/`), listens to `ProgressRepository`, pushes `max(local, remote)`
 and pulls remote progress forward into local on refresh.
+
+Library-local ports (lib/library/, default no-op, real impls injected by their
+owners via the registry): `UnreadCounts.watch(key) → Stream<int?>` (browse
+supplies, from its chapter cache), `DownloadedLookup.hasDownloads(key) →
+Stream<bool>` (downloads supplies), `TrackedLookup.isTracked(key) →
+Stream<bool>` (tracking-anilist supplies from TrackingService bindings).
+
+## 10. Service lookup, routes, keys (owner: foundation)
+
+- `KartkaFeature` gets `List<Object> services` (default empty). Consumers ask
+  `registry.all<T>()` / `registry.maybe<T>()`, which is how every port is supplied
+  (SourceHealthLookup, UnreadCounts, DownloadedLookup, TrackedLookup,
+  Tracker, MangaDetailSlot, ...). Ports live in the CONSUMER's dir;
+  foundation never imports feature dirs.
+- `lib/app/routes.dart`: `mangaRoute(sourceId, mangaUrl)`,
+  `readRoute(sourceId, mangaUrl, chapterUrl)` + matching parsers;
+  every segment is `Uri.encodeComponent`-encoded. Router: go_router (foundation pins it).
+- `lib/core/models/manga_key.dart`: `MangaKey mangaKeyOf(String sourceId,
+  String url)` and `String mangaKeyHash(MangaKey)` (sha1 hex, §4).
+
+## 11. Blob page URLs and FilePicker (owner: foundation)
+
+- A page stored in BlobStore is `PageRef(imageUrl: 'kartka-blob://<blobKey>',
+  headers: {})`. Not `blob:`, which is the browser's object-URL scheme on web.
+  `lib/platform/page_image.dart` (foundation) resolves either scheme:
+  kartka-blob → BlobStore bytes, http(s) → KartkaHttp with headers. Reader,
+  downloads and local all use it.
+- `FilePicker.pickFiles({List<String> extensions, bool multiple})` and
+  `FilePicker.pickDirectory()` return `List<PickedFile>`, where
+  `PickedFile {String name; String? relativePath; Future<Uint8List> readBytes()}`.
+  On web, directory picking uses webkitdirectory. Android path reads stay in
+  lib/platform/io/.
