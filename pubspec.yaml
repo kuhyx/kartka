@@ -13,6 +13,8 @@ environment:
 dependencies:
   # Android deep link kartka://oauth for OAuthRedirect.
   app_links: 7.2.2
+  # CBZ/ZIP reading for the local source (pure Dart, works on web).
+  archive: 4.5.2
   # Deep ==/hashCode for the list and map fields of the core models.
   collection: 1.19.1
   # SHA-1 for mangaKeyHash (RTDB-safe keys, DOCS-contracts §4).
@@ -39,6 +41,8 @@ dependencies:
   path_provider: 2.1.6
   url_launcher: 6.3.3
   web: 1.1.2
+  # ComicInfo.xml metadata in local CBZs and folders.
+  xml: 7.1.0
 
 dev_dependencies:
   # Generates the Android launcher icons from assets/icon/ (shared generator:
