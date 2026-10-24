@@ -41,9 +41,10 @@ void main() {
     expect(find.text('Library entries'), findsOneWidget);
     expect(find.text('Chapters read'), findsOneWidget);
     expect(find.text('AniList links'), findsOneWidget);
-    expect(find.text('Unmapped sources'), findsOneWidget);
-    expect(find.text('E-Hentai'), findsOneWidget);
-    expect(find.textContaining('mangaupdates 1'), findsOneWidget);
+    expect(find.text('MangaUpdates links'), findsOneWidget);
+    expect(find.text('Source unavailable'), findsOneWidget);
+    expect(find.text('E-Hentai (6901)'), findsOneWidget);
+    expect(find.textContaining('kitsu 1'), findsOneWidget);
     expect(find.text('History-only records skipped'), findsOneWidget);
 
     await tester.tap(find.text('Import 6 entries'));

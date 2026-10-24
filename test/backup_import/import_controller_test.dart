@@ -88,4 +88,16 @@ void main() {
     expect(c.phase, ImportPhase.failed);
     expect(c.error, contains('disk full'));
   });
+
+  test('sources that are not installed are listed as unavailable', () async {
+    final c = ImportController(
+      picker: FakeFilePicker(
+        files: [_file('b.tachibk', buildSyntheticTachibk())],
+      ),
+      importer: f.importer,
+      availableSources: () async => {'mangadex', 'local'},
+    );
+    await c.pick();
+    expect(c.unavailable.map((u) => u.id), ['4709139914729853090', '6901']);
+  });
 }

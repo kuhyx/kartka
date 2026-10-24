@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:kartka/backup_import/backup_importer.dart';
 import 'package:kartka/backup_import/import_plan.dart';
 
+const Set<String> _bound = {'anilist', 'mal', 'mangaupdates'};
+
 String _plural(int n, String one, String many) => '$n ${n == 1 ? one : many}';
 
 /// One label/value line of the summary.
@@ -30,10 +32,18 @@ class _Row extends StatelessWidget {
 /// The dry-run summary: what is in the backup and what will happen.
 class ImportPreview extends StatelessWidget {
   /// Creates the preview for [summary].
-  const new(this.summary, {this.bindTrackers = true, super.key});
+  const new(
+    this.summary, {
+    this.unavailable = const [],
+    this.bindTrackers = true,
+    super.key,
+  });
 
   /// Dry-run counts.
   final ImportSummary summary;
+
+  /// Entries whose source cannot open them right now.
+  final List<UnavailableSource> unavailable;
 
   /// False when no tracking module is installed to take the AniList/MAL links.
   final bool bindTrackers;
@@ -42,7 +52,7 @@ class ImportPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = summary;
     final others = {...s.trackersByService}
-      ..removeWhere((k, _) => k == 'anilist' || k == 'mal');
+      ..removeWhere((k, _) => _bound.contains(k));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -53,10 +63,15 @@ class ImportPreview extends StatelessWidget {
         _Row('Chapters read', '${s.chaptersRead}'),
         _Row('AniList links', '${s.trackersByService['anilist'] ?? 0}'),
         _Row('MyAnimeList links', '${s.trackersByService['mal'] ?? 0}'),
+        _Row(
+          'MangaUpdates links',
+          '${s.trackersByService['mangaupdates'] ?? 0}',
+        ),
         if (!bindTrackers && s.trackersImported > 0)
           Text(
-            'Tracking is not installed, so AniList and MyAnimeList links are '
-            'skipped. Import this file again once it is.',
+            'Tracking is not installed, so AniList, MyAnimeList and '
+            'MangaUpdates links are skipped. Import this file again once it '
+            'is.',
             style: Theme.of(context).textTheme.bodySmall,
           ),
         if (others.isNotEmpty)
@@ -67,16 +82,17 @@ class ImportPreview extends StatelessWidget {
         if (s.notInLibrary > 0)
           _Row('History-only records skipped', '${s.notInLibrary}'),
         if (s.duplicates > 0) _Row('Duplicates skipped', '${s.duplicates}'),
-        if (s.unmappedSources.isNotEmpty) ...[
-          const SectionHeader('Unmapped sources'),
+        if (unavailable.isNotEmpty) ...[
+          const SectionHeader('Source unavailable'),
           Text(
-            'No Kartka or Suwayomi source can open these. The entries are '
-            'still imported, with their progress, and stay in your library.',
+            'No installed source can open these. The entries are still '
+            'imported, with their progress, and load once a source for them '
+            'exists.',
             style: Theme.of(context).textTheme.bodySmall,
           ),
-          for (final u in s.unmappedSources)
+          for (final u in unavailable)
             _Row(
-              u.name.isEmpty ? 'Source ${u.id}' : u.name,
+              '${u.name.isEmpty ? 'Source' : u.name} (${u.id})',
               _plural(u.entries, 'entry', 'entries'),
             ),
         ],

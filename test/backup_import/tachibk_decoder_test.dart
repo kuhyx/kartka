@@ -62,6 +62,7 @@ void main() {
       (2, '134187'),
       (1, '139022'),
       (7, '57847596550'),
+      (3, '60625'),
     ]);
     expect(m.tracking.first.lastChapterRead, 3.0);
   });

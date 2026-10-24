@@ -7,6 +7,7 @@ import 'package:kartka/backup_import/import_screen.dart';
 import 'package:kartka/backup_import/repositories_seam.dart';
 import 'package:kartka/backup_import/tracker_binding_sink.dart';
 import 'package:kartka/core/repositories/repositories.dart';
+import 'package:kartka/core/source/source_provider.dart';
 
 /// Route of the import screen (More → Import SY backup).
 const String importSyBackupRoute = '/more/import-sy-backup';
@@ -36,6 +37,17 @@ BackupImporter buildImporter(
   );
 }
 
+/// Ids of every source that can be opened right now, or null when no
+/// [SourceProvider] is registered (availability unknown).
+Future<Set<String>?> availableSourceIds(KartkaEnv env) async {
+  final providers = env.registry.all<SourceProvider>();
+  if (providers.isEmpty) return null;
+  return {
+    for (final p in providers)
+      for (final source in await p.watch().first) source.ref.id,
+  };
+}
+
 /// The backup-import feature: one route plus a tile in More.
 KartkaFeature backupImportFeatureWith(
   KartkaEnv env,
@@ -49,6 +61,7 @@ KartkaFeature backupImportFeatureWith(
         controller: ImportController(
           picker: env.platform.filePicker,
           importer: buildImporter(env, resolve),
+          availableSources: () => availableSourceIds(env),
         ),
       ),
     ),

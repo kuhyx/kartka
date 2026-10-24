@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/backup_import/source_mapper.dart';
 
@@ -29,13 +32,36 @@ void main() {
     expect(m.kind, SourceKind.suwayomi);
   });
 
-  test('local source and SY-internal sources', () {
+  test('local source and SY built-in sources', () {
     expect(mapper.map('0').sourceId, 'local');
     expect(mapper.map('0').kind, SourceKind.local);
     for (final id in ['6901', '6902', '6969']) {
       final m = mapper.map(id);
-      expect(m.kind, SourceKind.unmapped);
-      expect(m.sourceId, 'suwayomi:$id');
+      expect(m.kind, SourceKind.syBuiltin);
+      expect(m.sourceId, 'sy-builtin:$id');
+    }
+  });
+
+  test('matches the Suwayomi cross-check of the real backup sources', () {
+    final data = jsonDecode(
+      File('test/fixtures/suwayomi/source_id_crosscheck.json')
+          .readAsStringSync(),
+    ) as Map<String, Object?>;
+    for (final e in (data['matched']! as List).cast<Map<String, Object?>>()) {
+      final id = e['backupSourceId']! as String;
+      final suwayomi = e['suwayomi']! as Map<String, Object?>;
+      final isDex = (suwayomi['pkgName']! as String).endsWith('.mangadex');
+      if (isDex) {
+        // Verifies the id formula for a non-English MangaDex source.
+        expect(tachiyomiSourceId('MangaDex', suwayomi['lang']! as String), id);
+      }
+      expect(mapper.map(id).sourceId, isDex ? 'mangadex' : 'suwayomi:$id');
+    }
+    for (final id in (data['syBuiltin']! as List).cast<String>()) {
+      expect(mapper.map(id).sourceId, 'sy-builtin:$id');
+    }
+    for (final id in (data['notInKeiyoushi']! as List).cast<String>()) {
+      expect(mapper.map(id).sourceId, 'suwayomi:$id');
     }
   });
 

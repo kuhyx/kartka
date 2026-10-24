@@ -42,6 +42,7 @@ class ImportController extends ChangeNotifier {
     required this.picker,
     required this.importer,
     this.planner = planBackup,
+    this.availableSources,
   });
 
   /// File chooser (platform seam).
@@ -49,6 +50,10 @@ class ImportController extends ChangeNotifier {
 
   /// Writes the plan.
   final BackupImporter importer;
+
+  /// Kartka source ids that can be opened right now; null result or no
+  /// callback means unknown.
+  final Future<Set<String>?> Function()? availableSources;
 
   /// Turns file bytes into a plan.
   final Future<ImportPlan> Function(Uint8List bytes) planner;
@@ -59,6 +64,7 @@ class ImportController extends ChangeNotifier {
   ImportResult? _result;
   String? _error;
   (int, int) _progress = (0, 0);
+  List<UnavailableSource> _unavailable = const [];
 
   /// Whether AniList/MAL links will be stored.
   bool get bindsTrackers => importer.bindings != null;
@@ -71,6 +77,9 @@ class ImportController extends ChangeNotifier {
 
   /// Dry-run plan, once a file was read.
   ImportPlan? get plan => _plan;
+
+  /// Entries whose source cannot open them (imported anyway).
+  List<UnavailableSource> get unavailable => _unavailable;
 
   /// What the import wrote.
   ImportResult? get result => _result;
@@ -101,7 +110,9 @@ class ImportController extends ChangeNotifier {
     _go(ImportPhase.loading);
     try {
       _fileName = files.first.name;
-      _plan = await planner(await files.first.readBytes());
+      final plan = await planner(await files.first.readBytes());
+      _unavailable = plan.unavailable(await availableSources?.call());
+      _plan = plan;
       _result = null;
       _go(ImportPhase.preview);
     } on Object catch (e) {

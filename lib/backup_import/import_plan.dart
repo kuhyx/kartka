@@ -36,6 +36,7 @@ class PlannedManga {
   /// Creates a planned manga.
   const new({
     required this.entry,
+    required this.tachiyomiSourceId,
     required this.categoryIds,
     required this.readChapterUrls,
     required this.progress,
@@ -44,6 +45,9 @@ class PlannedManga {
 
   /// The library entry.
   final LibraryEntry entry;
+
+  /// The entry's Tachiyomi source id in the backup.
+  final String tachiyomiSourceId;
 
   /// Planned category ids (see [PlannedCategory.id]).
   final List<String> categoryIds;
@@ -58,9 +62,9 @@ class PlannedManga {
   final List<PlannedBinding> bindings;
 }
 
-/// A source the importer cannot serve through Suwayomi.
-class UnmappedSource {
-  /// Creates an unmapped-source record.
+/// A source with no way to open its entries right now.
+class UnavailableSource {
+  /// Creates an unavailable-source record.
   const new(this.name, this.id, this.entries);
 
   /// Name from the backup's source table (`''` if absent).
@@ -83,7 +87,6 @@ class ImportSummary {
     required this.chaptersRead,
     required this.trackersByService,
     required this.trackersImported,
-    required this.unmappedSources,
     required this.notInLibrary,
     required this.duplicates,
   });
@@ -106,9 +109,6 @@ class ImportSummary {
   /// Bindings that will actually be stored (AniList and MAL).
   final int trackersImported;
 
-  /// Sources with no way to be served; their entries are imported anyway.
-  final List<UnmappedSource> unmappedSources;
-
   /// History-only records skipped because they are not in the library.
   final int notInLibrary;
 
@@ -123,6 +123,7 @@ class ImportPlan {
     required this.manga,
     required this.categories,
     required this.summary,
+    required this.sourceNames,
   });
 
   /// Entries to write.
@@ -133,4 +134,33 @@ class ImportPlan {
 
   /// Dry-run counts.
   final ImportSummary summary;
+
+  /// Tachiyomi source id to name, from the backup's source table.
+  final Map<String, String> sourceNames;
+
+  /// Entries whose source cannot be opened, grouped by Tachiyomi id (most
+  /// entries first). They are imported anyway. [available] holds the Kartka
+  /// source ids that exist right now; `null` means unknown, so only SY
+  /// built-ins (which never load) are listed.
+  List<UnavailableSource> unavailable(Set<String>? available) {
+    final counts = <String, int>{};
+    for (final m in manga) {
+      final id = m.entry.sourceId;
+      final missing =
+          id.startsWith('sy-builtin:') ||
+          (available != null && !available.contains(id));
+      if (missing) {
+        counts.update(m.tachiyomiSourceId, (n) => n + 1, ifAbsent: () => 1);
+      }
+    }
+    final ids = counts.keys.toList()
+      ..sort((a, b) {
+        final byCount = counts[b]!.compareTo(counts[a]!);
+        return byCount != 0 ? byCount : a.compareTo(b);
+      });
+    return [
+      for (final id in ids)
+        UnavailableSource(sourceNames[id] ?? '', id, counts[id]!),
+    ];
+  }
 }
