@@ -9,9 +9,8 @@ import 'package:kartka/platform/platform.dart';
 
 /// The recorded page list in `test/fixtures/downloads/chapter_pages.json`.
 List<PageRef> fixturePages() {
-  final raw = File(
-    'test/fixtures/downloads/chapter_pages.json',
-  ).readAsStringSync();
+  final raw = File('test/fixtures/downloads/chapter_pages.json')
+      .readAsStringSync();
   return [
     for (final p in jsonDecode(raw) as List<Object?>)
       PageRef.fromJson(p! as Map<String, Object?>),
@@ -62,7 +61,7 @@ class MemoryKv implements KeyValueStore {
 
 /// Serves [pages] for every chapter and [chapterList] for every manga.
 class FakeSource implements MangaSource {
-  FakeSource({this.id = 'mangadex', List<PageRef>? pages, this.chapterList})
+  new({this.id = 'mangadex', List<PageRef>? pages, this.chapterList})
     : pageList = pages ?? fixturePages();
 
   final String id;
@@ -72,12 +71,8 @@ class FakeSource implements MangaSource {
   int chapterCalls = 0;
 
   @override
-  SourceRef get ref => SourceRef(
-    id: id,
-    name: id,
-    lang: 'en',
-    origin: SourceOrigin.native,
-  );
+  SourceRef get ref =>
+      SourceRef(id: id, name: id, lang: 'en', origin: SourceOrigin.native);
 
   @override
   Future<List<PageRef>> pages(String chapterUrl) async {
@@ -108,10 +103,10 @@ class FakeSource implements MangaSource {
 /// A page loader that fails the first [failures] calls per URL with [error],
 /// and can hold every load on [gate] until the test releases it.
 class FakeLoader {
-  FakeLoader({this.failures = 0, this.error, this.gate});
+  new({this.failures = 0, this.error, this.gate});
 
   final int failures;
-  final Object? error;
+  final Exception? error;
   Completer<void>? gate;
   final Map<String, int> calls = {};
   final List<Map<String, String>> headersSeen = [];
@@ -121,7 +116,9 @@ class FakeLoader {
     headersSeen.add(page.headers);
     final g = gate;
     if (g != null) await g.future;
-    if (n <= failures) throw error ?? StateError('flaky ${page.imageUrl}');
+    final e = error;
+    if (n <= failures && e != null) throw e;
+    if (n <= failures) throw StateError('flaky ${page.imageUrl}');
     return fakeImage(page.imageUrl);
   }
 }

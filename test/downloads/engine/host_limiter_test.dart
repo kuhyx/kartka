@@ -5,12 +5,15 @@ import 'package:kartka/downloads/engine/host_limiter.dart';
 
 void main() {
   test('hostOf extracts the lowercase host, empty for non-URLs', () {
-    expect(hostOf('https://Uploads.MangaDex.org/a/b.png'), 'uploads.mangadex.org');
+    expect(
+      hostOf('https://Uploads.MangaDex.org/a/b.png'),
+      'uploads.mangadex.org',
+    );
     expect(hostOf('not a url'), '');
   });
 
   test('never runs more than perHost jobs on one host at a time', () async {
-    final limiter = HostLimiter(perHost: 2);
+    final limiter = HostLimiter();
     var running = 0;
     var peak = 0;
     final gates = List.generate(5, (_) => Completer<void>());

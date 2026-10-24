@@ -18,7 +18,7 @@ typedef SourceLookup = MangaSource? Function(String sourceId);
 /// Thrown inside a download when it was paused or cancelled.
 class DownloadStopped implements Exception {
   /// Creates the signal.
-  const DownloadStopped();
+  const new();
 }
 
 /// Whether a failed page is worth another attempt: network errors, 408,
@@ -38,13 +38,13 @@ bool isRetryable(Object error) {
 /// against `source:<id>`), and each one is retried per [policy].
 class DownloadEngine {
   /// Creates an engine.
-  DownloadEngine({
+  new({
     required this.blobs,
     required this.loadPage,
     required this.sourceFor,
     HostLimiter? limiter,
     this.policy = const RetryPolicy(),
-    this.sleep,
+    this.sleep = realSleep,
     DateTime Function()? now,
   }) : limiter = limiter ?? HostLimiter(),
        _now = now ?? DateTime.now;
@@ -64,8 +64,8 @@ class DownloadEngine {
   /// Retry policy for the page list and each page.
   final RetryPolicy policy;
 
-  /// Backoff sleep; `null` waits for real.
-  final Sleep? sleep;
+  /// Backoff sleep (injectable for tests).
+  final Sleep sleep;
 
   final DateTime Function() _now;
 
@@ -143,10 +143,12 @@ class DownloadEngine {
       if (shouldStop()) throw const DownloadStopped();
       return job();
     });
-    final s = sleep;
-    return s == null
-        ? retry(attempt, policy: policy, shouldRetry: isRetryable)
-        : retry(attempt, policy: policy, shouldRetry: isRetryable, sleep: s);
+    return retry(
+      attempt,
+      policy: policy,
+      shouldRetry: isRetryable,
+      sleep: sleep,
+    );
   }
 }
 

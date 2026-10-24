@@ -1,11 +1,11 @@
-import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/models/json_fields.dart';
+import 'package:kartka/core/models/models.dart';
 import 'package:kartka/downloads/keys.dart';
 
 /// One chapter waiting in, or moving through, the download queue.
 class DownloadTask {
   /// Creates a task; new tasks start [DownloadStatus.queued].
-  const DownloadTask({
+  const new({
     required this.mangaKey,
     required this.chapter,
     required this.enqueuedAt,
@@ -13,7 +13,7 @@ class DownloadTask {
   });
 
   /// Decodes the shape written by [toJson].
-  factory DownloadTask.fromJson(Map<String, Object?> json) => DownloadTask(
+  factory fromJson(Map<String, Object?> json) => DownloadTask(
     mangaKey: readString(json, 'mangaKey'),
     chapter: ChapterInfo.fromJson(readObject(json['chapter'])),
     enqueuedAt: readDate(json, 'enqueuedAt'),

@@ -47,17 +47,19 @@ void main() {
       pages.fold<int>(0, (s, p) => s + fakeImage(p.imageUrl).length),
     );
     for (final p in pages) {
-      expect(blobs.data[pageBlobKey(key, chapter.url, p.index)],
-          fakeImage(p.imageUrl));
+      expect(
+        blobs.data[pageBlobKey(key, chapter.url, p.index)],
+        fakeImage(p.imageUrl),
+      );
     }
     expect(
       loader.headersSeen,
       anyElement(equals({'Referer': 'https://site-a.example/'})),
     );
-    expect(progress.first, const DownloadState(
-      status: DownloadStatus.downloading,
-      pagesTotal: 3,
-    ));
+    expect(
+      progress.first,
+      const DownloadState(status: DownloadStatus.downloading, pagesTotal: 3),
+    );
     expect(progress.last.pagesDone, 3);
   });
 

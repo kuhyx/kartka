@@ -6,7 +6,7 @@ import 'package:kartka/core/models/manga_key.dart';
 /// One fully downloaded chapter: how many page blobs and how big.
 class OfflineChapter {
   /// Creates a record.
-  const OfflineChapter({
+  const new({
     required this.chapterUrl,
     required this.chapterName,
     required this.pageCount,
@@ -15,7 +15,7 @@ class OfflineChapter {
   });
 
   /// Decodes [toJson].
-  factory OfflineChapter.fromJson(Map<String, Object?> json) => OfflineChapter(
+  factory fromJson(Map<String, Object?> json) => OfflineChapter(
     chapterUrl: readString(json, 'chapterUrl'),
     chapterName: readString(json, 'chapterName'),
     pageCount: readInt(json, 'pageCount'),
@@ -69,10 +69,10 @@ class OfflineChapter {
 /// Which chapters are stored offline, per manga (persisted in KeyValueStore).
 class DownloadIndex {
   /// An empty index.
-  DownloadIndex();
+  new();
 
   /// Decodes [encode]'s output; `null` is empty.
-  factory DownloadIndex.decode(String? raw) {
+  factory decode(String? raw) {
     final idx = DownloadIndex();
     if (raw == null) return idx;
     readObject(jsonDecode(raw)).forEach((key, chapters) {

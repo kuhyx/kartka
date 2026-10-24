@@ -27,19 +27,21 @@ void main() {
     expect(idx.chapters('none'), isEmpty);
   });
 
-  test('remove chapter drops empty manga; removeManga returns its chapters',
-      () {
-    final idx = DownloadIndex()
-      ..put('a|1', rec('/1', 1))
-      ..put('b|1', rec('/1', 1))
-      ..put('b|1', rec('/2', 1));
-    expect(idx.removeChapter('a|1', '/1')?.chapterUrl, '/1');
-    expect(idx.removeChapter('a|1', '/1'), isNull);
-    expect(idx.mangaKeys, ['b|1']);
-    expect(idx.removeManga('b|1').length, 2);
-    expect(idx.removeManga('b|1'), isEmpty);
-    expect(idx.totalBytes, 0);
-  });
+  test(
+    'remove chapter drops empty manga; removeManga returns its chapters',
+    () {
+      final idx = DownloadIndex()
+        ..put('a|1', rec('/1', 1))
+        ..put('b|1', rec('/1', 1))
+        ..put('b|1', rec('/2', 1));
+      expect(idx.removeChapter('a|1', '/1')?.chapterUrl, '/1');
+      expect(idx.removeChapter('a|1', '/1'), isNull);
+      expect(idx.mangaKeys, ['b|1']);
+      expect(idx.removeManga('b|1').length, 2);
+      expect(idx.removeManga('b|1'), isEmpty);
+      expect(idx.totalBytes, 0);
+    },
+  );
 
   test('encode/decode round-trip, null decodes empty', () {
     final idx = DownloadIndex()..put('a|1', rec('/1', 10));

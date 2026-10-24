@@ -4,7 +4,7 @@ library;
 /// How often and how patiently a failed page is retried.
 class RetryPolicy {
   /// Creates a policy; defaults are 4 attempts, 1 s doubling up to 30 s.
-  const RetryPolicy({
+  const new({
     this.maxAttempts = 4,
     this.base = const Duration(seconds: 1),
     this.max = const Duration(seconds: 30),
@@ -29,7 +29,8 @@ class RetryPolicy {
 /// Sleeps for a duration; injectable so tests do not wait.
 typedef Sleep = Future<void> Function(Duration delay);
 
-Future<void> _realSleep(Duration d) => Future<void>.delayed(d);
+/// Waits for real; the default [Sleep].
+Future<void> realSleep(Duration d) => Future<void>.delayed(d);
 
 /// Runs [action] until it succeeds, [policy] attempts are spent, or
 /// [shouldRetry] rejects the error. The last error is rethrown.
@@ -37,7 +38,7 @@ Future<T> retry<T>(
   Future<T> Function() action, {
   RetryPolicy policy = const RetryPolicy(),
   bool Function(Object error) shouldRetry = _always,
-  Sleep sleep = _realSleep,
+  Sleep sleep = realSleep,
 }) async {
   for (var attempt = 1; ; attempt++) {
     try {

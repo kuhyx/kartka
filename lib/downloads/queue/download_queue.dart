@@ -9,11 +9,11 @@ import 'package:kartka/downloads/queue/download_task.dart';
 /// Persisted as one JSON document in KeyValueStore so it survives restart.
 class DownloadQueue {
   /// An empty, running queue.
-  DownloadQueue();
+  new();
 
   /// Decodes [toJson]. Tasks that were mid-download when the app stopped
   /// come back as queued; their stored pages are kept and skipped on resume.
-  factory DownloadQueue.fromJson(Map<String, Object?> json) {
+  factory fromJson(Map<String, Object?> json) {
     final q = DownloadQueue()..paused = readBool(json, 'paused');
     for (final raw in json['tasks']! as List<Object?>) {
       final t = DownloadTask.fromJson(readObject(raw));
@@ -24,7 +24,7 @@ class DownloadQueue {
   }
 
   /// Decodes [encode]'s output; `null` (nothing stored yet) is empty.
-  factory DownloadQueue.decode(String? raw) => raw == null
+  factory decode(String? raw) => raw == null
       ? DownloadQueue()
       : DownloadQueue.fromJson(readObject(jsonDecode(raw)));
 

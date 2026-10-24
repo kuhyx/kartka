@@ -71,13 +71,10 @@ void main() {
     test('default sleep waits for real', () async {
       final sw = Stopwatch()..start();
       var calls = 0;
-      await retry(
-        () async {
-          if (calls++ == 0) throw StateError('once');
-          return 1;
-        },
-        policy: const RetryPolicy(base: Duration(milliseconds: 20)),
-      );
+      await retry(() async {
+        if (calls++ == 0) throw StateError('once');
+        return 1;
+      }, policy: const RetryPolicy(base: Duration(milliseconds: 20)));
       expect(sw.elapsedMilliseconds, greaterThanOrEqualTo(20));
     });
   });

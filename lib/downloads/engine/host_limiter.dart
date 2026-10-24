@@ -10,7 +10,7 @@ String hostOf(String url) => (Uri.tryParse(url)?.host ?? '').toLowerCase();
 /// A counting semaphore keyed by host.
 class HostLimiter {
   /// At most [perHost] jobs run at once on any single host.
-  HostLimiter({this.perHost = 2});
+  new({this.perHost = 2});
 
   /// Maximum concurrent jobs per host.
   final int perHost;
