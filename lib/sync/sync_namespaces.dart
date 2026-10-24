@@ -24,7 +24,8 @@ typedef TransportOpener = Future<RtdbTransport?> Function();
 /// Flattens a namespace subtree into `{<ns>/<k1>[/<k2>]: node}`.
 Map<String, Node> flattenNodes(String ns, Object? tree, int depth) {
   final out = <String, Node>{};
-  void walk(String prefix, Object? node, int level) {
+  void walk(String prefix, Object? raw, int level) {
+    final node = fromRtdb(raw);
     if (node is! Map<String, Object?>) return;
     if (level == depth) {
       out[prefix] = node;
@@ -53,3 +54,18 @@ String? newestClock(Node node, String? last) {
   }
   return newest;
 }
+
+/// Undoes RTDB's array coercion: an object whose keys are all small
+/// integers (a numeric remoteId, a category named "1") reads back as a List.
+/// Turned back into a map, recursively, so it compares equal to what was
+/// written instead of looking "behind" and being re-pushed every poll.
+Object? fromRtdb(Object? value) => switch (value) {
+  final List<Object?> l => <String, Object?>{
+    for (var i = 0; i < l.length; i++)
+      if (l[i] != null) '$i': fromRtdb(l[i]),
+  },
+  final Map<String, Object?> m => {
+    for (final e in m.entries) e.key: fromRtdb(e.value),
+  },
+  _ => value,
+};

@@ -105,20 +105,24 @@ class SyncEngine {
   /// Full pull + push regardless of revisions (the "Sync now" button).
   Future<void> syncNow() => _serial(() => _sync(force: true));
 
+  /// Records that a decorator replayed [path] into its local repository.
+  void ack(String path) => shadow.ack(path);
+
   /// Drops the cached transport, e.g. after signing in or out.
   void reset() => _transport = null;
 
   Future<bool> _mergeLocal(Map<String, Node> nodes) async {
     var changed = false;
+    // Memory only per node; one save for the whole batch.
     for (final MapEntry(key: path, value: node) in nodes.entries) {
       final merge = kSyncNamespaces[path.split('/').first]!.$2;
       final old = shadow.node(path);
       final merged = old == null ? node : merge(old, node);
       if (old != null && canon(merged) == canon(old)) continue;
-      await shadow.put(path, merged, dirty: true);
+      shadow.put(path, merged, dirty: true);
       changed = true;
     }
-    await shadow.saveMeta();
+    await shadow.save();
     return changed;
   }
 
@@ -142,14 +146,15 @@ class SyncEngine {
         }
       } else {
         for (final path in plan.paths) {
-          final node = await transport.get(path);
-          if (node is Map<String, Object?>) await _mergeRemote(path, node);
+          final node = fromRtdb(await transport.get(path));
+          if (node is Map<String, Object?>) _mergeRemote(path, node);
         }
       }
       shadow.peers = peers;
+      await shadow.save();
       await _push(transport);
       shadow.lastSync = _now();
-      await shadow.saveMeta();
+      await shadow.save();
       _emit(SyncStatus(phase: SyncPhase.idle, lastSync: shadow.lastSync));
     } on RemoteSyncError catch (e) {
       _fail(e);
@@ -163,14 +168,14 @@ class SyncEngine {
       kSyncNamespaces[ns]!.$1,
     );
     for (final MapEntry(key: path, value: theirs) in remote.entries) {
-      await _mergeRemote(path, theirs);
+      _mergeRemote(path, theirs);
     }
     for (final path in shadow.namespace(ns).keys) {
-      if (!remote.containsKey(path)) await shadow.markDirty(path);
+      if (!remote.containsKey(path)) shadow.markDirty(path);
     }
   }
 
-  Future<void> _mergeRemote(String path, Node theirs) async {
+  void _mergeRemote(String path, Node theirs) {
     final rule = kSyncNamespaces[path.split('/').first];
     if (rule == null) return;
     shadow.lastHlc = newestClock(theirs, shadow.lastHlc);
@@ -178,10 +183,14 @@ class SyncEngine {
     final merged = mine == null ? theirs : rule.$2(mine, theirs);
     final behind = canon(merged) != canon(theirs);
     if (mine == null || canon(merged) != canon(mine)) {
-      await shadow.put(path, merged, dirty: behind);
+      shadow
+        ..put(path, merged, dirty: behind)
+        // Persisted with the node, so a change no decorator was listening
+        // for yet (or a crash before replay) is replayed, never lost.
+        ..markUnapplied(path);
       _changes.add((path: path, node: merged));
     } else if (behind) {
-      await shadow.markDirty(path);
+      shadow.markDirty(path);
     }
   }
 
@@ -189,6 +198,7 @@ class SyncEngine {
     if (transport == null) return;
     try {
       if (!await pushDirty(transport, shadow, deviceId)) return;
+      await shadow.save();
       if (_current.phase == SyncPhase.error) {
         _emit(SyncStatus(phase: SyncPhase.idle, lastSync: shadow.lastSync));
       }

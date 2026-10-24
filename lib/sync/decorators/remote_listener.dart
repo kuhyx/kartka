@@ -24,13 +24,26 @@ mixin RemoteListener {
     unawaited(
       this.engine.then((e) {
         if (e == null) return;
+        bool mine(String path) => namespaces.contains(path.split('/').first);
         _sub = e.remoteChanges
-            .where((c) => namespaces.contains(c.path.split('/').first))
-            // Serial, so a later change for one node never lands first.
-            .listen((c) => _applying = _applying.then((_) => apply(e, c)));
+            .where((c) => mine(c.path))
+            .listen((c) => _enqueue(e, c));
+        // Changes merged before this repo existed (or before a crash) are
+        // still marked unapplied: replay them. Re-applying is harmless,
+        // the local repos are LWW / max.
+        for (final path in e.shadow.unapplied.where(mine)) {
+          _enqueue(e, (path: path, node: e.shadow.node(path)!));
+        }
       }),
     );
   }
+
+  // Serial, so a later change for one node never lands first.
+  void _enqueue(SyncEngine e, RemoteChange c) =>
+      _applying = _applying.then((_) async {
+        await apply(e, c);
+        e.ack(c.path);
+      });
 
   /// Replays one merged remote [change] into the wrapped local repository.
   Future<void> apply(SyncEngine engine, RemoteChange change);

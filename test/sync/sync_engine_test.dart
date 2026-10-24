@@ -158,11 +158,32 @@ void main() {
 
   test('corrupt persisted entries are skipped', () async {
     final kv = MemoryKeyValueStore({
-      'sync.node.library/x': '{bad',
-      'sync.node.library/y': '[1]',
+      'sync.b.library/x': '{bad',
+      'sync.b.library/y': '[1]',
+      'sync.b.library/z': '{"library/z": 5}',
+      'sync.dirty': '{bad',
+      'sync.unapplied': '{"not": "a list"}',
     });
     final shadow = await SyncShadow.load(kv);
     expect(shadow.paths, isEmpty);
+    expect(shadow.dirty, isEmpty);
+    expect(shadow.unapplied, isEmpty);
+  });
+
+  test('acks are coalesced into one deferred save', () async {
+    final kv = MemoryKeyValueStore();
+    final shadow = await SyncShadow.load(kv)
+      ..put('read/h/a', {'read': true}, dirty: false)
+      ..markUnapplied('read/h/a')
+      ..markUnapplied('read/h/b');
+    await shadow.save();
+    shadow
+      ..ack('read/h/a')
+      ..ack('read/h/b')
+      ..ack('read/h/never');
+    expect(await kv.get('sync.unapplied'), contains('read/h/a'));
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    expect(await kv.get('sync.unapplied'), '[]');
   });
 
   test('flattenNodes walks to the namespace depth', () {

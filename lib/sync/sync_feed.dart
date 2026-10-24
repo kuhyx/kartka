@@ -57,12 +57,12 @@ Future<PullPlan> planPull(
     if (from == null || to == null || to < from || to - from > kFeedWindow) {
       return _full;
     }
-    final log = await transport.get('log/$device');
-    if (log is! Map) return _full;
+    // One tiny GET per missing revision (usually one), never the whole log.
     for (var r = from + 1; r <= to; r++) {
-      final entry = log['r$r'];
+      final entry = await transport.get('log/$device/r$r');
       if (entry is! String || entry == '*') return _full;
       paths.addAll(entry.split('\n').where((p) => p.isNotEmpty));
+      if (paths.length > kFeedMaxDelta) return _full;
     }
     if (paths.length > kFeedMaxDelta) return _full;
   }
@@ -86,6 +86,6 @@ Future<bool> pushDirty(
         ...feedUpdates(deviceId, await shadow.nextRev(), pending),
     });
   }
-  await shadow.clearDirty(pending);
+  shadow.clearDirty(pending);
   return true;
 }
