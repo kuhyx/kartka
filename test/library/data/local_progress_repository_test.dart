@@ -68,6 +68,22 @@ void main() {
     expect(await repo.readMarks(_k).first, {'/c1': true, '/c2': false});
   });
 
+  test('markReadMany marks many chapters in one store row', () async {
+    await repo.markUnread(_k, '/c0');
+    await repo.markReadMany(_k, ['/c1', '/c2', '/c1']);
+    await repo.markReadMany(_k, const []);
+    await repo.markReadMany('other|/x', ['/c9']);
+    expect(await repo.readChapters(_k).first, {'/c1', '/c2'});
+    final rows = await kv.entries(prefix: 'read/');
+    expect(
+      rows.keys,
+      unorderedEquals([
+        'read/${mangaKeyHash(_k)}',
+        'read/${mangaKeyHash('other|/x')}',
+      ]),
+    );
+  });
+
   test('unmarking an unknown chapter writes nothing', () async {
     await repo.markUnread(_k, '/c1');
     expect(await kv.entries(), isEmpty);

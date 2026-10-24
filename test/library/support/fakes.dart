@@ -52,26 +52,22 @@ LibraryEntry entry(String url, {String? title, int addedDays = 0}) =>
       updatedAt: t0,
     );
 
-/// A deps bundle over a fresh store with fake ports and a fixed clock.
-({
-  LibraryDeps deps,
-  MemoryKeyValueStore kv,
-  FakeUnread unread,
-  FakeDownloaded dl,
-  FakeTracked tracked,
-})
-fakeDeps({DateTime Function()? clock}) {
+/// A deps bundle over a fresh store with fake ports and a settable clock.
+class Fakes {
+  new({DateTime? at}) : now = at ?? t0 {
+    deps = LibraryDeps(
+      repos: LibraryRepositories(kv, decorators: () => [], now: () => now),
+      unread: unread,
+      downloaded: dl,
+      tracked: tracked,
+      clock: () => now,
+    );
+  }
+
+  DateTime now;
   final kv = MemoryKeyValueStore();
-  final now = clock ?? () => t0;
   final unread = FakeUnread();
   final dl = FakeDownloaded();
   final tracked = FakeTracked();
-  final deps = LibraryDeps(
-    repos: LibraryRepositories(kv, decorators: () => [], now: now),
-    unread: unread,
-    downloaded: dl,
-    tracked: tracked,
-    clock: now,
-  );
-  return (deps: deps, kv: kv, unread: unread, dl: dl, tracked: tracked);
+  late final LibraryDeps deps;
 }
