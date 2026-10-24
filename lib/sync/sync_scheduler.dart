@@ -9,10 +9,13 @@ import 'package:flutter/widgets.dart';
 /// Calls [poll] every [interval] while the app lifecycle is resumed.
 class SyncScheduler with WidgetsBindingObserver {
   /// Creates a stopped scheduler.
-  new(this.poll, {this.interval = const Duration(seconds: 5)});
+  new(this.poll, {this.onPause, this.interval = const Duration(seconds: 5)});
 
   /// One cheap change check (`SyncEngine.poll`).
   final Future<void> Function() poll;
+
+  /// Runs when the app leaves the foreground (flushes deferred pushes).
+  final Future<void> Function()? onPause;
 
   /// Poll period; 5 s keeps cross-device latency under the 10 s goal.
   final Duration interval;
@@ -46,7 +49,10 @@ class SyncScheduler with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       _start();
     } else {
+      final wasRunning = running;
       _stop();
+      final pause = onPause;
+      if (wasRunning && pause != null) unawaited(pause());
     }
   }
 

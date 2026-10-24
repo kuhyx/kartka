@@ -59,8 +59,9 @@ class SyncEngine {
   final DateTime Function() _now;
   final _changes = StreamController<RemoteChange>.broadcast();
   final _status = StreamController<SyncStatus>.broadcast();
+  // "Checking" until the first poll learns whether this device is signed in.
   late SyncStatus _current = SyncStatus(
-    phase: SyncPhase.idle,
+    phase: SyncPhase.syncing,
     lastSync: shadow.lastSync,
   );
   RtdbTransport? _transport;

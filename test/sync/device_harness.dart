@@ -26,7 +26,7 @@ class Device {
     final c = clock ?? TestClock();
     final kv = MemoryKeyValueStore();
     final engine = await engineFor(id, db, clock: c);
-    final decorator = SyncRepositoryDecorator(Future.value(engine));
+    final decorator = SyncRepositoryDecorator(() => Future.value(engine));
     DateTime now() => c.now;
     return Device._(
       engine,
