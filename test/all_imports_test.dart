@@ -73,6 +73,7 @@ import 'package:kartka/plugins/runtime/plugins_screen.dart';
 import 'package:kartka/plugins/runtime/plugins_sections.dart';
 import 'package:kartka/plugins/runtime/polyfills.dart';
 import 'package:kartka/plugins/runtime/prelude.dart';
+import 'package:kartka/plugins/runtime/third_party_licenses.g.dart';
 import 'package:kartka/plugins/runtime/worker_script.dart';
 
 void main() {
