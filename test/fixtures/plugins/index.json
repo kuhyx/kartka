@@ -1,0 +1,13 @@
+{
+  "plugins": [
+    {
+      "id": "demo", "name": "Demo Site", "version": "1.0.0", "lang": "en",
+      "baseUrl": "https://demo.test", "apiVersion": 1,
+      "url": "demo.js", "sha256": "aa49010caad72548d3b06241f298026482ded57670843fc4d392407761ae334a"
+    },
+    {
+      "id": "nohash", "name": "No Hash", "version": "0.1.0", "lang": "en",
+      "baseUrl": "https://nohash.test", "apiVersion": 1, "url": "demo.js"
+    }
+  ]
+}
