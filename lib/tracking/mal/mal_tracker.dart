@@ -82,7 +82,9 @@ class MalTracker implements Tracker {
   Future<void> pushProgress(String remoteId, int chaptersRead) async {
     final id = _parseId(remoteId);
     final manga = await _api.manga(id);
-    if (manga == null) throw MalException('unknown MAL id', statusCode: 404);
+    if (manga == null) {
+      throw const MalException('unknown MAL id', statusCode: 404);
+    }
     final total = manga.totalChapters;
     final entry = manga.listStatus;
     final target = total != null && chaptersRead > total ? total : chaptersRead;
