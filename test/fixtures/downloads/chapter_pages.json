@@ -1,0 +1,5 @@
+[
+  {"index": 0, "imageUrl": "https://img-a.example/data/h1/1.png", "headers": {"Referer": "https://site-a.example/"}},
+  {"index": 1, "imageUrl": "https://img-a.example/data/h1/2.png", "headers": {"Referer": "https://site-a.example/"}},
+  {"index": 2, "imageUrl": "https://img-b.example/data/h1/3.png", "headers": {}}
+]

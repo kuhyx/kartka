@@ -9,8 +9,7 @@ library;
 
 import 'package:kartka/core/models/manga_key.dart';
 
-/// URL scheme of a page stored in BlobStore (§11).
-const blobScheme = 'kartka-blob://';
+export 'package:kartka/platform/page_image.dart' show blobPageUrl;
 
 /// KeyValueStore key of the persisted queue.
 const queueKvKey = 'downloads/queue';
@@ -32,7 +31,7 @@ String sourceIdOf(MangaKey key) {
 
 /// Stable id of the task downloading [chapterUrl] of [key].
 String taskId(MangaKey key, String chapterUrl) =>
-    '${keyHash(key)}/${keyHash(chapterUrl)}';
+    '${mangaKeyHash(key)}/${mangaKeyHash(chapterUrl)}';
 
 /// Prefix shared by all page blobs of one chapter.
 String chapterBlobPrefix(MangaKey key, String chapterUrl) =>
@@ -41,6 +40,3 @@ String chapterBlobPrefix(MangaKey key, String chapterUrl) =>
 /// BlobStore key of page [index] of a chapter.
 String pageBlobKey(MangaKey key, String chapterUrl, int index) =>
     '${chapterBlobPrefix(key, chapterUrl)}${index.toString().padLeft(4, '0')}';
-
-/// The `kartka-blob://` URL a reader resolves for [blobKey].
-String blobPageUrl(String blobKey) => '$blobScheme$blobKey';

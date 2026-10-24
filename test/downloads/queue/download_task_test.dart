@@ -34,7 +34,7 @@ void main() {
 
   test('keys: blob keys are hashed, prefixed and zero-padded', () {
     final prefix = chapterBlobPrefix('m|u', '/c');
-    expect(prefix, 'downloads/${keyHash('m|u')}/${keyHash('/c')}/');
+    expect(prefix, 'downloads/${mangaKeyHash('m|u')}/${mangaKeyHash('/c')}/');
     expect(pageBlobKey('m|u', '/c', 7), '${prefix}0007');
     expect(blobPageUrl('k/1'), 'kartka-blob://k/1');
     expect(sourceIdOf('suwayomi:12|/m/1'), 'suwayomi:12');
