@@ -192,13 +192,22 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   unchanged value pushes nothing.
 - **Secrets** (everything in `KartkaPlatform.secrets`) are sealed on the
   device. The cipher is AES-256-GCM (with the key as AAD), under a key
-  derived from the sync account password by PBKDF2-HMAC-SHA256 with
-  ≥ 200k rounds. Salt (16 B) and nonce (12 B) are random per record. The
-  password is the one crdt_sync_flutter keeps in its keystore account
-  (`storedAccount()`); no second copy exists. RTDB and the persisted shadow
-  only ever hold ciphertext.
-- **No password, or the wrong one** (a Google or seeded sign-in stores `''`):
-  secrets are neither uploaded nor applied, and the local value stays. The
-  Suwayomi screen then shows "Couldn't decrypt synced Suwayomi password",
-  or "... not synced: sign in to sync with a password". The node stays
-  unapplied, so the next start tries again.
+  derived by PBKDF2-HMAC-SHA256 with ≥ 200k rounds. Salt (16 B) and nonce
+  (12 B) are random per record. RTDB and the persisted shadow only ever
+  hold ciphertext.
+- **Key source** (kuhy's decision a, 2026-10-24): the device's **sync
+  passphrase** (`SyncPassphrase`, `KartkaPlatform.secrets` key
+  `sync.passphrase`, outside the catalogue, so it never leaves the device),
+  else the sync account password crdt_sync_flutter keeps
+  (`storedAccount()`). A Google sign-in stores `''`, so a Google device
+  needs the passphrase. More → Sync sets or changes it, and prompts once
+  per visit when a secret can't be opened or sealed and none is set.
+  Setting it applies the unapplied peer secrets it now opens, then re-seals
+  this device's local secrets. A key with no local value, or whose peer
+  node is still unopened, is skipped (that would delete or overwrite the
+  peer's value).
+- **No key, or the wrong one**: secrets are neither uploaded nor applied,
+  and the local value stays. The Suwayomi screen then shows "Couldn't
+  decrypt synced Suwayomi password", or "... not synced: set a sync
+  passphrase in More → Sync". The node stays unapplied, so the next start
+  or a new passphrase tries again.

@@ -12,22 +12,15 @@ library;
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show storedAccount;
 import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/platform/key_value_store.dart';
 import 'package:kartka/sync/merge/merge_rules.dart';
 import 'package:kartka/sync/settings/settings_catalog.dart';
 import 'package:kartka/sync/settings/settings_cipher.dart';
+import 'package:kartka/sync/settings/sync_passphrase.dart';
 import 'package:kartka/sync/sync_engine.dart';
 
-/// The sync account password crdt_sync_flutter keeps in the keystore, or
-/// null when this device has none (a Google or seeded-session sign-in).
-Future<String?> storedSyncPassword() async {
-  final password = (await storedAccount())?.password;
-  return password == null || password.isEmpty ? null : password;
-}
-
-const _noPassword = 'sign in to sync with a password';
+const _setPassphrase = 'set a sync passphrase in More → Sync';
 
 /// Syncs the catalogued settings through one [SyncEngine].
 class SyncedSettings implements SettingsSync {
@@ -38,7 +31,7 @@ class SyncedSettings implements SettingsSync {
     required this.start,
     required this.kv,
     required this.secrets,
-    required this.syncPassword,
+    required this.passphrase,
     SettingsCipher? cipher,
   }) : cipher = cipher ?? SettingsCipher() {
     unawaited(started.then(_attach, onError: (Object _) {}));
@@ -53,8 +46,8 @@ class SyncedSettings implements SettingsSync {
   /// The platform's secret store.
   final KeyValueStore secrets;
 
-  /// The sync account password; null when this device has none.
-  final Future<String?> Function() syncPassword;
+  /// The key source for secrets: the passphrase, else the sync password.
+  final SyncPassphrase passphrase;
 
   /// Seals and opens secret values.
   final SettingsCipher cipher;
@@ -81,15 +74,15 @@ class SyncedSettings implements SettingsSync {
     final setting = kSyncedSettings[key];
     if (setting == null || setting.vault != vault) return;
     _serial(() async {
-      final engine = await start().then<SyncEngine?>(
-        (e) => e,
-        onError: (Object _) => null,
-      );
+      final engine = await _engine();
       if (engine == null) return;
       final node = await _encode(engine, key, setting, value);
       if (node != null) await engine.write(settingPath(key), node);
     });
   }
+
+  Future<SyncEngine?> _engine() =>
+      start().then<SyncEngine?>((e) => e, onError: (Object _) => null);
 
   Future<Node?> _encode(
     SyncEngine engine,
@@ -103,9 +96,9 @@ class SyncedSettings implements SettingsSync {
       if (old?['value'] == value) return null;
       return {'key': key, 'value': ?value, kHlcField: engine.tick().toStr()};
     }
-    final password = await syncPassword();
+    final password = await passphrase.key();
     if (password == null) {
-      _problem(key, '${setting.label} not synced: $_noPassword');
+      _problem(key, '${setting.label} not synced: $_setPassphrase');
       return null;
     }
     _problem(key, null);
@@ -123,6 +116,34 @@ class SyncedSettings implements SettingsSync {
 
   Future<String?> _open(Object? enc, String key, String password) =>
       cipher.open(enc, password: password, context: key);
+
+  /// Stores [value] as this device's passphrase, applies the peers' secrets
+  /// it now opens, then re-seals this device's own secrets under it.
+  ///
+  /// A key with no local value, or whose peer node is still unopened, is
+  /// left alone: re-sealing it would delete or overwrite the peer's value.
+  Future<void> setPassphrase(String value) async {
+    await passphrase.set(value);
+    _serial(() async {
+      final engine = await _engine();
+      if (engine == null) return;
+      bool mine(String path) => path.startsWith('settings/');
+      for (final path in engine.shadow.unapplied.where(mine).toList()) {
+        await _apply(engine, (path: path, node: engine.shadow.node(path)!));
+      }
+      for (final MapEntry(:key, value: setting) in kSyncedSettings.entries) {
+        final local = await secrets.get(key);
+        if (setting.vault == SettingsVault.plain ||
+            local == null ||
+            engine.shadow.unapplied.contains(settingPath(key))) {
+          continue;
+        }
+        final node = await _encode(engine, key, setting, local);
+        if (node != null) await engine.write(settingPath(key), node);
+      }
+    });
+    await settled;
+  }
 
   void _attach(SyncEngine engine) {
     bool mine(String path) => path.startsWith('settings/');
@@ -149,11 +170,14 @@ class SyncedSettings implements SettingsSync {
     var value = raw as String?;
     final enc = change.node['enc'];
     if (setting.vault == SettingsVault.secret && enc != null) {
-      final password = await syncPassword();
+      final password = await passphrase.key();
       value = password == null ? null : await _open(enc, key, password);
       if (value == null) {
-        // Keep the local value; left unapplied, so the next start retries.
-        final why = password == null ? ': no sync password here' : '';
+        // Keep the local value; left unapplied, so the next start (or a new
+        // passphrase) retries.
+        final why = password == null
+            ? ': set the sync passphrase in More → Sync'
+            : '';
         _problem(key, "Couldn't decrypt synced ${setting.label}$why");
         return;
       }

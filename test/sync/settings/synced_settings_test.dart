@@ -98,7 +98,8 @@ void main() {
     await a.settle();
     expect(db.tree['settings'], isNull);
     expect(await a.settings.watchProblems().first, {
-      _pass: 'Suwayomi password not synced: sign in to sync with a password',
+      _pass:
+          'Suwayomi password not synced: set a sync passphrase in More → Sync',
     });
     final b = await SettingsDevice.create('dev-b', db, clock: clock);
     await b.secrets.set(_pass, 'from-b');
@@ -107,7 +108,8 @@ void main() {
     expect(await a.secretsLocal.get(_pass), 'local-only');
     expect(
       (await a.settings.watchProblems().first)[_pass],
-      "Couldn't decrypt synced Suwayomi password: no sync password here",
+      "Couldn't decrypt synced Suwayomi password: set the sync passphrase "
+      'in More → Sync',
     );
   });
 

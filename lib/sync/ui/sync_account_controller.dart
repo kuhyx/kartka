@@ -6,6 +6,7 @@ import 'package:crdt_sync_flutter/crdt_sync_flutter.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:kartka/sync/google_client.dart';
+import 'package:kartka/sync/settings/synced_settings.dart';
 import 'package:kartka/sync/sync_config.dart';
 import 'package:kartka/sync/sync_engine.dart';
 import 'package:kartka/sync/sync_runtime.dart';
@@ -29,18 +30,32 @@ abstract interface class SyncAccountController {
 
   /// Opens the sign-in / sign-out screen; resyncs when it closes.
   Future<void> manageAccount(BuildContext context);
+
+  /// Synced-settings problems by key, e.g. a secret this device can't open;
+  /// the current map first, then every change.
+  Stream<Map<String, String>> watchProblems();
+
+  /// Whether this device has a sync passphrase of its own.
+  Future<bool> hasPassphrase();
+
+  /// Sets or changes this device's sync passphrase (§16).
+  Future<void> setPassphrase(String passphrase);
 }
 
 /// The production controller over a started engine.
 class EngineAccountController implements SyncAccountController {
-  /// Drives [engine]; account changes go through [runtime].
-  new(this.engine, this.runtime);
+  /// Drives [engine]; account changes go through [runtime], the passphrase
+  /// through [settings] (none: no synced secrets to key).
+  new(this.engine, this.runtime, [this.settings]);
 
   /// The started engine.
   final SyncEngine engine;
 
   /// Owner of the cached session.
   final SyncRuntime runtime;
+
+  /// The synced settings service.
+  final SyncedSettings? settings;
 
   @override
   SyncStatus get status => engine.status;
@@ -61,6 +76,18 @@ class EngineAccountController implements SyncAccountController {
     );
     await runtime.accountChanged();
   }
+
+  @override
+  Stream<Map<String, String>> watchProblems() =>
+      settings?.watchProblems() ?? Stream.value(const {});
+
+  @override
+  Future<bool> hasPassphrase() async =>
+      await settings?.passphrase.isSet ?? false;
+
+  @override
+  Future<void> setPassphrase(String passphrase) async =>
+      await settings?.setPassphrase(passphrase);
 }
 
 /// This build's Google route: the plugin on Android, the GIS button on the

@@ -3,6 +3,7 @@ import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/settings/settings_cipher.dart';
+import 'package:kartka/sync/settings/sync_passphrase.dart';
 import 'package:kartka/sync/settings/synced_settings.dart';
 import 'package:kartka/sync/sync_engine.dart';
 
@@ -27,7 +28,8 @@ class SettingsDevice {
         () => settings,
       );
 
-  /// Builds device [id] over [db]; [password] is its stored sync password.
+  /// Builds device [id] over [db]; [password] is its stored sync password
+  /// (null: a Google sign-in).
   static Future<SettingsDevice> create(
     String id,
     InMemoryRtdb db, {
@@ -48,7 +50,7 @@ class SettingsDevice {
         start: () async => engine,
         kv: local,
         secrets: secrets,
-        syncPassword: () async => password,
+        passphrase: SyncPassphrase(secrets, fallback: () async => password),
         cipher: testCipher,
       ),
       shadow,

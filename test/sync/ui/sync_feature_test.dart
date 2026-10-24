@@ -10,9 +10,11 @@ import 'package:kartka/library/repository_decorator.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/sync/rtdb_reader.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
+import 'package:kartka/sync/settings/sync_passphrase.dart';
 import 'package:kartka/sync/settings/synced_settings.dart';
 import 'package:kartka/sync/sync_feature.dart';
 import 'package:kartka/sync/sync_runtime.dart';
+import 'package:kartka/sync/ui/sync_account_controller.dart';
 import 'package:kartka/sync/ui/sync_account_screen.dart';
 import 'package:kartka/tracking/common/binding_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,6 +57,34 @@ void main() {
       expect((await kv.entries(prefix: 'sync.')).keys, contains('sync.dirty'));
     },
   );
+
+  test('the controller keys secrets through the synced settings', () async {
+    SharedPreferences.setMockInitialValues({});
+    installFakeSecureStorage();
+    final runtime = _runtime(InMemoryRtdb());
+    final engine = await runtime.engine;
+    final bare = EngineAccountController(engine, runtime);
+    expect(await bare.watchProblems().first, isEmpty);
+    expect(await bare.hasPassphrase(), isFalse);
+    await bare.setPassphrase('ignored');
+    final secrets = MemoryKeyValueStore();
+    final c = EngineAccountController(
+      engine,
+      runtime,
+      SyncedSettings(
+        started: runtime.started,
+        start: () => runtime.engine,
+        kv: MemoryKeyValueStore(),
+        secrets: secrets,
+        passphrase: SyncPassphrase(secrets, fallback: () async => null),
+      ),
+    );
+    expect(await c.hasPassphrase(), isFalse);
+    await c.setPassphrase('pp');
+    expect(await c.hasPassphrase(), isTrue);
+    expect(await secrets.get(kSyncPassphraseKey), 'pp');
+    expect(await c.watchProblems().first, isEmpty);
+  });
 
   test('the feature registers its services without starting sync', () {
     final registry = KartkaRegistry.build(memoryPlatform(), [syncFeature]);

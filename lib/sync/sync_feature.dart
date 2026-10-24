@@ -6,11 +6,11 @@ library;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
-import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/sync/decorators/sync_repository_decorator.dart';
 import 'package:kartka/sync/decorators/synced_bindings.dart';
 import 'package:kartka/sync/polling_rtdb_reader.dart';
 import 'package:kartka/sync/rtdb_reader.dart';
+import 'package:kartka/sync/settings/sync_passphrase.dart';
 import 'package:kartka/sync/settings/synced_settings.dart';
 import 'package:kartka/sync/sync_engine.dart';
 import 'package:kartka/sync/sync_runtime.dart';
@@ -33,45 +33,51 @@ KartkaFeature syncFeature(KartkaEnv env) {
       start: () => runtime.engine,
       kv: env.platform.kv,
       secrets: env.platform.secrets,
-      syncPassword: storedSyncPassword,
+      passphrase: SyncPassphrase(env.platform.secrets),
     ),
   );
 }
 
 /// The feature over [runtime]; nothing starts until a repo, a synced
 /// setting or the account screen first needs the engine.
-KartkaFeature syncFeatureWith(SyncRuntime runtime, {SettingsSync? settings}) =>
-    KartkaFeature(
-      id: 'sync',
-      routes: [
-        GoRoute(
-          path: syncAccountRoute,
-          builder: (context, state) => SyncAccountRoute(runtime: runtime),
-        ),
-      ],
-      settingsTiles: [
-        (context) => ListTile(
-          leading: const Icon(Icons.cloud_sync_outlined),
-          title: const Text('Sync'),
-          subtitle: const Text('Account, status, sync now'),
-          onTap: () => context.push(syncAccountRoute),
-        ),
-      ],
-      services: <Object>[
-        SyncRepositoryDecorator(() => runtime.engine),
-        SyncBindingDecorator(() => runtime.engine),
-        PollingRtdbReader(runtime.transport) as RtdbReader,
-        ?settings,
-      ],
-    );
+KartkaFeature syncFeatureWith(
+  SyncRuntime runtime, {
+  SyncedSettings? settings,
+}) => KartkaFeature(
+  id: 'sync',
+  routes: [
+    GoRoute(
+      path: syncAccountRoute,
+      builder: (context, state) =>
+          SyncAccountRoute(runtime: runtime, settings: settings),
+    ),
+  ],
+  settingsTiles: [
+    (context) => ListTile(
+      leading: const Icon(Icons.cloud_sync_outlined),
+      title: const Text('Sync'),
+      subtitle: const Text('Account, status, sync now'),
+      onTap: () => context.push(syncAccountRoute),
+    ),
+  ],
+  services: <Object>[
+    SyncRepositoryDecorator(() => runtime.engine),
+    SyncBindingDecorator(() => runtime.engine),
+    PollingRtdbReader(runtime.transport) as RtdbReader,
+    ?settings,
+  ],
+);
 
 /// Waits for the engine, then shows [SyncAccountScreen].
 class SyncAccountRoute extends StatelessWidget {
-  /// Shows the account screen for [runtime].
-  const new({required this.runtime, super.key});
+  /// Shows the account screen for [runtime] and [settings].
+  const new({required this.runtime, this.settings, super.key});
 
   /// The sync runtime.
   final SyncRuntime runtime;
+
+  /// The synced settings service, for the passphrase.
+  final SyncedSettings? settings;
 
   @override
   Widget build(BuildContext context) => FutureBuilder<SyncEngine>(
@@ -89,7 +95,7 @@ class SyncAccountRoute extends StatelessWidget {
         );
       }
       return SyncAccountScreen(
-        controller: EngineAccountController(engine, runtime),
+        controller: EngineAccountController(engine, runtime, settings),
       );
     },
   );

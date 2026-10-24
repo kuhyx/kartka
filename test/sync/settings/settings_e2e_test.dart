@@ -16,6 +16,7 @@ import 'package:kartka/sources/suwayomi/suwayomi_settings.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_source_provider.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/settings/settings_catalog.dart';
+import 'package:kartka/sync/settings/sync_passphrase.dart';
 import 'package:kartka/sync/settings/synced_settings.dart';
 import 'package:kartka/sync/sync_engine.dart';
 
@@ -35,7 +36,10 @@ class _App {
       start: () async => engine,
       kv: env.platform.kv,
       secrets: env.platform.secrets,
-      syncPassword: () async => 'sync-pass',
+      passphrase: SyncPassphrase(
+        env.platform.secrets,
+        fallback: () async => 'sync-pass',
+      ),
       cipher: testCipher,
     );
     env.registry = KartkaRegistry([

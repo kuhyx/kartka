@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:crdt_sync_flutter/testing/fake_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,34 +7,13 @@ import 'package:kartka/sync/ui/sync_account_controller.dart';
 import 'package:kartka/sync/ui/sync_account_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class _Fake implements SyncAccountController {
-  new(this.status);
+import 'fake_account_controller.dart';
 
-  @override
-  SyncStatus status;
-
-  final _changes = StreamController<SyncStatus>.broadcast();
-  int syncs = 0;
-  int manages = 0;
-  int refreshes = 0;
-
-  void emit(SyncStatus s) => _changes.add(status = s);
-
-  @override
-  Stream<SyncStatus> get changes => _changes.stream;
-
-  @override
-  Future<void> syncNow() async => syncs++;
-
-  @override
-  Future<void> refresh() async => refreshes++;
-
-  @override
-  Future<void> manageAccount(BuildContext context) async => manages++;
-}
-
-Future<_Fake> _pump(WidgetTester tester, SyncStatus status) async {
-  final fake = _Fake(status);
+Future<FakeAccountController> _pump(
+  WidgetTester tester,
+  SyncStatus status,
+) async {
+  final fake = FakeAccountController(status);
   await tester.pumpWidget(
     MaterialApp(home: SyncAccountScreen(controller: fake)),
   );

@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
+import 'package:kartka/sync/settings/sync_passphrase.dart';
 import 'package:kartka/sync/settings/synced_settings.dart';
 import 'package:kartka/sync/sync_engine.dart';
 
@@ -21,7 +22,10 @@ SyncedSettings _service({
   start: start,
   kv: MemoryKeyValueStore(),
   secrets: MemoryKeyValueStore(),
-  syncPassword: password ?? () async => 'p',
+  passphrase: SyncPassphrase(
+    MemoryKeyValueStore(),
+    fallback: password ?? () async => 'p',
+  ),
   cipher: testCipher,
 );
 
@@ -46,6 +50,15 @@ void main() {
     expect(await storedSyncPassword(), isNull);
     installFakeSecureStorage();
     expect(await storedSyncPassword(), isNull);
+  });
+
+  test('a passphrase is kept even when the engine cannot start', () async {
+    final s = _service(
+      started: Future.error(StateError('no keystore')),
+      start: () => Future.error(StateError('no keystore')),
+    );
+    await s.setPassphrase('pp');
+    expect(await s.passphrase.key(), 'pp');
   });
 
   test('an engine that cannot start leaves settings local only', () async {
