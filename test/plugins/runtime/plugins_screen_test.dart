@@ -1,4 +1,5 @@
 import 'package:design_system/design_system.dart';
+import 'package:flutter/foundation.dart' show LicenseRegistry;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -191,6 +192,12 @@ void main() {
     );
     final feature = registry.features.first;
     expect(feature.id, 'plugins');
+    final licensed = (await t.runAsync(
+      () => LicenseRegistry.licenses
+          .where((l) => l.packages.any((p) => p.contains('node-html-parser')))
+          .first,
+    ))!;
+    expect(licensed.paragraphs.map((p) => p.text).join(), contains('MIT'));
     expect(registry.all<SourceProvider>(), hasLength(1));
     final manager = registry.maybe<PluginRegistrar>()! as PluginManager;
     expect(

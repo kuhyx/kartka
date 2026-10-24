@@ -140,6 +140,45 @@ void main() {
     );
   });
 
+  test('an engine_error fails pending calls and reboots the engine', () async {
+    var boots = 0;
+    late ScriptedEngine current;
+    final s = PluginSession(
+      manifest: manifest,
+      source: '',
+      services: FakeServices(),
+      engineFactory: () {
+        boots++;
+        return current = ScriptedEngine((call, send) {
+          if (boots == 1) {
+            send(jsonEncode({'t': 'engine_error', 'error': 'isolate died'}));
+          } else {
+            send(
+              jsonEncode({
+                't': 'result',
+                'id': call['id'],
+                'ok': true,
+                'value': 1,
+              }),
+            );
+          }
+        });
+      },
+    );
+    await expectLater(
+      s.call(PluginMethod.popular, [1]),
+      throwsA(
+        isA<PluginException>().having((e) => e.message, 'm', 'isolate died'),
+      ),
+    );
+    expect(await s.call(PluginMethod.popular, [1]), 1);
+    expect(boots, 2);
+    // A stale engine's error must not kill the replacement.
+    current.sink(jsonEncode({'t': 'engine_error', 'error': 'late'}));
+    expect(await s.call(PluginMethod.popular, [1]), 1);
+    await s.dispose();
+  });
+
   test('platform engine selection', () {
     expect(createDefaultEngine(), isA<QuickJsEngine>());
   });
