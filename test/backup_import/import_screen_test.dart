@@ -7,28 +7,19 @@ import 'package:kartka/backup_import/backup_importer.dart';
 import 'package:kartka/backup_import/import_controller.dart';
 import 'package:kartka/backup_import/import_screen.dart';
 import 'package:kartka/platform/file_picker.dart';
+import 'package:kartka/platform/memory/memory_fakes.dart';
 
 import 'fake_setup.dart';
 import 'fakes.dart';
 import 'fixture_builder.dart';
 
-class _Picker implements FilePicker {
-  new(this.bytes);
-  final Uint8List bytes;
-
-  @override
-  Future<List<PickedFile>> pickFiles({
-    List<String> extensions = const [],
-    bool multiple = false,
-  }) async => [PickedFile(name: 'sy.tachibk', read: () async => bytes)];
-
-  @override
-  Future<List<PickedFile>> pickDirectory() async => [];
-}
+FakeFilePicker pickerOf(Uint8List bytes) => FakeFilePicker(
+  files: [PickedFile(name: 'sy.tachibk', read: () async => bytes)],
+);
 
 Future<ImportController> _pump(WidgetTester tester, Uint8List bytes) async {
   final controller = ImportController(
-    picker: _Picker(bytes),
+    picker: pickerOf(bytes),
     importer: Fakes().importer,
     planner: (b) async => planBackupSync(b),
   );
@@ -97,7 +88,7 @@ void main() {
     final writeGate = Completer<void>();
     fakes.library.gate = writeGate.future;
     final c = ImportController(
-      picker: _Picker(bytes),
+      picker: pickerOf(bytes),
       importer: fakes.importer,
       planner: (b) async {
         await gate.future;
@@ -131,7 +122,7 @@ void main() {
 
   testWidgets('warns when tracker links cannot be stored', (tester) async {
     final controller = ImportController(
-      picker: _Picker(buildSyntheticTachibk()),
+      picker: pickerOf(buildSyntheticTachibk()),
       importer: BackupImporter(
         library: FakeLibrary(),
         categories: FakeCategories(),

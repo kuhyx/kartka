@@ -112,9 +112,11 @@ class BackupImporter {
         await categories.setMembership(key, id, true);
         memberships++;
       }
-      final alreadyRead = await progress.readChapters(key).first;
+      // Any explicit mark wins, including an unread tombstone: re-importing
+      // must not undo a chapter the user marked unread afterwards.
+      final existingMarks = await progress.readMarks(key).first;
       for (final url in m.readChapterUrls.where(
-        (u) => !alreadyRead.contains(u),
+        (u) => !existingMarks.containsKey(u),
       )) {
         await progress.markRead(key, url);
         marks++;

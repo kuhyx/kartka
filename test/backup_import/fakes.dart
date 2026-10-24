@@ -59,6 +59,7 @@ class FakeCategories implements CategoryRepository {
 class FakeProgress implements ProgressRepository {
   final Map<MangaKey, ReadingProgress> progress = {};
   final Map<MangaKey, Set<String>> read = {};
+  final Map<MangaKey, Set<String>> unread = {};
   int writes = 0;
 
   @override
@@ -79,7 +80,14 @@ class FakeProgress implements ProgressRepository {
   @override
   Future<void> markUnread(MangaKey key, String chapterUrl) async {
     read[key]?.remove(chapterUrl);
+    unread.putIfAbsent(key, () => {}).add(chapterUrl);
   }
+
+  @override
+  Stream<Map<String, bool>> readMarks(MangaKey key) => Stream.value({
+    for (final u in unread[key] ?? <String>{}) u: false,
+    for (final u in read[key] ?? <String>{}) u: true,
+  });
 
   @override
   Stream<Set<String>> readChapters(MangaKey key) =>

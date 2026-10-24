@@ -9,54 +9,22 @@ import 'package:kartka/backup_import/repositories_seam.dart';
 import 'package:kartka/backup_import/source_mapper.dart';
 import 'package:kartka/backup_import/tachibk_decoder.dart';
 import 'package:kartka/library/library_repositories.dart';
-import 'package:kartka/platform/platform.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 
-import '../library/support/memory_kv.dart';
 import 'fakes.dart';
 import 'fixture_builder.dart';
 
-class _Http implements KartkaHttp {
-  @override
-  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
-}
-
-class _Blobs implements BlobStore {
-  @override
-  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
-}
-
-class _OAuth implements OAuthRedirect {
-  @override
-  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
-}
-
-class _Picker implements FilePicker {
-  @override
-  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
-}
-
-LibraryRepositories _library(MemoryKv kv) =>
+LibraryRepositories _library(MemoryKeyValueStore kv) =>
     LibraryRepositories(kv, decorators: () => const []);
 
-KartkaEnv _env(List<Object> services, {MemoryKv? kv}) {
-  return KartkaEnv(
-      KartkaPlatform(
-        http: _Http(),
-        blobs: _Blobs(),
-        kv: kv ?? MemoryKv(),
-        secrets: MemoryKv(),
-        filePicker: _Picker(),
-        oauth: _OAuth(),
-      ),
-    )
-    ..registry = KartkaRegistry([
-      KartkaFeature(id: 'library', services: services),
-    ]);
-}
+KartkaEnv _env(List<Object> services) => KartkaEnv(memoryPlatform())
+  ..registry = KartkaRegistry([
+    KartkaFeature(id: 'library', services: services),
+  ]);
 
 void main() {
   test('resolveRepositories reads the library accessor', () {
-    final repos = _library(MemoryKv());
+    final repos = _library(MemoryKeyValueStore());
     final r = resolveRepositories(_env([repos]));
     expect(r.library, same(repos.library));
     expect(r.progress, same(repos.progress));
@@ -67,7 +35,7 @@ void main() {
   });
 
   test('bindings go to a registered sink and are skipped without one', () {
-    final repos = _library(MemoryKv());
+    final repos = _library(MemoryKeyValueStore());
     expect(buildImporter(_env([repos]), resolveRepositories).bindings, isNull);
     final sink = FakeBindings();
     expect(
@@ -78,7 +46,7 @@ void main() {
 
   test('import through the real local repositories is idempotent', () async {
     final importer = buildImporter(
-      _env([_library(MemoryKv()), FakeBindings()]),
+      _env([_library(MemoryKeyValueStore()), FakeBindings()]),
       resolveRepositories,
     );
     final plan = const BackupPlanner(SourceMapper())
@@ -94,7 +62,7 @@ void main() {
 
   testWidgets('More tile opens the import screen', (tester) async {
     final feature = backupImportFeatureWith(
-      _env([_library(MemoryKv())]),
+      _env([_library(MemoryKeyValueStore())]),
       resolveRepositories,
     );
     expect(feature.id, 'backup_import');
@@ -116,7 +84,9 @@ void main() {
   });
 
   test('the registry entry point wires the real resolver', () {
-    final feature = backupImportFeature(_env([_library(MemoryKv())]));
+    final feature = backupImportFeature(
+      _env([_library(MemoryKeyValueStore())]),
+    );
     expect(feature.routes, hasLength(1));
   });
 }

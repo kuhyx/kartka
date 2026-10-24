@@ -3,27 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/backup_import/import_controller.dart';
 import 'package:kartka/platform/file_picker.dart';
+import 'package:kartka/platform/memory/memory_fakes.dart';
 
 import 'fake_setup.dart';
 import 'fixture_builder.dart';
-
-class _Picker implements FilePicker {
-  new(this.files);
-  final List<PickedFile> files;
-  List<String>? asked;
-
-  @override
-  Future<List<PickedFile>> pickFiles({
-    List<String> extensions = const [],
-    bool multiple = false,
-  }) async {
-    asked = extensions;
-    return files;
-  }
-
-  @override
-  Future<List<PickedFile>> pickDirectory() async => files;
-}
 
 PickedFile _file(String name, Uint8List bytes) =>
     PickedFile(name: name, read: () async => bytes);
@@ -31,19 +14,24 @@ PickedFile _file(String name, Uint8List bytes) =>
 void main() {
   late Fakes f;
 
-  ImportController make(List<PickedFile> files, [_Picker? out]) =>
-      ImportController(picker: out ?? _Picker(files), importer: f.importer);
+  ImportController make(List<PickedFile> files, [FakeFilePicker? out]) =>
+      ImportController(
+        picker: out ?? FakeFilePicker(files: files),
+        importer: f.importer,
+      );
 
   setUp(() => f = Fakes());
 
   test('pick, preview, import, done', () async {
-    final picker = _Picker([_file('b.tachibk', buildSyntheticTachibk())]);
+    final picker = FakeFilePicker(
+      files: [_file('b.tachibk', buildSyntheticTachibk())],
+    );
     final c = make([], picker);
     expect(c.phase, ImportPhase.idle);
     final phases = <ImportPhase>[];
     c.addListener(() => phases.add(c.phase));
     await c.pick();
-    expect(picker.asked, ['tachibk']);
+    expect(picker.lastExtensions, ['tachibk']);
     expect(c.phase, ImportPhase.preview);
     expect(c.fileName, 'b.tachibk');
     expect(c.plan!.summary.entries, 6);
