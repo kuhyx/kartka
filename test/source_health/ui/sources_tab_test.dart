@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/source_health/feed/fixture_feed.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
@@ -115,6 +116,36 @@ void main() {
     await tester.pageBack();
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('source-local')));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<SourceDetailPage>(find.byType(SourceDetailPage)).record.id,
+      'local',
+    );
+  });
+
+  testWidgets('keyboard only: Tab reaches a card, Enter opens it', (
+    tester,
+  ) async {
+    await pumpTab(tester);
+    final card = find.byKey(const ValueKey('source-local'));
+    bool focusedInCard() {
+      final ctx = FocusManager.instance.primaryFocus?.context;
+      return ctx != null &&
+          find
+              .ancestor(
+                of: find.byElementPredicate((e) => e == ctx),
+                matching: card,
+              )
+              .evaluate()
+              .isNotEmpty;
+    }
+
+    for (var i = 0; i < 60 && !focusedInCard(); i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+    }
+    expect(focusedInCard(), isTrue);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
     expect(
       tester.widget<SourceDetailPage>(find.byType(SourceDetailPage)).record.id,

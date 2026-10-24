@@ -57,13 +57,13 @@ void main() {
       final seen = <int>[];
       final sub = feed.watch().listen((rs) => seen.add(rs.length));
       await pumpEventQueue();
-      reader.tree = {
+      reader.replace({
         'source_health': {
           'h1': {'id': 'mangadex', 'verdict': 'keep'},
         },
-      };
+      });
       await pumpEventQueue();
-      reader.tree = <String, Object?>{};
+      reader.replace(<String, Object?>{});
       await pumpEventQueue();
       // Not awaited: InMemoryRtdbReader.watch is an async* parked in
       // `await for`, so its cancel() only completes on the next change.
