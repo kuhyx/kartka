@@ -91,12 +91,33 @@ void main() {
     expect(plan.summary.chaptersRead, 6);
   });
 
-  test('unmapped sources are reported with names and counts', () {
-    expect(plan.summary.unmappedSources.map((u) => (u.name, u.id, u.entries)), [
-      ('E-Hentai', '6901', 1),
-    ]);
-    expect(byTitle('EH gallery').entry.sourceId, 'suwayomi:6901');
+  test('SY built-ins get their own source id, entries are kept', () {
+    expect(byTitle('EH gallery').entry.sourceId, 'sy-builtin:6901');
+    expect(
+      byTitle('EH gallery').entry.key,
+      'sy-builtin:6901|/g/1234567/abcdef0123/',
+    );
     expect(byTitle('Local Manga').entry.sourceId, 'local');
+  });
+
+  test('unavailable sources are grouped by id with counts', () {
+    String line(UnavailableSource u) => '${u.name}|${u.id}|${u.entries}';
+    // Nothing known about installed sources: only SY built-ins are flagged.
+    expect(plan.unavailable(null).map(line), ['E-Hentai|6901|1']);
+    final all = {'mangadex', 'local', 'suwayomi:4709139914729853090'};
+    expect(plan.unavailable(all).map(line), ['E-Hentai|6901|1']);
+    // Suwayomi not connected: its entries are unavailable, biggest first.
+    expect(plan.unavailable({'mangadex', 'local'}).map(line), [
+      'AllManga|4709139914729853090|2',
+      'E-Hentai|6901|1',
+    ]);
+    expect(plan.unavailable(const {}).map(line), [
+      'AllManga|4709139914729853090|2',
+      '|0|1',
+      'MangaDex|2499283573021220255|1',
+      '|5098537545549490547|1',
+      'E-Hentai|6901|1',
+    ]);
   });
 
   test('duplicate keys are planned once', () {

@@ -13,9 +13,10 @@ enum SourceKind {
   /// Tachiyomi's local source.
   local,
 
-  /// SY-internal source Suwayomi cannot run (E-Hentai, merged, ...). The
-  /// entry is still imported, as `suwayomi:<id>`, but flagged in the summary.
-  unmapped,
+  /// SY built-in source (E-Hentai, ExHentai, merged) that no extension
+  /// server runs. The entry is still imported, as `sy-builtin:<id>`, so
+  /// nothing is lost; it loads once a source for it exists.
+  syBuiltin,
 }
 
 /// Result of mapping one Tachiyomi source id.
@@ -61,8 +62,8 @@ final Set<String> mangaDexSourceIds = {
 /// Tachiyomi's local source id.
 const String _localId = '0';
 
-/// SY sources with no Suwayomi counterpart: E-Hentai, ExHentai, merged.
-const Set<String> _syInternalIds = {'6901', '6902', '6969'};
+/// SY built-in sources: E-Hentai, ExHentai, merged.
+const Set<String> _syBuiltinIds = {'6901', '6902', '6969'};
 
 /// Maps Tachiyomi numeric source ids to Kartka source ids.
 ///
@@ -86,9 +87,9 @@ class SourceMapper {
     if (tachiyomiId == _localId) {
       return const MappedSource('local', SourceKind.local);
     }
-    final kind = _syInternalIds.contains(tachiyomiId)
-        ? SourceKind.unmapped
-        : SourceKind.suwayomi;
-    return MappedSource('suwayomi:$tachiyomiId', kind);
+    if (_syBuiltinIds.contains(tachiyomiId)) {
+      return MappedSource('sy-builtin:$tachiyomiId', SourceKind.syBuiltin);
+    }
+    return MappedSource('suwayomi:$tachiyomiId', SourceKind.suwayomi);
   }
 }

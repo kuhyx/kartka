@@ -50,7 +50,11 @@ class ImportScreen extends StatelessWidget {
       case ImportPhase.preview:
         return [
           Text(c.fileName ?? '', style: text.titleMedium),
-          ImportPreview(c.plan!.summary, bindTrackers: c.bindsTrackers),
+          ImportPreview(
+            c.plan!.summary,
+            unavailable: c.unavailable,
+            bindTrackers: c.bindsTrackers,
+          ),
           gap,
           _action('Import ${c.plan!.summary.entries} entries', c.runImport),
           gap,

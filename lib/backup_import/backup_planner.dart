@@ -41,7 +41,6 @@ class BackupPlanner {
     final names = {for (final s in data.sources) s.sourceId: s.name};
     final seen = <String>{};
     final planned = <PlannedManga>[];
-    final unmapped = <String, int>{};
     final byService = <String, int>{};
     var notInLibrary = 0;
     var duplicates = 0;
@@ -55,9 +54,6 @@ class BackupPlanner {
       if (!seen.add(pm.entry.key)) {
         duplicates++;
         continue;
-      }
-      if (source.kind == SourceKind.unmapped) {
-        unmapped.update(m.sourceId, (n) => n + 1, ifAbsent: () => 1);
       }
       planned.add(pm);
       for (final t in m.tracking.where((t) => t.mediaId != '0')) {
@@ -75,13 +71,10 @@ class BackupPlanner {
         planned,
         categories.length,
         byService,
-        unmapped: [
-          for (final e in unmapped.entries)
-            UnmappedSource(names[e.key] ?? '', e.key, e.value),
-        ],
         notInLibrary: notInLibrary,
         duplicates: duplicates,
       ),
+      sourceNames: names,
     );
   }
 
@@ -123,6 +116,7 @@ class BackupPlanner {
     }.toList();
     return PlannedManga(
       entry: entry,
+      tachiyomiSourceId: m.sourceId,
       categoryIds: {
         for (final o in m.categories)
           if (idByOrder[o] != null) idByOrder[o]!,
@@ -177,7 +171,6 @@ class BackupPlanner {
     List<PlannedManga> planned,
     int categoryCount,
     Map<String, int> byService, {
-    required List<UnmappedSource> unmapped,
     required int notInLibrary,
     required int duplicates,
   }) {
@@ -188,7 +181,6 @@ class BackupPlanner {
       chaptersRead: planned.fold(0, (n, m) => n + m.readChapterUrls.length),
       trackersByService: byService,
       trackersImported: planned.fold(0, (n, m) => n + m.bindings.length),
-      unmappedSources: unmapped,
       notInLibrary: notInLibrary,
       duplicates: duplicates,
     );

@@ -44,7 +44,7 @@ void main() {
       expect(data.manga, hasLength(2657));
       expect(favorites, 774);
       expect(s.categories, 3);
-      expect(s.unmappedSources.map((u) => u.id), contains('6901'));
+      expect(plan.unavailable(null).map((u) => u.id), contains('6901'));
     }
     final f = Fakes();
     final first = await f.importer.apply(plan);
