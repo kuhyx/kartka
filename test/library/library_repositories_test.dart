@@ -7,7 +7,7 @@ import 'package:kartka/library/data/local_progress_repository.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/repository_decorator.dart';
 
-import 'support/memory_kv.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 
 abstract class _Tagged {
   new(this.tag, this.inner);
@@ -42,7 +42,10 @@ class _Decorator implements RepositoryDecorator {
 
 void main() {
   test('without decorators the local implementations are returned', () {
-    final repos = LibraryRepositories(MemoryKv(), decorators: () => []);
+    final repos = LibraryRepositories(
+      MemoryKeyValueStore(),
+      decorators: () => [],
+    );
     expect(repos.library, isA<LocalLibraryRepository>());
     expect(repos.categories, isA<LocalCategoryRepository>());
     expect(repos.progress, isA<LocalProgressRepository>());
@@ -52,7 +55,7 @@ void main() {
   test('decorators wrap in registry order, built lazily once', () {
     var asked = 0;
     final repos = LibraryRepositories(
-      MemoryKv(),
+      MemoryKeyValueStore(),
       decorators: () {
         asked++;
         return [_Decorator('first'), _Decorator('second')];
@@ -73,7 +76,7 @@ void main() {
   });
 
   test('repositories share the one store', () async {
-    final kv = MemoryKv();
+    final kv = MemoryKeyValueStore();
     final repos = LibraryRepositories(kv, decorators: () => []);
     await repos.library.upsert(
       LibraryEntry(
@@ -85,6 +88,6 @@ void main() {
         updatedAt: DateTime.utc(2026),
       ),
     );
-    expect(kv.data.keys.single, startsWith('library/'));
+    expect((await kv.entries()).keys.single, startsWith('library/'));
   });
 }

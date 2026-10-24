@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/library/data/kv_table.dart';
 
-import '../support/memory_kv.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 
-KvTable<int> _table(MemoryKv kv) => KvTable<int>(
+KvTable<int> _table(MemoryKeyValueStore kv) => KvTable<int>(
   kv,
   'n/',
   decode: (json) => json['v']! as int,
@@ -14,26 +14,27 @@ KvTable<int> _table(MemoryKv kv) => KvTable<int>(
 
 void main() {
   test('put persists under the prefix and reloads in a fresh table', () async {
-    final kv = MemoryKv();
+    final kv = MemoryKeyValueStore();
     await _table(kv).put('a', 1);
-    expect(kv.data, {
+    expect(await kv.entries(), {
       'n/a': jsonEncode({'v': 1}),
     });
     expect(await _table(kv).load(), {'a': 1});
   });
 
   test('corrupt or foreign rows are skipped, not fatal', () async {
-    final kv = MemoryKv()
-      ..data['n/bad'] = '{nope'
-      ..data['n/list'] = '[1]'
-      ..data['n/wrong'] = jsonEncode({'v': 'str'})
-      ..data['n/ok'] = jsonEncode({'v': 2})
-      ..data['other/x'] = jsonEncode({'v': 3});
+    final kv = MemoryKeyValueStore({
+      'n/bad': '{nope',
+      'n/list': '[1]',
+      'n/wrong': jsonEncode({'v': 'str'}),
+      'n/ok': jsonEncode({'v': 2}),
+      'other/x': jsonEncode({'v': 3}),
+    });
     expect(await _table(kv).load(), {'ok': 2});
   });
 
   test('watch emits the snapshot then every change', () async {
-    final kv = MemoryKv();
+    final kv = MemoryKeyValueStore();
     final table = _table(kv);
     await table.put('a', 1);
     final seen = <Map<String, int>>[];
@@ -49,7 +50,7 @@ void main() {
   });
 
   test('snapshots are immutable copies', () async {
-    final table = _table(MemoryKv());
+    final table = _table(MemoryKeyValueStore());
     await table.put('a', 1);
     final snap = await table.watch().first;
     await table.put('a', 5);
@@ -58,7 +59,7 @@ void main() {
   });
 
   test('get reads one row after load', () async {
-    final table = _table(MemoryKv());
+    final table = _table(MemoryKeyValueStore());
     expect(await table.get('a'), isNull);
     await table.put('a', 7);
     expect(await table.get('a'), 7);
