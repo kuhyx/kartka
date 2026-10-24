@@ -3,11 +3,7 @@ import 'package:kartka/core/models/models.dart';
 /// A category to create (or match by name) on import.
 class PlannedCategory {
   /// Creates a planned category.
-  const PlannedCategory({
-    required this.id,
-    required this.name,
-    required this.order,
-  });
+  const new({required this.id, required this.name, required this.order});
 
   /// Deterministic id derived from the name (`sy-<hex>`), so re-importing
   /// never creates a second copy.
@@ -23,7 +19,7 @@ class PlannedCategory {
 /// A tracker binding to store.
 class PlannedBinding {
   /// Creates a planned binding.
-  const PlannedBinding(this.service, this.remoteId, this.lastChapter);
+  const new(this.service, this.remoteId, this.lastChapter);
 
   /// `anilist` or `mal`.
   final String service;
@@ -38,7 +34,7 @@ class PlannedBinding {
 /// Everything to write for one library entry.
 class PlannedManga {
   /// Creates a planned manga.
-  const PlannedManga({
+  const new({
     required this.entry,
     required this.categoryIds,
     required this.readChapterUrls,
@@ -65,7 +61,7 @@ class PlannedManga {
 /// A source the importer cannot serve through Suwayomi.
 class UnmappedSource {
   /// Creates an unmapped-source record.
-  const UnmappedSource(this.name, this.id, this.entries);
+  const new(this.name, this.id, this.entries);
 
   /// Name from the backup's source table (`''` if absent).
   final String name;
@@ -80,7 +76,7 @@ class UnmappedSource {
 /// Counts shown by the dry run.
 class ImportSummary {
   /// Creates a summary.
-  const ImportSummary({
+  const new({
     required this.entries,
     required this.categories,
     required this.memberships,
@@ -123,7 +119,7 @@ class ImportSummary {
 /// Pure result of reading a backup: no repository has been touched.
 class ImportPlan {
   /// Creates a plan.
-  const ImportPlan({
+  const new({
     required this.manga,
     required this.categories,
     required this.summary,

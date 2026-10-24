@@ -8,7 +8,7 @@ import 'fake_setup.dart';
 import 'fixture_builder.dart';
 
 class _Picker implements FilePicker {
-  _Picker(this.files);
+  new(this.files);
   final List<PickedFile> files;
   List<String>? asked;
 
@@ -32,11 +32,7 @@ void main() {
   late Fakes f;
 
   ImportController make(List<PickedFile> files, [_Picker? out]) =>
-      ImportController(
-        picker: out ?? _Picker(files),
-        importer: f.importer,
-        planner: planBackup,
-      );
+      ImportController(picker: out ?? _Picker(files), importer: f.importer);
 
   setUp(() => f = Fakes());
 

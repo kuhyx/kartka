@@ -87,7 +87,7 @@ Uint8List buildSyntheticProto() {
       _chapter('/chapter/c1', 1, read: true, page: 3, order: 3),
       _chapter('/chapter/c2', 2, read: true, page: 7, order: 2),
       _chapter('/chapter/c3', 3, read: true, page: 4, order: 1),
-      _chapter('/chapter/c4', 4, order: 0),
+      _chapter('/chapter/c4', 4),
     ],
     tracking: [
       _track(2, BigInt.from(134187), 3),
@@ -170,13 +170,13 @@ Uint8List buildSyntheticProto() {
         ..int64(2, id),
     );
   }
-  return root
-      .message(104, ProtoWriter()..string(1, 'pref'))
-      .message(106, ProtoWriter()..string(1, 'store'))
-      .message(600, ProtoWriter()..string(1, 'saved search'))
-      .bytes;
+  root
+    ..message(104, ProtoWriter()..string(1, 'pref'))
+    ..message(106, ProtoWriter()..string(1, 'store'))
+    ..message(600, ProtoWriter()..string(1, 'saved search'));
+  return root.bytes;
 }
 
 /// The synthetic backup gzipped, exactly like a real `.tachibk`.
 Uint8List buildSyntheticTachibk() =>
-    Uint8List.fromList(GZipEncoder().encode(buildSyntheticProto()));
+    Uint8List.fromList(const GZipEncoder().encode(buildSyntheticProto()));

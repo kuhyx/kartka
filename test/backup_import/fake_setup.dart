@@ -4,7 +4,7 @@ import 'fakes.dart';
 
 /// A wired-up importer over in-memory fakes.
 class Fakes {
-  Fakes({bool withBindings = true}) {
+  new({bool withBindings = true}) {
     importer = BackupImporter(
       library: library,
       categories: categories,

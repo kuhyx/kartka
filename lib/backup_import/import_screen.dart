@@ -6,7 +6,7 @@ import 'package:kartka/backup_import/import_preview.dart';
 /// More → "Import SY backup": choose a `.tachibk`, review, import.
 class ImportScreen extends StatelessWidget {
   /// Creates the screen around [controller].
-  const ImportScreen({required this.controller, super.key});
+  const new({required this.controller, super.key});
 
   /// Drives the flow.
   final ImportController controller;
@@ -50,7 +50,7 @@ class ImportScreen extends StatelessWidget {
       case ImportPhase.preview:
         return [
           Text(c.fileName ?? '', style: text.titleMedium),
-          ImportPreview(c.plan!.summary),
+          ImportPreview(c.plan!.summary, bindTrackers: c.bindsTrackers),
           gap,
           _action('Import ${c.plan!.summary.entries} entries', c.runImport),
           gap,

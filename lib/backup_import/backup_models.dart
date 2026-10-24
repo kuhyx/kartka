@@ -9,7 +9,7 @@ library;
 /// A parsed backup.
 class BackupData {
   /// Creates a backup.
-  const BackupData({
+  const new({
     required this.manga,
     required this.categories,
     required this.sources,
@@ -28,7 +28,7 @@ class BackupData {
 /// `BackupManga`.
 class BackupManga {
   /// Creates an empty manga record, filled in by the decoder.
-  BackupManga();
+  new();
 
   /// Tachiyomi's numeric source id (decimal string).
   String sourceId = '0';
@@ -153,7 +153,7 @@ class BackupHistory {
 /// `BackupSource`.
 class BackupSource {
   /// Creates a source record.
-  const BackupSource(this.name, this.sourceId);
+  const new(this.name, this.sourceId);
 
   /// Source name at backup time.
   final String name;

@@ -10,8 +10,7 @@ import 'dart:typed_data';
 /// exact on dart2js; use [varintBig] where full int64 matters (source ids).
 class ProtoReader {
   /// Reads the whole of [bytes], or the `[start, end)` slice of it.
-  ProtoReader(this._bytes, [this._pos = 0, int? end])
-    : _end = end ?? _bytes.length;
+  new(this._bytes, [this._pos = 0, int? end]) : _end = end ?? _bytes.length;
 
   final Uint8List _bytes;
   final int _end;

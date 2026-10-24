@@ -21,7 +21,7 @@ enum SourceKind {
 /// Result of mapping one Tachiyomi source id.
 class MappedSource {
   /// Creates a mapping result.
-  const MappedSource(this.sourceId, this.kind);
+  const new(this.sourceId, this.kind);
 
   /// Kartka source id (`mangadex`, `local`, `suwayomi:<id>`, ...).
   final String sourceId;
@@ -71,7 +71,7 @@ const Set<String> _syInternalIds = {'6901', '6902', '6969'};
 /// id changes. [overrides] (Tachiyomi id to Kartka id) beat every default.
 class SourceMapper {
   /// Creates a mapper.
-  const SourceMapper({this.overrides = const {}});
+  const new({this.overrides = const {}});
 
   /// Explicit Tachiyomi id to Kartka source id replacements.
   final Map<String, String> overrides;

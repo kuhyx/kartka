@@ -3,15 +3,17 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/backup_import/backup_importer.dart';
 import 'package:kartka/backup_import/import_controller.dart';
 import 'package:kartka/backup_import/import_screen.dart';
 import 'package:kartka/platform/file_picker.dart';
 
 import 'fake_setup.dart';
+import 'fakes.dart';
 import 'fixture_builder.dart';
 
 class _Picker implements FilePicker {
-  _Picker(this.bytes);
+  new(this.bytes);
   final Uint8List bytes;
 
   @override
@@ -125,6 +127,24 @@ void main() {
     await tester.tap(find.text('Choose another file'));
     await tester.pumpAndSettle();
     expect(find.text('Import 6 entries'), findsOneWidget);
+  });
+
+  testWidgets('warns when tracker links cannot be stored', (tester) async {
+    final controller = ImportController(
+      picker: _Picker(buildSyntheticTachibk()),
+      importer: BackupImporter(
+        library: FakeLibrary(),
+        categories: FakeCategories(),
+        progress: FakeProgress(),
+      ),
+      planner: (b) async => planBackupSync(b),
+    );
+    await tester.pumpWidget(
+      MaterialApp(home: ImportScreen(controller: controller)),
+    );
+    await controller.pick();
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Tracking is not installed'), findsOneWidget);
   });
 
   testWidgets('summary hides optional lines when they are zero', (

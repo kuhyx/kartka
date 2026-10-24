@@ -57,8 +57,7 @@ void main() {
         0x10, 0x01, // field 2 bool true
         0x1A, text.length, ...text, // field 3 string
       ]),
-    );
-    r.next();
+    )..next();
     expect(r.float32(), 12.5);
     r.next();
     expect(r.boolean(), isTrue);
@@ -117,7 +116,7 @@ void main() {
       throwsFormatException,
     );
     expect(
-      () => (ProtoReader(b([...List.filled(11, 0xFF)]))).next(),
+      () => ProtoReader(b([...List.filled(11, 0xFF)])).next(),
       throwsFormatException,
     );
   });

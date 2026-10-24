@@ -93,7 +93,8 @@ void main() {
           ..int64(1, 2)
           ..int64(3, 42),
       );
-    final data = decodeTachibk(ProtoWriter().message(1, manga).bytes);
+    final root = ProtoWriter()..message(1, manga);
+    final data = decodeTachibk(root.bytes);
     expect(data.manga.single.tracking.single.mediaId, '42');
   });
 

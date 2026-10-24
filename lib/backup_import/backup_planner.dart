@@ -29,7 +29,7 @@ DateTime _ms(int ms) => DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true);
 /// touching any repository (so the same plan feeds dry run and import).
 class BackupPlanner {
   /// Creates a planner using [mapper] for source ids.
-  const BackupPlanner(this.mapper);
+  const new(this.mapper);
 
   /// Source id mapping.
   final SourceMapper mapper;

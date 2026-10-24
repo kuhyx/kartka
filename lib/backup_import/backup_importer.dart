@@ -6,7 +6,7 @@ import 'package:kartka/core/repositories/repositories.dart';
 /// What an import wrote (zero everywhere on a repeat run).
 class ImportResult {
   /// Creates a result.
-  const ImportResult({
+  const new({
     this.entries = 0,
     this.categories = 0,
     this.memberships = 0,
@@ -47,7 +47,7 @@ class ImportResult {
 class BackupImporter {
   /// Creates an importer. [bindings] may be null when no tracking part is
   /// installed; tracker bindings are then skipped.
-  const BackupImporter({
+  const new({
     required this.library,
     required this.categories,
     required this.progress,

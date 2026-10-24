@@ -20,7 +20,7 @@ class ProtoWriter {
   }
 
   /// Varint field; [BigInt] values keep full int64 precision.
-  ProtoWriter int64(int field, Object value) {
+  void int64(int field, Object value) {
     _tag(field, 0);
     if (value is BigInt) {
       var v = value;
@@ -33,40 +33,36 @@ class ProtoWriter {
     } else {
       _varint(value as int);
     }
-    return this;
   }
 
   /// Boolean field.
-  ProtoWriter boolean(int field, {required bool value}) =>
-      int64(field, value ? 1 : 0);
+  void boolean(int field, {required bool value}) => int64(field, value ? 1 : 0);
 
   /// UTF-8 string field.
-  ProtoWriter string(int field, String value) => raw(field, utf8.encode(value));
+  void string(int field, String value) => raw(field, utf8.encode(value));
 
   /// Length-delimited bytes field.
-  ProtoWriter raw(int field, List<int> value) {
+  void raw(int field, List<int> value) {
     _tag(field, 2);
     _varint(value.length);
     _out.add(value);
-    return this;
   }
 
   /// Embedded message field.
-  ProtoWriter message(int field, ProtoWriter inner) => raw(field, inner.bytes);
+  void message(int field, ProtoWriter inner) => raw(field, inner.bytes);
 
   /// Float field.
-  ProtoWriter float32(int field, double value) {
+  void float32(int field, double value) {
     _tag(field, 5);
     _out.add(
       (ByteData(4)..setFloat32(0, value, Endian.little)).buffer.asUint8List(),
     );
-    return this;
   }
 
   /// Packed repeated varint field.
-  ProtoWriter packed(int field, List<int> values) {
+  void packed(int field, List<int> values) {
     final inner = ProtoWriter();
     values.forEach(inner._varint);
-    return raw(field, inner.bytes);
+    raw(field, inner.bytes);
   }
 }

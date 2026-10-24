@@ -7,7 +7,7 @@ String _plural(int n, String one, String many) => '$n ${n == 1 ? one : many}';
 
 /// One label/value line of the summary.
 class _Row extends StatelessWidget {
-  const _Row(this.label, this.value);
+  const new(this.label, this.value);
 
   final String label;
   final String value;
@@ -30,10 +30,13 @@ class _Row extends StatelessWidget {
 /// The dry-run summary: what is in the backup and what will happen.
 class ImportPreview extends StatelessWidget {
   /// Creates the preview for [summary].
-  const ImportPreview(this.summary, {super.key});
+  const new(this.summary, {this.bindTrackers = true, super.key});
 
   /// Dry-run counts.
   final ImportSummary summary;
+
+  /// False when no tracking module is installed to take the AniList/MAL links.
+  final bool bindTrackers;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +53,12 @@ class ImportPreview extends StatelessWidget {
         _Row('Chapters read', '${s.chaptersRead}'),
         _Row('AniList links', '${s.trackersByService['anilist'] ?? 0}'),
         _Row('MyAnimeList links', '${s.trackersByService['mal'] ?? 0}'),
+        if (!bindTrackers && s.trackersImported > 0)
+          Text(
+            'Tracking is not installed, so AniList and MyAnimeList links are '
+            'skipped. Import this file again once it is.',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         if (others.isNotEmpty)
           _Row(
             'Other trackers (not imported)',
@@ -79,7 +88,7 @@ class ImportPreview extends StatelessWidget {
 /// The outcome after importing.
 class ImportOutcome extends StatelessWidget {
   /// Creates the outcome for [result].
-  const ImportOutcome(this.result, {super.key});
+  const new(this.result, {super.key});
 
   /// What was written.
   final ImportResult result;

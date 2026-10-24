@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:kartka/backup_import/backup_importer.dart';
 import 'package:kartka/backup_import/backup_planner.dart';
@@ -40,7 +38,7 @@ enum ImportPhase {
 /// State machine behind the "Import SY backup" screen.
 class ImportController extends ChangeNotifier {
   /// Creates a controller.
-  ImportController({
+  new({
     required this.picker,
     required this.importer,
     this.planner = planBackup,
@@ -61,6 +59,9 @@ class ImportController extends ChangeNotifier {
   ImportResult? _result;
   String? _error;
   (int, int) _progress = (0, 0);
+
+  /// Whether AniList/MAL links will be stored.
+  bool get bindsTrackers => importer.bindings != null;
 
   /// Current phase.
   ImportPhase get phase => _phase;

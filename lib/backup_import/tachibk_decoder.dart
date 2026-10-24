@@ -2,13 +2,13 @@ import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 
-import 'backup_models.dart';
-import 'proto_reader.dart';
+import 'package:kartka/backup_import/backup_models.dart';
+import 'package:kartka/backup_import/proto_reader.dart';
 
 /// Thrown when the file is not a readable `.tachibk`.
 class BackupFormatException implements Exception {
   /// Creates the exception.
-  const BackupFormatException(this.message);
+  const new(this.message);
 
   /// What went wrong.
   final String message;
@@ -22,7 +22,7 @@ BackupData decodeTachibk(Uint8List bytes) {
   try {
     final gzipped = bytes.length > 2 && bytes[0] == 0x1f && bytes[1] == 0x8b;
     final raw = gzipped
-        ? Uint8List.fromList(GZipDecoder().decodeBytes(bytes))
+        ? Uint8List.fromList(const GZipDecoder().decodeBytes(bytes))
         : bytes;
     return _readBackup(ProtoReader(raw));
   } on BackupFormatException {

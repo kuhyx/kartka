@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kartka/backup_import/backup_importer.dart';
 import 'package:kartka/backup_import/backup_planner.dart';
 import 'package:kartka/backup_import/import_plan.dart';
 import 'package:kartka/backup_import/source_mapper.dart';
@@ -27,7 +26,7 @@ void main() {
       'Later',
       'Empty',
     ]);
-    final dexKey = 'mangadex|/manga/$mdUuid';
+    const dexKey = 'mangadex|/manga/$mdUuid';
     expect(f.categories.membership[dexKey], {plan.categories.first.id});
     expect(f.progress.read[dexKey], {
       '/chapter/c1',
@@ -72,7 +71,7 @@ void main() {
   });
 
   test('existing entries and newer progress are left alone', () async {
-    final key = 'mangadex|/manga/$mdUuid';
+    const key = 'mangadex|/manga/$mdUuid';
     final existing = plan.manga.first.entry.copyWith(title: 'Renamed by me');
     await f.library.upsert(existing);
     await f.progress.record(

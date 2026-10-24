@@ -43,7 +43,6 @@ class FakeCategories implements CategoryRepository {
   Future<void> setMembership(
     MangaKey key,
     String categoryId,
-    // ignore: avoid_positional_boolean_parameters
     bool member,
   ) async {
     writes++;
