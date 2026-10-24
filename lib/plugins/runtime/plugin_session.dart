@@ -148,6 +148,15 @@ class PluginSession {
         }
       case 'host':
         unawaited(_onHost(from, m));
+      case 'engine_error':
+        // The sandbox itself broke (bad eval, dead isolate): fail what is
+        // running and reboot on the next call.
+        if (identical(from, _engine)) {
+          for (final c in _calls.values.toList()) {
+            if (!c.isCompleted) c.completeError(_err('${m['error']}'));
+          }
+          unawaited(_kill());
+        }
     }
   }
 

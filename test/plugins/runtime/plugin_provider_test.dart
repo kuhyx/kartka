@@ -31,6 +31,10 @@ void main() {
     emissions = [];
   });
 
+  test('watch emits immediately, even when nothing is installed', () async {
+    expect(await provider.watch().first, isEmpty);
+  });
+
   test('repo to installed source to chapter pages, end to end', () async {
     final sub = provider.watch().listen(emissions.add);
     await manager.addRepo(repo);

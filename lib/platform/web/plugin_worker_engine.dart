@@ -1,3 +1,6 @@
+// coverage:ignore-file
+// Browser-only; covered by test/plugins/runtime/engine_worker_web_test.dart
+// (`flutter test --platform chrome`), which the VM lcov cannot see.
 import 'dart:async';
 import 'dart:js_interop';
 
