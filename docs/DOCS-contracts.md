@@ -153,3 +153,24 @@ removed}`, `Category {id, name, order, updatedAt, removed}`,
 `lib/core/models/`. Local impls are in-memory + KeyValueStore-backed; the sync
 part decorates them (same interfaces), so UI never knows sync exists.
 Tracking listens to `ProgressRepository.watch` — no direct coupling.
+
+## 9. Tracker interface (`lib/tracking/common/tracker.dart`; owner: AniList part)
+
+```dart
+abstract interface class Tracker {
+  String get id;                                   // 'anilist' | 'mal'
+  String get name;
+  Future<bool> isLoggedIn();
+  Future<void> login();                            // via OAuthRedirect (§7)
+  Future<void> logout();
+  Future<List<TrackSearchResult>> search(String title);
+  Future<TrackStatus?> fetch(String remoteId);
+  Future<void> pushProgress(String remoteId, int chaptersRead); // never lowers
+}
+class TrackSearchResult { String remoteId; String title; String? coverUrl; int? chapters; }
+class TrackStatus { String remoteId; int chaptersRead; int? totalChapters; String status; double? score; }
+```
+
+`TrackingService` (common) binds a `MangaKey` to `remoteId`s (stored in sync
+path `trackers/`), listens to `ProgressRepository`, pushes `max(local, remote)`
+and pulls remote progress forward into local on refresh.
