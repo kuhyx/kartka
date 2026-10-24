@@ -24,7 +24,7 @@ linter:
   rules:
     # The core models are immutable by construction (every field final, lists
     # and maps unmodifiable when decoded). Marking them @immutable needs
-    # package:meta, which Flutter 3.47.7 pins at 1.18.3 while newest stable is
+    # package:meta, which Flutter 3.47.8 pins at 1.18.3 while newest stable is
     # 1.19.0, so the exact-pin rule makes it unsatisfiable; importing it from
     # flutter/foundation would make lib/core depend on Flutter (SPEC: pure
     # Dart). Revisit when Flutter's pin catches up.

@@ -1,7 +1,7 @@
 # CLAUDE.md — kartka
 
-Private manga reader (Flutter 3.47.7 via fvm; Android + web). Read
-`SPEC.md` (goal, structure, boundaries) and `docs/DOCS-contracts.md` (the
+Private manga reader (Flutter 3.47.8 via fvm; Android + web). Read
+`docs/DOCS-spec.md` (goal, structure, boundaries) and `docs/DOCS-contracts.md` (the
 interfaces every part codes against) before changing anything shared.
 
 The **desktop app is the web build** in a Chrome `--app` window, served by

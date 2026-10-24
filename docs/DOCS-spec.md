@@ -3,7 +3,7 @@
 Private `kuhyx/kartka`. Own manga reader replacing the dropped TachiyomiSY fork
 (too big to bring to kuhy's standards; Kotlin; not desktop-first). Small, Dart,
 desktop-friendly from day one. Contracts every part codes against:
-[`docs/DOCS-contracts.md`](docs/DOCS-contracts.md).
+[`DOCS-contracts.md`](DOCS-contracts.md).
 
 ## Goal and done (v1)
 
@@ -24,7 +24,7 @@ On the Pixel 6a (`23181JEGR08034`) AND the desktop Chrome-app build:
 
 ## Stack
 
-- Flutter **3.47.7** pinned in `.fvmrc`, Dart from that SDK. Exact pins in
+- Flutter **3.47.8** pinned in `.fvmrc`, Dart from that SDK. Exact pins in
   `pubspec.yaml`, newest stable, lockfile committed, dependency-freshness gate.
 - Targets: Android + web. "Desktop" = web build in a Chrome `--app` window served
   by a local Dart wrapper (pattern + traps: skill `flutter-desktop-to-chrome`).

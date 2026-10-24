@@ -49,3 +49,6 @@ app.*.map.json
 
 # Wrapper package coverage output.
 /desktop/coverage/
+
+# fvm SDK symlink (version lives in .fvmrc)
+.fvm/

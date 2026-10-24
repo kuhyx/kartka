@@ -3,7 +3,7 @@
 A small manga reader for Android and the desktop (a Flutter web build in a
 Chrome app window, served by a local wrapper). "Kartka" is Polish for a page.
 
-- Goal, stack and boundaries: [`SPEC.md`](SPEC.md)
+- Goal, stack and boundaries: [`docs/DOCS-spec.md`](docs/DOCS-spec.md)
 - Interfaces between parts: [`docs/DOCS-contracts.md`](docs/DOCS-contracts.md)
 - Working on it: [`CLAUDE.md`](CLAUDE.md)
 
@@ -14,7 +14,7 @@ Chrome app window, served by a local wrapper). "Kartka" is Polish for a page.
 ./run.sh android    # release APK, adb install -r, launch
 ```
 
-Needs `fvm` (Flutter 3.47.7 is pinned in `.fvmrc`; `run.sh` installs both
+Needs `fvm` (Flutter 3.47.8 is pinned in `.fvmrc`; `run.sh` installs both
 when missing) and a Chrome-family browser (`KARTKA_BROWSER` overrides the
 lookup). OAuth client ids, when you have them, go in
 `~/.config/kartka/oauth.json` and are passed as `--dart-define-from-file`.
