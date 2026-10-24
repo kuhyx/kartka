@@ -1,0 +1,32 @@
+[Unit]
+Description=Kartka source evaluator: its own Suwayomi (127.0.0.1:4590, never the live :4567)
+# Started only as a dependency of the evaluator jobs and stopped after them:
+# the evaluator installs every candidate extension (~570) into THIS root.
+StopWhenUnneeded=yes
+
+[Service]
+UnsetEnvironment=DISPLAY XAUTHORITY WAYLAND_DISPLAY
+# Upstream's suwayomi-server.sh preloads this (it catches KCEF aborts).
+Environment=LD_PRELOAD=%h/services/suwayomi/app/current/bin/catch_abort.so
+# Same pinned release the live deploy installed (deploy/suwayomi/install.sh);
+# separate rootDir, port and extension set.
+ExecStart=%h/services/suwayomi/app/current/jre/bin/java \
+	-Xmx1g \
+	-Djava.awt.headless=true \
+	-Dsuwayomi.tachidesk.config.server.rootDir=%h/.local/share/kartka-source-eval/suwayomi \
+	-Dsuwayomi.tachidesk.config.server.ip=127.0.0.1 \
+	-Dsuwayomi.tachidesk.config.server.port=4590 \
+	-Dsuwayomi.tachidesk.config.server.authMode=NONE \
+	-Dsuwayomi.tachidesk.config.server.webUIEnabled=false \
+	-Dsuwayomi.tachidesk.config.server.initialOpenInBrowserEnabled=false \
+	-Dsuwayomi.tachidesk.config.server.systemTrayEnabled=false \
+	-Dsuwayomi.tachidesk.config.server.kcefEnabled=false \
+	-jar %h/services/suwayomi/app/current/bin/Suwayomi-Server.jar
+# The JVM exits 143 on SIGTERM; that is a clean stop, not a failure.
+SuccessExitStatus=143
+Nice=19
+IOSchedulingClass=idle
+MemoryMax=2G
+CPUQuota=50%
+NoNewPrivileges=true
+PrivateTmp=true

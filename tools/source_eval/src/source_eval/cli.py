@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import sys
 from typing import TYPE_CHECKING
+from urllib.parse import urlsplit
 
 from source_eval.app import App, Settings
 from source_eval.backends.suwayomi import SuwayomiConfig
@@ -31,13 +32,34 @@ def _env(*names: str, default: str = "") -> str:
     return next((v for n in names if (v := os.environ.get(n))), default)
 
 
+#: The evaluator's own Suwayomi (tools/source_eval/systemd/install.sh).
+EVAL_SUWAYOMI_URL = "http://127.0.0.1:4590"
+
+#: kuhy's live Suwayomi: loopback port and public host. Never evaluated
+#: against, because probe/run install every candidate extension (~570).
+_LIVE_PORT = 4567
+_LIVE_HOST = "suwayomi.kuhy.duckdns.org"
+
+
+def _refuse_live(url: str) -> None:
+    """Exit 2 when ``url`` is the live Suwayomi instead of the eval instance."""
+    parts = urlsplit(url)
+    if parts.port == _LIVE_PORT or parts.hostname == _LIVE_HOST:
+        sys.stderr.write(
+            f"source-eval: refusing the live Suwayomi at {url}; it would install"
+            f" every candidate extension. Use the eval instance"
+            f" ({EVAL_SUWAYOMI_URL}).\n"
+        )
+        raise SystemExit(2)
+
+
 def _parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="source-eval", description=__doc__)
     p.add_argument("--state-dir", type=Path)
     p.add_argument("--data-dir", type=Path)
     p.add_argument(
         "--suwayomi-url",
-        default=os.environ.get("KARTKA_SUWAYOMI_URL", "http://127.0.0.1:4567"),
+        default=os.environ.get("KARTKA_SUWAYOMI_URL", EVAL_SUWAYOMI_URL),
     )
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("candidates", help="refresh data/candidates.json")
@@ -72,6 +94,7 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _settings(args: argparse.Namespace) -> Settings:
+    _refuse_live(args.suwayomi_url)
     s = Settings(
         suwayomi=SuwayomiConfig(
             args.suwayomi_url.rstrip("/"),

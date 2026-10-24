@@ -1,13 +1,16 @@
 [Unit]
 Description=Kartka source evaluator: uptime probe (one request per source)
-After=network-online.target suwayomi.service
+# Its own Suwayomi on :4590, started with the job and stopped after it.
+Requires=kartka-suwayomi-eval.service
+After=network-online.target kartka-suwayomi-eval.service
 Wants=network-online.target
 
 [Service]
 Type=oneshot
 WorkingDirectory=%h/src/kartka/tools/source_eval
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin
-Environment=KARTKA_SUWAYOMI_URL=http://127.0.0.1:4567
+Environment=KARTKA_SUWAYOMI_URL=http://127.0.0.1:4590
+ExecStartPre=%h/src/kartka/tools/source_eval/systemd/eval_server_ready.sh
 # A probe during the weekly run would pace hosts separately from it; skip.
 ExecCondition=/bin/sh -c '! systemctl --user is-active --quiet kartka-source-eval-full.service'
 ExecStart=%h/.local/bin/uv run --frozen source-eval probe --workers 16

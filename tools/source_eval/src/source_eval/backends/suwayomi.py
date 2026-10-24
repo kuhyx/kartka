@@ -43,7 +43,7 @@ _PAGES = "mutation($c:Int!){fetchChapterPages(input:{chapterId:$c}){pages}}"
 class SuwayomiConfig:
     """Where the server is and how to authenticate (basic auth or none)."""
 
-    url: str = "http://127.0.0.1:4567"
+    url: str = "http://127.0.0.1:4590"
     user: str = ""
     password: str = ""
 

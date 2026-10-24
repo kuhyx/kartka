@@ -1,13 +1,16 @@
 [Unit]
 Description=Kartka source evaluator: full weekly run + RTDB publish
-After=network-online.target suwayomi.service
+# Its own Suwayomi on :4590, started with the job and stopped after it.
+Requires=kartka-suwayomi-eval.service
+After=network-online.target kartka-suwayomi-eval.service
 Wants=network-online.target
 
 [Service]
 Type=oneshot
 WorkingDirectory=%h/src/kartka/tools/source_eval
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin
-Environment=KARTKA_SUWAYOMI_URL=http://127.0.0.1:4567
+Environment=KARTKA_SUWAYOMI_URL=http://127.0.0.1:4590
+ExecStartPre=%h/src/kartka/tools/source_eval/systemd/eval_server_ready.sh
 ExecStart=%h/src/kartka/tools/source_eval/systemd/weekly.sh
 Nice=19
 IOSchedulingClass=idle
