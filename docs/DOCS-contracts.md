@@ -120,3 +120,36 @@ methods to these six.
 wrapper files on web), `KeyValueStore`, `FilePicker` (CBZ import),
 `OAuthRedirect` (Android deep link `kartka://oauth`, web
 `http://127.0.0.1:<wrapperPort>/oauth`).
+
+## 8. Repositories (`lib/core/repositories/`, interfaces only; owner: library part)
+
+```dart
+abstract interface class LibraryRepository {
+  Stream<List<LibraryEntry>> watch();          // removed entries excluded
+  Future<void> upsert(LibraryEntry e);          // LWW on updatedAt
+  Future<void> remove(MangaKey key);
+}
+abstract interface class CategoryRepository {
+  Stream<List<Category>> watch();
+  Future<void> upsert(Category c);
+  Future<void> setMembership(MangaKey key, String categoryId, bool member);
+}
+abstract interface class ProgressRepository {
+  Stream<ReadingProgress?> watch(MangaKey key);
+  Future<void> record(ReadingProgress p);       // ignored if not > current
+  Future<void> markRead(MangaKey key, String chapterUrl);
+  Stream<Set<String>> readChapters(MangaKey key);
+}
+abstract interface class DownloadRepository {   // owner: downloads part
+  Future<void> enqueue(MangaKey key, ChapterInfo chapter);
+  Stream<DownloadState> watch(MangaKey key, String chapterUrl);
+  Future<List<PageRef>?> offlinePages(MangaKey key, String chapterUrl);
+}
+```
+
+`LibraryEntry {key, sourceId, mangaUrl, title, coverUrl, addedAt, updatedAt,
+removed}`, `Category {id, name, order, updatedAt, removed}`,
+`ReadingProgress {key, chapterUrl, chapterNumber, page, readAt}` live in
+`lib/core/models/`. Local impls are in-memory + KeyValueStore-backed; the sync
+part decorates them (same interfaces), so UI never knows sync exists.
+Tracking listens to `ProgressRepository.watch` — no direct coupling.
