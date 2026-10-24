@@ -132,9 +132,11 @@ class SyncedSettings implements SettingsSync {
         await _apply(engine, (path: path, node: engine.shadow.node(path)!));
       }
       for (final MapEntry(:key, value: setting) in kSyncedSettings.entries) {
+        // Plain keys never touch the secret store: the desktop wrapper
+        // rejects keys like `downloads/auto_new_chapters`.
+        if (setting.vault == SettingsVault.plain) continue;
         final local = await secrets.get(key);
-        if (setting.vault == SettingsVault.plain ||
-            local == null ||
+        if (local == null ||
             engine.shadow.unapplied.contains(settingPath(key))) {
           continue;
         }
@@ -205,8 +207,9 @@ class SyncedSettings implements SettingsSync {
   void _serial(Future<void> Function() job) => _queue = _queue.then((_) async {
     try {
       await job();
-    } on Exception catch (e, st) {
-      // A keystore or transport failure must not wedge later changes.
+    } on Object catch (e, st) {
+      // Any failure (an Error too) must not wedge later changes: one
+      // escaping here would leave `_queue` failed and skip every later job.
       log('settings sync step failed', error: e, stackTrace: st, level: 900);
     }
   });
