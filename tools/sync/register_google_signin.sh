@@ -33,11 +33,12 @@ readonly REPO_DIR
 source "$HERE/../tracking/oauth_common.sh"
 
 readonly PROJECT="kuhy-syncs"
+readonly GOOGLE_ACCOUNT="${KARTKA_GOOGLE_ACCOUNT:-321krzychu@gmail.com}"
 readonly PACKAGE="com.kuhy.kartka"
 readonly WEB_CLIENT_ID="845446124781-prdoherj0v64vc6egvvcp3l0693khaur.apps.googleusercontent.com"
 readonly ORIGIN="http://127.0.0.1:${WRAPPER_PORT}"
-readonly CLIENTS_URL="https://console.cloud.google.com/auth/clients?project=${PROJECT}"
-readonly WEB_CLIENT_URL="https://console.cloud.google.com/auth/clients/${WEB_CLIENT_ID}?project=${PROJECT}"
+readonly CLIENTS_URL="https://console.cloud.google.com/auth/clients?project=${PROJECT}&authuser=${GOOGLE_ACCOUNT}"
+readonly WEB_CLIENT_URL="https://console.cloud.google.com/auth/clients/${WEB_CLIENT_ID}?project=${PROJECT}&authuser=${GOOGLE_ACCOUNT}"
 readonly GRADLE="${KARTKA_GRADLE:-$REPO_DIR/android/app/build.gradle.kts}"
 readonly DEVICE="${ANDROID_SERIAL:-23181JEGR08034}"
 readonly ID_KEY="KARTKA_GOOGLE_CLIENT_ID_ANDROID"
@@ -88,7 +89,7 @@ register_android() {
     sha="$(release_sha1)"
     check_apk_signer "$sha"
     echo "==> Android client (one form, three fields)"
-    xdg-open "$CLIENTS_URL" >/dev/null 2>&1 || echo "  open: $CLIENTS_URL"
+    open_url "$CLIENTS_URL"
     echo "  Click '+ Create client', Application type = Android."
     paste_step "Name" "kartka"
     paste_step "Package name" "$PACKAGE"
@@ -109,7 +110,7 @@ register_web() {
         echo "  $ORIGIN is already allowed; nothing to do"
         return 0
     fi
-    xdg-open "$WEB_CLIENT_URL" >/dev/null 2>&1 || echo "  open: $WEB_CLIENT_URL"
+    open_url "$WEB_CLIENT_URL"
     echo "  Under 'Authorised JavaScript origins' click '+ Add URI'."
     paste_step "origin" "$ORIGIN"
     read -r -p "  Click Save (change nothing else), then press Enter. " _

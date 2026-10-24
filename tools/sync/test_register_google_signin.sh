@@ -7,6 +7,7 @@
 # ============================================================================
 
 set -euo pipefail
+export KARTKA_OPEN_URL_SYNC=1
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 readonly HERE
