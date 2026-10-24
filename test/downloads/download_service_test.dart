@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/downloads/keys.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/platform/platform.dart';
 
 import 'fakes.dart';
@@ -21,7 +22,7 @@ void main() {
     expect(pages.map((p) => p.index), [0, 1, 2]);
     expect(pages.first.imageUrl, startsWith('kartka-blob://downloads/'));
     expect(pages.first.headers, isEmpty);
-    final loader = PageImageLoader(http: _NoHttp(), blobs: h.blobs);
+    final loader = PageImageLoader(http: FakeKartkaHttp(), blobs: h.blobs);
     expect(
       await loader.load(pages.last),
       fakeImage(fixturePages().last.imageUrl),
@@ -103,12 +104,12 @@ void main() {
     await s.enqueue(mangaKey, ch2);
     await waitFor(s, ch1, DownloadStatus.downloading);
     await s.cancel(mangaKey, ch2.url);
-    expect(h.blobs.data, isEmpty);
+    expect(await h.blobs.list(''), isEmpty);
     await s.cancel(mangaKey, ch1.url);
     h.loader.gate!.complete();
     await waitFor(s, ch1, DownloadStatus.none);
     await pumpEventQueue();
-    expect(h.blobs.data, isEmpty);
+    expect(await h.blobs.list(''), isEmpty);
     expect((await s.watchAll().first).queue, isEmpty);
     await s.cancel(mangaKey, '/never'); // unknown: no-op
   });
@@ -126,7 +127,7 @@ void main() {
     expect(await s.offlinePages(mangaKey, ch1.url), isNull);
     expect((await s.watchAll().first).index.totalBytes, used ~/ 2);
     await s.deleteManga(mangaKey);
-    expect(h.blobs.data, isEmpty);
+    expect(await h.blobs.list(''), isEmpty);
     expect(await s.hasDownloads(mangaKey).first, isFalse);
     expect((await s.watchAll().first).index.totalBytes, 0);
   });
@@ -140,7 +141,7 @@ void main() {
     h.loader.gate!.complete();
     await waitFor(s, ch1, DownloadStatus.none);
     await pumpEventQueue();
-    expect(h.blobs.data, isEmpty);
+    expect(await h.blobs.list(''), isEmpty);
     expect(h.loader.calls.length, lessThan(3));
   });
 
@@ -159,14 +160,4 @@ void main() {
     await sub.cancel();
     await pumpEventQueue();
   });
-}
-
-class _NoHttp extends KartkaHttp {
-  @override
-  Future<KartkaResponse> send(
-    String method,
-    Uri url, {
-    Map<String, String> headers = const {},
-    String? body,
-  }) => throw UnimplementedError();
 }

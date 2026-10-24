@@ -5,7 +5,6 @@ import 'dart:typed_data';
 
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
-import 'package:kartka/platform/platform.dart';
 
 /// The recorded page list in `test/fixtures/downloads/chapter_pages.json`.
 List<PageRef> fixturePages() {
@@ -19,45 +18,6 @@ List<PageRef> fixturePages() {
 
 /// Deterministic fake image bytes for [url] (length = url length).
 Uint8List fakeImage(String url) => Uint8List.fromList(utf8.encode(url));
-
-class MemoryBlobs implements BlobStore {
-  final Map<String, Uint8List> data = {};
-
-  @override
-  Future<void> put(String key, Uint8List bytes) async {
-    checkBlobKey(key);
-    data[key] = bytes;
-  }
-
-  @override
-  Future<Uint8List?> get(String key) async => data[key];
-
-  @override
-  Future<void> delete(String key) async => data.remove(key);
-
-  @override
-  Future<List<String>> list(String prefix) async =>
-      data.keys.where((k) => k.startsWith(prefix)).toList()..sort();
-}
-
-class MemoryKv implements KeyValueStore {
-  final Map<String, String> data = {};
-
-  @override
-  Future<String?> get(String key) async => data[key];
-
-  @override
-  Future<void> set(String key, String value) async => data[key] = value;
-
-  @override
-  Future<void> remove(String key) async => data.remove(key);
-
-  @override
-  Future<Map<String, String>> entries({String prefix = ''}) async => {
-    for (final e in data.entries)
-      if (e.key.startsWith(prefix)) e.key: e.value,
-  };
-}
 
 /// Serves [pages] for every chapter and [chapterList] for every manga.
 class FakeSource implements MangaSource {

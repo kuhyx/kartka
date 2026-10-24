@@ -4,6 +4,7 @@ import 'package:kartka/downloads/engine/download_engine.dart';
 import 'package:kartka/downloads/engine/retry.dart';
 import 'package:kartka/downloads/keys.dart';
 import 'package:kartka/downloads/queue/download_task.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/platform/platform.dart';
 
 import '../fakes.dart';
@@ -16,7 +17,7 @@ void main() {
     chapter: chapter,
     enqueuedAt: DateTime.utc(2026),
   );
-  late MemoryBlobs blobs;
+  late MemoryBlobStore blobs;
   late FakeSource source;
 
   DownloadEngine engine(FakeLoader loader, {int maxAttempts = 3}) =>
@@ -30,7 +31,7 @@ void main() {
       );
 
   setUp(() {
-    blobs = MemoryBlobs();
+    blobs = MemoryBlobStore();
     source = FakeSource();
   });
 
@@ -48,7 +49,7 @@ void main() {
     );
     for (final p in pages) {
       expect(
-        blobs.data[pageBlobKey(key, chapter.url, p.index)],
+        await blobs.get(pageBlobKey(key, chapter.url, p.index)),
         fakeImage(p.imageUrl),
       );
     }

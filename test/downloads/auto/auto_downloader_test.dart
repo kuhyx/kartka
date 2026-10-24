@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/downloads/auto/auto_downloader.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 
 import '../fakes.dart';
 
@@ -17,7 +18,7 @@ LibraryEntry _entry(String url, {bool removed = false}) => LibraryEntry(
 ChapterInfo _ch(String url) => ChapterInfo(url: url, name: url);
 
 void main() {
-  late MemoryKv kv;
+  late MemoryKeyValueStore kv;
   late FakeSource source;
   late List<(String, String)> queued;
   late List<LibraryEntry> library;
@@ -30,7 +31,7 @@ void main() {
   );
 
   setUp(() {
-    kv = MemoryKv();
+    kv = MemoryKeyValueStore();
     source = FakeSource(chapterList: [_ch('/c1')]);
     queued = [];
     library = [_entry('/m1')];

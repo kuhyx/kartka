@@ -3,6 +3,7 @@ import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/downloads/engine/download_engine.dart';
 import 'package:kartka/downloads/engine/host_limiter.dart';
 import 'package:kartka/downloads/engine/retry.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 
 import 'fakes.dart';
 
@@ -14,8 +15,8 @@ const ch2 = ChapterInfo(url: '/chapter/2', name: 'Ch. 2', number: 2);
 class Harness {
   new({FakeLoader? loader}) : loader = loader ?? FakeLoader();
 
-  final MemoryKv kv = MemoryKv();
-  final MemoryBlobs blobs = MemoryBlobs();
+  final MemoryKeyValueStore kv = MemoryKeyValueStore();
+  final MemoryBlobStore blobs = MemoryBlobStore();
   final FakeSource source = FakeSource();
   FakeLoader loader;
 

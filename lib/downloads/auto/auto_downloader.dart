@@ -10,9 +10,9 @@ import 'package:kartka/platform/key_value_store.dart';
 ///
 /// Runs only while the app is open, via [checkIfDue] (called when the
 /// download service first loads and when the Downloads screen opens); there
-/// is no timer and no background worker in v1. The first time a manga is seen its current
-/// chapters become the baseline, so enabling the setting never downloads a
-/// whole back catalogue.
+/// is no timer and no background worker in v1. The first time a manga is
+/// seen its current chapters become the baseline, so enabling the setting
+/// never downloads a whole back catalogue.
 class AutoDownloader {
   /// Creates the checker.
   new({
