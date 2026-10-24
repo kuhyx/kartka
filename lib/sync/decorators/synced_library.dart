@@ -12,8 +12,8 @@ import 'package:kartka/sync/wire/wire.dart';
 
 /// The sync decorator for the library.
 class SyncedLibraryRepository with RemoteListener implements LibraryRepository {
-  /// Wraps [inner]; remote `library/` changes from [engine] are applied to it.
-  SyncedLibraryRepository(this._inner, Future<SyncEngine> engine) {
+  /// Wraps `inner`; remote `library/` changes from `engine` are applied to it.
+  new(this._inner, Future<SyncEngine> engine) {
     listen(engine, {'library'});
   }
 
@@ -25,7 +25,10 @@ class SyncedLibraryRepository with RemoteListener implements LibraryRepository {
   @override
   Future<void> upsert(LibraryEntry e) async {
     final engine = await this.engine;
-    if (engine == null) return _inner.upsert(e);
+    if (engine == null) {
+      await _inner.upsert(e);
+      return;
+    }
     final tick = engine.tick();
     // The local repo's LWW must accept every write made through sync, so it
     // gets the monotonic tick, never the caller's (possibly skewed) clock.
@@ -42,7 +45,10 @@ class SyncedLibraryRepository with RemoteListener implements LibraryRepository {
   @override
   Future<void> remove(MangaKey key) async {
     final engine = await this.engine;
-    if (engine == null) return _inner.remove(key);
+    if (engine == null) {
+      await _inner.remove(key);
+      return;
+    }
     final path = libraryPath(key);
     final known = engine.shadow.node(path);
     final current = known == null ? null : libraryFromNode(known);

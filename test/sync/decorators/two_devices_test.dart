@@ -5,7 +5,7 @@ import 'package:kartka/sync/wire/wire.dart';
 
 import '../device_harness.dart';
 
-final _key = mangaKeyOf('mangadex', '/manga/1');
+final MangaKey _key = mangaKeyOf('mangadex', '/manga/1');
 
 LibraryEntry _entry(String title, {bool removed = false}) => LibraryEntry(
   key: _key,

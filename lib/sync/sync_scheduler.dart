@@ -9,7 +9,7 @@ import 'package:flutter/widgets.dart';
 /// Calls [poll] every [interval] while the app lifecycle is resumed.
 class SyncScheduler with WidgetsBindingObserver {
   /// Creates a stopped scheduler.
-  SyncScheduler(this.poll, {this.interval = const Duration(seconds: 5)});
+  new(this.poll, {this.interval = const Duration(seconds: 5)});
 
   /// One cheap change check (`SyncEngine.poll`).
   final Future<void> Function() poll;

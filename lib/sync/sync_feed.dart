@@ -37,7 +37,7 @@ Map<String, Object?> feedUpdates(
   if (rev > kFeedWindow) 'log/$deviceId/r${rev - kFeedWindow}': null,
 };
 
-/// What a poll must fetch: everything, or just [paths].
+/// What a poll must fetch: everything, or just `paths`.
 typedef PullPlan = ({bool full, Set<String> paths});
 
 const PullPlan _full = (full: true, paths: {});

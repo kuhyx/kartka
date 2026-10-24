@@ -36,7 +36,7 @@ typedef TransportOpener = Future<RtdbTransport?> Function();
 /// The sync engine; one per app.
 class SyncEngine {
   /// Creates an engine for [deviceId] over [shadow].
-  SyncEngine({
+  new({
     required this.shadow,
     required this.deviceId,
     required this.open,
@@ -202,7 +202,10 @@ class SyncEngine {
     if (pending.isEmpty) return;
     try {
       for (var i = 0; i < pending.length; i += kPushChunk) {
-        final chunk = pending.sublist(i, (i + kPushChunk).clamp(0, pending.length));
+        final chunk = pending.sublist(
+          i,
+          (i + kPushChunk).clamp(0, pending.length),
+        );
         final last = i + kPushChunk >= pending.length;
         await transport.patch({
           for (final path in chunk) path: shadow.node(path),

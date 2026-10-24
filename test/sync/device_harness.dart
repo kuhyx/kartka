@@ -15,7 +15,7 @@ import 'fakes.dart';
 /// One simulated install: the library part's real local repositories,
 /// decorated by sync, over a shared in-memory RTDB.
 class Device {
-  Device._(this.engine, this.library, this.categories, this.progress);
+  new _(this.engine, this.library, this.categories, this.progress);
 
   /// Builds device [id] syncing through [db].
   static Future<Device> create(

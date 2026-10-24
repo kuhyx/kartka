@@ -13,8 +13,8 @@ import 'package:kartka/sync/wire/wire.dart';
 class SyncedProgressRepository
     with RemoteListener
     implements ProgressRepository {
-  /// Wraps [inner]; remote changes from [engine] are applied to it.
-  SyncedProgressRepository(this._inner, Future<SyncEngine> engine) {
+  /// Wraps `inner`; remote changes from `engine` are applied to it.
+  new(this._inner, Future<SyncEngine> engine) {
     listen(engine, {'progress', 'read'});
   }
 
@@ -32,7 +32,10 @@ class SyncedProgressRepository
   @override
   Future<void> record(ReadingProgress p) async {
     final engine = await this.engine;
-    if (engine == null) return _inner.record(p);
+    if (engine == null) {
+      await _inner.record(p);
+      return;
+    }
     // Both sides max-merge (isAheadOf), so a stale record is a no-op here
     // and in RTDB alike.
     await _inner.record(p);
@@ -41,7 +44,10 @@ class SyncedProgressRepository
     // Page turns within one chapter coalesce into one push per few seconds;
     // a chapter change (or a first record) goes out at once.
     final pushed = engine.shadow.node(path)?['chapterUrl'];
-    if (pushed == p.chapterUrl) return engine.writeDeferred(path, node);
+    if (pushed == p.chapterUrl) {
+      await engine.writeDeferred(path, node);
+      return;
+    }
     await engine.flush();
     await engine.write(path, node);
   }

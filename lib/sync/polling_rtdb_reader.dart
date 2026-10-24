@@ -14,10 +14,7 @@ typedef ReaderOpener = Future<RtdbTransport?> Function();
 /// [RtdbReader] over an [RtdbTransport].
 class PollingRtdbReader implements RtdbReader {
   /// Reads via [open]; [watch] re-reads every [interval] while listened to.
-  PollingRtdbReader(
-    this.open, {
-    this.interval = const Duration(minutes: 1),
-  });
+  new(this.open, {this.interval = const Duration(minutes: 1)});
 
   /// Transport factory.
   final ReaderOpener open;
@@ -29,7 +26,8 @@ class PollingRtdbReader implements RtdbReader {
   @override
   Future<Object?> get(String path) async {
     final transport = await open();
-    return transport?.get(path);
+    if (transport == null) return null;
+    return await transport.get(path);
   }
 
   @override
