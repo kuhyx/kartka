@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
+import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
 
@@ -83,8 +84,8 @@ class MangaDetailController extends ChangeNotifier {
       .map((entries) => entries.any((e) => e.key == key))
       .distinct();
 
-  /// Read chapter urls, live.
-  Stream<Set<String>> readChapters() => _deps.progress.readChapters(key);
+  /// Read marks + progress, live; feed to `readUrls` with [chapters].
+  Stream<ReadMarks> readMarks() => watchReadMarks(_deps.progress, key);
 
   /// Reading progress, live (drives "Continue").
   Stream<ReadingProgress?> progress() => _deps.progress.watch(key);

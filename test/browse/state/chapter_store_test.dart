@@ -3,6 +3,7 @@ import 'package:kartka/browse/ports/browse_chapter_url_resolver.dart';
 import 'package:kartka/browse/ports/browse_unread_counts.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 
 import '../fakes.dart';
 
@@ -11,7 +12,7 @@ Future<void> tick() => Future<void>.delayed(Duration.zero);
 void main() {
   final src = FakeSource('mangadex');
   final key = mangaKeyOf('mangadex', '/m/1?a|b');
-  ChapterStore storeWith({FakeKv? kv}) =>
+  ChapterStore storeWith({MemoryKeyValueStore? kv}) =>
       ChapterStore((id) => id == 'mangadex' ? src : null, kv: kv);
 
   setUp(src.calls.clear);
@@ -35,7 +36,7 @@ void main() {
   });
 
   test('persists to the key-value store and restores after restart', () async {
-    final kv = FakeKv();
+    final kv = MemoryKeyValueStore();
     await storeWith(kv: kv).load(key);
     src.calls.clear();
     final fresh = storeWith(kv: kv);
@@ -49,9 +50,11 @@ void main() {
   });
 
   test('a corrupt persisted entry reads as uncached', () async {
-    final kv = FakeKv();
+    final kv = MemoryKeyValueStore();
     await storeWith(kv: kv).load(key);
-    kv.data.updateAll((_, _) => '{not json');
+    for (final k in (await kv.entries()).keys) {
+      await kv.set(k, '{not json');
+    }
     final fresh = storeWith(kv: kv);
     expect(await fresh.load(key), hasLength(3));
     expect(src.calls, hasLength(2));
@@ -74,7 +77,17 @@ void main() {
     await store.load(key);
     await progress.markRead(key, '/c/1');
     await tick();
-    expect(counts, [null, 3, 2]);
+    await progress.record(
+      ReadingProgress(
+        key: key,
+        chapterUrl: '/c/3',
+        chapterNumber: 3,
+        page: 0,
+        readAt: DateTime.utc(2026),
+      ),
+    );
+    await tick();
+    expect(counts, [null, 3, 2, 0]);
     await sub.cancel();
   });
 

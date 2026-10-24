@@ -1,10 +1,12 @@
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/state/combine_latest.dart';
+import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/library/ports.dart';
 
-/// Library's `UnreadCounts` port: cached chapters minus the read set.
+/// Library's `UnreadCounts` port: cached chapters not read per
+/// `isChapterRead`.
 ///
 /// Never fetches: a manga whose chapters were not loaded yet reads as null
 /// (unknown) rather than triggering one request per library row.
@@ -19,7 +21,7 @@ class BrowseUnreadCounts implements UnreadCounts {
   @override
   Stream<int?> watch(MangaKey key) => combineLatest2(
     _store.watch(key),
-    _progress.readChapters(key),
-    (chapters, read) => chapters?.where((c) => !read.contains(c.url)).length,
-  );
+    watchReadMarks(_progress, key),
+    (chapters, marks) => chapters == null ? null : unreadCount(chapters, marks),
+  ).distinct();
 }

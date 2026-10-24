@@ -3,11 +3,8 @@ import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/core/models/models.dart';
 
 /// Chapter i has url '/c<i>' and number i/2, or no number when i is 0 mod 5.
-ChapterInfo _ch(int i) => ChapterInfo(
-  url: '/c$i',
-  name: 'c$i',
-  number: i % 5 == 0 ? null : i / 2,
-);
+ChapterInfo _ch(int i) =>
+    ChapterInfo(url: '/c$i', name: 'c$i', number: i % 5 == 0 ? null : i / 2);
 
 extension on Any {
   Generator<ReadMarks> get marks => combine3(

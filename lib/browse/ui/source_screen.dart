@@ -54,9 +54,16 @@ class _SourceTabs extends StatefulWidget {
 }
 
 class _SourceTabsState extends State<_SourceTabs> {
-  late final _popular = _paged(widget.source.popular);
-  late final _latest = _paged(widget.source.latest);
-  late final _search = _paged(_searchFetch(widget.query ?? ''));
+  late final PagedController<MangaSummary> _popular = _paged(
+    widget.source.popular,
+  );
+  late final PagedController<MangaSummary> _latest = _paged(
+    widget.source.latest,
+  );
+  late final PagedController<MangaSummary> _search = PagedController(
+    _searchFetch(widget.query ?? ''),
+    keyOf: (m) => m.url,
+  );
   late final _queryField = TextEditingController(text: widget.query);
   late String? _active = (widget.query ?? '').isEmpty ? null : widget.query;
 
@@ -69,13 +76,10 @@ class _SourceTabsState extends State<_SourceTabs> {
 
   static PagedController<MangaSummary> _paged(
     Future<SearchPage> Function(int) call,
-  ) => PagedController<MangaSummary>(
-    (page) async {
-      final p = await call(page);
-      return (items: p.items, hasNext: p.hasNext);
-    },
-    keyOf: (m) => m.url,
-  );
+  ) => PagedController<MangaSummary>((page) async {
+    final p = await call(page);
+    return (items: p.items, hasNext: p.hasNext);
+  }, keyOf: (m) => m.url);
 
   PageFetcher<MangaSummary> _searchFetch(String q) => (page) async {
     final p = await widget.source.search(q, page);

@@ -35,16 +35,13 @@ class ChapterTile extends StatelessWidget {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
     final subtitle = [
-      if (chapter.scanlator case final s?) s,
+      ?chapter.scanlator,
       if (chapter.uploadedAt case final d?)
         d.toLocal().toIso8601String().substring(0, 10),
     ].join(' · ');
     return ListTile(
       key: ValueKey('chapter-${chapter.url}'),
-      title: Text(
-        chapter.name,
-        style: read ? TextStyle(color: muted) : null,
-      ),
+      title: Text(chapter.name, style: read ? TextStyle(color: muted) : null),
       subtitle: subtitle.isEmpty ? null : Text(subtitle),
       onTap: () => unawaited(
         context.push(

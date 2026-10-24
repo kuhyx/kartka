@@ -3,6 +3,7 @@ import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
+import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 
@@ -97,10 +98,21 @@ void main() {
     final c = ctl();
     await c.load();
     await c.setRead(c.chapters.first, read: true);
-    expect(await c.readChapters().first, {'/c/1'});
+    expect(readUrls(c.chapters, await c.readMarks().first), {'/c/1'});
     await c.setRead(c.chapters.first, read: false);
-    expect(await c.readChapters().first, isEmpty);
+    expect(readUrls(c.chapters, await c.readMarks().first), isEmpty);
     expect(await c.progress().first, isNull);
+    await progress.record(
+      ReadingProgress(
+        key: c.key,
+        chapterUrl: '/c/2',
+        chapterNumber: 2,
+        page: 0,
+        readAt: when,
+      ),
+    );
+    // Progress reads /c/2; /c/1 stays unread because of its tombstone.
+    expect(readUrls(c.chapters, await c.readMarks().first), {'/c/2'});
   });
 
   test('download queues each chapter; no-op without downloads', () async {

@@ -12,8 +12,8 @@ typedef SourceLookup = MangaSource? Function(String sourceId);
 /// library (unread counts) and tracking (chapter-number → url) can answer
 /// without a network call per row.
 class ChapterStore {
-  /// Creates a store resolving sources through [lookup]; with a `kv` store, lists
-  /// survive restarts (so library unread counts show before a re-fetch).
+  /// Creates a store resolving sources through `lookup`; with a `kv` store,
+  /// lists survive restarts (library unread counts show before a re-fetch).
   new(this._lookup, {this._kv});
 
   final SourceLookup _lookup;

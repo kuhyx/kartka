@@ -1,6 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:kartka/browse/state/combine_latest.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/repositories/repositories.dart';
 
 const _marksEq = MapEquality<String, bool>();
 
@@ -51,3 +53,11 @@ Set<String> readUrls(List<ChapterInfo> chapters, ReadMarks m) => {
 /// How many of [chapters] are unread.
 int unreadCount(List<ChapterInfo> chapters, ReadMarks m) =>
     chapters.where((c) => !isChapterRead(c, m)).length;
+
+/// Live [ReadMarks] of [key]: explicit marks plus the progress number.
+Stream<ReadMarks> watchReadMarks(ProgressRepository progress, MangaKey key) =>
+    combineLatest2(
+      progress.readMarks(key),
+      progress.watch(key),
+      (marks, p) => ReadMarks(marks: marks, progressNumber: p?.chapterNumber),
+    );

@@ -4,7 +4,6 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
-import 'package:kartka/platform/key_value_store.dart';
 
 /// Manga summary in [source] numbered [i].
 MangaSummary manga(String source, int i) =>
@@ -123,15 +122,18 @@ class FakeLibrary implements LibraryRepository {
 }
 
 class FakeProgress implements ProgressRepository {
-  final Map<MangaKey, Set<String>> read = {};
+  final Map<MangaKey, Map<String, bool>> marks = {};
   final Map<MangaKey, ReadingProgress> progress = {};
   final _c = StreamController<MangaKey>.broadcast();
 
-  @override
-  Stream<ReadingProgress?> watch(MangaKey key) async* {
-    yield progress[key];
-    yield* _c.stream.where((k) => k == key).map((k) => progress[k]);
+  Stream<T> _live<T>(MangaKey key, T Function() read) async* {
+    yield read();
+    yield* _c.stream.where((k) => k == key).map((_) => read());
   }
+
+  @override
+  Stream<ReadingProgress?> watch(MangaKey key) =>
+      _live(key, () => progress[key]);
 
   @override
   Future<void> record(ReadingProgress p) async {
@@ -141,21 +143,28 @@ class FakeProgress implements ProgressRepository {
 
   @override
   Future<void> markRead(MangaKey key, String chapterUrl) async {
-    (read[key] ??= {}).add(chapterUrl);
+    (marks[key] ??= {})[chapterUrl] = true;
     _c.add(key);
   }
 
   @override
   Future<void> markUnread(MangaKey key, String chapterUrl) async {
-    read[key]?.remove(chapterUrl);
+    (marks[key] ??= {})[chapterUrl] = false;
     _c.add(key);
   }
 
   @override
-  Stream<Set<String>> readChapters(MangaKey key) async* {
-    yield {...?read[key]};
-    yield* _c.stream.where((k) => k == key).map((k) => {...?read[k]});
-  }
+  Stream<Map<String, bool>> readMarks(MangaKey key) =>
+      _live(key, () => {...?marks[key]});
+
+  @override
+  Stream<Set<String>> readChapters(MangaKey key) => _live(
+    key,
+    () => {
+      for (final e in (marks[key] ?? const <String, bool>{}).entries)
+        if (e.value) e.key,
+    },
+  );
 }
 
 class FakeDownloads implements DownloadRepository {
@@ -175,23 +184,4 @@ class FakeDownloads implements DownloadRepository {
   @override
   Future<List<PageRef>?> offlinePages(MangaKey key, String chapterUrl) async =>
       null;
-}
-
-class FakeKv implements KeyValueStore {
-  final Map<String, String> data = {};
-
-  @override
-  Future<String?> get(String key) async => data[key];
-
-  @override
-  Future<void> set(String key, String value) async => data[key] = value;
-
-  @override
-  Future<void> remove(String key) async => data.remove(key);
-
-  @override
-  Future<Map<String, String>> entries({String prefix = ''}) async => {
-    for (final e in data.entries)
-      if (e.key.startsWith(prefix)) e.key: e.value,
-  };
 }
