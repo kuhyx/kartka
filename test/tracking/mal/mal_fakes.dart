@@ -26,8 +26,7 @@ class FakeTransport {
   new(this.handler);
 
   /// Answers each request in turn from [responses].
-  new queue(List<MalResponse> responses)
-    : handler = _fromQueue(responses);
+  new queue(List<MalResponse> responses) : handler = _fromQueue(responses);
 
   /// Current response policy, replaceable mid-test.
   FakeHandler handler;
