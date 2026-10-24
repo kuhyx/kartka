@@ -6,12 +6,13 @@
 # ============================================================================
 
 set -euo pipefail
+export KARTKA_OPEN_URL_SYNC=1
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 readonly HERE
 readonly SCRIPT="$HERE/register_mal.sh"
-readonly ANDROID_ID='aaaaaaaaaaaaaaaa1111'
-readonly WEB_ID='bbbbbbbbbbbbbbbb2222'
+readonly ANDROID_ID='aaaaaaaaaaaaaaaaaaaaaaaaaaaa1111'
+readonly WEB_ID='bbbbbbbbbbbbbbbbbbbbbbbbbbbb2222'
 SANDBOX=""
 FAILS=0
 
@@ -42,8 +43,8 @@ EOF
     # The script asks only for the HTTP status; known ids get 200.
     cat >"$SANDBOX/bin/curl" <<'EOF'
 #!/bin/bash
-if [[ " $* " == *"X-MAL-CLIENT-ID: aaaaaaaaaaaaaaaa1111"* ||
-      " $* " == *"X-MAL-CLIENT-ID: bbbbbbbbbbbbbbbb2222"* ]]; then
+if [[ " $* " == *"X-MAL-CLIENT-ID: aaaaaaaaaaaaaaaaaaaaaaaaaaaa1111"* ||
+      " $* " == *"X-MAL-CLIENT-ID: bbbbbbbbbbbbbbbbbbbbbbbbbbbb2222"* ]]; then
   printf 200
 else
   printf 401
@@ -105,7 +106,7 @@ test_bad_clipboard_id() {
 }
 
 test_verify_only_rejected_id() {
-    jq '.KARTKA_MAL_CLIENT_ID_WEB = "cccccccccccccccc3333"' "$(conf)" >"$SANDBOX/c" &&
+    jq '.KARTKA_MAL_CLIENT_ID_WEB = "cccccccccccccccccccccccccccc3333"' "$(conf)" >"$SANDBOX/c" &&
         cat "$SANDBOX/c" >"$(conf)"
     run_script '' --verify-only && fail "rejected id passed verification"
     grep -q 'FAIL web: MAL answered HTTP 401' "$SANDBOX/out" ||

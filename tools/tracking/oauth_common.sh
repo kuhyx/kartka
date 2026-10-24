@@ -84,3 +84,15 @@ config_check_mode() {
     mode="$(stat -c '%a' "$KARTKA_OAUTH_FILE")"
     [[ "$mode" == "600" ]] || die "$KARTKA_OAUTH_FILE has mode $mode, want 600"
 }
+
+# Opens a URL without blocking: a browser that was not already running
+# otherwise keeps xdg-open in the foreground until it exits, which hid every
+# later prompt. Prints the URL as a fallback.
+open_url() {
+    if [[ -n ${KARTKA_OPEN_URL_SYNC:-} ]]; then
+        xdg-open "$1" >/dev/null 2>&1 </dev/null || true # tests: deterministic
+    else
+        setsid -f xdg-open "$1" >/dev/null 2>&1 </dev/null || true
+    fi
+    echo "  opened: $1"
+}

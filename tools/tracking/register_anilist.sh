@@ -57,7 +57,7 @@ read_client_id() {
 register_client() {
     local label="$1" redirect="$2" key="$3" id
     echo "== AniList client: Kartka ${label}"
-    xdg-open "$DEV_PAGE" >/dev/null 2>&1
+    open_url "$DEV_PAGE"
     read -r -p "  Click 'Create New Client', then press Enter. " _
     paste_step "Name" "Kartka ${label}"
     paste_step "Redirect URL" "$redirect"
@@ -81,7 +81,7 @@ check_web_login() {
     id="$(config_get "$KEY_WEB")"
     echo "== Web login check: approve Kartka Web in the browser."
     echo "   The redirect page may fail to load; that is fine."
-    xdg-open "${AUTHORIZE}?client_id=${id}&response_type=token" >/dev/null 2>&1
+    open_url "${AUTHORIZE}?client_id=${id}&response_type=token"
     read -r -p "  Copy the full address-bar URL, then press Enter. " _
     url="$(clip_get | tr -d '[:space:]')"
     [[ "$url" == "${WEB_REDIRECT}#"* ]] ||

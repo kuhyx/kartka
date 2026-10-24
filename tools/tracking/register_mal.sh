@@ -91,7 +91,7 @@ register_app() {
   printf '   App Type must be "other": a public client with NO secret.\n'
   printf '   "web" issues a secret the app cannot keep, and MAL never lets you\n'
   printf '   change the type afterwards. Match fields by LABEL, not position.\n'
-  xdg-open "$CREATE_URL" >/dev/null 2>&1
+  open_url "$CREATE_URL"
   wait_enter "log in if asked; the Create ID form is open"
 
   paste_field 'App Name' "Kartka ${platform}"
