@@ -30,14 +30,13 @@ abstract interface class RtdbReader {
 /// An [RtdbReader] over a fixed in-memory tree, for tests and offline mode.
 class InMemoryRtdbReader implements RtdbReader {
   /// Creates a reader over [tree] (the decoded JSON under `/kartka`).
-  InMemoryRtdbReader([Map<String, Object?>? tree])
-    : _tree = tree ?? <String, Object?>{};
+  new([Map<String, Object?>? tree]) : _tree = tree ?? <String, Object?>{};
 
   Map<String, Object?> _tree;
   final _changes = StreamController<void>.broadcast();
 
   /// Replaces the whole tree and notifies every [watch] subscriber.
-  set tree(Map<String, Object?> value) {
+  void replace(Map<String, Object?> value) {
     _tree = value;
     _changes.add(null);
   }
@@ -47,7 +46,7 @@ class InMemoryRtdbReader implements RtdbReader {
 
   @override
   Stream<Object?> watch(String path) async* {
-    Object? last = _lookup(path);
+    var last = _lookup(path);
     yield last;
     await for (final _ in _changes.stream) {
       final next = _lookup(path);
