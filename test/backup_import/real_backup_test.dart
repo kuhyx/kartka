@@ -40,7 +40,24 @@ void main() {
       plan.manga.where((m) => m.entry.sourceId == 'mangadex').length,
       greaterThan(0),
     );
+    // The old MangaDex id lands on native `mangadex`, URLs unchanged
+    // (same Keiyoushi shape). In this backup all 269 are history only.
+    final legacy = data.manga.where((m) => m.sourceId == legacyMangaDexId);
+    for (final m in legacy) {
+      expect(const SourceMapper().map(m.sourceId).sourceId, 'mangadex');
+      expect(m.url, matches(RegExp(r'^/manga/[0-9a-f-]{36}$')));
+    }
+    for (final m in plan.manga) {
+      if (m.tachiyomiSourceId == legacyMangaDexId) {
+        expect(m.entry.sourceId, 'mangadex');
+      }
+    }
+    expect(
+      plan.unavailable(null).map((u) => u.id),
+      isNot(contains(legacyMangaDexId)),
+    );
     if (file.path.contains('2026-10-24_08-29')) {
+      expect(legacy, hasLength(269));
       expect(data.manga, hasLength(2657));
       expect(favorites, 774);
       expect(s.categories, 3);

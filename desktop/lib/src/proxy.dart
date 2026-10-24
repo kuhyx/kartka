@@ -45,8 +45,9 @@ const _hopByHop = {
 /// `<METHOD> /proxy?url=<absolute http(s) URL>`: forwards the method, body
 /// and allowed headers; relays status, body and headers (prefixed).
 class ProxyRoute {
-  /// Forwards through [client].
-  new(this.client) {
+  /// Forwards through [client]; `_log` gets failures (never a target URL,
+  /// whose query can hold a credential such as RTDB's `?auth=`).
+  new(this.client, this._log) {
     client
       ..userAgent = null
       ..connectionTimeout = const Duration(seconds: 20);
@@ -54,6 +55,8 @@ class ProxyRoute {
 
   /// Upstream client (follows redirects for GET/HEAD).
   final HttpClient client;
+
+  final void Function(String line) _log;
 
   /// Releases the client.
   void close() => client.close(force: true);
@@ -107,7 +110,13 @@ class ProxyRoute {
       response.headers.set('$responseHeaderPrefix$name', values.join(', '));
       if (name == 'content-type') response.headers.set(name, values.first);
     });
-    await response.addStream(upstream);
+    try {
+      await response.addStream(upstream);
+    } on Object catch (e) {
+      // The headers are out, so the status cannot change any more: the
+      // truncated body is the error. Escaping would kill the wrapper.
+      _log('kartka-desktop: /proxy: upstream cut mid-body (${e.runtimeType})');
+    }
   }
 
   static bool _isSelf(Uri target, int ownPort) =>

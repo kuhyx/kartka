@@ -35,9 +35,22 @@ class PluginSourceProvider implements SourceProvider {
 
   final Map<String, ({InstalledPlugin plugin, PluginSource source})> _live = {};
 
+  /// Never ends in silence: an unreadable installed list (or a failing
+  /// sync) re-emits the last good list, or `[]` before there is one, so the
+  /// library's "unavailable source" badges can show.
   @override
-  Stream<List<MangaSource>> watch() =>
-      registrar.watchInstalled().asyncMap(_sync);
+  Stream<List<MangaSource>> watch() {
+    List<MangaSource>? last;
+    return registrar
+        .watchInstalled()
+        .asyncMap(_sync)
+        .transform(
+          StreamTransformer.fromHandlers(
+            handleData: (sources, sink) => sink.add(last = sources),
+            handleError: (_, _, sink) => sink.add(last ?? const []),
+          ),
+        );
+  }
 
   Future<List<MangaSource>> _sync(List<InstalledPlugin> installed) async {
     final ids = {for (final p in installed) p.manifest.id};

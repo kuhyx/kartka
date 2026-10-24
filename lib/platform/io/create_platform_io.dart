@@ -7,6 +7,7 @@ import 'package:app_links/app_links.dart';
 import 'package:file_picker/file_picker.dart' as fp;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:kartka/platform/coalescing_saver.dart';
 import 'package:kartka/platform/http_kartka.dart';
 import 'package:kartka/platform/io/directory_files.dart';
 import 'package:kartka/platform/io/file_stores.dart';
@@ -22,10 +23,13 @@ import 'package:url_launcher/url_launcher.dart';
 Future<KartkaPlatform> createPlatform() async {
   final docs = await getApplicationDocumentsDirectory();
   final support = await getApplicationSupportDirectory();
+  final kv = FileKeyValueStore(File(p.join(support.path, 'kv.json')));
+  // Held by the binding for the app's lifetime: pause/detach writes kv.json.
+  flushOnBackground(kv.flush);
   return KartkaPlatform(
     http: DirectKartkaHttp(http.Client()),
     blobs: FileBlobStore(Directory(p.join(docs.path, 'blobs'))),
-    kv: FileKeyValueStore(File(p.join(support.path, 'kv.json'))),
+    kv: kv,
     secrets: SecureKeyValueStore(const FlutterSecureStorage()),
     filePicker: PluginFilePicker(
       pickDirectory: () async =>

@@ -19,6 +19,7 @@ import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/state/paged_controller.dart';
 import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/browse/ui/browse_tab.dart';
+import 'package:kartka/browse/ui/chapter_download_button.dart';
 import 'package:kartka/browse/ui/chapter_tile.dart';
 import 'package:kartka/browse/ui/cover_image.dart';
 import 'package:kartka/browse/ui/detail_header.dart';

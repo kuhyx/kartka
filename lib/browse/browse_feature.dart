@@ -16,6 +16,7 @@ import 'package:kartka/browse/ui/manga_detail_screen.dart';
 import 'package:kartka/browse/ui/source_screen.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
+import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/platform/image_headers.dart';
@@ -95,6 +96,7 @@ class BrowseRuntime {
     library: _repos.library,
     progress: _repos.progress,
     downloads: _env.registry.maybe<DownloadRepository>(),
+    downloadService: _env.registry.maybe<DownloadService>(),
     health: _env.registry.maybe<SourceHealthLookup>(),
     detailSlots: _env.registry.all<MangaDetailSlot>(),
     coverLoader: (url) => _covers.load(PageRef(index: 0, imageUrl: url)),

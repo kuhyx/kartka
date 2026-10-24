@@ -144,3 +144,21 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   beside `Tracker`. The track sheet calls `showLogin(context)` when
   `tracker is CredentialsLogin`, else `tracker.login()`. MangaUpdates shows
   its username + password sheet; AniList and MAL stay OAuth (§9 unchanged).
+- **Android kv.json writes are coalesced.** `FileKeyValueStore` writes at
+  most once per 250 ms window while sets keep coming (bounded latency, not
+  a resetting debounce; `CoalescingSaver`, lib/platform/). `createPlatform()`
+  wires `flushOnBackground(kv.flush)`, which flushes on every non-resumed
+  `AppLifecycleState`, so a clean pause or detach loses nothing.
+- **The wrapper never logs a /proxy target.** A query can carry a
+  credential (RTDB `?auth=<token>`, forwarded byte-identical). A mid-body
+  upstream cut is logged by error type only and no longer kills the
+  wrapper; the generic error log scrubs every `?query`.
+- **Every `SourceProvider` emits on subscribe**, even when it is
+  unconfigured, offline or failing (`[]`, or the last good list), and never
+  ends a subscription with only an error. `SourceAvailability` needs one
+  emission per provider before any badge can show.
+- **Chapter rows follow their `DownloadState`.** They offer download (or
+  retry), cancel while queued or downloading, and delete once downloaded.
+  Cancel and delete need `registry.maybe<DownloadService>()`.
+- **Old MangaDex id `3091964041986261235`** (SY "MangaDex (Revived)") maps
+  to native `mangadex` with URLs unchanged, like the current per-language ids.

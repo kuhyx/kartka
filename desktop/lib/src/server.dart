@@ -25,11 +25,27 @@ class WrapperServer {
     required String filesDir,
     required String secretsFile,
     HttpClient? upstream,
-  }) : _static = StaticFiles(webRoot),
-       _files = FileRoutes(filesDir),
-       _secrets = SecretRoutes(secretsFile),
-       _proxy = ProxyRoute(upstream ?? HttpClient());
+    void Function(String line)? log,
+  }) : this._(
+         log ?? stderr.writeln,
+         webRoot,
+         filesDir,
+         secretsFile,
+         upstream ?? HttpClient(),
+       );
 
+  new _(
+    this._log,
+    String webRoot,
+    String filesDir,
+    String secretsFile,
+    HttpClient upstream,
+  ) : _static = StaticFiles(webRoot),
+      _files = FileRoutes(filesDir),
+      _secrets = SecretRoutes(secretsFile),
+      _proxy = ProxyRoute(upstream, _log);
+
+  final void Function(String line) _log;
   final StaticFiles _static;
   final FileRoutes _files;
   final SecretRoutes _secrets;
@@ -71,8 +87,11 @@ class WrapperServer {
         await _route(request);
       }
     } on Object catch (e) {
+      // Path only, and queries scrubbed from the error: a /proxy target can
+      // carry a credential (RTDB `?auth=<token>`), and HttpException
+      // embeds the full upstream URI in its message.
+      _log('kartka-desktop: ${request.uri.path}: ${redactQueries('$e')}');
       response.statusCode = HttpStatus.internalServerError;
-      stderr.writeln('kartka-desktop: ${request.uri.path}: $e');
     }
     await response.close();
   }
@@ -116,3 +135,8 @@ class WrapperServer {
     return await _static.handle(request);
   }
 }
+
+/// [text] with every URL query (`?...` up to whitespace, `,` or `)`)
+/// replaced by `?<redacted>`.
+String redactQueries(String text) =>
+    text.replaceAll(RegExp(r'\?[^\s,)]*'), '?<redacted>');
