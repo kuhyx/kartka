@@ -24,6 +24,7 @@ class SourceHealthRecord {
     this.completeness,
     this.imageQuality,
     this.subsetOf,
+    this.availability,
     this.score,
     this.rank,
     this.verdict = HealthVerdict.pending,
@@ -49,6 +50,7 @@ class SourceHealthRecord {
       completeness: CompletenessMetric.fromJson(j['chapterCompleteness']),
       imageQuality: ImageQualityMetric.fromJson(j['imageQuality']),
       subsetOf: SubsetOfMetric.fromJson(j['subsetOf']),
+      availability: AvailabilityMetric.fromJson(j['availability']),
       score: readDouble(j, 'score'),
       rank: readInt(j, 'rank'),
       verdict: HealthVerdict.parse(readString(j, 'verdict')),
@@ -92,6 +94,9 @@ class SourceHealthRecord {
   /// Set when the source is a subset of a better one.
   final SubsetOfMetric? subsetOf;
 
+  /// Which implementations of the site exist (native, JS, Keiyoushi).
+  final AvailabilityMetric? availability;
+
   /// Weighted score in 0..1.
   final double? score;
 
@@ -119,6 +124,7 @@ class SourceHealthRecord {
     'chapterCompleteness': completeness?.toJson(),
     'imageQuality': imageQuality?.toJson(),
     'subsetOf': subsetOf?.toJson(),
+    'availability': availability?.toJson(),
     'score': score,
     'rank': rank,
     'verdict': verdict.name,
@@ -140,6 +146,7 @@ class SourceHealthRecord {
       other.completeness == completeness &&
       other.imageQuality == imageQuality &&
       other.subsetOf == subsetOf &&
+      other.availability == availability &&
       other.score == score &&
       other.rank == rank &&
       other.verdict == verdict &&
@@ -159,6 +166,7 @@ class SourceHealthRecord {
     completeness,
     imageQuality,
     subsetOf,
+    availability,
     score,
     rank,
     verdict,

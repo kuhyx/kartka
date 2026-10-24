@@ -122,3 +122,48 @@ class SubsetOfMetric {
   @override
   int get hashCode => Object.hash(sourceId, overlap);
 }
+
+/// §5 `availability`: which implementations of this site exist.
+@immutable
+class AvailabilityMetric {
+  /// Creates an availability block; null flags were not reported.
+  const AvailabilityMetric({this.native, this.mangayomiJs, this.keiyoushi});
+
+  /// Parses `availability`; null unless [json] is a map.
+  static AvailabilityMetric? fromJson(Object? json) {
+    final m = asMap(json);
+    if (m == null) return null;
+    bool? flag(String k) => m[k] is bool ? m[k]! as bool : null;
+    return AvailabilityMetric(
+      native: flag('native'),
+      mangayomiJs: flag('mangayomiJs'),
+      keiyoushi: flag('keiyoushi'),
+    );
+  }
+
+  /// A native Dart source exists in Kartka.
+  final bool? native;
+
+  /// A Mangayomi JS extension exists (usable as a converted plugin).
+  final bool? mangayomiJs;
+
+  /// A Keiyoushi extension exists (usable through Suwayomi).
+  final bool? keiyoushi;
+
+  /// The JSON block.
+  Map<String, Object?> toJson() => compact({
+    'native': native,
+    'mangayomiJs': mangayomiJs,
+    'keiyoushi': keiyoushi,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      other is AvailabilityMetric &&
+      other.native == native &&
+      other.mangayomiJs == mangayomiJs &&
+      other.keiyoushi == keiyoushi;
+
+  @override
+  int get hashCode => Object.hash(native, mangayomiJs, keiyoushi);
+}

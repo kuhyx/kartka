@@ -67,6 +67,14 @@ extension HealthGenerators on Any {
     (String id, double? o) => SubsetOfMetric(sourceId: id, overlap: o),
   );
 
+  Generator<AvailabilityMetric> get availability => combine3(
+    this.bool.nullable,
+    this.bool.nullable,
+    this.bool.nullable,
+    (bool? n, bool? j, bool? k) =>
+        AvailabilityMetric(native: n, mangayomiJs: j, keiyoushi: k),
+  );
+
   Generator<DateTime?> get _instant => intInRange(0, 4102444800000)
       .map((ms) => DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true))
       .nullable;
@@ -96,7 +104,12 @@ extension HealthGenerators on Any {
     completeness.nullable,
     imageQuality.nullable,
     subsetOf.nullable,
-    combine2(_ratio, intInRange(1, 400).nullable, (double? s, int? r) => (s, r)),
+    combine3(
+      _ratio,
+      intInRange(1, 400).nullable,
+      availability.nullable,
+      (double? s, int? r, AvailabilityMetric? a) => (s, r, a),
+    ),
     combine2(
       choose(HealthVerdict.values),
       list(choose(['uptime<0.95', 'blocking', 'coverage<0.60', 'subset'])),
@@ -111,7 +124,7 @@ extension HealthGenerators on Any {
       CompletenessMetric? cc,
       ImageQualityMetric? iq,
       SubsetOfMetric? so,
-      (double?, int?) ranking,
+      (double?, int?, AvailabilityMetric?) ranking,
       (HealthVerdict, List<String>) verdict,
     ) => SourceHealthRecord(
       id: base.id,
@@ -126,6 +139,7 @@ extension HealthGenerators on Any {
       completeness: cc,
       imageQuality: iq,
       subsetOf: so,
+      availability: ranking.$3,
       score: ranking.$1,
       rank: ranking.$2,
       verdict: verdict.$1,

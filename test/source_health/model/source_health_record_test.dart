@@ -45,6 +45,14 @@ void main() {
         r.subsetOf,
         const SubsetOfMetric(sourceId: 'mangadex', overlap: 0.93),
       );
+      expect(
+        r.availability,
+        const AvailabilityMetric(
+          native: true,
+          mangayomiJs: true,
+          keiyoushi: true,
+        ),
+      );
       expect(r.score, 0.81);
       expect(r.rank, 3);
       expect(r.verdict, HealthVerdict.cut);
@@ -58,6 +66,7 @@ void main() {
       expect(r.completeness, isNull);
       expect(r.imageQuality, isNull);
       expect(r.subsetOf, isNull);
+      expect(r.availability, isNull);
       expect(r.score, isNull);
       expect(r.rank, isNull);
       expect(r.cutReasons, isEmpty);
@@ -94,6 +103,7 @@ void main() {
         'latencyMs': {'p50': 'fast', 'p95': 12.6},
         'blocking': {'challengeRate': '0', 'kinds': 'cloudflare'},
         'subsetOf': {'overlap': 0.5},
+        'availability': {'native': 'yes', 'keiyoushi': false},
         'score': true,
         'rank': 2.0,
         'cutReasons': ['blocking', 7],
@@ -104,6 +114,7 @@ void main() {
       expect(r.latency, const LatencyMetric(p95: 13));
       expect(r.blocking, const BlockingMetric(kinds: []));
       expect(r.subsetOf, isNull);
+      expect(r.availability, const AvailabilityMetric(keiyoushi: false));
       expect(r.score, isNull);
       expect(r.rank, 2);
       expect(r.cutReasons, ['blocking']);

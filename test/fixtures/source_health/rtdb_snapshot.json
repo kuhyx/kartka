@@ -34,6 +34,11 @@
       "medianWidthPx": 1400,
       "medianJpegQuality": 90
     },
+    "availability": {
+      "native": true,
+      "mangayomiJs": true,
+      "keiyoushi": true
+    },
     "score": 0.93,
     "rank": 1,
     "verdict": "keep",
@@ -77,6 +82,11 @@
     "subsetOf": {
       "sourceId": "mangadex",
       "overlap": 0.93
+    },
+    "availability": {
+      "native": true,
+      "mangayomiJs": true,
+      "keiyoushi": true
     },
     "score": 0.81,
     "rank": 3,
@@ -122,6 +132,11 @@
       "sampledPages": 60,
       "medianWidthPx": 800,
       "medianJpegQuality": 75
+    },
+    "availability": {
+      "native": false,
+      "mangayomiJs": true,
+      "keiyoushi": false
     },
     "score": 0.41,
     "rank": 5,
@@ -229,6 +244,11 @@
       "sampledPages": 30,
       "medianWidthPx": 1200,
       "medianJpegQuality": 85
+    },
+    "availability": {
+      "native": false,
+      "mangayomiJs": false,
+      "keiyoushi": true
     },
     "score": 0.55,
     "rank": 4,
