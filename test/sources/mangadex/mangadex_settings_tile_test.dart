@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings_store.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings_tile.dart';
-
-import 'fakes.dart';
 
 void main() {
   late MangadexSettingsStore store;
 
   Future<void> pumpTile(WidgetTester tester) async {
-    store = MangadexSettingsStore(FakeKv());
+    store = MangadexSettingsStore(MemoryKeyValueStore());
     await tester.runAsync(() => store.ready);
     await tester.pumpWidget(
       MaterialApp(

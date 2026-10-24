@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/sources/mangadex/rate_limiter.dart';
 
@@ -98,6 +100,27 @@ void main() {
     await expectLater(l.acquire(u), throwsStateError);
     await l.acquire(u);
     expect(clock.waits, [const Duration(seconds: 1)]);
+  });
+
+  test('a full at-home bucket does not block other api calls', () async {
+    final gate = Completer<void>();
+    final l = RateLimiter(
+      mangadexRateRules,
+      now: () => clock.now,
+      delay: (_) => gate.future,
+    );
+    for (var i = 0; i < 40; i++) {
+      await l.acquire(atHome);
+      clock.now = clock.now.add(const Duration(milliseconds: 300));
+    }
+    var pagesGranted = false;
+    unawaited(l.acquire(atHome).then((_) => pagesGranted = true));
+    await l.acquire(api);
+    expect(pagesGranted, isFalse);
+    clock.now = clock.now.add(const Duration(minutes: 1));
+    gate.complete();
+    await pumpEventQueue();
+    expect(pagesGranted, isTrue);
   });
 
   test('defaults use the wall clock', () async {

@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/platform/http_client.dart';
+import 'package:kartka/platform/memory/memory_fakes.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings_store.dart';
 import 'package:kartka/sources/mangadex/mangadex_source.dart';
@@ -12,12 +14,12 @@ const _solo = '32d76d19-8a05-4db0-9fc2-e0b0648fe9d0';
 const _seijo = 'e9d69f82-4c53-44ce-a94b-32303d172227';
 
 void main() {
-  late FakeKv kv;
+  late MemoryKeyValueStore kv;
   late List<Duration> waits;
   final t0 = DateTime.utc(2026, 10, 24, 12);
   var now = t0;
 
-  MangaDexSource sourceOver(FakeHttp http, {int feedLimit = 3}) {
+  MangaDexSource sourceOver(FakeKartkaHttp http, {int feedLimit = 3}) {
     final limiter = RateLimiter(
       mangadexRateRules,
       now: () => now,
@@ -36,19 +38,19 @@ void main() {
   }
 
   setUp(() {
-    kv = FakeKv();
+    kv = MemoryKeyValueStore();
     waits = [];
     now = t0;
   });
 
   test('ref is the native mangadex source', () {
-    final ref = sourceOver(FakeHttp({})).ref;
+    final ref = sourceOver(fixtureHttp({})).ref;
     expect(ref.id, 'mangadex');
     expect(ref.origin, SourceOrigin.native);
   });
 
   test('popular maps the recorded list and sends the User-Agent', () async {
-    final http = FakeHttp({
+    final http = fixtureHttp({
       '/manga': [Canned.file('popular.json')],
     });
     final page = await sourceOver(http).popular(1);
@@ -57,29 +59,29 @@ void main() {
     expect(page.items.first.url, '/manga/$_solo');
     expect(page.items.first.coverUrl, endsWith('.jpg.512.jpg'));
     expect(page.hasNext, isTrue);
-    expect(http.sentHeaders.single['User-Agent'], kartkaUserAgent);
+    expect(http.requests.single.headers['User-Agent'], kartkaUserAgent);
   });
 
   test('latest and search hit /manga with their orders', () async {
-    final http = FakeHttp({
+    final http = fixtureHttp({
       '/manga': [Canned.file('latest.json'), Canned.file('search.json')],
     });
     final s = sourceOver(http);
     expect((await s.latest(1)).items.first.title, 'The Ghostly Doctor');
     final found = await s.search('yotsuba', 1);
     expect(found.items.first.title, startsWith('Yotsuba&!'));
-    expect(http.requests[1].queryParameters['title'], 'yotsuba');
+    expect(http.requests[1].url.queryParameters['title'], 'yotsuba');
   });
 
   test('pages past the 10000 window are empty without a request', () async {
-    final http = FakeHttp({});
+    final http = fixtureHttp({});
     final page = await sourceOver(http).popular(501);
     expect(page, SearchPage.empty);
     expect(http.requests, isEmpty);
   });
 
   test('details maps authors, status and tracker ids', () async {
-    final http = FakeHttp({
+    final http = fixtureHttp({
       '/manga/$_solo': [Canned.file('details.json')],
     });
     final d = await sourceOver(http).details('/manga/$_solo');
@@ -98,7 +100,7 @@ void main() {
 
   test('chapters page through the feed by the returned count', () async {
     const path = '/manga/$_seijo/feed';
-    final http = FakeHttp({
+    final http = fixtureHttp({
       '$path?offset=0': [Canned.file('feed_0.json')],
       '$path?offset=3': [Canned.file('feed_3.json')],
     });
@@ -111,7 +113,7 @@ void main() {
   });
 
   test('an empty feed page stops the loop', () async {
-    final http = FakeHttp({
+    final http = fixtureHttp({
       '/manga/x/feed': [const Canned.body('{"data":[],"total":9}')],
     });
     expect(await sourceOver(http).chapters('/manga/x'), isEmpty);
@@ -121,7 +123,7 @@ void main() {
     final routes = {
       '/at-home/server/c1': [Canned.file('at_home.json')],
     };
-    final full = await sourceOver(FakeHttp(routes)).pages('/chapter/c1');
+    final full = await sourceOver(fixtureHttp(routes)).pages('/chapter/c1');
     expect(full, hasLength(55));
     expect(full.first.index, 0);
     expect(full.first.imageUrl, contains('/data/2a695934'));
@@ -129,7 +131,7 @@ void main() {
 
     final store = MangadexSettingsStore(kv);
     await store.save(MangadexSettings.defaults.copyWith(dataSaver: true));
-    final saver = await sourceOver(FakeHttp(routes)).pages('/chapter/c1');
+    final saver = await sourceOver(fixtureHttp(routes)).pages('/chapter/c1');
     expect(saver.first.imageUrl, contains('/data-saver/2a695934'));
   });
 
@@ -140,7 +142,7 @@ void main() {
         '{"hash":"h","data":["a.jpg"],"dataSaver":[]}}';
     return store.save(MangadexSettings.defaults.copyWith(dataSaver: true)).then(
       (_) async {
-        final http = FakeHttp({
+        final http = fixtureHttp({
           '/at-home/server/c': [const Canned.body(body)],
         });
         final pages = await sourceOver(http).pages('/chapter/c');
@@ -150,7 +152,7 @@ void main() {
   });
 
   test('404 throws MangadexApiException with the API detail', () async {
-    final http = FakeHttp({
+    final http = fixtureHttp({
       '/manga/nope': [Canned.file('error_404.json', status: 404)],
     });
     final call = sourceOver(http).details('/manga/nope');
@@ -166,14 +168,14 @@ void main() {
   });
 
   test('non-JSON error bodies still throw', () async {
-    final http = FakeHttp({
+    final http = fixtureHttp({
       '/manga/x': [const Canned.body('<html>', status: 503)],
     });
     await expectLater(
       sourceOver(http).details('/manga/x'),
       throwsA(isA<MangadexApiException>()),
     );
-    final arr = FakeHttp({
+    final arr = fixtureHttp({
       '/manga/y': [const Canned.body('[]', status: 500)],
     });
     await expectLater(
@@ -184,7 +186,7 @@ void main() {
 
   test('429 backs off until Retry-After, then retries', () async {
     final retry = t0.add(const Duration(seconds: 30));
-    final http = FakeHttp({
+    final http = fixtureHttp({
       '/manga/$_solo': [
         Canned.file(
           'rate_limited_429.json',
@@ -203,7 +205,7 @@ void main() {
   });
 
   test('429 without a header waits a second; gives up after retries', () {
-    final http = FakeHttp({
+    final http = fixtureHttp({
       '/manga/x': [Canned.file('rate_limited_429.json', status: 429)],
     });
     return expectLater(
@@ -217,7 +219,7 @@ void main() {
 
   test('default limiter and clock construct', () {
     final s = MangaDexSource(
-      http: FakeHttp({}),
+      http: fixtureHttp({}),
       settings: MangadexSettingsStore(kv),
     );
     expect(s.feedLimit, 500);

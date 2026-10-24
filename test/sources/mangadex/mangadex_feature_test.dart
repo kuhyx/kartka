@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/core/source/source_provider.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/platform/platform.dart';
 import 'package:kartka/sources/mangadex/mangadex_feature.dart';
 import 'package:kartka/sources/mangadex/mangadex_image_headers.dart';
@@ -9,24 +10,8 @@ import 'package:kartka/sources/mangadex/mangadex_settings_store.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings_tile.dart';
 import 'package:kartka/sources/mangadex/mangadex_source.dart';
 
-import 'fakes.dart';
-
-/// Platform services this part never touches.
-class _Unused implements BlobStore, FilePicker, OAuthRedirect {
-  @override
-  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
-}
-
 void main() {
-  final unused = _Unused();
-  final platform = KartkaPlatform(
-    http: FakeHttp({}),
-    blobs: unused,
-    kv: FakeKv(),
-    secrets: FakeKv(),
-    filePicker: unused,
-    oauth: unused,
-  );
+  final platform = memoryPlatform();
 
   test('feature provides the source and the settings store', () async {
     final registry = KartkaRegistry.build(platform, [mangadexFeature]);

@@ -57,25 +57,33 @@ class RateLimiter {
   final Future<void> Function(Duration) _delay;
   final Map<RateRule, Queue<DateTime>> _grants = {};
   final Map<String, DateTime> _blockedUntil = {};
-  Future<void> _tail = Future.value();
+  final Map<String, Future<void>> _tails = {};
 
   /// Completes when a request to [uri] may be sent.
+  ///
+  /// Callers that match the same rules on the same host queue in order;
+  /// other queues proceed, so a full at-home bucket does not stall browsing.
+  /// The final check and the grant run with no await in between, so queues
+  /// sharing a rule never over-grant it.
   Future<void> acquire(Uri uri) {
-    final turn = _tail.then((_) => _grant(uri));
-    _tail = turn.then((_) {}, onError: (Object _) {});
+    final matching = [
+      for (final r in rules)
+        if (r.matches(uri)) r,
+    ];
+    final lane = '${uri.host}|${matching.map(rules.indexOf).join(',')}';
+    final turn = (_tails[lane] ?? Future.value()).then(
+      (_) => _grant(uri.host, matching),
+    );
+    _tails[lane] = turn.then((_) {}, onError: (Object _) {});
     return turn;
   }
 
   /// Blocks [host] until [until], e.g. from a 429's `X-RateLimit-Retry-After`.
   void backOff(String host, DateTime until) => _blockedUntil[host] = until;
 
-  Future<void> _grant(Uri uri) async {
-    final matching = [
-      for (final r in rules)
-        if (r.matches(uri)) r,
-    ];
+  Future<void> _grant(String host, List<RateRule> matching) async {
     for (;;) {
-      final wait = _waitFor(uri.host, matching);
+      final wait = _waitFor(host, matching);
       if (wait <= Duration.zero) break;
       await _delay(wait);
     }

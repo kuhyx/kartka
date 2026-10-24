@@ -7,10 +7,9 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/platform/http_client.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings_store.dart';
 import 'package:kartka/sources/mangadex/mangadex_source.dart';
-
-import 'fakes.dart';
 
 /// Minimal dart:io client; test-only, so lib/ stays free of dart:io.
 class _IoHttp extends KartkaHttp {
@@ -48,7 +47,7 @@ void main() {
   test('live: popular -> details -> chapters -> pages', () async {
     final s = MangaDexSource(
       http: _IoHttp(),
-      settings: MangadexSettingsStore(FakeKv()),
+      settings: MangadexSettingsStore(MemoryKeyValueStore()),
     );
     final popular = await s.popular(1);
     expect(popular.items, isNotEmpty);

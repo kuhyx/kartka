@@ -1,12 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings_store.dart';
 
-import 'fakes.dart';
-
 void main() {
-  late FakeKv kv;
-  setUp(() => kv = FakeKv());
+  late MemoryKeyValueStore kv;
+  setUp(() => kv = MemoryKeyValueStore());
 
   test('empty storage keeps defaults', () async {
     final store = MangadexSettingsStore(kv);
@@ -20,7 +19,7 @@ void main() {
       dataSaver: true,
     );
     await MangadexSettingsStore(kv).save(s);
-    expect(kv.data, contains(MangadexSettingsStore.storageKey));
+    expect(await kv.get(MangadexSettingsStore.storageKey), isNotNull);
     final again = MangadexSettingsStore(kv);
     await again.ready;
     expect(again.value, s);
@@ -36,7 +35,7 @@ void main() {
 
   test('corrupt or non-object JSON keeps defaults', () async {
     for (final raw in ['{not json', '[1,2]']) {
-      kv.data[MangadexSettingsStore.storageKey] = raw;
+      await kv.set(MangadexSettingsStore.storageKey, raw);
       final store = MangadexSettingsStore(kv);
       await store.ready;
       expect(store.value, MangadexSettings.defaults);
