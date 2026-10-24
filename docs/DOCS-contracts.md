@@ -244,3 +244,12 @@ Stream<bool>` (tracking-anilist supplies from TrackingService bindings).
 - MangaDex URLs are Keiyoushi-compatible (`/manga/<uuid>`, `/chapter/<uuid>`),
   so .tachibk MangaDex entries map to `mangadex|/manga/<uuid>` unchanged.
 - `dart_test.yaml` skips tag `live` (foundation).
+- Sources are dynamic and supplied ONLY as `SourceProvider { Stream<List<MangaSource>> watch(); }`
+  (+ `StaticSourceProvider`, lib/core/source/) through `KartkaFeature.services`.
+  Browse's SourceRegistry merges them live.
+- `ImageHeaders { Map<String,String> forUrl(String url); }` (lib/platform/) is
+  merged into every image request by page_image and the cover widget, with
+  PageRef headers winning. Credentials never go into synced URLs.
+- Suwayomi entries the server has never seen are resolved by searching their
+  title on that source and matching the exact url, then retrying. Kartka never
+  restores the .tachibk into Suwayomi.
