@@ -1,0 +1,54 @@
+name: kartka
+description: "Kartka: a small, desktop-friendly manga reader (Android + web)."
+publish_to: 'none'
+
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.5
+
+# Exact pins, newest stable, checked by scripts/check_dependency_freshness.sh
+# (pre-commit) and the dependency-freshness workflow (CI). Only the carve-out
+# packages (very_good_analysis, the SDK ones) keep a caret.
+dependencies:
+  # Android deep link kartka://oauth for OAuthRedirect.
+  app_links: 7.2.2
+  # Deep ==/hashCode for the list and map fields of the core models.
+  collection: 1.19.1
+  # SHA-1 for mangaKeyHash (RTDB-safe keys, DOCS-contracts §4).
+  crypto: 3.0.7
+  # The shared palette, scales and theme builders. Owns the tokens: there is
+  # deliberately no local theme file to drift from the frozen table.
+  design_system:
+    git:
+      url: https://github.com/kuhyx/utils
+      ref: design_system-v0.2.1
+      path: design_system
+  # CBZ / folder import (FilePicker seam); web and Android implementations.
+  file_picker: 13.2.0
+  flutter:
+    sdk: flutter
+  # Router (DOCS-contracts §10); lib/app/routes.dart builds and parses paths.
+  go_router: 18.1.1
+  # Only lib/platform/ may import this (enforced by
+  # test/platform/import_boundaries_test.dart); sources go through KartkaHttp.
+  http: 1.6.0
+  # IndexedDB on web (KeyValueStore); the in-memory backend keeps tests fast.
+  idb_shim: 2.10.1+1
+  path: 1.9.1
+  path_provider: 2.1.6
+  url_launcher: 6.3.3
+  web: 1.1.2
+
+dev_dependencies:
+  # Generates the Android launcher icons from assets/icon/ (shared generator:
+  # ~/src/testsAndMisc/python_pkg/app_icons).
+  flutter_launcher_icons: 0.14.4
+  flutter_test:
+    sdk: flutter
+  # Property-based tests for models, parsers and merge rules.
+  glados: 1.1.7
+  very_good_analysis: ^11.0.0
+
+flutter:
+  uses-material-design: true
