@@ -7,6 +7,19 @@ import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
 
+/// No registered source has the route's source id (not installed, server
+/// unreachable, or an id kartka has no source for, e.g. `sy-builtin:*`).
+class SourceUnavailable implements Exception {
+  /// Creates the error for [sourceId].
+  const new(this.sourceId);
+
+  /// The missing source id.
+  final String sourceId;
+
+  @override
+  String toString() => 'Source $sourceId is not available';
+}
+
 /// State and actions of the manga detail screen.
 class MangaDetailController extends ChangeNotifier {
   /// Creates a controller for the manga at [mangaUrl] in [sourceId].
@@ -72,7 +85,7 @@ class MangaDetailController extends ChangeNotifier {
     late final StreamSubscription<void> sub;
     final timer = Timer(sourceWait, () {
       if (found.isCompleted) return;
-      found.completeError(StateError('Source $sourceId is not available'));
+      found.completeError(SourceUnavailable(sourceId));
       unawaited(sub.cancel());
     });
     sub = _deps.sources.watch().listen((_) {

@@ -133,4 +133,17 @@ void main() {
     await t.pumpAndSettle();
     expect(src.calls.where((c) => c.startsWith('details')), hasLength(3));
   });
+
+  testWidgets('a source id with no MangaSource shows unavailable', (t) async {
+    final h = Harness();
+    await h.pump(t, const SizedBox(), at: mangaRoute('sy-builtin:42', _url));
+    expect(find.text('Source unavailable'), findsOneWidget);
+    expect(find.textContaining('sy-builtin:42'), findsOneWidget);
+    expect(find.textContaining('Could not load'), findsNothing);
+    // It can appear later (e.g. a plugin installed): Retry picks it up.
+    h.provider.controller.add([FakeSource('sy-builtin:42')]);
+    await t.tap(find.text('Retry'));
+    await t.pumpAndSettle();
+    expect(find.text('Detail title'), findsOneWidget);
+  });
 }

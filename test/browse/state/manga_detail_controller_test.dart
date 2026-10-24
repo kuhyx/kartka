@@ -75,6 +75,7 @@ void main() {
       sourceWait: const Duration(milliseconds: 10),
     );
     await c.load();
+    expect(c.error, isA<SourceUnavailable>());
     expect('${c.error}', contains('plugin:never'));
   });
 
