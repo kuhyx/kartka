@@ -79,6 +79,6 @@ void main() {
     await t.pumpAndSettle();
     expect(find.text('MangaDex'), findsOneWidget);
     expect(find.text('Alpha'), findsOneWidget);
-    expect((sources.first as FakeSource).calls, contains('search(berserk):1'));
+    expect(sources.first.calls, contains('search(berserk):1'));
   });
 }

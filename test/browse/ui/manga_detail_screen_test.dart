@@ -7,7 +7,7 @@ import '../fakes.dart';
 import 'harness.dart';
 
 const _url = '/manga/a b?c=1#d';
-final _key = mangaKeyOf('mangadex', _url);
+final MangaKey _key = mangaKeyOf('mangadex', _url);
 
 Future<Harness> _open(WidgetTester t, {bool downloads = true}) async {
   t.view.physicalSize = const Size(1200, 2400);
@@ -132,5 +132,18 @@ void main() {
     await t.tap(find.byTooltip('Refresh'));
     await t.pumpAndSettle();
     expect(src.calls.where((c) => c.startsWith('details')), hasLength(3));
+  });
+
+  testWidgets('a source id with no MangaSource shows unavailable', (t) async {
+    final h = Harness();
+    await h.pump(t, const SizedBox(), at: mangaRoute('sy-builtin:42', _url));
+    expect(find.text('Source unavailable'), findsOneWidget);
+    expect(find.textContaining('sy-builtin:42'), findsOneWidget);
+    expect(find.textContaining('Could not load'), findsNothing);
+    // It can appear later (e.g. a plugin installed): Retry picks it up.
+    h.provider.controller.add([FakeSource('sy-builtin:42')]);
+    await t.tap(find.text('Retry'));
+    await t.pumpAndSettle();
+    expect(find.text('Detail title'), findsOneWidget);
   });
 }

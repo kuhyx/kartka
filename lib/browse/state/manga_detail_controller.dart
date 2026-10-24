@@ -7,6 +7,19 @@ import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
 
+/// No registered source has the route's source id (not installed, server
+/// unreachable, or an id kartka has no source for, e.g. `sy-builtin:*`).
+class SourceUnavailable implements Exception {
+  /// Creates the error for [sourceId].
+  const new(this.sourceId);
+
+  /// The missing source id.
+  final String sourceId;
+
+  @override
+  String toString() => 'Source $sourceId is not available';
+}
+
 /// State and actions of the manga detail screen.
 class MangaDetailController extends ChangeNotifier {
   /// Creates a controller for the manga at [mangaUrl] in [sourceId].
@@ -64,18 +77,25 @@ class MangaDetailController extends ChangeNotifier {
     _notify();
   }
 
-  Future<MangaSource> _source() async {
-    final now = _deps.sources.byId(sourceId);
-    if (now != null) return now;
-    try {
-      await _deps.sources
-          .watch()
-          .firstWhere((_) => _deps.sources.byId(sourceId) != null)
-          .timeout(sourceWait);
-    } on TimeoutException {
-      throw StateError('Source $sourceId is not available');
-    }
-    return _deps.sources.byId(sourceId)!;
+  /// The route's source, waiting up to [sourceWait] for a runtime source.
+  /// Completes without awaiting the subscription's cancel, so a slow
+  /// provider teardown never delays the screen.
+  Future<MangaSource> _source() {
+    final found = Completer<MangaSource>();
+    late final StreamSubscription<void> sub;
+    final timer = Timer(sourceWait, () {
+      if (found.isCompleted) return;
+      found.completeError(SourceUnavailable(sourceId));
+      unawaited(sub.cancel());
+    });
+    sub = _deps.sources.watch().listen((_) {
+      final source = _deps.sources.byId(sourceId);
+      if (source == null || found.isCompleted) return;
+      timer.cancel();
+      found.complete(source);
+      unawaited(sub.cancel());
+    });
+    return found.future;
   }
 
   /// Whether the manga is in the library, live.

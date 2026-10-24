@@ -23,19 +23,24 @@ class GlobalSearchScreen extends StatefulWidget {
 
 class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   GlobalSearchController? _search;
+  StreamSubscription<void>? _sources;
   late final _field = TextEditingController(text: widget.query);
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_search != null) return;
-    final c = GlobalSearchController(BrowseScope.of(context).sources.current);
+    final registry = BrowseScope.of(context).sources;
+    final c = GlobalSearchController(registry.current);
     _search = c;
     if (widget.query.trim().isNotEmpty) unawaited(c.search(widget.query));
+    // Runtime sources (Suwayomi, plugins) join the running search live.
+    _sources = registry.watch().listen((l) => unawaited(c.updateSources(l)));
   }
 
   @override
   void dispose() {
+    unawaited(_sources?.cancel());
     _search?.dispose();
     _field.dispose();
     super.dispose();

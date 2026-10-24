@@ -72,16 +72,32 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
     final details = c.details;
     if (details == null) {
       if (c.error != null) {
+        final retry = FilledButton(
+          onPressed: () => unawaited(c.load()),
+          child: const Text('Retry'),
+        );
+        if (c.error is SourceUnavailable) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              EmptyState(
+                icon: Icons.cloud_off_outlined,
+                title: 'Source unavailable',
+                message:
+                    'No installed source provides ${c.sourceId}. Install '
+                    'its plugin or check the Suwayomi server.',
+              ),
+              retry,
+            ],
+          );
+        }
         return Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('Could not load: ${c.error}', textAlign: TextAlign.center),
               const SizedBox(height: AppSpacing.sm),
-              FilledButton(
-                onPressed: () => unawaited(c.load()),
-                child: const Text('Retry'),
-              ),
+              retry,
             ],
           ),
         );

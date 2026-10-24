@@ -96,5 +96,8 @@ void main() {
     expect(await resolver.resolve(key, 2), '/c/2');
     expect(await resolver.resolve(key, 9), isNull);
     expect(await resolver.resolve(mangaKeyOf('nope', '/x'), 1), isNull);
+    expect(await resolver.numberOf(key, '/c/1'), 1);
+    expect(await resolver.numberOf(key, '/c/none'), isNull);
+    expect(await resolver.numberOf(mangaKeyOf('nope', '/x'), '/c/1'), isNull);
   });
 }

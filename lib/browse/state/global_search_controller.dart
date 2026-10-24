@@ -37,18 +37,20 @@ class GlobalSearchController extends ChangeNotifier {
   new(List<MangaSource> sources, {this.timeout = const Duration(seconds: 20)})
     : _sources = List.unmodifiable(sources);
 
-  final List<MangaSource> _sources;
+  List<MangaSource> _sources;
 
   /// Per-source deadline.
   final Duration timeout;
 
-  List<SourceSearchState> _results = const [];
+  final Map<String, SourceSearchState> _byId = {};
   String _query = '';
   int _generation = 0;
   bool _disposed = false;
 
-  /// One entry per source, in source order; empty before the first search.
-  List<SourceSearchState> get results => _results;
+  /// One entry per source, in source order; empty without a query.
+  List<SourceSearchState> get results => [
+    for (final s in _sources) ?_byId[s.ref.id],
+  ];
 
   /// The query of the current search.
   String get query => _query;
@@ -58,22 +60,41 @@ class GlobalSearchController extends ChangeNotifier {
   Future<void> search(String query) async {
     final generation = ++_generation;
     _query = query.trim();
+    _byId.clear();
     if (_query.isEmpty) {
-      _results = const [];
       notifyListeners();
       return;
     }
-    _results = [
-      for (final s in _sources) SourceSearchState(s.ref, loading: true),
-    ];
-    notifyListeners();
-    await Future.wait([
-      for (var i = 0; i < _sources.length; i++) _searchOne(i, generation),
-    ]);
+    await _searchAll(_sources, generation);
   }
 
-  Future<void> _searchOne(int index, int generation) async {
-    final source = _sources[index];
+  /// Switches to the live source list: removed sources drop out, added ones
+  /// are searched with the current query, existing results are kept.
+  Future<void> updateSources(List<MangaSource> sources) async {
+    final known = {for (final s in _sources) s.ref.id};
+    _sources = List.unmodifiable(sources);
+    final ids = {for (final s in sources) s.ref.id};
+    _byId.removeWhere((id, _) => !ids.contains(id));
+    final added = [
+      for (final s in sources)
+        if (!known.contains(s.ref.id)) s,
+    ];
+    if (_query.isEmpty || added.isEmpty) {
+      notifyListeners();
+      return;
+    }
+    await _searchAll(added, _generation);
+  }
+
+  Future<void> _searchAll(List<MangaSource> sources, int generation) async {
+    for (final s in sources) {
+      _byId[s.ref.id] = SourceSearchState(s.ref, loading: true);
+    }
+    notifyListeners();
+    await Future.wait([for (final s in sources) _searchOne(s, generation)]);
+  }
+
+  Future<void> _searchOne(MangaSource source, int generation) async {
     SourceSearchState next;
     try {
       final page = await source.search(_query, 1).timeout(timeout);
@@ -82,7 +103,8 @@ class GlobalSearchController extends ChangeNotifier {
       next = SourceSearchState(source.ref, error: e);
     }
     if (generation != _generation || _disposed) return;
-    _results = [..._results]..[index] = next;
+    if (!_byId.containsKey(source.ref.id)) return; // Removed meanwhile.
+    _byId[source.ref.id] = next;
     notifyListeners();
   }
 

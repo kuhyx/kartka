@@ -149,6 +149,14 @@ class FakeProgress implements ProgressRepository {
   }
 
   @override
+  Future<void> markReadMany(MangaKey key, Iterable<String> urls) async {
+    for (final u in urls) {
+      (marks[key] ??= {})[u] = true;
+    }
+    _c.add(key);
+  }
+
+  @override
   Future<void> markUnread(MangaKey key, String chapterUrl) async {
     (marks[key] ??= {})[chapterUrl] = false;
     _c.add(key);

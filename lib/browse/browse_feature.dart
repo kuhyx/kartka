@@ -20,6 +20,7 @@ import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/platform/image_headers.dart';
 import 'package:kartka/platform/page_image.dart';
+import 'package:kartka/tracking/common/chapter_url_resolver.dart';
 
 /// The browse part: Browse tab, source/search/detail routes, and the
 /// unread-count + chapter-url ports other parts consume.
@@ -118,16 +119,20 @@ class _LazyUnreadCounts implements UnreadCounts {
   Stream<int?> watch(String key) => _runtime.unreadCounts.watch(key);
 }
 
-// ADAPTER: implement tracking's `ChapterUrlResolver`
-// (lib/tracking/common/chapter_url_resolver.dart) once agent/tracking-anilist
-// commits it; until then this has the port's exact method shape.
-class BrowseResolverPort {
+/// Tracking's chapter-url port, resolved lazily through [BrowseRuntime].
+class BrowseResolverPort implements ChapterUrlResolver {
   /// Creates the port over [_runtime].
   const new(this._runtime);
 
   final BrowseRuntime _runtime;
 
-  /// See `BrowseChapterUrlResolver.resolve`.
+  @override
   Future<String?> resolve(MangaKey key, int chapterNumber) =>
       _runtime.resolver.resolve(key, chapterNumber);
+
+  // PENDING @override: ChapterUrlResolver.numberOf is being added on
+  // agent/tracking-anilist; annotate once it lands there.
+  /// See `BrowseChapterUrlResolver.numberOf`.
+  Future<double?> numberOf(MangaKey key, String chapterUrl) =>
+      _runtime.resolver.numberOf(key, chapterUrl);
 }

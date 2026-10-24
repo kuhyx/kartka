@@ -6,6 +6,7 @@ library;
 
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/backup_import/backup_import_feature.dart';
+import 'package:kartka/browse/browse_feature.dart';
 import 'package:kartka/downloads/downloads_feature.dart';
 import 'package:kartka/library/library_feature.dart';
 import 'package:kartka/plugins/mangayomi/mangayomi_feature.dart';
@@ -31,4 +32,5 @@ final List<KartkaFeatureFactory> kartkaFeatureFactories = [
   backupImportFeature,
   trackingFeature,
   syncFeature,
+  browseFeature,
 ];

@@ -9,9 +9,9 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
-import 'package:kartka/platform/memory/memory_fakes.dart';
+import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
-import 'package:kartka/platform/memory/memory_stores.dart';
+import 'package:kartka/tracking/common/chapter_url_resolver.dart';
 
 import 'fakes.dart';
 import 'ui/harness.dart';
@@ -78,27 +78,16 @@ void main() {
     final key = mangaKeyOf('mangadex', '/m/1');
     final counts = reg.maybe<UnreadCounts>()!;
     expect(await counts.watch(key).first, isNull);
-    final resolver = reg.maybe<BrowseResolverPort>()!;
+    final resolver = reg.maybe<ChapterUrlResolver>()!;
     expect(await resolver.resolve(key, 2), '/c/2');
+    final port = reg.maybe<BrowseResolverPort>()!;
+    expect(await port.numberOf(key, '/c/3'), 3);
     expect(await counts.watch(key).first, 3);
   });
 
   testWidgets('without the library feature the tab fails loudly', (t) async {
-    final reg = _registry(withLibrary: false);
-    final tab = reg.tab(KartkaTab.browse)!;
-    late Object error;
-    await t.pumpWidget(
-      Builder(
-        builder: (context) {
-          try {
-            return tab(context);
-          } on StateError catch (e) {
-            error = e;
-            return const SizedBox();
-          }
-        },
-      ),
-    );
-    expect('$error', contains('library'));
+    final tab = _registry(withLibrary: false).tab(KartkaTab.browse)!;
+    await t.pumpWidget(Builder(builder: tab));
+    expect('${t.takeException()}', contains('library'));
   });
 }
