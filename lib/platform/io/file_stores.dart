@@ -71,30 +71,31 @@ class FileKeyValueStore implements KeyValueStore {
   final File file;
 
   late final CoalescingSaver _saver;
-  Map<String, String>? _cache;
+  // One shared read: concurrent first calls must not each load the file and
+  // replace one another's map (a set into the loser would be lost).
+  late final Future<Map<String, String>> _cache = _read();
 
   /// Writes any pending change to [file] now.
   Future<void> flush() => _saver.flush();
 
-  Future<Map<String, String>> _load() async {
-    if (_cache != null) return _cache!;
-    var values = <String, String>{};
-    if (file.existsSync()) {
-      try {
-        values = (jsonDecode(await file.readAsString()) as Map<String, Object?>)
-            .cast<String, String>();
-      } on FormatException {
-        // A corrupt file is treated as empty rather than bricking startup.
-      }
+  Future<Map<String, String>> _load() => _cache;
+
+  Future<Map<String, String>> _read() async {
+    if (!file.existsSync()) return {};
+    try {
+      return (jsonDecode(await file.readAsString()) as Map<String, Object?>)
+          .cast<String, String>();
+    } on FormatException {
+      // A corrupt file is treated as empty rather than bricking startup.
+      return {};
     }
-    return _cache = values;
   }
 
   Future<void> _save() async {
     await file.parent.create(recursive: true);
     final tmp = File('${file.path}.tmp');
     // Encoded at write time, so it holds every change made so far.
-    await tmp.writeAsString(jsonEncode(_cache), flush: true);
+    await tmp.writeAsString(jsonEncode(await _cache), flush: true);
     await tmp.rename(file.path);
   }
 

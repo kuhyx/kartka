@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/platform/coalescing_saver.dart';
 import 'package:kartka/platform/io/directory_files.dart';
 import 'package:kartka/platform/io/file_stores.dart';
 import 'package:kartka/platform/io/secure_key_value_store.dart';
@@ -70,6 +72,34 @@ void main() {
     await kv.remove('k0');
     await kv.flush();
     expect(await FileKeyValueStore(file).get('k0'), isNull);
+  });
+
+  test('FileKeyValueStore: concurrent first calls share one load', () async {
+    final file = File('${dir.path}/kv.json')..writeAsStringSync('{"old":"1"}');
+    final kv = FileKeyValueStore(file);
+    await Future.wait([kv.set('a', '1'), kv.get('x'), kv.set('b', '2')]);
+    await kv.flush();
+    expect(await FileKeyValueStore(file).entries(), {
+      'old': '1',
+      'a': '1',
+      'b': '2',
+    });
+  });
+
+  testWidgets('FileKeyValueStore is on disk once the app is paused', (t) async {
+    final file = File('${dir.path}/kv.json');
+    final kv = FileKeyValueStore(file, window: const Duration(hours: 1));
+    final listener = flushOnBackground(kv.flush);
+    addTearDown(listener.dispose);
+    await t.runAsync(() async {
+      await kv.set('progress', '42');
+      t.binding
+        ..handleAppLifecycleStateChanged(AppLifecycleState.inactive)
+        ..handleAppLifecycleStateChanged(AppLifecycleState.hidden)
+        ..handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      expect(await FileKeyValueStore(file).get('progress'), '42');
+    });
   });
 
   test('SecureKeyValueStore maps onto flutter_secure_storage', () async {
