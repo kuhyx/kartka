@@ -121,7 +121,7 @@ wrapper files on web), `KeyValueStore`, `FilePicker` (CBZ import),
 `OAuthRedirect` (Android deep link `kartka://oauth`, web
 `http://127.0.0.1:<wrapperPort>/oauth`).
 
-## 8. Repositories (`lib/core/repositories/`, interfaces only; owner: library part)
+## 8. Repositories (`lib/core/repositories/`, interfaces written by foundation; local impls by library part)
 
 ```dart
 abstract interface class LibraryRepository {
@@ -133,6 +133,7 @@ abstract interface class CategoryRepository {
   Stream<List<Category>> watch();
   Future<void> upsert(Category c);
   Future<void> setMembership(MangaKey key, String categoryId, bool member);
+  Stream<Map<MangaKey, Set<String>>> watchMembership(); // true values only
 }
 abstract interface class ProgressRepository {
   Stream<ReadingProgress?> watch(MangaKey key);
@@ -174,3 +175,9 @@ class TrackStatus { String remoteId; int chaptersRead; int? totalChapters; Strin
 `TrackingService` (common) binds a `MangaKey` to `remoteId`s (stored in sync
 path `trackers/`), listens to `ProgressRepository`, pushes `max(local, remote)`
 and pulls remote progress forward into local on refresh.
+
+Library-local ports (lib/library/, default no-op, real impls injected by their
+owners via the registry): `UnreadCounts.watch(key) → Stream<int?>` (browse
+supplies, from its chapter cache), `DownloadedLookup.hasDownloads(key) →
+Stream<bool>` (downloads supplies), `TrackedLookup.isTracked(key) →
+Stream<bool>` (tracking-anilist supplies from TrackingService bindings).
