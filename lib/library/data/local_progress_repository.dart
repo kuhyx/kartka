@@ -2,15 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/progress_repository.dart';
 import 'package:kartka/library/data/kv_table.dart';
-import 'package:kartka/library/data/mark.dart';
+import 'package:kartka/library/data/mark_set.dart';
 import 'package:kartka/platform/key_value_store.dart';
 
 /// [ProgressRepository] on a [KeyValueStore].
 ///
 /// Progress lives under `progress/<mangaKeyHash>` and only moves forward
 /// (`ReadingProgress.isAheadOf`). Read marks live under
-/// `read/<mangaKeyHash>/<sha1(chapterUrl)>` as LWW [Mark]s, so `markUnread`
-/// is a tombstone (contracts §4).
+/// `read/<mangaKeyHash>`, one [MarkSet] of LWW marks per manga, so
+/// `markUnread` is a tombstone (contracts §4) and `markReadMany` is one
+/// store write.
 ///
 /// The read set holds the explicit marks: deriving "everything before the
 /// current chapter" needs the chapter list, which this repository does not
@@ -28,13 +29,13 @@ class LocalProgressRepository implements ProgressRepository {
       _marks = KvTable(
         store,
         'read/',
-        decode: Mark.fromJson,
+        decode: MarkSet.fromJson,
         encode: (m) => m.toJson(),
       );
 
   final DateTime Function() _now;
   final KvTable<ReadingProgress> _progress;
-  final KvTable<Mark> _marks;
+  final KvTable<MarkSet> _marks;
 
   @override
   Stream<ReadingProgress?> watch(MangaKey key) {
@@ -56,22 +57,35 @@ class LocalProgressRepository implements ProgressRepository {
   Future<void> markUnread(MangaKey key, String chapterUrl) =>
       _mark(key, chapterUrl, on: false);
 
+  @override
+  Future<void> markReadMany(MangaKey key, Iterable<String> chapterUrls) =>
+      _marks.update(
+        mangaKeyHash(key),
+        (current) =>
+            MarkSet.apply(current, key, chapterUrls, on: true, now: _now()),
+      );
+
   Future<void> _mark(MangaKey key, String chapterUrl, {required bool on}) =>
       _marks.update(
-        '${mangaKeyHash(key)}/${mangaKeyHash(chapterUrl)}',
-        (current) => flip(current, key, chapterUrl, on: on, now: _now()),
+        mangaKeyHash(key),
+        (current) =>
+            MarkSet.apply(current, key, [chapterUrl], on: on, now: _now()),
       );
 
   @override
-  Stream<Map<String, bool>> readMarks(MangaKey key) => _marks
-      .watch()
-      .map(
-        (rows) => Map<String, bool>.unmodifiable({
-          for (final m in rows.values)
-            if (m.key == key) m.target: m.on,
-        }),
-      )
-      .distinct(mapEquals);
+  Stream<Map<String, bool>> readMarks(MangaKey key) {
+    final id = mangaKeyHash(key);
+    return _marks
+        .watch()
+        .map(
+          (rows) => Map<String, bool>.unmodifiable({
+            for (final MapEntry(:key, :value)
+                in (rows[id]?.marks ?? {}).entries)
+              key: value.on,
+          }),
+        )
+        .distinct(mapEquals);
+  }
 
   @override
   Stream<Set<String>> readChapters(MangaKey key) => readMarks(key)
