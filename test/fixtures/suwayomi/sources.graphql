@@ -1,0 +1,4 @@
+# Every installed source. id is a LongString: Tachiyomi's 64-bit source id.
+query Sources {
+  sources { nodes { id name lang displayName supportsLatest isConfigurable contentWarning iconUrl extension { pkgName } } }
+}

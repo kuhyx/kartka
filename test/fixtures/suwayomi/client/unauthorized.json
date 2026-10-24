@@ -1,0 +1,9 @@
+{
+  "request": {
+    "operationName": "KartkaAbout",
+    "query": "query KartkaAbout { aboutServer { name version } }",
+    "variables": {}
+  },
+  "status": 401,
+  "response": "Unauthorized"
+}

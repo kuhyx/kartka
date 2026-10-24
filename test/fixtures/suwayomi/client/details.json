@@ -1,0 +1,35 @@
+{
+  "request": {
+    "operationName": "KartkaDetails",
+    "query": "mutation KartkaDetails($id: Int!) { fetchMangaAndChapters(input: {id: $id, fetchManga: true, fetchChapters: false}) { manga { id url title thumbnailUrl author artist description genre status } } }",
+    "variables": {
+      "id": 1
+    }
+  },
+  "status": 200,
+  "response": {
+    "data": {
+      "fetchMangaAndChapters": {
+        "manga": {
+          "id": 1,
+          "url": "/manga/cfef125c-7ca2-4c58-a5e8-e695a1ec9226",
+          "title": "No Taste for Gyaru and Vegetables",
+          "thumbnailUrl": "/api/v1/manga/1/thumbnail",
+          "author": "Tsutsumi Kotatsu",
+          "artist": "Tsutsumi Kotatsu",
+          "description": "Genichi Tomita, a newspaper reporter, has just been transferred to a rural town. While house-hunting, he arranges to rent a vacant house through a referral from a former colleague back in Tokyo. But when he arrives at the address he was given, he finds nothing but a dilapidated, rundown house. As Genichi stands there at a loss, a gyaru dressed in farm work clothes suddenly appears before him — Shuri Nakazato.",
+          "genre": [
+            "Comedy",
+            "Romance",
+            "Slice of Life",
+            "Gyaru",
+            "Seinen",
+            "Content rating: Suggestive",
+            "Japanese"
+          ],
+          "status": "ONGOING"
+        }
+      }
+    }
+  }
+}

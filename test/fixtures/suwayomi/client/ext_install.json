@@ -1,0 +1,29 @@
+{
+  "request": {
+    "operationName": "KartkaUpdateExtension",
+    "query": "mutation KartkaUpdateExtension($id: String!, $patch: UpdateExtensionPatchInput!) { updateExtension(input: {id: $id, patch: $patch}) { extension { pkgName name lang versionName iconUrl isInstalled hasUpdate isObsolete } } }",
+    "variables": {
+      "id": "eu.kanade.tachiyomi.extension.en.weebcentral",
+      "patch": {
+        "install": true
+      }
+    }
+  },
+  "status": 200,
+  "response": {
+    "data": {
+      "updateExtension": {
+        "extension": {
+          "pkgName": "eu.kanade.tachiyomi.extension.en.weebcentral",
+          "name": "Weeb Central",
+          "lang": "en",
+          "versionName": "1.6.25",
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.en.weebcentral",
+          "isInstalled": true,
+          "hasUpdate": false,
+          "isObsolete": false
+        }
+      }
+    }
+  }
+}

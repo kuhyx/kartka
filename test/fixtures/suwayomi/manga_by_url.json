@@ -1,0 +1,15 @@
+{
+  "data": {
+    "mangas": {
+      "nodes": [
+        {
+          "id": 4,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/58be6aa6-06cb-4ca5-bd20-f1392ce451fb",
+          "title": "Yotsuba&!",
+          "initialized": true
+        }
+      ]
+    }
+  }
+}

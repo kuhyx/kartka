@@ -1,0 +1,38 @@
+{
+  "request": {
+    "operationName": "KartkaDetails",
+    "query": "mutation KartkaDetails($id: Int!) { fetchMangaAndChapters(input: {id: $id, fetchManga: true, fetchChapters: false}) { manga { id url title thumbnailUrl author artist description genre status } } }",
+    "variables": {
+      "id": 88
+    }
+  },
+  "status": 200,
+  "response": {
+    "data": {
+      "fetchMangaAndChapters": {
+        "manga": {
+          "id": 88,
+          "url": "/manga/b0b721ff-c388-4486-aa0f-c2b0bb321512",
+          "title": "Frieren: Beyond Journey's End",
+          "thumbnailUrl": "/api/v1/manga/88/thumbnail",
+          "author": "Yamada Kanehito",
+          "artist": "Abe Tsukasa",
+          "description": "The adventure is over but life goes on for an elf mage just beginning to learn what living is all about. Elf mage Frieren and her courageous fellow adventurers have defeated the Demon King and brought peace to the land. With the great struggle over, they all go their separate ways to live a quiet life. But as an elf, Frieren, nearly immortal, will long outlive the rest of her former party. How will she come to terms with the mortality of her friends? How can she find fulfillment in her own life, and can she learn to understand what life means to the humans around her? Frieren begins a new journey to find the answer.",
+          "genre": [
+            "Award Winning",
+            "Adventure",
+            "Drama",
+            "Fantasy",
+            "Slice of Life",
+            "Demons",
+            "Magic",
+            "Monsters",
+            "Shounen",
+            "Japanese"
+          ],
+          "status": "ON_HIATUS"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+# $type: SEARCH | POPULAR | LATEST. $query is ignored unless SEARCH.
+mutation FetchSourceManga($source: LongString!, $type: FetchSourceMangaType!, $query: String, $page: Int!) {
+  fetchSourceManga(input: { source: $source, type: $type, query: $query, page: $page }) {
+    hasNextPage
+    mangas { id sourceId url title thumbnailUrl inLibrary initialized }
+  }
+}

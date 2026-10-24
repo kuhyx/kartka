@@ -1,0 +1,24 @@
+{
+  "request": {
+    "operationName": "KartkaChapterId",
+    "query": "query KartkaChapterId($url: String!) { chapters(condition: {url: $url}) { nodes { id manga { sourceId } } } }",
+    "variables": {
+      "url": "/chapter/a920779b-af51-4ea3-8871-365eb58bf7af"
+    }
+  },
+  "status": 200,
+  "response": {
+    "data": {
+      "chapters": {
+        "nodes": [
+          {
+            "id": 1,
+            "manga": {
+              "sourceId": "2499283573021220255"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

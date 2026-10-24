@@ -1,0 +1,64 @@
+{
+  "request": {
+    "operationName": "KartkaSourceManga",
+    "query": "mutation KartkaSourceManga($source: LongString!, $type: FetchSourceMangaType!, $page: Int!, $query: String) { fetchSourceManga(input: {source: $source, type: $type, page: $page, query: $query}) { hasNextPage mangas { id url title thumbnailUrl } } }",
+    "variables": {
+      "source": "2499283573021220255",
+      "type": "SEARCH",
+      "page": 1,
+      "query": "Sousou no Frieren"
+    }
+  },
+  "status": 200,
+  "response": {
+    "data": {
+      "fetchSourceManga": {
+        "hasNextPage": false,
+        "mangas": [
+          {
+            "id": 88,
+            "url": "/manga/b0b721ff-c388-4486-aa0f-c2b0bb321512",
+            "title": "Frieren: Beyond Journey's End",
+            "thumbnailUrl": "/api/v1/manga/88/thumbnail"
+          },
+          {
+            "id": 89,
+            "url": "/manga/1e46de27-70a0-4aca-8192-b5a3c589ddfd",
+            "title": "Sousou no Frieren - Kudaranai Nichijou (Doujinshi)",
+            "thumbnailUrl": "/api/v1/manga/89/thumbnail"
+          },
+          {
+            "id": 90,
+            "url": "/manga/8edc81f2-bb70-4100-9df7-2552a14e5d75",
+            "title": "Sousou no Frieren - kmtakpk's Frieren Koma (Doujinshi)",
+            "thumbnailUrl": "/api/v1/manga/90/thumbnail"
+          },
+          {
+            "id": 91,
+            "url": "/manga/03f3f742-e2da-4f3c-b057-0bb9da6757ee",
+            "title": "Sousou no Frieren - Gaku Paro na Shutaferu (Doujinshi)",
+            "thumbnailUrl": "/api/v1/manga/91/thumbnail"
+          },
+          {
+            "id": 92,
+            "url": "/manga/9906dfa8-52c9-40ac-8eef-1099a85c8611",
+            "title": "Funeral Frieren Anthology: The Magic of Enjoying a Divergent Journey",
+            "thumbnailUrl": "/api/v1/manga/92/thumbnail"
+          },
+          {
+            "id": 93,
+            "url": "/manga/1d55e985-8379-41bc-aeca-acd069bcadd0",
+            "title": "Sousou no Frieren -  Fern ga Ookiku Naru Ohanashi (Doujinshi)",
+            "thumbnailUrl": "/api/v1/manga/93/thumbnail"
+          },
+          {
+            "id": 94,
+            "url": "/manga/e5afc3bc-c054-4b71-a182-a7e5ae9a4417",
+            "title": "Hokuto no Ken & Sousou no Frieren - Gouken no Frieren (Doujinshi)",
+            "thumbnailUrl": "/api/v1/manga/94/thumbnail"
+          }
+        ]
+      }
+    }
+  }
+}

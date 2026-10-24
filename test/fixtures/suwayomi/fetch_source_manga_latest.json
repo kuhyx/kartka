@@ -1,0 +1,648 @@
+{
+  "data": {
+    "fetchSourceManga": {
+      "hasNextPage": true,
+      "mangas": [
+        {
+          "id": 41,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/cb3fcf45-e83c-4dbf-aa04-c4d48d14beae",
+          "title": "81diver",
+          "thumbnailUrl": "/api/v1/manga/41/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 42,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/89daf9dc-075a-4aa5-873a-cc76bb287108",
+          "title": "The Way of the Househusband",
+          "thumbnailUrl": "/api/v1/manga/42/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 43,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/0813ea1e-5a6c-4148-be7e-25038a0fa90f",
+          "title": "Ren AI Flag: When I Used a Matching App Where AI Chooses Your Ideal Lover, I Matched with a Hero from Another World",
+          "thumbnailUrl": "/api/v1/manga/43/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 44,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/559c5fc6-6a57-43a6-93cb-b43328bc1957",
+          "title": "Meaheim",
+          "thumbnailUrl": "/api/v1/manga/44/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 45,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/870d53e7-199c-4af0-ae5f-279c1fca55fb",
+          "title": "Grandson of the Evil God: Leading a Shut-In Life in Another World with Dark Elf Sisters",
+          "thumbnailUrl": "/api/v1/manga/45/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 46,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/27179c2f-72d7-4a49-a577-2fa6eaf9df4d",
+          "title": "Useless High School Girls",
+          "thumbnailUrl": "/api/v1/manga/46/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 47,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/67b35ba4-9c53-4957-91e7-4f7884e4b412",
+          "title": "Miss Kobayashi's Dragon Maid",
+          "thumbnailUrl": "/api/v1/manga/47/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 20,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/0a580438-bc72-4503-940b-12a5da881b56",
+          "title": "You Are a Four-Leaf Clover",
+          "thumbnailUrl": "/api/v1/manga/20/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 48,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/6724bbf4-5855-4972-b6c9-ea92469aba89",
+          "title": "Prey",
+          "thumbnailUrl": "/api/v1/manga/48/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 49,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/c02343b3-74e4-4057-b34a-90e08d93f95a",
+          "title": "Is the Order a Rabbit?",
+          "thumbnailUrl": "/api/v1/manga/49/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 50,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/d34ba929-11ee-4511-a3ae-40ab7b608c7b",
+          "title": "Please Don't Die!",
+          "thumbnailUrl": "/api/v1/manga/50/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 51,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/65208a20-4253-42c8-b0e7-56524bbe795b",
+          "title": "Legend of Star General",
+          "thumbnailUrl": "/api/v1/manga/51/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 52,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/46596dea-95de-40e8-b2b8-4e63aa6acd1a",
+          "title": "The Magical Revolution of the Reincarnated Princess and the Genius Young Lady",
+          "thumbnailUrl": "/api/v1/manga/52/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 53,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/283f8818-43c4-4c1d-9b9e-52a2529414f7",
+          "title": "Galaxy Express 999 - Another Story: Ultimate Journey",
+          "thumbnailUrl": "/api/v1/manga/53/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 54,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/3c8f55a0-ce7e-4ee3-8880-c54e6796fdf9",
+          "title": "Tokusatsu Gagaga",
+          "thumbnailUrl": "/api/v1/manga/54/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 55,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/83e6e476-63e0-4c86-aaed-c011150d8cab",
+          "title": "The Lady Knight and the Beast-Eared Child",
+          "thumbnailUrl": "/api/v1/manga/55/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 56,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/4bb7eac3-da10-4873-ae04-1157dc08b22d",
+          "title": "Dragon Ball - Zeroverse (Doujinshi)",
+          "thumbnailUrl": "/api/v1/manga/56/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 57,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/6c079564-363d-4d95-9410-4a841e6a33fb",
+          "title": "I Became the World's Strongest Witch: I Will Live Freely in a World Where Only I can Access the \"Guide Site\"",
+          "thumbnailUrl": "/api/v1/manga/57/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 58,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/a967d6e2-e269-4ab8-9306-04ffc4c2cb52",
+          "title": "The Tiger Won't Eat the Dragon Yet",
+          "thumbnailUrl": "/api/v1/manga/58/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 59,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/7991e715-40ae-4c3e-b0e0-aa8bee90ece7",
+          "title": "Me and the Prez, Drinking Under the Stars",
+          "thumbnailUrl": "/api/v1/manga/59/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 60,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/bc7c15a1-7e48-4520-b7fc-dd93fcbf3aa9",
+          "title": "Dragon Quest Dai - Days of the Dagger",
+          "thumbnailUrl": "/api/v1/manga/60/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 61,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/a9dd451c-3c45-4d66-a818-4e1b78855838",
+          "title": "Uma Musume: Cinderella Gray",
+          "thumbnailUrl": "/api/v1/manga/61/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 62,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/e881168f-ef99-41ff-88cf-1cf21c152635",
+          "title": "I've Become Able to Do Anything with My Growth Cheat, but I Can't Seem to Get out of Being Jobless",
+          "thumbnailUrl": "/api/v1/manga/62/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 63,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/ffa0fdfd-8755-42ea-82a3-a278801aeb78",
+          "title": "If I'm Going to Cry, I Might as Well Be in Love",
+          "thumbnailUrl": "/api/v1/manga/63/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 64,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/bb5f1b24-58a6-49e4-847b-a322c2addbd5",
+          "title": "You're the Only One I Can See",
+          "thumbnailUrl": "/api/v1/manga/64/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 65,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/f29fa79d-f596-4ae5-a1d7-42de941690f3",
+          "title": "Sumisaka-san's Wild Delusions!",
+          "thumbnailUrl": "/api/v1/manga/65/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 66,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/683ae381-9447-4e31-b5b1-6f1dc9214a29",
+          "title": "A Childhood Friend Who's Somehow Oddly Changed",
+          "thumbnailUrl": "/api/v1/manga/66/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 67,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/c48abd82-74d0-4be7-a6f1-ccc436759643",
+          "title": "Mobile Suit Gundam UC (Unicorn) - Bande Dessinée",
+          "thumbnailUrl": "/api/v1/manga/67/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 68,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/5ab8abc4-9820-4139-bdbe-c5ba91af1466",
+          "title": "The Summoner: Apocalypse Rewinds",
+          "thumbnailUrl": "/api/v1/manga/68/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 38,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/1267bf7e-65a9-4747-9aa4-e7ad1564f83e",
+          "title": "Copying Skills With Affinity",
+          "thumbnailUrl": "/api/v1/manga/38/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 69,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/d7e6e960-35aa-4748-9d0a-249c552ed505",
+          "title": "This Bug Won't Leave Me Alone!",
+          "thumbnailUrl": "/api/v1/manga/69/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 70,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/aae175fe-7d78-4643-97dd-25afb8610a8b",
+          "title": "Ginkai no Speed Star",
+          "thumbnailUrl": "/api/v1/manga/70/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 71,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/931a894b-443b-44b6-a1b7-f739b9febe08",
+          "title": "Call Up Girls",
+          "thumbnailUrl": "/api/v1/manga/71/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 72,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/624e2b30-55c1-4de9-8dc9-991abf0241ea",
+          "title": "The Old Man Next Door",
+          "thumbnailUrl": "/api/v1/manga/72/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 73,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/9429ab78-c308-42ee-bcb6-9e6f0aa7b1fc",
+          "title": "Bakuchi Gui",
+          "thumbnailUrl": "/api/v1/manga/73/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 74,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/48ea29fc-5544-4f7a-b2ed-04c4dbb21bb1",
+          "title": "Spice & Wolf Restaurant: Gourmet Exploration",
+          "thumbnailUrl": "/api/v1/manga/74/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 75,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/97ace6d3-cc83-4e9b-817c-d7da3c46eee5",
+          "title": "Pani Poni Dash",
+          "thumbnailUrl": "/api/v1/manga/75/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 76,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/61830b36-1712-4b7b-9421-f671e9ced6d3",
+          "title": "Learning to Love My Cat-like Classmate",
+          "thumbnailUrl": "/api/v1/manga/76/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 77,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/cd3b54d7-b87f-4a27-9283-865a19ab8542",
+          "title": "Kemeko Deluxe!",
+          "thumbnailUrl": "/api/v1/manga/77/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 78,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/02b6484e-5bbf-4f86-aaeb-6ce1a52b9aa3",
+          "title": "Seven Ninja of Efu",
+          "thumbnailUrl": "/api/v1/manga/78/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 79,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/6beac520-56f6-4a44-b5f7-a12de70e9fd4",
+          "title": "Perman (The Complete Works of Fujiko F. Fujio)",
+          "thumbnailUrl": "/api/v1/manga/79/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 80,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/bc7d2f16-f89f-480b-8be5-c24b34798b6a",
+          "title": "Honmono no Kanojo ni Shitakunaru Made, Watashi de Tameshite Ii yo.",
+          "thumbnailUrl": "/api/v1/manga/80/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 81,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/a532d6f6-75a6-40f2-9b8d-82fb9d13c1ab",
+          "title": "Sekitou Elegy",
+          "thumbnailUrl": "/api/v1/manga/81/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 82,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/a1526a66-5dbf-4fef-9e7b-5f8f48b2ca93",
+          "title": "Pale Blue-green Color Saudade",
+          "thumbnailUrl": "/api/v1/manga/82/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 83,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/beb4a784-c30c-4a56-9165-a9adefbc422e",
+          "title": "Worst Gaiden Guriko",
+          "thumbnailUrl": "/api/v1/manga/83/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 84,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/8bbeb85e-9452-4bf8-a06e-dc1b915c0234",
+          "title": "I’m the Saintess' Older Sister, but After I Stopped Gathering Special Magic Stones and Herbs for My Sister, I Found Happiness with a Mage in the Neighboring Country!",
+          "thumbnailUrl": "/api/v1/manga/84/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 85,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/b41bef1e-7df9-4255-bd82-ecf570fec566",
+          "title": "The New Gate",
+          "thumbnailUrl": "/api/v1/manga/85/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 86,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/08248a83-c5a5-4030-97c9-9c012117a061",
+          "title": "Through the Eyes of a Giantess",
+          "thumbnailUrl": "/api/v1/manga/86/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 87,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/1e01d7f6-c4e1-4102-9dd0-a6fccc065978",
+          "title": "Monochrome Lovers",
+          "thumbnailUrl": "/api/v1/manga/87/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 88,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/7337b917-c57f-4d4a-930c-57ec71776cf9",
+          "title": "Friends or Lovers, Which is More Important?",
+          "thumbnailUrl": "/api/v1/manga/88/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 89,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/85a99758-de39-471e-9f6d-800547f53d0a",
+          "title": "Tougen Anki: Legend of the Cursed Blood",
+          "thumbnailUrl": "/api/v1/manga/89/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 90,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/e6909948-0a4a-4577-9e64-125837045dec",
+          "title": "Hiroin-kun",
+          "thumbnailUrl": "/api/v1/manga/90/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 91,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/d553645b-03a3-4fc8-9a9c-57f91cbbab89",
+          "title": "Are You a Landmine, Chihara-san?",
+          "thumbnailUrl": "/api/v1/manga/91/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 92,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/5c9d1254-f074-4b5c-8795-6f0641b2597b",
+          "title": "Girl and Science",
+          "thumbnailUrl": "/api/v1/manga/92/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 93,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/67f7d17a-d448-411d-ab6a-5649b3ebe7f0",
+          "title": "Non-Human",
+          "thumbnailUrl": "/api/v1/manga/93/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 94,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/8572da1b-3b5d-44aa-a40c-8a92b512c336",
+          "title": "Dungeon Friends Forever",
+          "thumbnailUrl": "/api/v1/manga/94/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 95,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/bc70eee3-5668-4a89-bc57-4ec3af33e8ed",
+          "title": "Starting Today, You are the Snake Goddess' Son",
+          "thumbnailUrl": "/api/v1/manga/95/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 96,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/de0c8b12-2721-4a7c-a43e-82e452d62b9c",
+          "title": "An Onee Reincarnated as a Villainess, but There’s No Problem",
+          "thumbnailUrl": "/api/v1/manga/96/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 97,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/e709a859-3e1d-4e1a-aa07-27fdcd8decc3",
+          "title": "Otto no Yuigon ga \"Doujinshi Kake\" Datta Mono de",
+          "thumbnailUrl": "/api/v1/manga/97/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 33,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/75f8931e-380d-4354-81fc-3f252d104c20",
+          "title": "I Made the Girl I Liked My Maid, and Now She’s Secretly Doing Something in My Room",
+          "thumbnailUrl": "/api/v1/manga/33/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 98,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/9308cb58-bff6-49fd-bd4f-84f51053c2ae",
+          "title": "Masochist Gal Himekawa-san",
+          "thumbnailUrl": "/api/v1/manga/98/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 99,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/6274fcab-df09-4ac5-b516-14152bd031c7",
+          "title": "The Dangers in My Heart: The Romantic Comedy Won't Start",
+          "thumbnailUrl": "/api/v1/manga/99/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 100,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/1cdb20d4-bf4d-4f16-91a8-fa90e6e130d5",
+          "title": "Hengoku no Schwester",
+          "thumbnailUrl": "/api/v1/manga/100/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 101,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/543253c3-9a95-43ea-83ff-f9a8c27d6ca5",
+          "title": "Stealing the Short, Stacked, and Cute Nanase-san from Her Delusional Ex-Boyfriend and Making Her Happy",
+          "thumbnailUrl": "/api/v1/manga/101/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 102,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/e396a999-6442-476b-a4d5-b5b074ca2492",
+          "title": "Seton Animal Chronicles",
+          "thumbnailUrl": "/api/v1/manga/102/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 103,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/b4615bd9-7cbd-4243-a8a2-5c24671663e0",
+          "title": "Karate Survivor in Another World",
+          "thumbnailUrl": "/api/v1/manga/103/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 104,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/0b72b7fa-c14e-4270-8d86-5e4993eff40f",
+          "title": "Nami no Shijima no Horizont",
+          "thumbnailUrl": "/api/v1/manga/104/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 105,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/c37d93a8-9c50-49b3-bd71-143937f4288e",
+          "title": "Gantz: E",
+          "thumbnailUrl": "/api/v1/manga/105/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 106,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/8edbe71c-be89-427b-9d00-7a14ed4546d3",
+          "title": "Lulu's Hell House",
+          "thumbnailUrl": "/api/v1/manga/106/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 107,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/c81272a7-9e4e-42f3-99ba-732eb7617a04",
+          "title": "The Demon King and the Hero Became Out of Time",
+          "thumbnailUrl": "/api/v1/manga/107/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 108,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/6ad54367-4165-43ed-9a7d-71179c520180",
+          "title": "Chainsmoker Cat",
+          "thumbnailUrl": "/api/v1/manga/108/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        }
+      ]
+    }
+  }
+}

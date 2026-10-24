@@ -1,0 +1,99 @@
+{
+  "request": {
+    "operationName": "KartkaChapters",
+    "query": "mutation KartkaChapters($id: Int!) { fetchMangaAndChapters(input: {id: $id, fetchManga: false, fetchChapters: true}) { chapters { id url name chapterNumber uploadDate scanlator sourceOrder } } }",
+    "variables": {
+      "id": 1
+    }
+  },
+  "status": 200,
+  "response": {
+    "data": {
+      "fetchMangaAndChapters": {
+        "chapters": [
+          {
+            "id": 1,
+            "url": "/chapter/a920779b-af51-4ea3-8871-365eb58bf7af",
+            "name": "Vol.1 Ch.1",
+            "chapterNumber": 1.0,
+            "uploadDate": "1790429088000",
+            "scanlator": "Tomoshibi scan",
+            "sourceOrder": 1
+          },
+          {
+            "id": 2,
+            "url": "/chapter/869fd871-0d67-4d9a-95c1-047e064bb239",
+            "name": "Vol.1 Ch.2",
+            "chapterNumber": 2.0,
+            "uploadDate": "1790476249000",
+            "scanlator": "Tomoshibi scan",
+            "sourceOrder": 2
+          },
+          {
+            "id": 3,
+            "url": "/chapter/02d04efd-9d41-4114-9a63-447ff83f4f78",
+            "name": "Vol.1 Ch.3",
+            "chapterNumber": 3.0,
+            "uploadDate": "1790514346000",
+            "scanlator": "Tomoshibi scan",
+            "sourceOrder": 3
+          },
+          {
+            "id": 4,
+            "url": "/chapter/7cc2ad6a-f2c9-4b1e-93aa-b93d4db11a58",
+            "name": "Vol.1 Ch.4",
+            "chapterNumber": 4.0,
+            "uploadDate": "1790680675000",
+            "scanlator": "Tomoshibi scan",
+            "sourceOrder": 4
+          },
+          {
+            "id": 5,
+            "url": "/chapter/e21d7848-f72a-40b2-8e39-d02303317444",
+            "name": "Vol.1 Ch.5",
+            "chapterNumber": 5.0,
+            "uploadDate": "1790770837000",
+            "scanlator": "Tomoshibi scan",
+            "sourceOrder": 5
+          },
+          {
+            "id": 6,
+            "url": "/chapter/8b874b87-0298-4b06-a073-8b3bfd79b9d0",
+            "name": "Vol.2 Ch.6",
+            "chapterNumber": 6.0,
+            "uploadDate": "1791286997000",
+            "scanlator": "Tomoshibi scan",
+            "sourceOrder": 6
+          },
+          {
+            "id": 7,
+            "url": "/chapter/2b462fba-987c-4099-8bc9-dfa4bb1452a5",
+            "name": "Vol.2 Ch.7",
+            "chapterNumber": 7.0,
+            "uploadDate": "1791375990000",
+            "scanlator": "Tomoshibi scan",
+            "sourceOrder": 7
+          },
+          {
+            "id": 8,
+            "url": "/chapter/61b4912a-e8d3-4b82-9f31-181e1f100151",
+            "name": "Vol.2 Ch.8",
+            "chapterNumber": 8.0,
+            "uploadDate": "1792155745000",
+            "scanlator": "Tomoshibi scan",
+            "sourceOrder": 8
+          },
+          {
+            "id": 9,
+            "url": "/chapter/c539606f-a418-4a31-95ba-c1d1ca9fa1e6",
+            "name": "Vol.2 Ch.9",
+            "chapterNumber": 9.0,
+            "uploadDate": "1792204511000",
+            "scanlator": "Tomoshibi scan",
+            "sourceOrder": 9
+          }
+        ]
+      }
+    }
+  }
+}

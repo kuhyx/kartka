@@ -1,0 +1,27 @@
+{
+  "data": {
+    "fetchMangaAndChapters": {
+      "manga": {
+        "id": 4,
+        "sourceId": "2499283573021220255",
+        "url": "/manga/58be6aa6-06cb-4ca5-bd20-f1392ce451fb",
+        "realUrl": "https://mangadex.org/title/58be6aa6-06cb-4ca5-bd20-f1392ce451fb/yotsuba",
+        "title": "Yotsuba&!",
+        "author": "Azuma Kiyohiko",
+        "artist": "Azuma Kiyohiko",
+        "description": "Yotsuba is a strange little girl with a big personality! Even in the most trivial, unremarkable encounters, Yotsuba's curiosity and enthusiasm quickly turns the everyday into the extraordinary!",
+        "genre": [
+          "Award Winning",
+          "Comedy",
+          "Philosophical",
+          "Slice of Life",
+          "Shounen",
+          "Japanese"
+        ],
+        "status": "ON_HIATUS",
+        "thumbnailUrl": "/api/v1/manga/4/thumbnail",
+        "initialized": true
+      }
+    }
+  }
+}

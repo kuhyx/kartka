@@ -1,0 +1,8 @@
+# pages are server-relative URLs (/api/v1/manga/<m>/chapter/<i>/page/<n>):
+# prefix the server URL and send the same basic-auth header to load them.
+mutation FetchChapterPages($chapterId: Int!) {
+  fetchChapterPages(input: { chapterId: $chapterId }) {
+    pages
+    chapter { id pageCount }
+  }
+}

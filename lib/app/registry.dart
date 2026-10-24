@@ -9,6 +9,7 @@ import 'package:kartka/downloads/downloads_feature.dart';
 import 'package:kartka/library/library_feature.dart';
 import 'package:kartka/sources/local/local_feature.dart';
 import 'package:kartka/sources/mangadex/mangadex_feature.dart';
+import 'package:kartka/sources/suwayomi/suwayomi_feature.dart';
 
 export 'package:kartka/app/feature.dart';
 
@@ -19,4 +20,5 @@ final List<KartkaFeatureFactory> kartkaFeatureFactories = [
   downloadsFeature,
   mangadexFeature,
   localFeature,
+  suwayomiFeature,
 ];

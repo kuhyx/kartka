@@ -1,0 +1,189 @@
+{
+  "data": {
+    "fetchSourceManga": {
+      "hasNextPage": true,
+      "mangas": [
+        {
+          "id": 1,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/3f86abb6-2c14-4c58-a13f-f859055d022e",
+          "title": "Innocent☆Angel ~Yotsuba Masumi's Otoko no Ko Collection~",
+          "thumbnailUrl": "/api/v1/manga/1/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 2,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/5b356a49-627a-498f-9b67-78eae9d8c3d9",
+          "title": "The Irregular at Magic High School - Yotsuba Succession Arc 「Movie Promotion」",
+          "thumbnailUrl": "/api/v1/manga/2/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 3,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/313682fc-c512-4a1c-8c66-33ad0121c505",
+          "title": "Yotsuba&! - Yanda&! (Doujinshi)",
+          "thumbnailUrl": "/api/v1/manga/3/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 4,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/58be6aa6-06cb-4ca5-bd20-f1392ce451fb",
+          "title": "Yotsuba&!",
+          "thumbnailUrl": "/api/v1/manga/4/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 5,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/d2f73eb0-6bbb-4000-8234-8e64bf79c417",
+          "title": "Yotsuba&! - Yotsuba and \"!\" (Doujinshi)",
+          "thumbnailUrl": "/api/v1/manga/5/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 6,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/63c49a00-4537-4915-96a8-319b59bb7d4e",
+          "title": "5Toubun no Hanayome - A flirty story where Yotsuba finds a 4-leaf clover and informs Fuutarou (Doujinshi)",
+          "thumbnailUrl": "/api/v1/manga/6/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 7,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/de408500-b6af-487f-9a24-6ddc445cd977",
+          "title": "5Toubun no Hanayome - Fuutarou and Yotsuba's date (Doujinshi)",
+          "thumbnailUrl": "/api/v1/manga/7/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 8,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/95f11d75-2018-4fe7-ac9f-04039f15b4e4",
+          "title": "Mahouka Koukou no Rettousei - Yotsuba Keishou-hen",
+          "thumbnailUrl": "/api/v1/manga/8/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 9,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/676d7404-6c2e-45ae-b5f0-17266b97d1bf",
+          "title": "Yotsuba Danshiryou Sensen",
+          "thumbnailUrl": "/api/v1/manga/9/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 10,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/cd4c8985-ef13-44c8-9bc3-f20aa82b7118",
+          "title": "5Toubun no Hanayome - Yotsuba Manga Compilation (Doujinshi)",
+          "thumbnailUrl": "/api/v1/manga/10/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 11,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/9300df2a-0be6-4a2f-85f5-9443188b44c3",
+          "title": "Yotsuba!, Azumanga Daioh, Fate/Stay night - Fate Soushuuchen Ichi Ni Sai Matome (Doujinshi)",
+          "thumbnailUrl": "/api/v1/manga/11/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 12,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/2beb6b36-7c86-4f25-a00f-1de950772ad4",
+          "title": "For You, a Four-Clover Flower",
+          "thumbnailUrl": "/api/v1/manga/12/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 13,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/667d78cf-462a-4586-9532-e79154278c9a",
+          "title": "Yotsuba&! - Yanyots Manga (Doujinshi)",
+          "thumbnailUrl": "/api/v1/manga/13/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 14,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/97bf34f7-0f2f-4f50-ae7f-81218d656a9d",
+          "title": "5Toubun no Hanayome - Butterfly (Yotsuba Doujinshi)",
+          "thumbnailUrl": "/api/v1/manga/14/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 15,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/b691938d-e33c-4600-aae1-e878df91eef1",
+          "title": "Butterflies Singing Love Song Flutter About the Four Blossoms",
+          "thumbnailUrl": "/api/v1/manga/15/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 16,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/1b72f028-9a91-465c-95c8-5357fe3d83cf",
+          "title": "5Toubun no Hanayome - Yotsuba's Halloween Dream (Doujinshi)",
+          "thumbnailUrl": "/api/v1/manga/16/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 17,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/883d25cb-4ce8-4881-9922-ed8f40496a7e",
+          "title": "5Toubun no Hanayome - A sweet story about a useless Fuutarou and an overly-intimate Yotsuba (Doujinshi)",
+          "thumbnailUrl": "/api/v1/manga/17/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 18,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/3fa1504e-56d7-4bc0-90d9-a0b3fe0ba7cb",
+          "title": "Motoyan Papa to Hitsuji-sensei Yotsuba",
+          "thumbnailUrl": "/api/v1/manga/18/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 19,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/95d60aa7-a48a-44d6-8b36-420b99989e2c",
+          "title": "5Toubun no Hanayome - Pop Quiz! (Yotsuba Doujinshi)",
+          "thumbnailUrl": "/api/v1/manga/19/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        },
+        {
+          "id": 20,
+          "sourceId": "2499283573021220255",
+          "url": "/manga/0a580438-bc72-4503-940b-12a5da881b56",
+          "title": "You Are a Four-Leaf Clover",
+          "thumbnailUrl": "/api/v1/manga/20/thumbnail",
+          "inLibrary": false,
+          "initialized": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "request": {
+    "operationName": "KartkaAbout",
+    "query": "query KartkaAbout { aboutServer { name version } }",
+    "variables": {}
+  },
+  "status": 200,
+  "response": {
+    "data": {
+      "aboutServer": {
+        "name": "Suwayomi-Server",
+        "version": "v2.4.2366"
+      }
+    }
+  }
+}
