@@ -4,14 +4,33 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/registry.dart';
 import 'package:kartka/core/source/source_provider.dart';
-import 'package:kartka/plugins/runtime/engine_interpreter.dart';
+import 'package:kartka/plugins/runtime/engine_quickjs.dart';
+import 'package:kartka/plugins/runtime/host_api.dart';
+import 'package:kartka/plugins/runtime/plugin_index.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
 import 'package:kartka/plugins/runtime/plugin_registrar.dart';
+import 'package:kartka/plugins/runtime/plugin_repo_adapter.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
 import 'package:kartka/plugins/runtime/plugins_feature.dart';
 import 'package:kartka/plugins/runtime/plugins_screen.dart';
+import 'package:kartka/plugins/runtime/plugins_sections.dart';
 
 import 'support.dart';
+
+class _Adapter implements PluginRepoAdapter {
+  int parsed = 0;
+  @override
+  bool accepts(Object? indexJson) =>
+      indexJson is Map && indexJson['foreign'] == true;
+  @override
+  List<PluginIndexEntry> parse(Object? json, Uri indexUrl) {
+    parsed++;
+    return [];
+  }
+
+  @override
+  Future<String> buildSource(PluginIndexEntry e, String js) async => js;
+}
 
 void main() {
   const repo = 'https://repo.test/index.json';
@@ -40,6 +59,30 @@ void main() {
     await t.tap(find.byTooltip('Add repository'));
     await t.pumpAndSettle();
   }
+
+  testWidgets('submitting from the keyboard adds the repo', (t) async {
+    await open(t);
+    await t.enterText(find.byType(TextField), repo);
+    await t.testTextInput.receiveAction(TextInputAction.done);
+    await t.pumpAndSettle();
+    expect(find.text(repo), findsOneWidget);
+  });
+
+  testWidgets('the add row shows a spinner while busy', (t) async {
+    await t.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: AddRepoRow(
+            controller: TextEditingController(),
+            busy: true,
+            onAdd: () {},
+          ),
+        ),
+      ),
+    );
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byTooltip('Add repository'), findsNothing);
+  });
 
   testWidgets('empty state explains what to do', (t) async {
     await open(t);
@@ -94,6 +137,9 @@ void main() {
     );
     await open(t);
     expect(find.text('Update'), findsOneWidget);
+    await t.tap(find.text('Update'));
+    await t.pumpAndSettle();
+    expect(find.text('Update'), findsNothing);
   });
 
   testWidgets('a failing repo shows its error and can be removed', (t) async {
@@ -135,19 +181,46 @@ void main() {
   });
 
   testWidgets('feature wires route, settings tile and services', (t) async {
-    final env = KartkaEnv(memoryPlatform(http: http.client, kv: kv))
-      ..registry = KartkaRegistry([]);
-    final feature = pluginsFeature(env, engineFactory: InterpreterEngine.new);
+    final adapter = _Adapter();
+    final registry = KartkaRegistry.build(
+      memoryPlatform(http: http.client, kv: kv),
+      [
+        (env) => pluginsFeature(env, engineFactory: QuickJsEngine.new),
+        (env) => KartkaFeature(id: 'x', services: [adapter]),
+      ],
+    );
+    final feature = registry.features.first;
     expect(feature.id, 'plugins');
-    final registry = KartkaRegistry([feature]);
     expect(registry.all<SourceProvider>(), hasLength(1));
-    expect(registry.maybe<PluginRegistrar>(), isA<PluginManager>());
+    final manager = registry.maybe<PluginRegistrar>()! as PluginManager;
     expect(
       await t.runAsync(
         () => registry.all<SourceProvider>().single.watch().first,
       ),
       isEmpty,
     );
+    http.overrides['https://repo.test/foreign.json'] = (
+      status: 200,
+      body: '{"foreign": true}',
+    );
+    await t.runAsync(() => manager.addRepo('https://repo.test/foreign.json'));
+    expect(adapter.parsed, 1);
+
+    await t.runAsync(() async {
+      await manager.installLocal(
+        const PluginManifest(
+          id: 'demo',
+          name: 'Demo',
+          version: '1',
+          lang: 'en',
+          baseUrl: 'https://demo.test',
+        ),
+        fixture('demo.js'),
+        origin: 'test',
+      );
+      final sources = await registry.all<SourceProvider>().single.watch().first;
+      expect((await sources.single.popular(1)).items, hasLength(2));
+    });
 
     final router = GoRouter(
       routes: [

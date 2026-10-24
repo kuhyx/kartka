@@ -3,8 +3,8 @@ var BASE = 'https://demo.test';
 
 async function list(path) {
   var r = await kartka.http.get(BASE + path);
-  var rows = await kartka.html.select(r.body, 'li.manga a');
-  var next = await kartka.html.select(r.body, 'a.next');
+  var rows = kartka.html.select(r.body, 'li.manga a');
+  var next = kartka.html.select(r.body, 'a.next');
   return {
     items: rows.map(function (a) {
       return { url: a.attrs.href, title: a.text, coverUrl: BASE + a.attrs['data-cover'] };
@@ -21,9 +21,9 @@ function search(query, page) {
 
 async function details(url) {
   var r = await kartka.http.get(BASE + url);
-  var title = await kartka.html.select(r.body, 'h1');
-  var desc = await kartka.html.select(r.body, 'p.desc');
-  var genres = await kartka.html.select(r.body, 'span.genre');
+  var title = kartka.html.select(r.body, 'h1');
+  var desc = kartka.html.select(r.body, 'p.desc');
+  var genres = kartka.html.select(r.body, 'span.genre');
   kartka.log('details', url);
   return {
     url: url,
@@ -37,7 +37,7 @@ async function details(url) {
 
 async function chapters(url) {
   var r = await kartka.http.get(BASE + url);
-  var rows = await kartka.html.select(r.body, 'ul.chapters a');
+  var rows = kartka.html.select(r.body, 'ul.chapters a');
   return rows.map(function (a) {
     return { url: a.attrs.href, name: a.text, number: parseFloat(a.attrs['data-n']) };
   });
@@ -45,7 +45,7 @@ async function chapters(url) {
 
 async function pages(url) {
   var r = await kartka.http.get(BASE + url);
-  var imgs = await kartka.html.select(r.body, 'img.page');
+  var imgs = kartka.html.select(r.body, 'img.page');
   var seen = (await kartka.prefs.get('seen')) || '0';
   await kartka.prefs.set('seen', String(Number(seen) + 1));
   return imgs.map(function (i) {

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
-import 'package:kartka/plugins/runtime/engine_interpreter.dart';
+import 'package:kartka/plugins/runtime/engine_quickjs.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
 import 'package:kartka/plugins/runtime/kartka_host_services.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
@@ -26,7 +26,7 @@ void main() {
       registrar: manager,
       services: (id) =>
           KartkaHostServices(pluginId: id, http: http.client, store: store),
-      engineFactory: InterpreterEngine.new,
+      engineFactory: QuickJsEngine.new,
     );
     emissions = [];
   });

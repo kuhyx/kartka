@@ -1,4 +1,4 @@
-/// JS bootstrap shared by every engine (QuickJS, interpreter, web worker).
+/// JS bootstrap shared by every engine (QuickJS and the web worker).
 ///
 /// The engine supplies exactly one native function, `__kartka_send(json)`
 /// (JS to Dart), and calls `__kartka_in(json)` for Dart to JS. Everything the
@@ -11,10 +11,24 @@
 /// * Dart to JS `{t:'call', id, method, args}` invoking a plugin function.
 library;
 
-/// The prelude source. Evaluated before the plugin source.
-const String kPreludeJs = '''
+import 'package:kartka/plugins/runtime/html_parser_bundle.g.dart';
+import 'package:kartka/plugins/runtime/polyfills.dart';
+
+/// Everything evaluated before the plugin source: polyfills, the bundled HTML
+/// parser, then the `kartka` object. `kartka.html` runs inside the sandbox
+/// (synchronous, identical on Android and web); only http, prefs and log are
+/// host calls.
+final String kPreludeJs = [
+  kPolyfillsJs,
+  kHtmlParserBundle,
+  _kCoreJs,
+].join('\n');
+
+const String _kCoreJs = '''
 (function (g) {
   var send = g.__kartka_send;
+  var parseHtml = g.__kartka_html_parse;
+  delete g.__kartka_html_parse;
   var pending = {};
   var seq = 0;
   function host(op, args) {
@@ -31,7 +45,12 @@ const String kPreludeJs = '''
       post: function (u, o) { return host('http.post', [String(u), opts(o)]); }
     },
     html: {
-      select: function (h, c) { return host('html.select', [String(h), String(c)]); }
+      parse: function (h) { return parseHtml(String(h)); },
+      select: function (h, c) {
+        return parseHtml(String(h)).querySelectorAll(String(c)).map(function (e) {
+          return { text: e.text.trim(), attrs: e.attributes, html: e.outerHTML };
+        });
+      }
     },
     log: function () {
       var parts = [];

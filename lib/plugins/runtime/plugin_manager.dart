@@ -5,6 +5,7 @@ import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
 import 'package:kartka/plugins/runtime/plugin_index.dart';
 import 'package:kartka/plugins/runtime/plugin_registrar.dart';
+import 'package:kartka/plugins/runtime/plugin_repo_adapter.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
 
 /// Largest plugin file accepted.
@@ -49,7 +50,7 @@ class AvailableResult {
 /// Repo management and install/update/uninstall.
 class PluginManager implements PluginRegistrar {
   /// Creates a manager.
-  new({required this.http, required this.store});
+  new({required this.http, required this.store, this.adapters = _noAdapters});
 
   /// All downloads go through this.
   final KartkaHttp http;
@@ -57,13 +58,22 @@ class PluginManager implements PluginRegistrar {
   /// Persistence.
   final PluginStore store;
 
+  /// Extra repo formats, asked lazily (registry order) on every index read.
+  final List<PluginRepoAdapter> Function() adapters;
+
+  static List<PluginRepoAdapter> _noAdapters() => const [];
+
   final StreamController<void> _changes = StreamController.broadcast();
 
   Future<List<PluginIndexEntry>> _fetchIndex(String url) async {
     final u = Uri.parse(url);
     final r = await http.get(u);
     if (!r.ok) throw KartkaHttpException(u, r.statusCode);
-    return parsePluginIndex(r.body, u);
+    final json = decodeIndexJson(r.body);
+    for (final a in adapters()) {
+      if (a.accepts(json)) return a.parse(json, u);
+    }
+    return parseNativeIndex(json, u);
   }
 
   /// Adds repo [url] after checking that it serves a valid index.
@@ -139,10 +149,16 @@ class PluginManager implements PluginRegistrar {
     if (entry.sha256 != null && entry.sha256 != digest) {
       throw PluginException(id, 'sha256 mismatch (got $digest)');
     }
+    final String source;
+    try {
+      source = await entry.adapter?.buildSource(entry, r.body) ?? r.body;
+    } on Object catch (e) {
+      throw PluginException(id, 'conversion failed: $e');
+    }
     await _save(
       InstalledPlugin(
         manifest: entry.manifest,
-        source: r.body,
+        source: source,
         origin: entry.repoUrl ?? 'unknown',
         sha256: entry.sha256,
       ),

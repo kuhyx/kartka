@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/plugins/runtime/engine_quickjs.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
@@ -7,10 +5,6 @@ import 'package:kartka/plugins/runtime/plugin_session.dart';
 
 import 'engine_contract.dart';
 import 'support.dart';
-
-/// Needs flutter_js's bundled Linux library; run via
-/// `test/plugins/runtime/run_quickjs_test.sh`. Skipped otherwise.
-final _hasLib = Platform.environment['LIBQUICKJSC_TEST_PATH'] != null;
 
 PluginSession _session(String source) => PluginSession(
   manifest: const PluginManifest(
@@ -25,11 +19,9 @@ PluginSession _session(String source) => PluginSession(
   engineFactory: QuickJsEngine.new,
 );
 
+/// QuickJS runs under plain `flutter test`: `flutter_test_config.dart`
+/// preloads the Linux library that flutter_js bundles.
 void main() {
-  if (!_hasLib) {
-    test('QuickJS engine', () {}, skip: 'LIBQUICKJSC_TEST_PATH not set');
-    return;
-  }
   group('contract', () => engineContractTests(QuickJsEngine.new));
 
   test('only the kartka global is reachable', () async {

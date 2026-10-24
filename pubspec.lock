@@ -177,14 +177,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
-  csslib:
-    dependency: transitive
-    description:
-      name: csslib
-      sha256: "09bad715f418841f976c77db72d5398dc1253c21fb9c0c7f0b0b985860b2d58e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.2"
   cupertino_ui:
     dependency: transitive
     description:
@@ -406,14 +398,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
-  html:
-    dependency: "direct main"
-    description:
-      name: html
-      sha256: "43b67b8f43321ab066817dfac5619596c98bb1b61624e77203bb4351785f9699"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.15.7"
   http:
     dependency: "direct main"
     description:
@@ -494,14 +478,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
-  js_interpreter:
-    dependency: "direct main"
-    description:
-      name: js_interpreter
-      sha256: c5d46cc313a34d448dbc1fce3fe5898727c7105abbbbb655302d20f5ee929fe6
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.5"
   json_annotation:
     dependency: transitive
     description:

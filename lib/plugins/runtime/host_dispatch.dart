@@ -28,11 +28,6 @@ class HostDispatcher {
           headers: _headers(o['headers']),
           body: body?.toString(),
         )).toJson();
-      case 'html.select':
-        return [
-          for (final m in services.htmlSelect(_str(args, 0), _str(args, 1)))
-            m.toJson(),
-        ];
       case 'log':
         services.log(_str(args, 0));
         return null;

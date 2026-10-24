@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:kartka/plugins/runtime/host_api.dart';
+import 'package:kartka/plugins/runtime/plugin_repo_adapter.dart';
 
 /// One plugin offered by a repo's `index.json`.
 ///
@@ -13,6 +14,7 @@ class PluginIndexEntry {
     required this.url,
     this.sha256,
     this.repoUrl,
+    this.adapter,
   });
 
   /// The plugin's manifest.
@@ -26,18 +28,29 @@ class PluginIndexEntry {
 
   /// URL of the index this entry came from.
   final String? repoUrl;
+
+  /// Set when a `PluginRepoAdapter` parsed this entry; it converts the
+  /// downloaded file at install time.
+  final PluginRepoAdapter? adapter;
 }
 
-/// Parses an `index.json` body fetched from [indexUrl].
+/// Parses a native `index.json` body fetched from [indexUrl].
 ///
 /// Throws [FormatException] naming the offending entry.
-List<PluginIndexEntry> parsePluginIndex(String body, Uri indexUrl) {
-  final Object? root;
+List<PluginIndexEntry> parsePluginIndex(String body, Uri indexUrl) =>
+    parseNativeIndex(decodeIndexJson(body), indexUrl);
+
+/// Decodes an index body; throws [FormatException] if it is not JSON.
+Object? decodeIndexJson(String body) {
   try {
-    root = jsonDecode(body);
+    return jsonDecode(body);
   } on FormatException catch (e) {
     throw FormatException('index is not JSON: ${e.message}');
   }
+}
+
+/// Parses an already decoded native index.
+List<PluginIndexEntry> parseNativeIndex(Object? root, Uri indexUrl) {
   final list = root is Map ? root['plugins'] : null;
   if (list is! List) throw const FormatException('index has no "plugins" list');
   final entries = <PluginIndexEntry>[];

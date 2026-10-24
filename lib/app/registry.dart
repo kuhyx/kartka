@@ -6,11 +6,13 @@ library;
 
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/plugins/mangayomi/mangayomi_feature.dart';
+import 'package:kartka/plugins/runtime/plugins_feature.dart';
 
 export 'package:kartka/app/feature.dart';
 
 /// Every part's feature factory, in registry order.
 final List<KartkaFeatureFactory> kartkaFeatureFactories = [
   // Parts append below this line, one entry each.
+  pluginsFeature,
   mangayomiFeature,
 ];

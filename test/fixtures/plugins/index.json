@@ -3,7 +3,7 @@
     {
       "id": "demo", "name": "Demo Site", "version": "1.0.0", "lang": "en",
       "baseUrl": "https://demo.test", "apiVersion": 1,
-      "url": "demo.js", "sha256": "097a593d387d332bdbcc93c0255440e77ccc887e29b646f5ff5ab8faff5786a7"
+      "url": "demo.js", "sha256": "aa49010caad72548d3b06241f298026482ded57670843fc4d392407761ae334a"
     },
     {
       "id": "nohash", "name": "No Hash", "version": "0.1.0", "lang": "en",

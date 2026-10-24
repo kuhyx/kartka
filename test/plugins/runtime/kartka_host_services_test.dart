@@ -48,8 +48,7 @@ void main() {
     expect(http.requested, isEmpty);
   });
 
-  test('html, log and prefs are scoped to the plugin', () async {
-    expect(s.htmlSelect('<p>x</p>', 'p').single.text, 'x');
+  test('log and prefs are scoped to the plugin', () async {
     s.log('hello');
     expect(logs, ['demo: hello']);
     await s.prefsSet('k', 'v');
