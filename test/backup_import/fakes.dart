@@ -6,6 +6,8 @@ import 'package:kartka/core/repositories/repositories.dart';
 class FakeLibrary implements LibraryRepository {
   final Map<MangaKey, LibraryEntry> entries = {};
   int writes = 0;
+  bool failOnWrite = false;
+  Future<void>? gate;
 
   @override
   Stream<List<LibraryEntry>> watch() =>
@@ -13,6 +15,8 @@ class FakeLibrary implements LibraryRepository {
 
   @override
   Future<void> upsert(LibraryEntry e) async {
+    await gate;
+    if (failOnWrite) throw StateError('disk full');
     writes++;
     entries[e.key] = e;
   }
