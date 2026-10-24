@@ -13,6 +13,7 @@ import 'dart:async';
 
 import 'package:crdt_sync/crdt_sync.dart' show Hlc, RemoteSyncError;
 import 'package:kartka/sync/merge/merge_rules.dart';
+import 'package:kartka/sync/merge/tracker_merge.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/sync_feed.dart';
 import 'package:kartka/sync/sync_shadow.dart';
@@ -25,6 +26,7 @@ const Map<String, (int, Merge)> kSyncNamespaces = {
   'membership': (2, mergeRegister),
   'progress': (1, mergeProgress),
   'read': (2, mergeRegister),
+  'trackers': (2, mergeTracker),
 };
 
 /// One node that changed because of a remote merge.

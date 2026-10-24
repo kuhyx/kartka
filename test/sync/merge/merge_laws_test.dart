@@ -1,5 +1,6 @@
 import 'package:glados/glados.dart';
 import 'package:kartka/sync/merge/merge_rules.dart';
+import 'package:kartka/sync/merge/tracker_merge.dart';
 
 import 'node_generators.dart';
 
@@ -30,6 +31,21 @@ void main() {
   _joinLaws('mergeLwwNode', any.lwwNode, mergeLwwNode);
   _joinLaws('mergeRegister', any.registerNode, mergeRegister);
   _joinLaws('mergeProgress', any.progressNode, mergeProgress);
+  _joinLaws('mergeTracker', any.trackerNode, mergeTracker);
+
+  Glados2(any.trackerNode, any.trackerNode).test(
+    'a tracker never forgets a pushed chapter',
+    (a, b) {
+      final m = mergeTracker(a, b);
+      for (final side in [a, b]) {
+        final pushed = (side[kPushedField] as Map?) ?? const {};
+        for (final MapEntry(:key, :value) in pushed.entries) {
+          final kept = ((m[kPushedField] as Map?) ?? const {})[key] as int;
+          expect(kept, greaterThanOrEqualTo(value as int));
+        }
+      }
+    },
+  );
 
   group('progress is monotonic', () {
     Glados2(any.progressNode, any.progressNode).test(

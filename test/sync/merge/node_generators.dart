@@ -1,6 +1,7 @@
 import 'package:crdt_sync/crdt_sync.dart' show Hlc;
 import 'package:glados/glados.dart';
 import 'package:kartka/sync/merge/merge_rules.dart';
+import 'package:kartka/sync/merge/tracker_merge.dart';
 
 /// Small domains on purpose: collisions (equal clocks, equal positions) are
 /// where merge rules break, so the generators make them common.
@@ -69,6 +70,30 @@ extension SyncNodeAnys on Any {
       'readAt': readAt,
     },
   );
+
+  /// A `trackers/` node: an LWW binding plus a per-remoteId max map.
+  Generator<Node> get trackerNode => combine4(
+    choose<String?>(['21', '42', null]),
+    hlcStr,
+    map(choose(['21', '42']), intInRange(0, 5)),
+    this.bool,
+    (id, clock, pushed, removed) =>
+        trackerNode2(id, clock, pushed, removed: removed),
+  );
+
+  static Node trackerNode2(
+    String? id,
+    String? clock,
+    Map<String, int> pushed, {
+    required bool removed,
+  }) => normalTracker({
+    'key': 'k',
+    'service': 'anilist',
+    'remoteId': ?id,
+    'removed': removed,
+    kHlcField: ?clock,
+    if (pushed.isNotEmpty) kPushedField: pushed,
+  });
 
   /// Picks one of [gens] (glados has no built-in union).
   Generator<T> oneOfGen<T>(List<Generator<T>> gens) =>

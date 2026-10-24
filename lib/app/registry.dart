@@ -6,8 +6,8 @@ library;
 
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/backup_import/backup_import_feature.dart';
-import 'package:kartka/tracking/anilist/tracking_feature.dart';
 import 'package:kartka/sync/sync_feature.dart';
+import 'package:kartka/tracking/anilist/tracking_feature.dart';
 
 export 'package:kartka/app/feature.dart';
 

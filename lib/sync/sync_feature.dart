@@ -1,11 +1,13 @@
 /// The sync part's feature (contracts §3, §10, §13): the repository
-/// decorator, the read-only [RtdbReader], and More → Sync.
+/// and tracker-binding decorators, the read-only [RtdbReader], and
+/// More → Sync.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/sync/decorators/sync_repository_decorator.dart';
+import 'package:kartka/sync/decorators/synced_bindings.dart';
 import 'package:kartka/sync/polling_rtdb_reader.dart';
 import 'package:kartka/sync/rtdb_reader.dart';
 import 'package:kartka/sync/sync_engine.dart';
@@ -44,6 +46,7 @@ KartkaFeature syncFeatureWith(SyncRuntime runtime) => KartkaFeature(
   ],
   services: <Object>[
     SyncRepositoryDecorator(() => runtime.engine),
+    SyncBindingDecorator(() => runtime.engine),
     PollingRtdbReader(runtime.transport) as RtdbReader,
   ],
 );

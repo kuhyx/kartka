@@ -1,6 +1,6 @@
 import 'package:crdt_sync/crdt_sync.dart' show Hlc;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:glados/glados.dart' show Glados, any, StringAnys;
+import 'package:glados/glados.dart' show Glados, StringAnys, any;
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/wire/wire.dart';
