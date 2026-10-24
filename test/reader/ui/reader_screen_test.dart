@@ -133,4 +133,25 @@ void main() {
     await tester.tap(find.text('Back'));
     expect(h.exits, 1);
   });
+
+  testWidgets('the settings sheet edits global settings', (tester) async {
+    await ltr(tester);
+    await tester.tapAt(const Offset(400, 300));
+    await h.settle(tester);
+    await tester.tap(find.byTooltip('Reader settings'));
+    await h.settle(tester);
+    await tester.tap(find.text('Invert tap zones'));
+    await h.settle(tester);
+    expect((await h.prefs.settings()).invertTaps, isTrue);
+  });
+
+  testWidgets('webtoon scrolls back to the previous-chapter screen', (
+    tester,
+  ) async {
+    await h.prefs.setModeFor('fake|/m/1', ReaderMode.webtoon);
+    await h.pump(tester);
+    await key(tester, LogicalKeyboardKey.arrowUp);
+    await key(tester, LogicalKeyboardKey.arrowUp);
+    expect(find.text('Previous: Ch. 1'), findsOneWidget);
+  });
 }

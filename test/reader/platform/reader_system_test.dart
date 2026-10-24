@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/reader/platform/browser_fullscreen_stub.dart';
 import 'package:kartka/reader/platform/reader_system.dart';
 
 void main() {
@@ -70,5 +71,10 @@ void main() {
     // flutter_test reports Android as the target platform on every host.
     expect(system.isAndroid, defaultTargetPlatform == TargetPlatform.android);
     expect(system.isWeb, isFalse);
+  });
+
+  test('the non-web fullscreen hook is a no-op', () async {
+    await setBrowserFullscreen(on: true);
+    expect(calls, isEmpty);
   });
 }

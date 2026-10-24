@@ -53,4 +53,13 @@ void main() {
     await tester.tap(find.text('Retry'));
     expect(retried, 1);
   });
+
+  testWidgets('undecodable bytes offer a retry too', (tester) async {
+    await pump(tester, Future.value(Uint8List.fromList([1, 2, 3])));
+    for (var i = 0; i < 5; i++) {
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+      await tester.pump();
+    }
+    expect(find.text('Retry'), findsOneWidget);
+  });
 }
