@@ -25,6 +25,7 @@ class SyncedLibraryRepository with RemoteListener implements LibraryRepository {
   @override
   Future<void> upsert(LibraryEntry e) async {
     final engine = await this.engine;
+    if (engine == null) return _inner.upsert(e);
     final tick = engine.tick();
     // The local repo's LWW must accept every write made through sync, so it
     // gets the monotonic tick, never the caller's (possibly skewed) clock.
@@ -41,12 +42,22 @@ class SyncedLibraryRepository with RemoteListener implements LibraryRepository {
   @override
   Future<void> remove(MangaKey key) async {
     final engine = await this.engine;
-    await _inner.remove(key);
+    if (engine == null) return _inner.remove(key);
     final path = libraryPath(key);
-    final delta = stampChanges(engine.shadow.node(path), {
+    final known = engine.shadow.node(path);
+    final current = known == null ? null : libraryFromNode(known);
+    final tick = engine.tick();
+    // A tombstone upsert stamped with the tick, not inner.remove: remove
+    // stamps its own clock, which a later remote re-add could fail to beat.
+    await (current == null
+        ? _inner.remove(key)
+        : _inner.upsert(
+            current.copyWith(removed: true, updatedAt: localStamp(tick)),
+          ));
+    final delta = stampChanges(known, {
       'key': key,
       'removed': true,
-    }, engine.tick().toStr());
+    }, tick.toStr());
     if (delta != null) await engine.write(path, delta);
   }
 
@@ -54,7 +65,6 @@ class SyncedLibraryRepository with RemoteListener implements LibraryRepository {
   Future<void> apply(SyncEngine engine, RemoteChange change) async {
     final entry = libraryFromNode(change.node);
     if (entry == null) return;
-    if (entry.removed) return _inner.remove(entry.key);
     await _inner.upsert(entry.copyWith(updatedAt: localStamp(engine.tick())));
   }
 }

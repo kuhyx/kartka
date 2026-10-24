@@ -32,10 +32,37 @@ class SyncedProgressRepository
   @override
   Future<void> record(ReadingProgress p) async {
     final engine = await this.engine;
+    if (engine == null) return _inner.record(p);
     // Both sides max-merge (isAheadOf), so a stale record is a no-op here
     // and in RTDB alike.
     await _inner.record(p);
-    await engine.write(progressPath(p.key), rtdbNormal(p.toJson()));
+    final path = progressPath(p.key);
+    final node = rtdbNormal(p.toJson());
+    // Page turns within one chapter coalesce into one push per few seconds;
+    // a chapter change (or a first record) goes out at once.
+    final pushed = engine.shadow.node(path)?['chapterUrl'];
+    if (pushed == p.chapterUrl) return engine.writeDeferred(path, node);
+    await engine.flush();
+    await engine.write(path, node);
+  }
+
+  @override
+  Future<void> markReadMany(MangaKey key, Iterable<String> chapterUrls) async {
+    final urls = chapterUrls.toList();
+    final engine = await this.engine;
+    await _inner.markReadMany(key, urls);
+    if (engine == null || urls.isEmpty) return;
+    final hlc = engine.tick().toStr();
+    // One atomic multi-path PATCH and one revision for the whole manga.
+    await engine.writeAll({
+      for (final url in urls)
+        readPath(key, url): {
+          'read': true,
+          kHlcField: hlc,
+          'url': url,
+          'key': key,
+        },
+    });
   }
 
   @override
@@ -55,6 +82,7 @@ class SyncedProgressRepository
     await (read
         ? _inner.markRead(key, chapterUrl)
         : _inner.markUnread(key, chapterUrl));
+    if (engine == null) return;
     // `key` is additive to §13's {read, hlc, url}: the path only carries
     // hashes, and the receiver needs the MangaKey to replay the mark.
     await engine.write(readPath(key, chapterUrl), {

@@ -8,17 +8,22 @@ import 'package:kartka/sync/sync_engine.dart';
 
 /// Mixed into each decorator; call [listen] from the constructor.
 mixin RemoteListener {
-  /// The engine, which starts asynchronously after the repos are built.
-  late final Future<SyncEngine> engine;
+  /// The engine, which starts asynchronously after the repos are built;
+  /// null when it failed to start, so local writes still work unsynced.
+  late final Future<SyncEngine?> engine;
 
   StreamSubscription<RemoteChange>? _sub;
   Future<void> _applying = Future.value();
 
   /// Subscribes to [engine]'s changes under [namespaces] once it is ready.
   void listen(Future<SyncEngine> engine, Set<String> namespaces) {
-    this.engine = engine;
+    this.engine = engine.then<SyncEngine?>(
+      (e) => e,
+      onError: (Object _) => null,
+    );
     unawaited(
-      engine.then((e) {
+      this.engine.then((e) {
+        if (e == null) return;
         _sub = e.remoteChanges
             .where((c) => namespaces.contains(c.path.split('/').first))
             // Serial, so a later change for one node never lands first.

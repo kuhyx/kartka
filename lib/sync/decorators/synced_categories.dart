@@ -31,6 +31,7 @@ class SyncedCategoryRepository
   @override
   Future<void> upsert(Category c) async {
     final engine = await this.engine;
+    if (engine == null) return _inner.upsert(c);
     final tick = engine.tick();
     await _inner.upsert(_restamp(c, localStamp(tick)));
     final path = categoryPath(c.id);
@@ -52,6 +53,7 @@ class SyncedCategoryRepository
   ) async {
     final engine = await this.engine;
     await _inner.setMembership(key, categoryId, member);
+    if (engine == null) return;
     await engine.write(membershipPath(key, categoryId), {
       'member': member,
       kHlcField: engine.tick().toStr(),
