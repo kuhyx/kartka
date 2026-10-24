@@ -108,7 +108,7 @@ register_app() {
   printf '  Open the new app (myanimelist.net/apiconfig) and copy its Client ID.\n'
   wait_enter 'Client ID is on the clipboard'
   id="$(clip_get | tr -d '[:space:]')"
-  [[ $id =~ ^[A-Za-z0-9]{16,64}$ ]] ||
+  [[ $id =~ ^[0-9a-f]{32}$ ]] ||
     die "clipboard does not look like a client id: '${id:0:20}...' (rerun with --only ${platform})"
   config_set "$(client_key "$platform")" "$id"
   printf '  saved %s to %s\n' "$(client_key "$platform")" "$KARTKA_OAUTH_FILE"
