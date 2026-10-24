@@ -63,12 +63,22 @@ class LocalProgressRepository implements ProgressRepository {
       );
 
   @override
-  Stream<Set<String>> readChapters(MangaKey key) => _marks
+  Stream<Map<String, bool>> readMarks(MangaKey key) => _marks
       .watch()
       .map(
-        (rows) => Set<String>.unmodifiable({
+        (rows) => Map<String, bool>.unmodifiable({
           for (final m in rows.values)
-            if (m.key == key && m.on) m.target,
+            if (m.key == key) m.target: m.on,
+        }),
+      )
+      .distinct(mapEquals);
+
+  @override
+  Stream<Set<String>> readChapters(MangaKey key) => readMarks(key)
+      .map(
+        (marks) => Set<String>.unmodifiable({
+          for (final MapEntry(:key, :value) in marks.entries)
+            if (value) key,
         }),
       )
       .distinct(setEquals);
