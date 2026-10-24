@@ -89,7 +89,7 @@ void main() {
   });
 
   test('a chapter the user marked unread stays unread', () async {
-    final key = 'mangadex|/manga/$mdUuid';
+    const key = 'mangadex|/manga/$mdUuid';
     await f.progress.markUnread(key, '/chapter/c2');
     await f.importer.apply(plan);
     expect(f.progress.read[key], {'/chapter/c1', '/chapter/c3'});

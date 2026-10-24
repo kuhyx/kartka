@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/backup_import/backup_models.dart';
 import 'package:kartka/backup_import/backup_planner.dart';
 import 'package:kartka/backup_import/import_plan.dart';
 import 'package:kartka/backup_import/source_mapper.dart';
@@ -111,5 +112,38 @@ void main() {
     expect(trackerService(1), 'mal');
     expect(trackerService(60), 'mdlist');
     expect(trackerService(77), 'tracker77');
+  });
+
+  test('same-number chapters: the later page wins; trackers add up', () {
+    BackupManga manga(String url) {
+      final m = BackupManga()
+        ..sourceId = '4709139914729853090'
+        ..url = url;
+      for (final page in [2, 9, 4]) {
+        m.chapters.add(
+          BackupChapter()
+            ..url = '/c$page'
+            ..number = 5
+            ..read = true
+            ..lastPageRead = page,
+        );
+      }
+      m.tracking.add(
+        BackupTracking()
+          ..syncId = 2
+          ..mediaId = '7',
+      );
+      return m;
+    }
+
+    final p = const BackupPlanner(SourceMapper()).plan(
+      BackupData(
+        manga: [manga('/a'), manga('/b')],
+        categories: const [],
+        sources: const [],
+      ),
+    );
+    expect(p.manga.first.progress!.chapterUrl, '/c9');
+    expect(p.summary.trackersByService, {'anilist': 2});
   });
 }

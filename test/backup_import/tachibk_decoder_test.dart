@@ -98,6 +98,28 @@ void main() {
     expect(data.manga.single.tracking.single.mediaId, '42');
   });
 
+  test('unknown fields are skipped in every message type', () {
+    ProtoWriter unknown(ProtoWriter w) => w..int64(999, 1);
+    final manga = unknown(ProtoWriter())
+      ..message(16, unknown(ProtoWriter()..string(1, '/c')))
+      ..message(18, unknown(ProtoWriter()..string(5, 'Tracked title')))
+      ..message(104, unknown(ProtoWriter()..string(1, '/c')))
+      ..message(600, unknown(ProtoWriter()..boolean(1, value: false)));
+    final root = unknown(ProtoWriter())
+      ..message(1, manga)
+      ..message(2, unknown(ProtoWriter()..string(1, 'c')))
+      ..message(101, unknown(ProtoWriter()..string(1, 's')));
+    final data = decodeTachibk(root.bytes);
+    expect(data.manga.single.tracking.single.title, 'Tracked title');
+    expect(data.manga.single.chapters.single.url, '/c');
+    expect(data.categories.single.name, 'c');
+    expect(data.sources.single.name, 's');
+    expect(
+      const BackupFormatException('x').toString(),
+      'BackupFormatException: x',
+    );
+  });
+
   test('also accepts an uncompressed protobuf', () {
     final raw = decodeTachibk(buildSyntheticProto());
     expect(raw.manga, hasLength(7));
