@@ -1,0 +1,99 @@
+{
+ "result": "ok",
+ "response": "collection",
+ "data": [
+  {
+   "id": "0a580438-bc72-4503-940b-12a5da881b56",
+   "type": "manga",
+   "attributes": {
+    "title": {
+     "ja-ro": "Kimi wa Yotsuba no Clover"
+    },
+    "altTitles": [
+     {
+      "ja": "\u304d\u307f\u306f\u56db\u8449\u306e\u30af\u30ed\u30fc\u30d0\u30fc"
+     },
+     {
+      "en": "You Are a Four-Leaf Clover"
+     }
+    ]
+   },
+   "relationships": []
+  },
+  {
+   "id": "58be6aa6-06cb-4ca5-bd20-f1392ce451fb",
+   "type": "manga",
+   "attributes": {
+    "title": {
+     "ja-ro": "Yotsuba to!"
+    },
+    "altTitles": [
+     {
+      "vi": "Yotsuba&! \u2013 C\u1ecf 4 l\u00e1"
+     },
+     {
+      "es": "Yotsuba Y!"
+     }
+    ]
+   },
+   "relationships": []
+  },
+  {
+   "id": "5b356a49-627a-498f-9b67-78eae9d8c3d9",
+   "type": "manga",
+   "attributes": {
+    "title": {
+     "ja-ro": "Mahouka Koukou no Rettousei - Yotsuba Keishou-hen \u300cMovie Promotion\u300d"
+    },
+    "altTitles": [
+     {
+      "ja": "\u9b54\u6cd5\u79d1\u9ad8\u6821\u306e\u52a3\u7b49\u751f \u56db\u8449\u7d99\u627f\u7de8 \u300c\u5287\u5834\u7248 \u5ba3\u4f1d\u300d"
+     },
+     {
+      "en": "The Irregular at Magic High School - Yotsuba Succession Arc \u300cMovie Promotion\u300d"
+     }
+    ]
+   },
+   "relationships": []
+  },
+  {
+   "id": "95f11d75-2018-4fe7-ac9f-04039f15b4e4",
+   "type": "manga",
+   "attributes": {
+    "title": {
+     "en": "Mahouka Koukou no Rettousei - Yotsuba Keishou-hen"
+    },
+    "altTitles": [
+     {
+      "es-la": "Mahouka Koukou no Rettousei - Sucesi\u00f3n Yotsuba"
+     },
+     {
+      "en": "The Irregular at Magic High School - Yotsuba Succession Arc"
+     }
+    ]
+   },
+   "relationships": []
+  },
+  {
+   "id": "98c7e64e-fc12-4a62-9a47-f8f312d232bc",
+   "type": "manga",
+   "attributes": {
+    "title": {
+     "en": "5Toubun no Hanayome - Fuutsuba Date (Doujinshi)"
+    },
+    "altTitles": [
+     {
+      "en": "Fuutsuba Date"
+     },
+     {
+      "es-la": "Cita Fuutarou x Yotsuba"
+     }
+    ]
+   },
+   "relationships": []
+  }
+ ],
+ "limit": 5,
+ "offset": 0,
+ "total": 22
+}

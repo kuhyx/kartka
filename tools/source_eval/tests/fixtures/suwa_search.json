@@ -1,0 +1,32 @@
+{
+ "data": {
+  "fetchSourceManga": {
+   "mangas": [
+    {
+     "id": 21,
+     "title": "Berserk Gaiden"
+    },
+    {
+     "id": 22,
+     "title": "Berserk of Gluttony"
+    },
+    {
+     "id": 23,
+     "title": "Berserk dj - Cruel"
+    },
+    {
+     "id": 24,
+     "title": "Berserk of Gluttony"
+    },
+    {
+     "id": 25,
+     "title": "Berserk Memorial"
+    },
+    {
+     "id": 26,
+     "title": "Peerless Battle Spirit"
+    }
+   ]
+  }
+ }
+}

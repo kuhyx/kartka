@@ -1,0 +1,19 @@
+{
+ "data": {
+  "fetchChapterPages": null
+ },
+ "errors": [
+  {
+   "message": "Exception while fetching data (/fetchChapterPages) : CEF is disabled\n\nsuwayomi.tachidesk.server.util.CEFManager$CefException: CEF is disabled\n\tat suwayomi.tachidesk.server.util.CEFManager.initAsync(CEFManager.kt:97)",
+   "locations": [
+    {
+     "line": 1,
+     "column": 12
+    }
+   ],
+   "path": [
+    "fetchChapterPages"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,97 @@
+{
+ "result": "ok",
+ "response": "collection",
+ "data": [
+  {
+   "id": "ff4f79de-6102-4610-8327-539904cfe549",
+   "type": "chapter",
+   "attributes": {
+    "chapter": "1",
+    "pages": 51,
+    "externalUrl": null,
+    "translatedLanguage": "en"
+   },
+   "relationships": []
+  },
+  {
+   "id": "a3de73a0-ec90-42f1-bdb2-8ab7d95fa2c0",
+   "type": "chapter",
+   "attributes": {
+    "chapter": "1",
+    "pages": 48,
+    "externalUrl": null,
+    "translatedLanguage": "en"
+   },
+   "relationships": []
+  },
+  {
+   "id": "db997bf2-91b3-469b-8917-e3ed79c0e9c0",
+   "type": "chapter",
+   "attributes": {
+    "chapter": "2",
+    "pages": 36,
+    "externalUrl": null,
+    "translatedLanguage": "en"
+   },
+   "relationships": []
+  },
+  {
+   "id": "27d92b7c-12b9-4f08-bcc4-2406afe9718c",
+   "type": "chapter",
+   "attributes": {
+    "chapter": "2",
+    "pages": 36,
+    "externalUrl": null,
+    "translatedLanguage": "en"
+   },
+   "relationships": []
+  },
+  {
+   "id": "24281857-6861-49a6-a125-47735fcff084",
+   "type": "chapter",
+   "attributes": {
+    "chapter": "3",
+    "pages": 26,
+    "externalUrl": null,
+    "translatedLanguage": "en"
+   },
+   "relationships": []
+  },
+  {
+   "id": "a1a13ab1-1ec7-4341-a920-5296b54b6662",
+   "type": "chapter",
+   "attributes": {
+    "chapter": "3",
+    "pages": 28,
+    "externalUrl": null,
+    "translatedLanguage": "en"
+   },
+   "relationships": []
+  },
+  {
+   "id": "384e5138-8557-4fe0-840c-74cc942b7754",
+   "type": "chapter",
+   "attributes": {
+    "chapter": "4",
+    "pages": 26,
+    "externalUrl": null,
+    "translatedLanguage": "en"
+   },
+   "relationships": []
+  },
+  {
+   "id": "f82f05ee-0abf-4d75-af1a-a1b2be4141a4",
+   "type": "chapter",
+   "attributes": {
+    "chapter": "4",
+    "pages": 26,
+    "externalUrl": null,
+    "translatedLanguage": "en"
+   },
+   "relationships": []
+  }
+ ],
+ "limit": 500,
+ "offset": 0,
+ "total": 8
+}
