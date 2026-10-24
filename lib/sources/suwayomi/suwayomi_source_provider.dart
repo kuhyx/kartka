@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
@@ -13,9 +14,14 @@ import 'package:kartka/sources/suwayomi/suwayomi_source.dart';
 /// [MangaSource] each (`suwayomi:<id>`), re-listed whenever the settings
 /// change or an extension is installed, updated or removed.
 ///
+/// A failed fetch is never cached: the next watcher fetches again, and the
+/// provider retries by itself after [retryStart], doubling up to [retryCap],
+/// until a fetch succeeds or it is disposed.
+///
 /// Also the [ImageHeaders] for the server: covers, pages and extension icons
 /// under its URL get the basic-auth header, nothing else does.
-class SuwayomiSourceProvider implements SourceProvider, ImageHeaders {
+class SuwayomiSourceProvider
+    implements RefreshableSourceProvider, ImageHeaders {
   /// Creates the provider.
   new({required this.store, required this.client, this.titleOf});
 
@@ -28,15 +34,27 @@ class SuwayomiSourceProvider implements SourceProvider, ImageHeaders {
   /// Library title lookup for manga the server has not seen.
   final TitleLookup? titleOf;
 
+  /// First retry delay after a failed fetch.
+  static const retryStart = Duration(seconds: 2);
+
+  /// Longest retry delay.
+  static const retryCap = Duration(seconds: 60);
+
   final _updates = StreamController<List<MangaSource>>.broadcast();
   final _byServerId = <String, SuwayomiSource>{};
   StreamSubscription<SuwayomiSettings>? _settingsChanges;
-  List<MangaSource>? _last;
+  List<MangaSource>? _last; // the last successful fetch only
+  Timer? _retry;
+  Duration _retryDelay = retryStart;
+  bool _disposed = false;
 
   @override
   Stream<List<MangaSource>> watch() {
     _settingsChanges ??= store.changes.listen((_) {
       _byServerId.clear(); // another server means other ids
+      _retry?.cancel(); // a new server gets the fast cadence
+      _retry = null;
+      _retryDelay = retryStart;
       unawaited(refresh());
     });
     StreamSubscription<List<MangaSource>>? forward;
@@ -52,10 +70,17 @@ class SuwayomiSourceProvider implements SourceProvider, ImageHeaders {
   }
 
   /// Re-lists the server's sources and tells every watcher.
-  Future<void> refresh() async => _updates.add(await _load());
+  @override
+  Future<void> refresh() async {
+    final sources = await _load();
+    if (!_disposed) _updates.add(sources);
+  }
 
-  /// Stops watching the settings (tests; the app keeps it forever).
+  /// Stops watching the settings and retrying (tests; the app keeps it
+  /// forever).
   Future<void> dispose() async {
+    _disposed = true;
+    _retry?.cancel();
     await _settingsChanges?.cancel();
     await _updates.close();
   }
@@ -73,12 +98,32 @@ class SuwayomiSourceProvider implements SourceProvider, ImageHeaders {
   /// the library's "unavailable source" badges stay hidden.
   Future<List<MangaSource>> _load() async {
     try {
-      return _last = await _fetch();
-    } on Object {
+      final sources = _last = await _fetch();
+      _retry?.cancel();
+      _retry = null;
+      _retryDelay = retryStart;
+      return sources;
+    } on Object catch (e, st) {
       // Keystore read errors, HttpClient ArgumentErrors and shape errors
-      // (TypeError) all mean "no Suwayomi sources right now".
-      return _last = const [];
+      // (TypeError) all mean "no Suwayomi sources right now", not "none".
+      log(
+        'Suwayomi sources fetch failed',
+        name: 'kartka.suwayomi',
+        error: e,
+        stackTrace: st,
+        level: 900,
+      );
+      _last = null;
+      _scheduleRetry();
+      return const [];
     }
+  }
+
+  void _scheduleRetry() {
+    if (_disposed || (_retry?.isActive ?? false)) return;
+    _retry = Timer(_retryDelay, () => unawaited(refresh()));
+    final next = _retryDelay * 2;
+    _retryDelay = next > retryCap ? retryCap : next;
   }
 
   Future<List<MangaSource>> _fetch() async {

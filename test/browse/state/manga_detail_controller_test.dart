@@ -79,6 +79,32 @@ void main() {
     expect('${c.error}', contains('plugin:never'));
   });
 
+  test('retry after "source unavailable" re-fetches the sources', () async {
+    final lazy = FakeRefreshableProvider();
+    final sources = SourceRegistry([lazy]);
+    final c = MangaDetailController(
+      BrowseDeps(
+        sources: sources,
+        chapters: ChapterStore(sources.byId),
+        library: library,
+        progress: progress,
+        clock: () => when,
+      ),
+      sourceId: 'suwayomi:1',
+      mangaUrl: '/m/1',
+      sourceWait: const Duration(milliseconds: 10),
+    );
+    await c.load();
+    expect(c.error, isA<SourceUnavailable>());
+    expect(lazy.refreshes, 0, reason: 'a first load does not refresh');
+    lazy.onRefresh = [FakeSource('suwayomi:1')];
+    await c.load();
+    expect(lazy.refreshes, 1);
+    expect(c.error, isNull);
+    expect(c.details, isNotNull);
+    await sources.dispose();
+  });
+
   test('library add uses the clock, remove tombstones', () async {
     final c = ctl();
     final states = <bool>[];

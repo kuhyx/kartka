@@ -57,8 +57,11 @@ class MangaDetailController extends ChangeNotifier {
   bool loading = false;
   bool _disposed = false;
 
-  /// Loads details and a fresh chapter list in parallel.
+  /// Loads details and a fresh chapter list in parallel. After a
+  /// [SourceUnavailable] (the Retry button) it first asks every provider to
+  /// re-list its sources, so a server that was down at start is seen again.
   Future<void> load() async {
+    if (error is SourceUnavailable) unawaited(_deps.sources.refresh());
     loading = true;
     error = null;
     _notify();

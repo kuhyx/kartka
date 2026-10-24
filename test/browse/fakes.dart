@@ -94,6 +94,26 @@ class FakeSourceProvider implements SourceProvider {
   Stream<List<MangaSource>> watch() => controller.stream;
 }
 
+/// Provider that publishes [onRefresh]'s list only when asked to refresh.
+class FakeRefreshableProvider extends FakeSourceProvider
+    implements RefreshableSourceProvider {
+  /// The list the next [refresh] publishes.
+  List<MangaSource> onRefresh = const [];
+
+  /// Thrown by [refresh] when set.
+  Error? failWith;
+
+  /// How many times [refresh] ran.
+  int refreshes = 0;
+
+  @override
+  Future<void> refresh() async {
+    refreshes++;
+    if (failWith != null) throw failWith!;
+    controller.add(onRefresh);
+  }
+}
+
 class FakeLibrary implements LibraryRepository {
   final Map<MangaKey, LibraryEntry> entries = {};
   final _c = StreamController<List<LibraryEntry>>.broadcast();

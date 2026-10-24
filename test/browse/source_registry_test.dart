@@ -70,4 +70,20 @@ void main() {
     await tick();
     expect(reg.current.single.ref.id, 'mangadex');
   });
+
+  test(
+    'refresh asks every refreshable provider, and survives one failing',
+    () async {
+      final plain = FakeSourceProvider();
+      final broken = FakeRefreshableProvider()..failWith = StateError('down');
+      final live = FakeRefreshableProvider()
+        ..onRefresh = [FakeSource('suwayomi:1')];
+      final reg = SourceRegistry([plain, broken, live]);
+      await reg.refresh();
+      await tick();
+      expect([broken.refreshes, live.refreshes], [1, 1]);
+      expect(reg.byId('suwayomi:1'), isNotNull);
+      await reg.dispose();
+    },
+  );
 }

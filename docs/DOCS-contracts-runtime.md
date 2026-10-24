@@ -67,7 +67,10 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
 - `dart_test.yaml` skips tag `live` (foundation).
 - Sources are dynamic and supplied ONLY as `SourceProvider { Stream<List<MangaSource>> watch(); }`
   (+ `StaticSourceProvider`, lib/core/source/) through `KartkaFeature.services`.
-  Browse's SourceRegistry merges them live.
+  Browse's SourceRegistry merges them live. Optional opt-in
+  `RefreshableSourceProvider { Future<void> refresh(); }` (never throws):
+  `SourceRegistry.refresh()` asks each one, and the "Source unavailable"
+  Retry calls it before re-resolving the manga.
 - `ImageHeaders { Map<String,String> forUrl(String url); }` (lib/platform/) is
   merged into every image request by page_image and the cover widget, with
   PageRef headers winning. Credentials never go into synced URLs.
@@ -161,7 +164,9 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
 - **Every `SourceProvider` emits on subscribe**, even when it is
   unconfigured, offline or failing (`[]`, or the last good list), and never
   ends a subscription with only an error. `SourceAvailability` needs one
-  emission per provider before any badge can show.
+  emission per provider before any badge can show. A failed fetch is never
+  cached as "no sources": Suwayomi re-fetches for the next watcher, logs the
+  error and retries itself (2 s doubling to 60 s) until success or dispose.
 - **Chapter rows follow their `DownloadState`.** They offer download (or
   retry), cancel while queued or downloading, and delete once downloaded.
   Cancel and delete need `registry.maybe<DownloadService>()`.

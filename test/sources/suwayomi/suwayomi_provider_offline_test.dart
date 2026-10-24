@@ -33,13 +33,15 @@ void main() {
             kv: MemoryKeyValueStore(),
             secrets: secrets,
           );
-    return SuwayomiSourceProvider(
+    final p = SuwayomiSourceProvider(
       store: s,
       client: SuwayomiClient(
         http: http,
         settings: () => s.current ?? const SuwayomiSettings(),
       ),
     );
+    addTearDown(p.dispose); // a failed fetch leaves a retry timer
+    return p;
   }
 
   Future<List<MangaSource>> first(SuwayomiSourceProvider p) =>

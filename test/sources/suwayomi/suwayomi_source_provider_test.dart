@@ -17,13 +17,18 @@ void main() {
     ),
   );
 
-  SuwayomiSourceProvider provider(KartkaHttp http) => SuwayomiSourceProvider(
-    store: store,
-    client: SuwayomiClient(
-      http: http,
-      settings: () => store.current ?? const SuwayomiSettings(),
-    ),
-  );
+  // Disposed after each test: a failed fetch leaves a retry timer.
+  SuwayomiSourceProvider provider(KartkaHttp http) {
+    final p = SuwayomiSourceProvider(
+      store: store,
+      client: SuwayomiClient(
+        http: http,
+        settings: () => store.current ?? const SuwayomiSettings(),
+      ),
+    );
+    addTearDown(p.dispose);
+    return p;
+  }
 
   List<String> ids(List<MangaSource> s) => [for (final x in s) x.ref.id];
 

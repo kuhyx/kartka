@@ -13,7 +13,8 @@ import 'package:kartka/core/source/source_provider.dart';
 class SourceRegistry {
   /// Creates a registry and subscribes to every provider immediately.
   new(List<SourceProvider> providers)
-    : _latest = List.filled(providers.length, const []) {
+    : _providers = List.unmodifiable(providers),
+      _latest = List.filled(providers.length, const []) {
     for (final (i, p) in providers.indexed) {
       _subs.add(
         p.watch().listen((sources) {
@@ -29,6 +30,7 @@ class SourceRegistry {
   factory fromRegistry(KartkaRegistry registry) =>
       SourceRegistry(registry.all<SourceProvider>());
 
+  final List<SourceProvider> _providers;
   final List<List<MangaSource>> _latest;
   final List<StreamSubscription<List<MangaSource>>> _subs = [];
   final _changes = StreamController<List<MangaSource>>.broadcast(sync: true);
@@ -54,6 +56,13 @@ class SourceRegistry {
     );
     return out.stream;
   }
+
+  /// Asks every [RefreshableSourceProvider] to re-list its sources; their
+  /// new lists arrive through [watch]. A failing provider is ignored.
+  Future<void> refresh() => Future.wait([
+    for (final p in _providers)
+      if (p is RefreshableSourceProvider) p.refresh().catchError((Object _) {}),
+  ]);
 
   void _publish() {
     final byId = <String, MangaSource>{};

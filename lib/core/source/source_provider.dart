@@ -23,3 +23,12 @@ class StaticSourceProvider implements SourceProvider {
   @override
   Stream<List<MangaSource>> watch() => Stream.value(sources);
 }
+
+/// A [SourceProvider] that can re-list its sources on demand (DOCS-contracts
+/// §13, §15). Browse's registry asks every one of these before it re-resolves a
+/// missing source (the "Source unavailable" Retry). Optional: a provider
+/// whose set cannot go stale implements plain [SourceProvider].
+abstract interface class RefreshableSourceProvider implements SourceProvider {
+  /// Re-lists the sources and re-emits them to every watcher. Never throws.
+  Future<void> refresh();
+}
