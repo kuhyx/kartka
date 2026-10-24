@@ -1,0 +1,29 @@
+Third-party material in this directory
+=====================================
+
+index.json, repo.json and the extension sources embedded in http/*.json
+(the "body" of each exchange whose URL is on raw.githubusercontent.com) come
+from the Mangayomi extensions repository:
+
+  https://github.com/entityJY/mangayomi-extensions-eJ (the fork every JS
+  source in Mangayomi's official index points at)
+  commit f21a60bf026dd122f9b80042e1c3d220a38aa07a
+  files: index.json, repo.json,
+         javascript/manga/src/en/weebcentral.js,
+         javascript/manga/src/all/webtoons.js,
+         javascript/manga/src/all/mangadex.js
+
+Copyright the Mangayomi extensions contributors. Licensed under the Apache
+License, Version 2.0; a copy is in LICENSE next to this file. The upstream
+repository ships no NOTICE file.
+
+The files are unmodified. The extension sources are stored as recorded HTTP
+responses (the exact bytes served, JSON-string encoded in the "body" field)
+because Kartka installs an extension by fetching that URL.
+
+The other exchanges in http/*.json are HTTP responses recorded from the
+sites those extensions read (weebcentral.com, webtoons.com, mangadex.org),
+kept only as offline test fixtures.
+
+Kartka's Mangayomi shim (lib/plugins/mangayomi/) is written independently
+against Mangayomi's public extension API and contains no Mangayomi code.
