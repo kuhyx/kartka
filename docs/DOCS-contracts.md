@@ -244,3 +244,46 @@ Stream<bool>` (tracking-anilist supplies from TrackingService bindings).
 - MangaDex URLs are Keiyoushi-compatible (`/manga/<uuid>`, `/chapter/<uuid>`),
   so .tachibk MangaDex entries map to `mangadex|/manga/<uuid>` unchanged.
 - `dart_test.yaml` skips tag `live` (foundation).
+- Sources are dynamic and supplied ONLY as `SourceProvider { Stream<List<MangaSource>> watch(); }`
+  (+ `StaticSourceProvider`, lib/core/source/) through `KartkaFeature.services`.
+  Browse's SourceRegistry merges them live.
+- `ImageHeaders { Map<String,String> forUrl(String url); }` (lib/platform/) is
+  merged into every image request by page_image and the cover widget, with
+  PageRef headers winning. Credentials never go into synced URLs.
+- Suwayomi entries the server has never seen are resolved by searching their
+  title on that source and matching the exact url, then retrying. Kartka never
+  restores the .tachibk into Suwayomi.
+- Credentials (Suwayomi basic auth, OAuth tokens) go in `KartkaPlatform.secrets`:
+  the Android Keystore, or on web a wrapper-held 0600 file in ~/.config/kartka/.
+- Sync decorates repositories through the `RepositoryDecorator` port
+  (lib/library/). Library's accessor applies every decorator lazily, and other
+  parts get repos only from that accessor.
+- **Suwayomi's future is decided by data (kuhy, 2026-10-24, option d):** keep
+  the Suwayomi parts. Once the evaluator's first results are in, drop the Suwayomi
+  client from the app if every `keep` source is available natively or as a JS
+  plugin. Otherwise keep it, or port the missing source to a JS plugin.
+  Building our own extension server is ruled out (it would be the fork again).
+
+## 14. Foundation as built (agent/foundation @ 105b425, authoritative over §1-§3 sketches)
+
+- `lib/app/registry.dart`: `kartkaFeatureFactories` is a `List<KartkaFeatureFactory>`,
+  where `KartkaFeatureFactory = KartkaFeature Function(KartkaEnv env)`. `env.platform`
+  is a KartkaPlatform; `env.registry` is late and read lazily. Parts export
+  `KartkaFeature xFeature(KartkaEnv env) => KartkaFeature(...)` and append `xFeature,`.
+- `KartkaFeature{id, routes: List<RouteBase>, tabs: Map<KartkaTab, WidgetBuilder>
+  (library/browse/sources/more, first filler wins), settingsTiles, services}`.
+  There is no `sources` field. `registry.all<T>()` / `maybe<T>()` live in lib/app/feature.dart.
+- Dart 3.13 + very_good_analysis 11: constructors are declared `const new(...)` /
+  `factory fromJson(...)`, and callers are unchanged.
+- Use `hide Category` only on flutter/foundation.dart imports.
+- setMembership keeps a positional bool, so implementers add
+  `// ignore: avoid_positional_boolean_parameters`.
+- `MangaStatus` uses Tachiyomi codes 0-6 in order. `DownloadState{status: DownloadStatus
+  none|queued|downloading|done|failed, pagesDone, pagesTotal, error}`.
+  `ReadingProgress.chapterNumber` is a non-null double, and `isAheadOf(other)` is THE
+  never-decrease ordering. `mangaKeyHash()` also hashes chapterUrl and sourceId.
+- `KartkaPlatform{http, blobs, kv, secrets, filePicker, oauth}`.
+  `PageImageLoader(http, blobs, imageHeaders)`, `blobPageUrl(key)`, and
+  `kartkaUserAgent` (http_client.dart).
+- Repos: consumers NEVER use `registry.maybe<LibraryRepository>()`. They use
+  library's accessor, which applies `RepositoryDecorator`s (§13).
