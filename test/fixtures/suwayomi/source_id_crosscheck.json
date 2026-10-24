@@ -1,5 +1,5 @@
 {
-  "_note": "backupSources of syncyomi snapshot 2026-10-24T12:00Z vs sources{} after installing 5 Keiyoushi extensions on Suwayomi v2.4.2366. 6901/6902 are SY built-ins (E-/ExHentai), absent from Suwayomi by design.",
+  "_note": "backupSources of syncyomi snapshot 2026-10-24T12:00Z vs sources{} on Suwayomi v2.4.2366 after installing 5 Keiyoushi extensions; unmatched ids looked up in Keiyoushi index.pb (2026-10-24) by exact string match.",
   "matched": [
     {
       "backupSourceId": "2499283573021220255",
@@ -65,27 +65,61 @@
       }
     }
   ],
-  "notInstalledOrBuiltin": [
+  "inKeiyoushiNotInstalled": [
+    {
+      "backupSourceId": "4006397036545425884",
+      "pkgName": "eu.kanade.tachiyomi.extension.en.gwtb"
+    },
+    {
+      "backupSourceId": "684582342346256208",
+      "pkgName": "eu.kanade.tachiyomi.extension.en.existentialcomics"
+    },
+    {
+      "backupSourceId": "285164574089229147",
+      "pkgName": "eu.kanade.tachiyomi.extension.en.clowncorps"
+    },
+    {
+      "backupSourceId": "3112384885023225761",
+      "pkgName": "eu.kanade.tachiyomi.extension.en.kissmangain"
+    },
+    {
+      "backupSourceId": "7689478295161479290",
+      "pkgName": "eu.kanade.tachiyomi.extension.all.mangaup"
+    },
+    {
+      "backupSourceId": "491094567635736188",
+      "pkgName": "eu.kanade.tachiyomi.extension.en.explosm"
+    },
+    {
+      "backupSourceId": "8254209929759906152",
+      "pkgName": "eu.kanade.tachiyomi.extension.en.readonepunchmanmangaonlinetwo"
+    },
+    {
+      "backupSourceId": "4870917758913494428",
+      "pkgName": "eu.kanade.tachiyomi.extension.en.s2manga"
+    },
+    {
+      "backupSourceId": "2220258354919443918",
+      "pkgName": "eu.kanade.tachiyomi.extension.all.hdoujin"
+    },
+    {
+      "backupSourceId": "7266624490370375187",
+      "pkgName": "eu.kanade.tachiyomi.extension.en.hentaihere"
+    }
+  ],
+  "syBuiltin": [
     "6902",
-    "6901",
-    "4006397036545425884",
+    "6901"
+  ],
+  "notInKeiyoushi": [
     "3091964041986261235",
     "4531444389842992129",
     "7890050626002177109",
     "2292947733994124621",
-    "684582342346256208",
-    "285164574089229147",
-    "3112384885023225761",
-    "7689478295161479290",
-    "491094567635736188",
-    "8254209929759906152",
     "8758194323514078879",
     "690123758188633713",
     "7309872737163460316",
-    "4870917758913494428",
     "4936142045476640860",
-    "4659522191388348292",
-    "2220258354919443918",
-    "7266624490370375187"
+    "4659522191388348292"
   ]
 }

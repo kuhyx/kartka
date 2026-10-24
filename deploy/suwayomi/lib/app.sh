@@ -5,6 +5,10 @@
 # Download the pinned tarball into the cache (once) and check its sha256.
 fetch_release() {
 	local tarball="${CACHE_DIR}/${SUWAYOMI_TARBALL}"
+	if [[ -x ${APP_DIR}/jre/bin/java && -f ${APP_DIR}/bin/Suwayomi-Server.jar ]]; then
+		ok "release ${SUWAYOMI_VERSION} already unpacked; no download needed"
+		return 0
+	fi
 	mkdir -p "${CACHE_DIR}"
 	if [[ -f ${tarball} ]] && sha256sum --status -c <<<"${SUWAYOMI_SHA256}  ${tarball}"; then
 		ok "release ${SUWAYOMI_VERSION} already cached"

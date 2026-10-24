@@ -71,9 +71,14 @@ vm run suwa 'cd ~/suwayomi/deploy/suwayomi && SUWAYOMI_HOST=suwayomi.localhost V
 
 The guest edge mirrors the host: caddy:2.8, host networking, a root Caddyfile
 that only imports `sites/*.caddy`, and a neighbour site that has to keep
-answering. These passed in vmbox: fresh install, verify, an idempotent rerun,
-rollback of an invalid snippet (neighbour unaffected), and verify after a guest
-reboot.
+answering. These passed in vmbox on commit `794520d`: fresh install, verify,
+an idempotent rerun, rollback of an invalid snippet (neighbour unaffected), and
+verify after a guest reboot.
+
+Later changes were checked on the host only: the kcef/authMode readback and
+the early return that skips the download. In that vmbox run the tarball came
+in through a second `vm share`. The `vm scp` seeding lines above are the
+equivalent step, but they have not been run.
 
 ## Auth
 
@@ -108,7 +113,7 @@ stored credentials.
 | find an extension | `extensions.graphql` `{name}` | `extensions.json` |
 | install extension | `install_extension.graphql` `{pkgName}` (mutation `updateExtension`, `patch.install`) | `install_extension.json` |
 | list sources | `sources.graphql` | `sources.json` (181 sources) |
-| popular / latest / search | `fetch_source_manga.graphql` `{source, type: POPULAR\|LATEST\|SEARCH, query, page}` | `fetch_source_manga_search.json` |
+| popular / latest / search | `fetch_source_manga.graphql` `{source, type, query, page}`; enum `FetchSourceMangaType` = `SEARCH`, `POPULAR`, `LATEST` (introspected) | `fetch_source_manga_{search,popular,latest}.json` |
 | manga details | `fetch_manga.graphql` `{id}` (mutation `fetchMangaAndChapters`, `fetchManga: true`) | `fetch_manga.json` |
 | chapter list | `fetch_chapters.graphql` `{id}` (`fetchChapters: true`) | `fetch_chapters.json` |
 | pages | `fetch_chapter_pages.graphql` `{chapterId}` | `fetch_chapter_pages.json` |
@@ -134,6 +139,9 @@ Facts the Dart client depends on (all observed, not assumed):
 - **Unknown manga.** For a MangaKey the server has never seen, `manga_by_url`
   returns no nodes. Reach the manga once through `fetchSourceManga` SEARCH, or
   load the SY backup into Suwayomi with the `restoreBackup` mutation.
+- **Page size varies by source.** On MangaDex en, page 1 returned 20 manga
+  for SEARCH and POPULAR and 71 for LATEST. Page with `hasNextPage` and never
+  assume a fixed count.
 - **Errors.** GraphQL errors come back as HTTP 200 with `errors[]`, and
   `data.<field>` set to `null`. Only auth failures are non-200.
 - **Pages.** `fetchChapterPages.pages` is a list of relative URLs. Each GET
@@ -154,11 +162,23 @@ the identical 64-bit id, including the per-language ones (MangaDex en
 7 sources hold 2349 of the backup's library entries. The evidence is in
 `test/fixtures/suwayomi/source_id_crosscheck.json`.
 
-The 21 ids that did not match are of two kinds:
-- extensions that were not installed for this check;
-- `6901`/`6902`, SY's built-in E-Hentai and ExHentai (109 + 103 entries).
-  These are not extensions and do not exist in Suwayomi, so the backup mapper
-  has to treat them as unavailable unless a native or plugin source claims
-  them.
+The 21 ids that did not match were looked up in Keiyoushi's `index.pb`
+(gunzip + `protoc --decode_raw`). Matching was exact string matching, because
+ids above 2^53 lose precision as doubles. They fall into three groups:
+
+- **In Keiyoushi but not installed for this check (10).** These include
+  `en.gwtb`, `en.kissmangain`, `all.mangaup`, `en.explosm`, `en.s2manga`,
+  `all.hdoujin` and `en.hentaihere`. Installing the extension makes each one
+  available under the same id.
+- **SY built-ins `6901`/`6902` (E-Hentai/ExHentai; 103 + 109 entries).** These
+  are not extensions, and Suwayomi does not have them.
+- **Not in Keiyoushi at all (9 ids, 418 library entries).** The biggest is
+  `3091964041986261235` with 269 entries; others include `4936142045476640860`
+  (70). The backup records no name for any of them, so they probably come from
+  another repo or from extensions since removed.
+
+The backup mapper must treat the last two groups as unavailable unless a
+native or plugin source claims them. The ids for each group are in
+`source_id_crosscheck.json`.
 
 So `suwayomi:<backupSourceId>` (contracts §1) holds.
