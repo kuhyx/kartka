@@ -67,6 +67,7 @@ class FakeSource implements MangaSource {
       sourceId: ref.id,
       url: mangaUrl,
       title: 'Detail title',
+      coverUrl: 'https://img.test/cover.jpg',
       authors: const ['Author A'],
       description: 'A long description.',
       genres: const ['Action', 'Drama'],

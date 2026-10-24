@@ -54,7 +54,7 @@ KartkaFeature browseFeature(KartkaEnv env) {
         ),
       ),
     ],
-    services: [_LazyUnreadCounts(runtime), _LazyResolver(runtime)],
+    services: [_LazyUnreadCounts(runtime), BrowseResolverPort(runtime)],
   );
 }
 
@@ -121,11 +121,13 @@ class _LazyUnreadCounts implements UnreadCounts {
 // ADAPTER: implement tracking's `ChapterUrlResolver`
 // (lib/tracking/common/chapter_url_resolver.dart) once agent/tracking-anilist
 // commits it; until then this has the port's exact method shape.
-class _LazyResolver {
+class BrowseResolverPort {
+  /// Creates the port over [_runtime].
   const new(this._runtime);
 
   final BrowseRuntime _runtime;
 
+  /// See `BrowseChapterUrlResolver.resolve`.
   Future<String?> resolve(MangaKey key, int chapterNumber) =>
       _runtime.resolver.resolve(key, chapterNumber);
 }
