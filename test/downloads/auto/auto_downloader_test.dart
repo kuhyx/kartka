@@ -83,7 +83,6 @@ void main() {
     void Function(Timer)? tick;
     final timer = _FakeTimer();
     a.schedule(
-      every: const Duration(hours: 6),
       periodic: (d, cb) {
         tick = cb;
         return timer;
