@@ -17,6 +17,7 @@ import 'package:kartka/sources/mangadex/mangadex_feature.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_feature.dart';
 import 'package:kartka/sync/sync_feature.dart';
 import 'package:kartka/tracking/anilist/tracking_feature.dart';
+import 'package:kartka/tracking/mal/mal_feature.dart';
 
 export 'package:kartka/app/feature.dart';
 
@@ -35,4 +36,5 @@ final List<KartkaFeatureFactory> kartkaFeatureFactories = [
   syncFeature,
   browseFeature,
   readerFeature,
+  malFeature,
 ];
