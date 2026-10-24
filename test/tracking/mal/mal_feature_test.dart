@@ -1,8 +1,6 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/platform/platform.dart';
 import 'package:kartka/tracking/common/tracker.dart';
 import 'package:kartka/tracking/mal/mal_feature.dart';
@@ -12,89 +10,37 @@ import 'package:kartka/tracking/mal/mal_transport.dart';
 
 import 'mal_fakes.dart';
 
-class _Http extends KartkaHttp {
-  final List<(String, Uri, Map<String, String>, String?)> calls = [];
-  int status = 200;
-  String body = '{}';
-
-  @override
-  Future<KartkaResponse> send(
-    String method,
-    Uri url, {
-    Map<String, String> headers = const {},
-    String? body,
-  }) async {
-    calls.add((method, url, headers, body));
-    return KartkaResponse(
-      statusCode: status,
-      bodyBytes: Uint8List.fromList(utf8.encode(this.body)),
-    );
-  }
-}
-
-class _Kv implements KeyValueStore {
-  final Map<String, String> data = {};
-
-  @override
-  Future<String?> get(String key) async => data[key];
-
-  @override
-  Future<void> set(String key, String value) async => data[key] = value;
-
-  @override
-  Future<void> remove(String key) async => data.remove(key);
-
-  @override
-  Future<Map<String, String>> entries({String prefix = ''}) async => {
-    for (final e in data.entries)
-      if (e.key.startsWith(prefix)) e.key: e.value,
-  };
-}
-
-class _OAuth implements OAuthRedirect {
-  @override
-  Uri get redirectUri => Uri.parse('kartka://oauth');
-
-  @override
-  Future<Uri> authorize(
-    Uri authorizationUrl, {
-    Duration timeout = const Duration(minutes: 5),
-  }) async => Uri.parse(
-    'kartka://oauth?code=c&state=${authorizationUrl.queryParameters['state']}',
-  );
-}
-
-class _Unused implements BlobStore, FilePicker {
-  @override
-  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
-}
-
 void main() {
-  late _Http http;
-  late _Kv secrets;
-  late _Kv kv;
+  late FakeKartkaHttp http;
+  late MemoryKeyValueStore secrets;
+  late MemoryKeyValueStore kv;
   late KartkaEnv env;
+  var status = 200;
+  var body = '{}';
 
   setUp(() {
-    http = _Http();
-    secrets = _Kv();
-    kv = _Kv();
+    status = 200;
+    body = '{}';
+    http = FakeKartkaHttp((_) => FakeKartkaHttp.text(body, status: status));
+    secrets = MemoryKeyValueStore();
+    kv = MemoryKeyValueStore();
     env = KartkaEnv(
-      KartkaPlatform(
+      memoryPlatform(
         http: http,
-        blobs: _Unused(),
         kv: kv,
         secrets: secrets,
-        filePicker: _Unused(),
-        oauth: _OAuth(),
+        oauth: FakeOAuthRedirect(
+          (a) => Uri.parse(
+            'kartka://oauth?code=c&state=${a.queryParameters['state']}',
+          ),
+        ),
       ),
     );
   });
 
   test('adapter forwards method, headers and body', () async {
-    http
-      ..status = 201
-      ..body = 'ok';
+    status = 201;
+    body = 'ok';
     final res = await malSendVia(http)(
       MalRequest(
         MalMethod.patch,
@@ -105,9 +51,9 @@ void main() {
     );
     expect(res.statusCode, 201);
     expect(res.body, 'ok');
-    expect(http.calls.single.$1, 'PATCH');
-    expect(http.calls.single.$3, {'H': 'v'});
-    expect(http.calls.single.$4, 'b=1');
+    expect(http.requests.single.method, 'PATCH');
+    expect(http.requests.single.headers, {'H': 'v'});
+    expect(http.requests.single.body, 'b=1');
   });
 
   test('every MalMethod is a method KartkaHttp allows', () {
@@ -130,15 +76,15 @@ void main() {
   test('registers a Tracker whose tokens go to secrets, not kv', () async {
     final tracker = malFeature(env, clientId: 'cid').services.single;
     expect(tracker, isA<Tracker>());
-    http.body = fixture('token_ok.json');
+    body = fixture('token_ok.json');
     await (tracker as Tracker).login();
-    final form = Uri.splitQueryString(http.calls.single.$4!);
+    final form = Uri.splitQueryString(http.requests.single.body!);
     expect(form['redirect_uri'], 'kartka://oauth');
     expect(form['client_id'], 'cid');
-    expect(secrets.data.keys, [StringMalTokenStore.defaultKey]);
-    expect(kv.data, isEmpty);
+    expect((await secrets.entries()).keys, [StringMalTokenStore.defaultKey]);
+    expect(await kv.entries(), isEmpty);
     expect(await tracker.isLoggedIn(), isTrue);
     await tracker.logout();
-    expect(secrets.data, isEmpty);
+    expect(await secrets.entries(), isEmpty);
   });
 }
