@@ -56,6 +56,23 @@ void main() {
     expect(await a.check(), 0);
   });
 
+  test(
+    're-enabling resets baselines: no backlog from the off period',
+    () async {
+      final a = auto();
+      await a.setEnabled(enabled: true);
+      await a.check(); // baseline: /c1
+      await a.setEnabled(enabled: false);
+      source.chapterList = [_ch('/c1'), _ch('/c2')]; // released while off
+      expect(await a.check(), 0);
+      await a.setEnabled(enabled: true);
+      expect(await a.check(), 0);
+      expect(queued, isEmpty);
+      source.chapterList = [_ch('/c1'), _ch('/c2'), _ch('/c3')];
+      expect(await a.check(), 1);
+    },
+  );
+
   test('skips removed entries, missing sources and failing sources', () async {
     library = [
       _entry('/gone', removed: true),

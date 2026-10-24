@@ -7,7 +7,7 @@ import 'package:kartka/downloads/downloads_snapshot.dart';
 import 'package:kartka/downloads/ui/format.dart';
 
 /// More tab: opens the Downloads screen and shows storage used.
-class DownloadsNavTile extends StatelessWidget {
+class DownloadsNavTile extends StatefulWidget {
   /// Creates the tile.
   const new({required this.service, required this.onOpen, super.key});
 
@@ -18,8 +18,16 @@ class DownloadsNavTile extends StatelessWidget {
   final VoidCallback onOpen;
 
   @override
+  State<DownloadsNavTile> createState() => _DownloadsNavTileState();
+}
+
+class _DownloadsNavTileState extends State<DownloadsNavTile> {
+  // Held in state so a rebuild does not resubscribe (and blank the subtitle).
+  late final Stream<DownloadsSnapshot> _snapshots = widget.service.watchAll();
+
+  @override
   Widget build(BuildContext context) => StreamBuilder<DownloadsSnapshot>(
-    stream: service.watchAll(),
+    stream: _snapshots,
     builder: (context, snap) {
       final data = snap.data;
       return ListTile(
@@ -31,7 +39,7 @@ class DownloadsNavTile extends StatelessWidget {
                 '${data.queue.length} queued · '
                 '${formatBytes(data.index.totalBytes)} used',
               ),
-        onTap: onOpen,
+        onTap: widget.onOpen,
       );
     },
   );

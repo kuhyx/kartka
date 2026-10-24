@@ -40,9 +40,17 @@ class AutoDownloader {
   /// Whether new chapters are downloaded automatically.
   Future<bool> enabled() async => await kv.get(autoDownloadKvKey) == 'true';
 
-  /// Turns the setting on or off.
-  Future<void> setEnabled({required bool enabled}) =>
-      kv.set(autoDownloadKvKey, '$enabled');
+  /// Turns the setting on or off. Turning it on forgets the old baselines,
+  /// so chapters released while it was off are not downloaded as a backlog.
+  Future<void> setEnabled({required bool enabled}) async {
+    if (enabled) {
+      final known = await kv.entries(prefix: knownChaptersKvPrefix);
+      for (final key in known.keys) {
+        await kv.remove(key);
+      }
+    }
+    await kv.set(autoDownloadKvKey, '$enabled');
+  }
 
   /// Checks every library manga once; returns how many chapters were queued.
   Future<int> check() async {
