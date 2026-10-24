@@ -175,7 +175,9 @@ ids above 2^53 lose precision as doubles. They fall into three groups:
 - **Not in Keiyoushi at all (9 ids, 418 library entries).** The biggest is
   `3091964041986261235` with 269 entries; others include `4936142045476640860`
   (70). The backup records no name for any of them, so they probably come from
-  another repo or from extensions since removed.
+  another repo or from extensions since removed. Update (integration):
+  `3091964041986261235` is the old MangaDex id and maps to native `mangadex`
+  (all 269 are history-only); the rest are identified in DOCS-source-eval.md.
 
 The backup mapper must treat the last two groups as unavailable unless a
 native or plugin source claims them. The ids for each group are in

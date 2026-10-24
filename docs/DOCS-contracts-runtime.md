@@ -37,8 +37,10 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   `updatedAt` = max field Hlc millis. `progress/` and `trackers/` stay
   max-merge (a null chapterNumber sorts lowest). Change detection: tiny
   `revs/<deviceId>: "<counter>"`, polled every 5 s **only while the app is in
-  the foreground**. Subtrees are fetched only when it changes. RTDB is reached
-  with crdt_sync's own client (RTDB allows CORS, so no /proxy is needed).
+  the foreground**. Subtrees are fetched only when it changes. RTDB writes use
+  crdt_sync's own client (RTDB allows CORS); reads go through `KartkaHttp`, so
+  on web they pass the wrapper's /proxy with `?auth=` forwarded unchanged and
+  never logged (§15).
 - `DownloadState` (in `lib/core/models/download_state.dart`, foundation):
   `sealed class DownloadState` = `NotDownloaded | Queued |
   Downloading(done, total) | Paused(done, total) |
