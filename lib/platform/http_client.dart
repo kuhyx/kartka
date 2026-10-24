@@ -11,16 +11,42 @@ const kartkaUserAgent = 'Kartka/0.1 (+https://github.com/kuhyx/kartka)';
 /// Android talks to hosts directly; the web build routes every request
 /// through the desktop wrapper's `/proxy` (CORS, and headers like `Referer`
 /// that a browser page may not set). Callers cannot tell which.
-abstract interface class KartkaHttp {
+///
+/// Implementations extend this class and override [send] only; [get] and
+/// [post] are thin wrappers over it.
+abstract class KartkaHttp {
+  /// Methods [send] accepts (the desktop proxy allows exactly these).
+  static const methods = {'GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'};
+
+  /// Sends [method] (one of [methods]) to [url] with extra request
+  /// [headers] and an optional UTF-8 [body]. `Content-Type` is the caller's
+  /// to set (e.g. `application/x-www-form-urlencoded` for MAL).
+  Future<KartkaResponse> send(
+    String method,
+    Uri url, {
+    Map<String, String> headers = const {},
+    String? body,
+  });
+
   /// GETs [url] with extra request [headers].
-  Future<KartkaResponse> get(Uri url, {Map<String, String> headers});
+  Future<KartkaResponse> get(
+    Uri url, {
+    Map<String, String> headers = const {},
+  }) => send('GET', url, headers: headers);
 
   /// POSTs [body] (UTF-8) to [url] with extra request [headers].
   Future<KartkaResponse> post(
     Uri url, {
-    Map<String, String> headers,
+    Map<String, String> headers = const {},
     String? body,
-  });
+  }) => send('POST', url, headers: headers, body: body);
+}
+
+/// Throws [ArgumentError] unless [method] is one of [KartkaHttp.methods].
+void checkHttpMethod(String method) {
+  if (!KartkaHttp.methods.contains(method)) {
+    throw ArgumentError.value(method, 'method', 'not allowed');
+  }
 }
 
 /// A complete HTTP response.
