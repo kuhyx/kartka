@@ -20,7 +20,11 @@ void main() {
 
   setUp(() async {
     now = DateTime.utc(2026, 10, 24);
-    lib = LocalLibrary(blobs: MemoryBlobs(), kv: MemoryKv(), clock: () => now);
+    lib = LocalLibrary(
+      blobs: MemoryBlobStore(),
+      kv: MemoryKeyValueStore(),
+      clock: () => now,
+    );
     source = LocalSource(lib);
     await lib.importFiles([
       picked('bl1.cbz', cbz('Blue Lock', '1', title: 'Start')),

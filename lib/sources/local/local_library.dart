@@ -43,13 +43,8 @@ class ImportReport {
 /// as JSON in the [KeyValueStore]. Imports run one at a time.
 class LocalLibrary {
   /// Creates a library over the platform stores; [clock] is for tests.
-  new({
-    required BlobStore blobs,
-    required KeyValueStore kv,
-    DateTime Function()? clock,
-  }) : _blobs = blobs,
-       _kv = kv,
-       _clock = clock ?? DateTime.now;
+  new({required this._blobs, required this._kv, DateTime Function()? clock})
+    : _clock = clock ?? DateTime.now;
 
   /// KeyValueStore key of the JSON index.
   static const indexKey = 'local.index';

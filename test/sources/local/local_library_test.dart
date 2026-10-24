@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -10,14 +9,14 @@ import 'fakes.dart';
 import 'zip_builder.dart';
 
 void main() {
-  late MemoryBlobs blobs;
-  late MemoryKv kv;
+  late MemoryBlobStore blobs;
+  late MemoryKeyValueStore kv;
   late LocalLibrary lib;
   var now = DateTime.utc(2026, 10, 24);
 
   setUp(() {
-    blobs = MemoryBlobs();
-    kv = MemoryKv();
+    blobs = MemoryBlobStore();
+    kv = MemoryKeyValueStore();
     now = DateTime.utc(2026, 10, 24);
     lib = LocalLibrary(blobs: blobs, kv: kv, clock: () => now);
   });
@@ -45,9 +44,9 @@ void main() {
     expect(pages, hasLength(2));
     expect(pages.every(isValidBlobKey), isTrue);
     expect(pages.every((k) => k.startsWith('local/')), isTrue);
-    expect(utf8.decode(blobs.data[pages[0]]!), 'p2.jpg');
-    expect(utf8.decode(blobs.data[pages[1]]!), 'p10.jpg');
-    expect(kv.data[LocalLibrary.indexKey], isNotNull);
+    expect(utf8.decode((await blobs.get(pages[0]))!), 'p2.jpg');
+    expect(utf8.decode((await blobs.get(pages[1]))!), 'p10.jpg');
+    expect(await kv.get(LocalLibrary.indexKey), isNotNull);
   });
 
   test('imports a picked folder of images (web relative paths)', () async {
@@ -55,11 +54,20 @@ void main() {
       picked('2.jpg', utf8.encode('two'), relativePath: 'Saga/Ch 1/2.jpg'),
       picked('10.jpg', utf8.encode('ten'), relativePath: 'Saga/Ch 1/10.jpg'),
       picked('c.cbz', cbz('Saga', '2', ['x.jpg']), relativePath: 'Saga/c.cbz'),
+      picked(
+        'ComicInfo.xml',
+        comicInfoXml(series: 'Saga', title: 'Prologue'),
+        relativePath: 'Saga/Ch 0/ComicInfo.xml',
+      ),
+      picked('1.jpg', [0], relativePath: 'Saga/Ch 0/1.jpg'),
     ]);
     final m = (await lib.load()).find('saga')!;
-    expect(m.chapters.map((c) => c.title), ['c', 'Ch 1']);
-    final folderPages = m.chapters[1].pageBlobKeys;
-    expect(folderPages.map((k) => utf8.decode(blobs.data[k]!)), ['two', 'ten']);
+    expect(m.chapters.map((c) => c.title), ['c', 'Prologue', 'Ch 1']);
+    final folderPages = m.chapters[2].pageBlobKeys;
+    expect(
+      [for (final k in folderPages) utf8.decode((await blobs.get(k))!)],
+      ['two', 'ten'],
+    );
   });
 
   test('a failing read is reported, not thrown', () async {
@@ -83,10 +91,9 @@ void main() {
     await lib.importFiles([
       picked('s.cbz', cbz('S', '1', ['1.jpg'])),
     ]);
-    expect(blobs.data, hasLength(1));
-    expect((await lib.load()).manga.single.chapters.single.pageBlobKeys, [
-      blobs.data.keys.single,
-    ]);
+    final keys = await blobs.list('');
+    expect(keys, hasLength(1));
+    expect((await lib.load()).manga.single.chapters.single.pageBlobKeys, keys);
   });
 
   test('remove deletes the manga and its blobs', () async {
@@ -94,7 +101,7 @@ void main() {
       picked('s.cbz', cbz('S', '1', ['1.jpg'])),
     ]);
     await lib.remove('s');
-    expect(blobs.data, isEmpty);
+    expect(await blobs.list(''), isEmpty);
     expect((await lib.load()).manga, isEmpty);
   });
 
@@ -151,7 +158,7 @@ void main() {
   });
 }
 
-class _ThrowingBlobs extends MemoryBlobs {
+class _ThrowingBlobs extends MemoryBlobStore {
   @override
   Future<void> put(String key, Uint8List bytes) async =>
       throw StateError('disk full');
