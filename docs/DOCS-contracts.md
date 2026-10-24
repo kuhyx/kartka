@@ -263,3 +263,27 @@ Stream<bool>` (tracking-anilist supplies from TrackingService bindings).
   client from the app if every `keep` source is available natively or as a JS
   plugin. Otherwise keep it, or port the missing source to a JS plugin.
   Building our own extension server is ruled out (it would be the fork again).
+
+## 14. Foundation as built (agent/foundation @ 105b425, authoritative over §1-§3 sketches)
+
+- `lib/app/registry.dart`: `kartkaFeatureFactories` is a `List<KartkaFeatureFactory>`,
+  where `KartkaFeatureFactory = KartkaFeature Function(KartkaEnv env)`. `env.platform`
+  is a KartkaPlatform; `env.registry` is late and read lazily. Parts export
+  `KartkaFeature xFeature(KartkaEnv env) => KartkaFeature(...)` and append `xFeature,`.
+- `KartkaFeature{id, routes: List<RouteBase>, tabs: Map<KartkaTab, WidgetBuilder>
+  (library/browse/sources/more, first filler wins), settingsTiles, services}`.
+  There is no `sources` field. `registry.all<T>()` / `maybe<T>()` live in lib/app/feature.dart.
+- Dart 3.13 + very_good_analysis 11: constructors are declared `const new(...)` /
+  `factory fromJson(...)`, and callers are unchanged.
+- Use `hide Category` only on flutter/foundation.dart imports.
+- setMembership keeps a positional bool, so implementers add
+  `// ignore: avoid_positional_boolean_parameters`.
+- `MangaStatus` uses Tachiyomi codes 0-6 in order. `DownloadState{status: DownloadStatus
+  none|queued|downloading|done|failed, pagesDone, pagesTotal, error}`.
+  `ReadingProgress.chapterNumber` is a non-null double, and `isAheadOf(other)` is THE
+  never-decrease ordering. `mangaKeyHash()` also hashes chapterUrl and sourceId.
+- `KartkaPlatform{http, blobs, kv, secrets, filePicker, oauth}`.
+  `PageImageLoader(http, blobs, imageHeaders)`, `blobPageUrl(key)`, and
+  `kartkaUserAgent` (http_client.dart).
+- Repos: consumers NEVER use `registry.maybe<LibraryRepository>()`. They use
+  library's accessor, which applies `RepositoryDecorator`s (§13).
