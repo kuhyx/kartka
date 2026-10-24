@@ -1,16 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
 import 'package:kartka/reader/data/reader_settings.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 
-import '../support/fakes.dart';
-
 void main() {
-  late MemoryKv kv;
+  late MemoryKeyValueStore kv;
   late ReaderPrefs prefs;
 
   setUp(() {
-    kv = MemoryKv();
+    kv = MemoryKeyValueStore();
     prefs = ReaderPrefs(kv);
   });
 
@@ -22,9 +21,9 @@ void main() {
   });
 
   test('corrupt settings fall back to defaults', () async {
-    kv.data[ReaderPrefs.settingsKey] = '{not json';
+    await kv.set(ReaderPrefs.settingsKey, '{not json');
     expect(await prefs.settings(), const ReaderSettings());
-    kv.data[ReaderPrefs.settingsKey] = '[1]';
+    await kv.set(ReaderPrefs.settingsKey, '[1]');
     expect(await prefs.settings(), const ReaderSettings());
   });
 
@@ -34,11 +33,12 @@ void main() {
     await prefs.setModeFor(key, ReaderMode.webtoon);
     expect(await prefs.modeFor(key), ReaderMode.webtoon);
     expect(await prefs.modeFor('fake|/m/2'), isNull);
-    expect(kv.data.keys.single, startsWith(ReaderPrefs.modePrefix));
-    expect(kv.data.keys.single, isNot(contains('/m/1')));
+    final stored = (await kv.entries()).keys.single;
+    expect(stored, startsWith(ReaderPrefs.modePrefix));
+    expect(stored, isNot(contains('/m/1')));
     await prefs.setModeFor(key, null);
     expect(await prefs.modeFor(key), isNull);
-    expect(kv.data, isEmpty);
+    expect(await kv.entries(), isEmpty);
   });
 
   test('effective mode prefers the manga, then the global default', () async {

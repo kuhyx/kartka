@@ -11,9 +11,9 @@ void main() {
     calls = [];
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(SystemChannels.platform, (call) async {
-      calls.add(call);
-      return null;
-    });
+          calls.add(call);
+          return null;
+        });
   });
 
   test('keeps the screen awake only on Android', () async {
@@ -48,10 +48,7 @@ void main() {
       for (final c in calls)
         if (c.method == 'SystemChrome.setEnabledSystemUIMode') c.arguments,
     ];
-    expect(modes, [
-      'SystemUiMode.immersiveSticky',
-      'SystemUiMode.edgeToEdge',
-    ]);
+    expect(modes, ['SystemUiMode.immersiveSticky', 'SystemUiMode.edgeToEdge']);
   });
 
   test('web fullscreen goes through the browser hook', () async {

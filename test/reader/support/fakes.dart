@@ -3,27 +3,6 @@ import 'dart:async';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/manga_source.dart';
-import 'package:kartka/platform/key_value_store.dart';
-
-/// In-memory [KeyValueStore].
-class MemoryKv implements KeyValueStore {
-  final Map<String, String> data = {};
-
-  @override
-  Future<String?> get(String key) async => data[key];
-
-  @override
-  Future<void> set(String key, String value) async => data[key] = value;
-
-  @override
-  Future<void> remove(String key) async => data.remove(key);
-
-  @override
-  Future<Map<String, String>> entries({String prefix = ''}) async => {
-    for (final e in data.entries)
-      if (e.key.startsWith(prefix)) e.key: e.value,
-  };
-}
 
 /// A source serving fixed chapters and pages.
 class FakeSource implements MangaSource {
@@ -95,6 +74,9 @@ class FakeProgress implements ProgressRepository {
 
   @override
   Stream<Set<String>> readChapters(MangaKey key) => Stream.value({});
+
+  @override
+  Stream<Map<String, bool>> readMarks(MangaKey key) => Stream.value({});
 }
 
 /// Serves offline pages for the chapters in [offline].
