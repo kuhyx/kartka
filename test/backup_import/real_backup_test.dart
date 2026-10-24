@@ -46,6 +46,15 @@ void main() {
       expect(s.categories, 3);
       expect(plan.unavailable(null).map((u) => u.id), contains('6901'));
     }
+    expect(
+      plan.manga
+          .expand((m) => m.bindings)
+          .where((b) => b.service == 'mangaupdates'),
+      hasLength(s.trackersByService['mangaupdates'] ?? 0),
+    );
+    if (file.path.contains('2026-10-24_08-29')) {
+      expect(s.trackersByService['mangaupdates'], 483);
+    }
     final f = Fakes();
     final first = await f.importer.apply(plan);
     expect(first.entries, s.entries);

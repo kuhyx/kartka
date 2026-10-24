@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:kartka/backup_import/backup_importer.dart';
 import 'package:kartka/backup_import/import_plan.dart';
 
+const Set<String> _bound = {'anilist', 'mal', 'mangaupdates'};
+
 String _plural(int n, String one, String many) => '$n ${n == 1 ? one : many}';
 
 /// One label/value line of the summary.
@@ -50,7 +52,7 @@ class ImportPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = summary;
     final others = {...s.trackersByService}
-      ..removeWhere((k, _) => k == 'anilist' || k == 'mal');
+      ..removeWhere((k, _) => _bound.contains(k));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -61,10 +63,15 @@ class ImportPreview extends StatelessWidget {
         _Row('Chapters read', '${s.chaptersRead}'),
         _Row('AniList links', '${s.trackersByService['anilist'] ?? 0}'),
         _Row('MyAnimeList links', '${s.trackersByService['mal'] ?? 0}'),
+        _Row(
+          'MangaUpdates links',
+          '${s.trackersByService['mangaupdates'] ?? 0}',
+        ),
         if (!bindTrackers && s.trackersImported > 0)
           Text(
-            'Tracking is not installed, so AniList and MyAnimeList links are '
-            'skipped. Import this file again once it is.',
+            'Tracking is not installed, so AniList, MyAnimeList and '
+            'MangaUpdates links are skipped. Import this file again once it '
+            'is.',
             style: Theme.of(context).textTheme.bodySmall,
           ),
         if (others.isNotEmpty)

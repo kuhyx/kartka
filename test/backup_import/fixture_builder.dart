@@ -93,6 +93,7 @@ Uint8List buildSyntheticProto() {
       _track(2, BigInt.from(134187), 3),
       _track(1, BigInt.from(139022), 3),
       _track(7, BigInt.parse('57847596550'), 3),
+      _track(3, BigInt.from(60625), 3),
     ],
     history: [
       _history('/chapter/c2', 1700000000000),

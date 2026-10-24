@@ -115,11 +115,13 @@ class BackupImporter {
       // Any explicit mark wins, including an unread tombstone: re-importing
       // must not undo a chapter the user marked unread afterwards.
       final existingMarks = await progress.readMarks(key).first;
-      for (final url in m.readChapterUrls.where(
-        (u) => !existingMarks.containsKey(u),
-      )) {
-        await progress.markRead(key, url);
-        marks++;
+      final fresh = [
+        for (final u in m.readChapterUrls)
+          if (!existingMarks.containsKey(u)) u,
+      ];
+      if (fresh.isNotEmpty) {
+        await progress.markReadMany(key, fresh);
+        marks += fresh.length;
       }
       final p = m.progress;
       if (p != null && p.isAheadOf(await progress.watch(key).first)) {

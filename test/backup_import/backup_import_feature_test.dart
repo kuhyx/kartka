@@ -88,7 +88,7 @@ void main() {
     expect(first.entries, 6);
     expect(first.readMarks, 6);
     expect(first.progress, 3);
-    expect(first.bindings, 2);
+    expect(first.bindings, 3);
     final again = await importer.apply(plan);
     expect(again.changedNothing, isTrue);
   });

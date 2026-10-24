@@ -20,8 +20,10 @@ String trackerService(int syncId) => switch (syncId) {
   _ => 'tracker$syncId',
 };
 
-/// Services whose bindings Kartka can use (DOCS-contracts §9).
-const Set<String> _boundServices = {'anilist', 'mal'};
+/// Services whose bindings are stored. Unconditional: a binding is harmless
+/// when no tracker is registered, and it avoids an ordering dependency.
+/// MangaUpdates' media id is the v1 `series_id`, passed through unchanged.
+const Set<String> _boundServices = {'anilist', 'mal', 'mangaupdates'};
 
 DateTime _ms(int ms) => DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true);
 

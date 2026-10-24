@@ -36,12 +36,13 @@ void main() {
     expect(f.progress.progress[dexKey]!.chapterUrl, '/chapter/c3');
     expect(f.bindings.bound['$dexKey#anilist'], ('134187', 3));
     expect(f.bindings.bound['$dexKey#mal'], ('139022', 3));
+    expect(f.bindings.bound['$dexKey#mangaupdates'], ('57847596550', 3));
     expect(r.entries, 6);
     expect(r.categories, 3);
     expect(r.memberships, 3);
     expect(r.readMarks, 6);
     expect(r.progress, 3);
-    expect(r.bindings, 2);
+    expect(r.bindings, 3);
     expect(r.changedNothing, isFalse);
   });
 

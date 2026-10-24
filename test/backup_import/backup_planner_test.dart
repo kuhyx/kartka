@@ -76,20 +76,24 @@ void main() {
     expect(plan.summary.memberships, 3);
   });
 
-  test('trackers: only AniList and MAL are bound, all are counted', () {
-    final bindings = byTitle('Dex One').bindings;
-    expect(bindings.map((b) => (b.service, b.remoteId, b.lastChapter)), [
-      ('anilist', '134187', 3),
-      ('mal', '139022', 3),
-    ]);
-    expect(plan.summary.trackersByService, {
-      'anilist': 1,
-      'mal': 1,
-      'mangaupdates': 1,
-    });
-    expect(plan.summary.trackersImported, 2);
-    expect(plan.summary.chaptersRead, 6);
-  });
+  test(
+    'trackers: AniList, MAL and MangaUpdates are bound, all are counted',
+    () {
+      final bindings = byTitle('Dex One').bindings;
+      expect(bindings.map((b) => (b.service, b.remoteId, b.lastChapter)), [
+        ('anilist', '134187', 3),
+        ('mal', '139022', 3),
+        ('mangaupdates', '57847596550', 3),
+      ]);
+      expect(plan.summary.trackersByService, {
+        'anilist': 1,
+        'mal': 1,
+        'mangaupdates': 1,
+      });
+      expect(plan.summary.trackersImported, 3);
+      expect(plan.summary.chaptersRead, 6);
+    },
+  );
 
   test('SY built-ins get their own source id, entries are kept', () {
     expect(byTitle('EH gallery').entry.sourceId, 'sy-builtin:6901');
