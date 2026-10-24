@@ -106,6 +106,7 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
   }
 
   /// Fully downloaded chapters of [key], newest first (offline lists).
+  @override
   Future<List<ChapterInfo>> downloadedChapters(MangaKey key) async {
     await _ready;
     return [for (final c in _index.chapters(key)) c.chapter]..sort(newestFirst);

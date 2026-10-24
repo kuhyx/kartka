@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/library/state/library_deps.dart';
@@ -54,8 +56,9 @@ LibraryEntry entry(String url, {String? title, int addedDays = 0}) =>
 
 /// A deps bundle over a fresh store with fake ports and a settable clock.
 class Fakes {
-  new({DateTime? at}) : now = at ?? t0 {
+  new({DateTime? at, List<SourceProvider>? providers}) : now = at ?? t0 {
     deps = LibraryDeps(
+      sourceProviders: providers ?? [sources],
       repos: LibraryRepositories(kv, decorators: () => [], now: () => now),
       unread: unread,
       downloaded: dl,
@@ -69,5 +72,34 @@ class Fakes {
   final unread = FakeUnread();
   final dl = FakeDownloaded();
   final tracked = FakeTracked();
+  final sources = FakeSources();
   late final LibraryDeps deps;
+}
+
+/// A [SourceProvider] whose emissions the test drives.
+class FakeSources implements SourceProvider {
+  final controller = StreamController<List<MangaSource>>.broadcast();
+
+  @override
+  Stream<List<MangaSource>> watch() => controller.stream;
+
+  /// Emits sources with the given ids.
+  void emit(List<String> ids) =>
+      controller.add([for (final id in ids) _Source(id)]);
+}
+
+class _Source implements MangaSource {
+  new(String id)
+    : ref = SourceRef(
+        id: id,
+        name: id,
+        lang: 'en',
+        origin: SourceOrigin.native,
+      );
+
+  @override
+  final SourceRef ref;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

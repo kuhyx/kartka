@@ -64,4 +64,24 @@ void main() {
     await table.put('a', 7);
     expect(await table.get('a'), 7);
   });
+
+  test('a failed write surfaces but does not block later writes', () async {
+    final kv = _FlakyKv();
+    final table = _table(kv);
+    await expectLater(table.put('a', 1), throwsStateError);
+    expect(await table.get('a'), isNull);
+    kv.fail = false;
+    await table.put('a', 2);
+    expect(await table.get('a'), 2);
+  });
+}
+
+class _FlakyKv extends MemoryKeyValueStore {
+  bool fail = true;
+
+  @override
+  Future<void> set(String key, String value) async {
+    if (fail) throw StateError('disk full');
+    await super.set(key, value);
+  }
 }

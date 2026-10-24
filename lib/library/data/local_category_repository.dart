@@ -15,7 +15,7 @@ import 'package:kartka/platform/key_value_store.dart';
 class LocalCategoryRepository implements CategoryRepository {
   /// Creates the repository; [now] stamps membership changes.
   new(KeyValueStore store, {DateTime Function()? now})
-    : _now = now ?? _utcNow,
+    : _now = now ?? utcNow,
       _categories = KvTable(
         store,
         'categories/',
@@ -74,5 +74,3 @@ class LocalCategoryRepository implements CategoryRepository {
         return Map.unmodifiable(out);
       });
 }
-
-DateTime _utcNow() => DateTime.now().toUtc();

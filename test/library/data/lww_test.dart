@@ -43,6 +43,12 @@ void main() {
     expect(nextStamp(t, ahead), ahead.add(const Duration(milliseconds: 1)));
   });
 
+  test('utcNow is the current instant in UTC', () {
+    final now = utcNow();
+    expect(now.isUtc, isTrue);
+    expect(DateTime.now().difference(now).inSeconds.abs(), lessThan(5));
+  });
+
   Glados2(any.rec, any.rec).test('commutative', (a, b) {
     expect(_merge(a, b), _merge(b, a));
   });

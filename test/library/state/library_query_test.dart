@@ -121,6 +121,28 @@ void main() {
     );
   });
 
+  test('items differing only in source availability are unequal', () {
+    const k = 'k';
+    final at = DateTime.utc(2026);
+    final up = LibraryItem(
+      key: k,
+      sourceId: 's',
+      mangaUrl: '/',
+      title: 't',
+      addedAt: at,
+    );
+    final down = LibraryItem(
+      key: k,
+      sourceId: 's',
+      mangaUrl: '/',
+      title: 't',
+      addedAt: at,
+      sourceAvailable: false,
+    );
+    expect(up, isNot(down));
+    expect(up.hashCode, isNot(down.hashCode));
+  });
+
   test('unreadCount treats null as zero', () {
     expect(_item('z').unreadCount, 0);
     expect(_item('z', unread: 3).unreadCount, 3);

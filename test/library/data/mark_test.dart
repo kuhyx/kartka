@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/library/data/mark.dart';
+import 'package:kartka/library/data/mark_set.dart';
 
 final _t = DateTime.utc(2026, 10, 24, 12);
 
@@ -29,5 +30,16 @@ void main() {
     final m = flip(ahead, 'k', 'c', on: false, now: _t)!;
     expect(m.at, _t.add(const Duration(milliseconds: 1)));
     expect(m.on, isFalse);
+  });
+
+  test('MarkSet round-trips and compares by value', () {
+    final set = MarkSet.apply(null, 'k', ['/a', '/b'], on: true, now: _t)!;
+    final back = MarkSet.fromJson(set.toJson());
+    expect(back, set);
+    expect(back.hashCode, set.hashCode);
+    expect(MarkSet.apply(set, 'k', ['/a'], on: true, now: _t), isNull);
+    final off = MarkSet.apply(set, 'k', ['/a'], on: false, now: _t)!;
+    expect(off, isNot(set));
+    expect(off.marks['/a']!.on, isFalse);
   });
 }
