@@ -65,7 +65,8 @@ class _TrackerSectionState extends State<TrackerSection> {
     } on Object catch (e) {
       if (mounted) showError(context, '${_t.name}: $e');
     }
-    if (mounted) setState(() {
+    if (!mounted) return;
+    setState(() {
       _loggedIn = _t.isLoggedIn();
     });
   }
