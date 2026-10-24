@@ -225,3 +225,22 @@ Stream<bool>` (tracking-anilist supplies from TrackingService bindings).
   `sealed class DownloadState` = `NotDownloaded | Queued |
   Downloading(done, total) | Paused(done, total) |
   Downloaded(pageCount, bytes) | DownloadFailed(message)`.
+
+## 13. Decisions log (2026-10-24, coordinator)
+
+- Hashed keys are not reversible, so nodes carry their keys: `read/<h>/<c>` =
+  `{read, hlc, url}`, `membership/<h>/<cat>` = `{member, hlc, key}`, and
+  `progress/<h>` gains `key`.
+- DownloadState: foundation's `lib/core/models/download_state.dart` is the
+  source of truth and overrides the §12 sketch. Pause is a queue-level flag.
+- The desktop wrapper binds a fixed `127.0.0.1:8791`. OAuth web redirect is
+  `http://127.0.0.1:8791/oauth`, Android `kartka://oauth`. AniList and MAL each
+  get TWO clients (android + web). Client ids live in ONE file,
+  `~/.config/kartka/oauth.json` (keys `KARTKA_{ANILIST,MAL}_CLIENT_ID_{ANDROID,WEB}`),
+  passed with `--dart-define-from-file` by run.sh and the APK build.
+- `/proxy`: real Kartka User-Agent, never a Via header, proxies images too.
+- Tracking pull-forward uses the `ChapterUrlResolver` port (tracking/common,
+  browse supplies it). A null result skips the pull.
+- MangaDex URLs are Keiyoushi-compatible (`/manga/<uuid>`, `/chapter/<uuid>`),
+  so .tachibk MangaDex entries map to `mangadex|/manga/<uuid>` unchanged.
+- `dart_test.yaml` skips tag `live` (foundation).
