@@ -41,7 +41,7 @@ Object? _sorted(Object? v) => switch (v) {
 
 /// Serves recorded fixtures by (operationName, variables); anything else
 /// fails the test with a 599, so unexpected requests are loud.
-class FixtureHttp implements KartkaHttp {
+class FixtureHttp extends KartkaHttp {
   /// Serves the named fixtures.
   new(Iterable<String> names) {
     for (final name in names) add(name);
@@ -66,15 +66,13 @@ class FixtureHttp implements KartkaHttp {
       '${req['operationName']} ${canonical(req['variables'])}';
 
   @override
-  Future<KartkaResponse> get(Uri url, {Map<String, String> headers = const {}}) =>
-      throw UnsupportedError('GET $url');
-
-  @override
-  Future<KartkaResponse> post(
+  Future<KartkaResponse> send(
+    String method,
     Uri url, {
     Map<String, String> headers = const {},
     String? body,
   }) async {
+    if (method != 'POST') throw UnsupportedError('$method $url');
     final req = jsonDecode(body!) as Map<String, Object?>;
     requests.add(req);
     this.headers.add(headers);
@@ -94,7 +92,7 @@ KartkaResponse _response(int status, String body) => KartkaResponse(
 );
 
 /// Answers every request with [status] and [body].
-class CannedHttp implements KartkaHttp {
+class CannedHttp extends KartkaHttp {
   /// Creates the fake.
   new(this.status, this.body);
 
@@ -105,11 +103,8 @@ class CannedHttp implements KartkaHttp {
   final String body;
 
   @override
-  Future<KartkaResponse> get(Uri url, {Map<String, String> headers = const {}}) async =>
-      _response(status, body);
-
-  @override
-  Future<KartkaResponse> post(
+  Future<KartkaResponse> send(
+    String method,
     Uri url, {
     Map<String, String> headers = const {},
     String? body,
