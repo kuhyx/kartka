@@ -16,4 +16,8 @@ abstract interface class ProgressRepository {
 
   /// URLs of chapters read in [key] (progress-derived plus explicit marks).
   Stream<Set<String>> readChapters(MangaKey key);
+
+  /// Explicit per-chapter marks in [key]: chapter URL to `true` (marked
+  /// read) or `false` (an explicit unread tombstone, §4).
+  Stream<Map<String, bool>> readMarks(MangaKey key);
 }
