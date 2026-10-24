@@ -41,7 +41,7 @@ class DeepLinkOAuthRedirect implements OAuthRedirect {
 
 /// [OAuthRedirect] via the desktop wrapper's `/oauth` page (web build).
 ///
-/// The provider redirects the tab to `http://127.0.0.1:8791/oauth`; that
+/// The provider redirects the tab to `http://127.0.0.1:47391/oauth`; that
 /// page posts its full URL (fragment included: AniList's implicit grant
 /// puts the token there, and fragments never reach a server) to
 /// `/oauth/result`, which this polls.

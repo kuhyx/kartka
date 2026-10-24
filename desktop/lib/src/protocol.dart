@@ -5,9 +5,11 @@
 /// these values in tests.
 library;
 
-/// Fixed loopback port: AniList and MAL have `http://127.0.0.1:8791/oauth`
-/// registered, and the browser keys the app's IndexedDB by origin.
-const kartkaPort = 8791;
+/// Fixed loopback port: the OAuth redirect is `http://127.0.0.1:47391/oauth`,
+/// and the browser keys the app's IndexedDB by origin. Mirrors the app's
+/// `kartkaWrapperPort` (lib/platform/wrapper_protocol.dart), the one
+/// definition; test/protocol_test.dart fails if the two differ.
+const kartkaPort = 47391;
 
 /// Header (value `1`) every API call carries; makes cross-site requests
 /// non-simple so they need a CORS preflight this server never grants.
