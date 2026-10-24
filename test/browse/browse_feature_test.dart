@@ -13,10 +13,14 @@ import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/tracking/common/chapter_url_resolver.dart';
 
+import 'fake_download_service.dart';
 import 'fakes.dart';
 import 'ui/harness.dart';
 
-KartkaRegistry _registry({bool withLibrary = true}) {
+KartkaRegistry _registry({
+  bool withLibrary = true,
+  FakeDownloadService? downloads,
+}) {
   final kv = MemoryKeyValueStore();
   final http = FakeKartkaHttp(
     (_) => KartkaResponse(statusCode: 200, bodyBytes: onePixelPng),
@@ -27,6 +31,7 @@ KartkaRegistry _registry({bool withLibrary = true}) {
       services: [
         StaticSourceProvider([FakeSource('mangadex', name: 'MangaDex')]),
         if (withLibrary) LibraryRepositories(kv, decorators: () => const []),
+        ?downloads,
       ],
     ),
     browseFeature,
@@ -63,6 +68,21 @@ void main() {
     await _pumpApp(t, _registry(), mangaRoute('mangadex', '/m/1?x=1'));
     expect(find.text('Detail title'), findsOneWidget);
     expect(find.byType(Image), findsWidgets);
+  });
+
+  testWidgets('a registered DownloadService reaches the chapter rows', (
+    t,
+  ) async {
+    final downloads = FakeDownloadService()
+      ..states['/c/1'] = const DownloadState(status: DownloadStatus.done);
+    await _pumpApp(
+      t,
+      _registry(downloads: downloads),
+      mangaRoute('mangadex', '/m/1'),
+    );
+    await t.tap(find.byTooltip('Delete download'));
+    await t.pumpAndSettle();
+    expect(downloads.calls, ['delete:/c/1']);
   });
 
   testWidgets('source and global search routes', (t) async {
