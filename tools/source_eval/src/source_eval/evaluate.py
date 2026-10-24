@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
 from source_eval.budget import stratified
+from source_eval.challenge import WEBVIEW
 from source_eval.imagequality import measure
 from source_eval.match import best_hit
 from source_eval.models import Chapter, Hit, SourceError
@@ -40,7 +41,9 @@ def _search(backend: Backend, cand: Candidate, ref: RefTitle) -> dict[str, objec
 
 def _abort_reason(state: SourceState) -> str | None:
     results = list(state.titles.values())
-    if sum(1 for r in results if r.get("kind")) >= BLOCKED_AFTER:
+    # A browser-engine need is flagged, not blocking: keep measuring.
+    hard = [r for r in results if r.get("kind") not in (None, WEBVIEW)]
+    if len(hard) >= BLOCKED_AFTER:
         return "blocking"
     head = results[:DEAD_AFTER]
     if len(head) == DEAD_AFTER and all(r["status"] == "error" for r in head):

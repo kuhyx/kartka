@@ -6,7 +6,8 @@ abstract final class HealthThresholds {
   /// Uptime ratio below this cuts a source, once its window is final.
   static const double minUptimeRatio = 0.95;
 
-  /// Any challenge rate above this cuts a source (i.e. any blocking at all).
+  /// Any challenge rate above this cuts a source (i.e. any blocking at all),
+  /// except `webview`, which is flagged instead.
   static const double maxChallengeRate = 0;
 
   /// Coverage ratio below this cuts a source.

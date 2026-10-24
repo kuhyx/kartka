@@ -68,10 +68,33 @@ class StatusPill extends StatelessWidget {
   }
 }
 
-/// Compact source-health badge for source lists: `#3 Cut`.
+/// The warning chip for a source whose extension needs a browser engine.
+/// It warns; it never means the source was cut.
+class BrowserEngineChip extends StatelessWidget {
+  /// Creates the chip.
+  const new({super.key});
+
+  /// The visible label.
+  static const label = 'Needs browser engine';
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: 'Warning: needs a browser engine',
+    excludeSemantics: true,
+    child: StatusPill(text: label, fill: statusColors(context).warning),
+  );
+}
+
+/// Compact source-health badge for source lists: `#3 Cut`, with the
+/// [BrowserEngineChip] under it when [needsBrowserEngine].
 class HealthBadge extends StatelessWidget {
   /// Creates a badge; [rank] is omitted when the source is unranked.
-  const new({required this.verdict, this.rank, super.key});
+  const new({
+    required this.verdict,
+    this.rank,
+    this.needsBrowserEngine = false,
+    super.key,
+  });
 
   /// Evaluator verdict.
   final HealthVerdict verdict;
@@ -79,17 +102,27 @@ class HealthBadge extends StatelessWidget {
   /// 1-based rank, or null.
   final int? rank;
 
+  /// Adds the "Needs browser engine" warning chip.
+  final bool needsBrowserEngine;
+
   @override
   Widget build(BuildContext context) {
     final label = verdictLabel(verdict);
     final ranked = rank == null ? '' : 'rank $rank, ';
-    return Semantics(
+    final pill = Semantics(
       label: 'Source health: $ranked${verdict.name}',
       excludeSemantics: true,
       child: StatusPill(
         text: rank == null ? label : '#$rank $label',
         fill: verdictFill(context, verdict),
       ),
+    );
+    if (!needsBrowserEngine) return pill;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      spacing: AppSpacing.xs,
+      children: [pill, const BrowserEngineChip()],
     );
   }
 }

@@ -6,6 +6,9 @@ import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/source_health/model/json_read.dart';
 import 'package:kartka/source_health/model/metrics.dart';
 
+/// The §5 `flags` entry for a source whose extension needs a browser engine.
+const needsBrowserEngineFlag = 'needs-browser-engine';
+
 /// One source's evaluation. Only [id] is required; every metric block is
 /// null until the evaluator has measured it.
 @immutable
@@ -29,6 +32,7 @@ class SourceHealthRecord {
     this.rank,
     this.verdict = HealthVerdict.pending,
     this.cutReasons = const [],
+    this.flags = const [],
   });
 
   /// Parses a §5 record; null unless [json] is a map with a string `id`.
@@ -55,6 +59,7 @@ class SourceHealthRecord {
       rank: readInt(j, 'rank'),
       verdict: HealthVerdict.parse(readString(j, 'verdict')),
       cutReasons: readStrings(j, 'cutReasons'),
+      flags: readStrings(j, 'flags'),
     );
   }
 
@@ -110,6 +115,13 @@ class SourceHealthRecord {
   /// `subset`); see `cut_reasons.dart` for the plain-words version.
   final List<String> cutReasons;
 
+  /// Visible warnings that do not cut the source (§5 `flags`, additive: a
+  /// record from an older evaluator has none). Unknown entries are kept.
+  final List<String> flags;
+
+  /// True when the source needs a browser engine Kartka does not ship.
+  bool get needsBrowserEngine => flags.contains(needsBrowserEngineFlag);
+
   /// The §5 JSON, omitting fields that are missing.
   Map<String, Object?> toJson() => compact({
     'id': id,
@@ -129,6 +141,7 @@ class SourceHealthRecord {
     'rank': rank,
     'verdict': verdict.name,
     'cutReasons': cutReasons.isEmpty ? null : cutReasons,
+    'flags': flags.isEmpty ? null : flags,
   });
 
   @override
@@ -150,7 +163,8 @@ class SourceHealthRecord {
       other.score == score &&
       other.rank == rank &&
       other.verdict == verdict &&
-      listEquals(other.cutReasons, cutReasons);
+      listEquals(other.cutReasons, cutReasons) &&
+      listEquals(other.flags, flags);
 
   @override
   int get hashCode => Object.hash(
@@ -171,6 +185,7 @@ class SourceHealthRecord {
     rank,
     verdict,
     Object.hashAll(cutReasons),
+    Object.hashAll(flags),
   );
 
   @override

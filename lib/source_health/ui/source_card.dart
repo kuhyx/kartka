@@ -67,6 +67,7 @@ class SourceCard extends StatelessWidget {
                   HealthBadge(verdict: r.verdict, rank: r.rank),
                 ],
               ),
+              if (r.needsBrowserEngine) const BrowserEngineChip(),
               Wrap(
                 spacing: AppSpacing.md,
                 runSpacing: AppSpacing.xs,

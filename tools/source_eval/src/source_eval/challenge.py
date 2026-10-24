@@ -15,6 +15,12 @@ lazy from source_eval.http import Response
 #: browser engine (disabled on purpose) to read the site.
 KINDS = ("cloudflare", "captcha", "403", "429", "webview")
 
+#: The one kind that is flagged, not cut: a source that merely needs a browser
+#: engine is still a source worth reading (decision 2026-10-24, AllManga).
+WEBVIEW = "webview"
+#: ``flags`` entry (contract §5) raised whenever ``webview`` challenges are seen.
+FLAG_BROWSER_ENGINE = "needs-browser-engine"
+
 _CF_MARKERS = (
     "cf-chl",
     "_cf_chl_opt",

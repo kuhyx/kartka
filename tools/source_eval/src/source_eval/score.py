@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from typing import cast
 
+from source_eval.challenge import WEBVIEW
+
 UPTIME_MIN = 0.95
 COVERAGE_MIN = 0.60
 SUBSET_MIN = 0.90
@@ -34,6 +36,15 @@ def score(record: Record) -> float:
     return round(total, 3)
 
 
+def _blocked(record: Record) -> bool:
+    """Any challenge other than ``webview`` (that one is flagged, not cut)."""
+    block = cast("dict[str, object]", record["blocking"])
+    if (_get(record, "blocking", "challengeRate") or 0.0) <= 0:
+        return False
+    kinds = cast("list[str]", block.get("kinds") or [])
+    return not kinds or any(kind != WEBVIEW for kind in kinds)
+
+
 def cut_reasons(record: Record) -> list[str]:
     """Contract cut rules, except ``subset`` (needs the ranking)."""
     reasons = []
@@ -41,7 +52,7 @@ def cut_reasons(record: Record) -> list[str]:
     ratio = _get(record, "uptime", "ratio")
     if up["status"] == "final" and ratio is not None and ratio < UPTIME_MIN:
         reasons.append("uptime<0.95")
-    if (_get(record, "blocking", "challengeRate") or 0.0) > 0:
+    if _blocked(record):
         reasons.append("blocking")
     coverage = _get(record, "coverage", "ratio")
     if coverage is not None and coverage < COVERAGE_MIN:

@@ -19,7 +19,11 @@ class FeedSourceHealthLookup implements SourceHealthLookup {
       .map(
         (records) => {
           for (final r in records)
-            r.id: SourceHealthSummary(verdict: r.verdict, rank: r.rank),
+            r.id: SourceHealthSummary(
+              verdict: r.verdict,
+              rank: r.rank,
+              needsBrowserEngine: r.needsBrowserEngine,
+            ),
         },
       )
       .handleError((Object _) {});
@@ -31,5 +35,9 @@ class FeedSourceHealthLookup implements SourceHealthLookup {
     SourceHealthSummary? summary,
   ) => summary == null
       ? null
-      : HealthBadge(verdict: summary.verdict, rank: summary.rank);
+      : HealthBadge(
+          verdict: summary.verdict,
+          rank: summary.rank,
+          needsBrowserEngine: summary.needsBrowserEngine,
+        );
 }

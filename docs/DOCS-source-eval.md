@@ -88,8 +88,10 @@ and FlareSolverr off (the local dev server and the live deploy both do).
   the run's requests.
 - **blocking**: challenged / all observations. Kinds: `cloudflare`, `captcha`,
   `403`, `429`, plus **`webview`** = the extension needs a browser engine to
-  read the site (Suwayomi "CEF is disabled"). Counted as blocking because
-  Kartka has no browser and the evaluator must not run one.
+  read the site (Suwayomi "CEF is disabled"). Recorded in `kinds` and
+  `challengeRate` but **flagged, not cut**: the record gets
+  `flags: ["needs-browser-engine"]`, and `webview` challenges neither cut the
+  source nor abort its measurement. The evaluator still never runs a browser.
 - **coverage**: found / sample size; `referenceSize` is the run's sample size
   (30 in the sample run, 200 weekly), not the full 500, to stay honest.
 - **chapterCompleteness**: distinct chapter numbers / AniList (else

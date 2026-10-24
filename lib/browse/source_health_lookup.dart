@@ -23,7 +23,11 @@ enum HealthVerdict {
 @immutable
 class SourceHealthSummary {
   /// Creates a summary; [rank] is 1-based, null when the source is unranked.
-  const new({required this.verdict, this.rank});
+  const new({
+    required this.verdict,
+    this.rank,
+    this.needsBrowserEngine = false,
+  });
 
   /// 1-based rank from the evaluator; lower is better. Null = unranked.
   final int? rank;
@@ -31,17 +35,23 @@ class SourceHealthSummary {
   /// Evaluator verdict.
   final HealthVerdict verdict;
 
+  /// §5 flag `needs-browser-engine`: warn, but the source is not cut for it.
+  final bool needsBrowserEngine;
+
   @override
   bool operator ==(Object other) =>
       other is SourceHealthSummary &&
       other.rank == rank &&
-      other.verdict == verdict;
+      other.verdict == verdict &&
+      other.needsBrowserEngine == needsBrowserEngine;
 
   @override
-  int get hashCode => Object.hash(rank, verdict);
+  int get hashCode => Object.hash(rank, verdict, needsBrowserEngine);
 
   @override
-  String toString() => 'SourceHealthSummary(rank: $rank, verdict: $verdict)';
+  String toString() =>
+      'SourceHealthSummary(rank: $rank, verdict: $verdict, '
+      'needsBrowserEngine: $needsBrowserEngine)';
 }
 
 /// Optional port the source_health part implements and registers.
