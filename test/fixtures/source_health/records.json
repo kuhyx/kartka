@@ -1,0 +1,67 @@
+[
+  {
+    "id": "mangadex", "name": "MangaDex", "lang": "en", "origin": "native",
+    "probedAt": "2026-10-24T12:00:00Z",
+    "uptime": {"windowDays": 7, "probes": 28, "ok": 28, "ratio": 1.0, "status": "final"},
+    "latencyMs": {"p50": 310, "p95": 900},
+    "blocking": {"challengeRate": 0.0, "kinds": []},
+    "coverage": {"referenceSize": 650, "found": 590, "ratio": 0.908},
+    "chapterCompleteness": {"sampled": 40, "medianRatio": 0.98},
+    "imageQuality": {"sampledPages": 120, "medianWidthPx": 1400, "medianJpegQuality": 90},
+    "score": 0.93, "rank": 1, "verdict": "keep", "cutReasons": []
+  },
+  {
+    "id": "suwayomi:2499283573021220255", "name": "MangaDex", "lang": "en",
+    "origin": "suwayomi", "probedAt": "2026-10-24T12:00:00Z",
+    "uptime": {"windowDays": 7, "probes": 28, "ok": 27, "ratio": 0.964, "status": "final"},
+    "latencyMs": {"p50": 420, "p95": 1300},
+    "blocking": {"challengeRate": 0.0, "kinds": []},
+    "coverage": {"referenceSize": 650, "found": 512, "ratio": 0.788},
+    "chapterCompleteness": {"sampled": 40, "medianRatio": 0.97},
+    "imageQuality": {"sampledPages": 120, "medianWidthPx": 1100, "medianJpegQuality": 88},
+    "subsetOf": {"sourceId": "mangadex", "overlap": 0.93},
+    "score": 0.81, "rank": 3, "verdict": "cut", "cutReasons": ["subset"]
+  },
+  {
+    "id": "plugin:comick", "name": "Comick", "lang": "en", "origin": "plugin",
+    "probedAt": "2026-10-24T12:00:00Z",
+    "uptime": {"windowDays": 7, "probes": 28, "ok": 22, "ratio": 0.786, "status": "final"},
+    "latencyMs": {"p50": 1800, "p95": 4200},
+    "blocking": {"challengeRate": 0.35, "kinds": ["cloudflare", "429"]},
+    "coverage": {"referenceSize": 650, "found": 300, "ratio": 0.462},
+    "chapterCompleteness": {"sampled": 25, "medianRatio": 0.71},
+    "imageQuality": {"sampledPages": 60, "medianWidthPx": 800, "medianJpegQuality": 75},
+    "score": 0.41, "rank": 5, "verdict": "cut",
+    "cutReasons": ["uptime<0.95", "blocking", "coverage<0.60"]
+  },
+  {
+    "id": "local", "name": "Local files", "lang": "all", "origin": "local",
+    "probedAt": "2026-10-24T12:00:00Z",
+    "uptime": {"windowDays": 7, "probes": 28, "ok": 28, "ratio": 1.0, "status": "final"},
+    "latencyMs": {"p50": 5, "p95": 12},
+    "blocking": {"challengeRate": 0.0, "kinds": []},
+    "coverage": {"referenceSize": 650, "found": 410, "ratio": 0.631},
+    "chapterCompleteness": {"sampled": 30, "medianRatio": 0.9},
+    "imageQuality": {"sampledPages": 90, "medianWidthPx": 1600, "medianJpegQuality": 92},
+    "score": 0.86, "rank": 2, "verdict": "keep", "cutReasons": []
+  },
+  {
+    "id": "suwayomi:7034581279101437511", "name": "Mangarden", "lang": "pl",
+    "origin": "suwayomi", "probedAt": "2026-10-24T12:00:00Z",
+    "uptime": {"windowDays": 7, "probes": 9, "ok": 9, "ratio": 1.0, "status": "accruing"},
+    "latencyMs": {"p50": 650, "p95": 2100},
+    "blocking": {"challengeRate": 0.0, "kinds": []},
+    "verdict": "pending"
+  },
+  {
+    "id": "suwayomi:1111", "name": "Tiny Scans", "lang": "en", "origin": "suwayomi",
+    "probedAt": "2026-10-24T12:00:00Z",
+    "uptime": {"windowDays": 7, "probes": 28, "ok": 28, "ratio": 1.0, "status": "final"},
+    "latencyMs": {"p50": 500, "p95": 1500},
+    "blocking": {"challengeRate": 0.0, "kinds": []},
+    "coverage": {"referenceSize": 650, "found": 90, "ratio": 0.138},
+    "chapterCompleteness": {"sampled": 12, "medianRatio": 1.0},
+    "imageQuality": {"sampledPages": 30, "medianWidthPx": 1200, "medianJpegQuality": 85},
+    "score": 0.55, "rank": 4, "verdict": "cut", "cutReasons": ["coverage<0.60"]
+  }
+]

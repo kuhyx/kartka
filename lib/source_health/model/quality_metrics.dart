@@ -1,0 +1,124 @@
+/// §5 blocks about what a source serves: chapter completeness, image
+/// quality and whether it duplicates a better source.
+library;
+
+import 'package:flutter/foundation.dart';
+import 'package:kartka/source_health/model/json_read.dart';
+
+/// §5 `chapterCompleteness`: source chapters / AniList chapters, capped at 1.
+@immutable
+class CompletenessMetric {
+  /// Creates a completeness block.
+  const CompletenessMetric({this.sampled, this.medianRatio});
+
+  /// Parses `chapterCompleteness`; null unless [json] is a map.
+  static CompletenessMetric? fromJson(Object? json) {
+    final m = asMap(json);
+    if (m == null) return null;
+    return CompletenessMetric(
+      sampled: readInt(m, 'sampled'),
+      medianRatio: readDouble(m, 'medianRatio'),
+    );
+  }
+
+  /// Reference titles sampled.
+  final int? sampled;
+
+  /// Median completeness over the sample.
+  final double? medianRatio;
+
+  /// The JSON block.
+  Map<String, Object?> toJson() =>
+      compact({'sampled': sampled, 'medianRatio': medianRatio});
+
+  @override
+  bool operator ==(Object other) =>
+      other is CompletenessMetric &&
+      other.sampled == sampled &&
+      other.medianRatio == medianRatio;
+
+  @override
+  int get hashCode => Object.hash(sampled, medianRatio);
+}
+
+/// §5 `imageQuality`: median page width and JPEG quality.
+@immutable
+class ImageQualityMetric {
+  /// Creates an image-quality block.
+  const ImageQualityMetric({
+    this.sampledPages,
+    this.medianWidthPx,
+    this.medianJpegQuality,
+  });
+
+  /// Parses `imageQuality`; null unless [json] is a map.
+  static ImageQualityMetric? fromJson(Object? json) {
+    final m = asMap(json);
+    if (m == null) return null;
+    return ImageQualityMetric(
+      sampledPages: readInt(m, 'sampledPages'),
+      medianWidthPx: readInt(m, 'medianWidthPx'),
+      medianJpegQuality: readInt(m, 'medianJpegQuality'),
+    );
+  }
+
+  /// Pages sampled.
+  final int? sampledPages;
+
+  /// Median page width in pixels.
+  final int? medianWidthPx;
+
+  /// Median estimated JPEG quality (0-100).
+  final int? medianJpegQuality;
+
+  /// The JSON block.
+  Map<String, Object?> toJson() => compact({
+    'sampledPages': sampledPages,
+    'medianWidthPx': medianWidthPx,
+    'medianJpegQuality': medianJpegQuality,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      other is ImageQualityMetric &&
+      other.sampledPages == sampledPages &&
+      other.medianWidthPx == medianWidthPx &&
+      other.medianJpegQuality == medianJpegQuality;
+
+  @override
+  int get hashCode => Object.hash(sampledPages, medianWidthPx, medianJpegQuality);
+}
+
+/// §5 `subsetOf`: a higher-ranked source that already has this one's titles.
+@immutable
+class SubsetOfMetric {
+  /// Creates a subset block.
+  const SubsetOfMetric({required this.sourceId, this.overlap});
+
+  /// Parses `subsetOf`; null unless [json] is a map with a `sourceId`.
+  static SubsetOfMetric? fromJson(Object? json) {
+    final m = asMap(json);
+    final id = m == null ? null : readString(m, 'sourceId');
+    if (id == null) return null;
+    return SubsetOfMetric(sourceId: id, overlap: readDouble(m!, 'overlap'));
+  }
+
+  /// The covering source's id.
+  final String sourceId;
+
+  /// Share of this source's found titles the covering source also has.
+  final double? overlap;
+
+  /// The JSON block.
+  Map<String, Object?> toJson() =>
+      compact({'sourceId': sourceId, 'overlap': overlap});
+
+  @override
+  bool operator ==(Object other) =>
+      other is SubsetOfMetric &&
+      other.sourceId == sourceId &&
+      other.overlap == overlap;
+
+  @override
+  int get hashCode => Object.hash(sourceId, overlap);
+}
