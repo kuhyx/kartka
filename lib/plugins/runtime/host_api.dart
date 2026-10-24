@@ -63,7 +63,7 @@ enum PluginMethod {
 /// Manifest `{id, name, version, lang, baseUrl, apiVersion, icon?}`.
 class PluginManifest {
   /// Creates a manifest.
-  const PluginManifest({
+  const new({
     required this.id,
     required this.name,
     required this.version,
@@ -74,7 +74,7 @@ class PluginManifest {
   });
 
   /// Parses a manifest map; throws [FormatException] when invalid.
-  factory PluginManifest.fromJson(Map<String, Object?> json) {
+  factory fromJson(Map<String, Object?> json) {
     String req(String k) {
       final v = json[k];
       if (v is String && v.isNotEmpty) return v;
@@ -139,11 +139,7 @@ class PluginManifest {
 /// Result of `kartka.http.get/post`.
 class HostHttpResponse {
   /// Creates a response.
-  const HostHttpResponse({
-    required this.status,
-    required this.headers,
-    required this.body,
-  });
+  const new({required this.status, required this.headers, required this.body});
 
   /// HTTP status code.
   final int status;
@@ -165,11 +161,7 @@ class HostHttpResponse {
 /// One `kartka.html.select` match.
 class HtmlMatch {
   /// Creates a match.
-  const HtmlMatch({
-    required this.text,
-    required this.attrs,
-    required this.html,
-  });
+  const new({required this.text, required this.attrs, required this.html});
 
   /// Text content.
   final String text;
@@ -217,7 +209,7 @@ abstract interface class PluginHostServices {
 /// Error surfaced to the UI. Always names the plugin.
 class PluginException implements Exception {
   /// Creates an exception for [pluginId].
-  const PluginException(this.pluginId, this.message, {this.method});
+  const new(this.pluginId, this.message, {this.method});
 
   /// Id of the failing plugin.
   final String pluginId;

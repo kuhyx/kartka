@@ -14,7 +14,9 @@ void main() {
   test('http.get and http.post return response JSON', () async {
     final g = await d.dispatch('http.get', [
       'https://demo.test/latest?page=1',
-      {'headers': {'X': 1}},
+      {
+        'headers': {'X': 1},
+      },
     ]);
     expect((g! as Map)['status'], 200);
     final p = await d.dispatch('http.post', [
@@ -37,12 +39,12 @@ void main() {
   });
 
   test('rejects unknown ops and non-string arguments', () async {
-    await expectLater(d.dispatch('fs.read', ['/etc/passwd']), throwsArgumentError);
-    await expectLater(d.dispatch('http.get', [42]), throwsArgumentError);
-    await expectLater(d.dispatch('http.get', []), throwsArgumentError);
     await expectLater(
-      d.dispatch('html.select', ['<a/>']),
+      d.dispatch('fs.read', ['/etc/passwd']),
       throwsArgumentError,
     );
+    await expectLater(d.dispatch('http.get', [42]), throwsArgumentError);
+    await expectLater(d.dispatch('http.get', []), throwsArgumentError);
+    await expectLater(d.dispatch('html.select', ['<a/>']), throwsArgumentError);
   });
 }

@@ -124,14 +124,12 @@ async function popular(p) {
     await s.dispose();
   });
 
-  test('timeout fails the call, restarts the engine, next call works', () async {
+  test('timeout fails the call and the engine restarts', () async {
     services.delay = const Duration(milliseconds: 300);
     await expectLater(
-      session.call(
-        PluginMethod.popular,
-        [1],
-        timeout: const Duration(milliseconds: 50),
-      ),
+      session.call(PluginMethod.popular, [
+        1,
+      ], timeout: const Duration(milliseconds: 50)),
       throwsA(
         isA<PluginException>().having(
           (e) => e.message,

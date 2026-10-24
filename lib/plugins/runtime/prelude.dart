@@ -12,7 +12,7 @@
 library;
 
 /// The prelude source. Evaluated before the plugin source.
-const String kPreludeJs = r'''
+const String kPreludeJs = '''
 (function (g) {
   var send = g.__kartka_send;
   var pending = {};
