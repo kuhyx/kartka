@@ -49,10 +49,10 @@ void main() {
     s.searchGate = null;
     await c.search('new');
     expect(c.query, 'new');
-    final settled = c.results;
+    final settled = c.results.single;
     gate.complete();
     await old;
-    expect(c.results, same(settled));
+    expect(c.results.single, same(settled));
   });
 
   test('empty query clears results', () async {
@@ -69,5 +69,30 @@ void main() {
     c.dispose();
     s.searchGate!.complete();
     await pending;
+  });
+
+  test('updateSources searches added, drops removed, keeps others', () async {
+    final a = FakeSource('a');
+    final b = FakeSource('b');
+    final c = GlobalSearchController([a]);
+    await c.updateSources([a]); // No query yet: nothing searched.
+    expect(a.calls, isEmpty);
+    await c.search('q');
+    await c.updateSources([b, a]);
+    expect(a.calls, ['search(q):1']);
+    expect(b.calls, ['search(q):1']);
+    expect(c.results.map((r) => r.source.id), ['b', 'a']);
+    await c.updateSources([b]);
+    expect(c.results.map((r) => r.source.id), ['b']);
+  });
+
+  test('a source removed mid-search drops its late result', () async {
+    final slow = FakeSource('s')..searchGate = Completer<void>();
+    final c = GlobalSearchController([slow]);
+    final pending = c.search('q');
+    await c.updateSources([]);
+    slow.searchGate!.complete();
+    await pending;
+    expect(c.results, isEmpty);
   });
 }

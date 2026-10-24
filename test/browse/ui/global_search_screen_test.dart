@@ -46,4 +46,14 @@ void main() {
     expect(find.text('Popular'), findsOneWidget);
     expect(src.calls.last, 'search(zz):1');
   });
+
+  testWidgets('sources appearing later join the search', (t) async {
+    final h = Harness(sources: []);
+    await h.pump(t, const SizedBox(), at: globalSearchRoute('gate'));
+    expect(find.text('Late'), findsNothing);
+    h.provider.controller.add([FakeSource('plugin:l', name: 'Late')]);
+    await t.pumpAndSettle();
+    expect(find.text('Late'), findsOneWidget);
+    expect(find.text('Title 0'), findsOneWidget);
+  });
 }
