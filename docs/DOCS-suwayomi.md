@@ -58,9 +58,11 @@ deploy/suwayomi/install.sh --verify-only  # end-to-end check, exit 0 = good
 ### Sandbox test (vmbox)
 
 ```bash
-vm share ~/.cache/kartka-suwayomi-dl          # the cached release tarball
 vm share ~/src/kartka-wt/suwayomi             # share BEFORE the guest first boots
 vm new suwa
+# seed the guest's download cache from the host's (skips a 337 MB download)
+vm run suwa 'mkdir -p ~/.cache/kartka/suwayomi'
+vm scp suwa ~/.cache/kartka/suwayomi/Suwayomi-Server-v2.4.2366-linux-x64.tar.gz .cache/kartka/suwayomi/
 vm run suwa 'sudo pacman -Sy --noconfirm docker && sudo systemctl enable --now docker && sudo chmod 666 /var/run/docker.sock'
 vm repo suwa ~/src/kartka-wt/suwayomi --worktree
 vm run suwa 'bash ~/suwayomi/deploy/suwayomi/tests/vmbox_guest_edge.sh'
