@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:kartka/reader/platform/browser_fullscreen_stub.dart'
-    if (dart.library.js_interop) 'package:kartka/reader/platform/browser_fullscreen_web.dart';
+// TODO(reader): swap for foundation's web fullscreen seam once it exists;
+// package:web may only be imported under lib/platform/web/.
+import 'package:kartka/reader/platform/browser_fullscreen_stub.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 /// Device integration the reader needs: screen wake lock and fullscreen.

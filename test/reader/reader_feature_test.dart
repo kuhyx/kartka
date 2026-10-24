@@ -7,10 +7,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/routes.dart';
+import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
+import 'package:kartka/platform/page_image.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/reader_feature.dart';
@@ -25,30 +27,36 @@ void main() {
   late LibraryRepositories repos;
   late KartkaRegistry registry;
   late FakeReaderSystem system;
+  late MemoryBlobStore blobs;
 
-  void build({bool injectSystem = true}) {
+  void build({bool injectSystem = true, List<Object> extra = const []}) {
     http = FakeKartkaHttp(
       (r) => KartkaResponse(statusCode: 200, bodyBytes: onePixelPng),
     );
     kv = MemoryKeyValueStore();
+    blobs = MemoryBlobStore();
     repos = LibraryRepositories(kv, decorators: () => []);
     system = FakeReaderSystem();
     final source = FakeSource(
       chapterList: harnessChapters,
       pageMap: {'/c/2': fakePages('/c/2', 2), '/c/3': fakePages('/c/3', 2)},
     );
-    registry = KartkaRegistry.build(memoryPlatform(http: http, kv: kv), [
-      (env) => injectSystem
-          ? readerFeature(env, system: system)
-          : readerFeature(env),
-      (env) => KartkaFeature(
-        id: 'test',
-        services: [
-          StaticSourceProvider([source]),
-          repos,
-        ],
-      ),
-    ]);
+    registry = KartkaRegistry.build(
+      memoryPlatform(http: http, kv: kv, blobs: blobs),
+      [
+        (env) => injectSystem
+            ? readerFeature(env, system: system)
+            : readerFeature(env),
+        (env) => KartkaFeature(
+          id: 'test',
+          services: [
+            StaticSourceProvider([source]),
+            repos,
+            ...extra,
+          ],
+        ),
+      ],
+    );
   }
 
   // The library's KV-backed repositories complete some futures outside the
@@ -157,5 +165,27 @@ void main() {
     expect(find.byType(ReaderScreen), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
     debugDefaultTargetPlatformOverride = null;
+  });
+
+  testWidgets('downloaded pages load from the blob store, not the network', (
+    tester,
+  ) async {
+    build(
+      extra: [
+        FakeDownloads({
+          '/c/2': [
+            for (var i = 0; i < 2; i++)
+              PageRef(index: i, imageUrl: blobPageUrl('dl/c2/$i.png')),
+          ],
+        }),
+      ],
+    );
+    for (var i = 0; i < 2; i++) {
+      await blobs.put('dl/c2/$i.png', onePixelPng);
+    }
+    await pump(tester, readRoute('fake', '/m/1', '/c/2'));
+    expect(find.byType(Image), findsWidgets);
+    expect(find.text('Retry'), findsNothing);
+    expect(http.requests, isEmpty);
   });
 }

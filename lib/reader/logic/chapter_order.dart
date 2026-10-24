@@ -33,9 +33,14 @@ ChapterNeighbours neighboursOf(List<ChapterInfo> chapters, String url) {
   );
 }
 
-/// The chapter number to record progress under.
+/// The chapter number to record progress under, or null when unknown.
 ///
 /// [ReadingProgress.chapterNumber] is required, but sources do not always
 /// number chapters; the 1-based reading position keeps ordering sane then.
-double progressNumber(ChapterInfo? chapter, int? position) =>
-    chapter?.number ?? ((position ?? -1) + 1).toDouble();
+/// A chapter missing from the list (offline, list failed) has no number, and
+/// the reader must not record it: a guess could sort behind real progress.
+double? progressNumber(ChapterInfo? chapter, int? position) {
+  final number = chapter?.number;
+  if (number != null) return number;
+  return position == null ? null : (position + 1).toDouble();
+}

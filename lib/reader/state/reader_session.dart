@@ -81,6 +81,7 @@ class ReaderSession extends ChangeNotifier {
 
   PageCache? _cache;
   ProgressRecorder? _recorder;
+  bool _disposed = false;
 
   /// Pages framed by chapter transitions.
   ChapterStrip get strip => ChapterStrip(pageCount: pages.length);
@@ -112,6 +113,8 @@ class ReaderSession extends ChangeNotifier {
       return _fail('$e');
     }
     page = await _resumePage();
+    // The reader may have been left while this was loading.
+    if (_disposed) return;
     _cache = PageCache(fetch: (i) => deps.loadImage(pages[i]));
     _recorder = ProgressRecorder(
       pageCount: pages.length,
@@ -150,15 +153,20 @@ class ReaderSession extends ChangeNotifier {
     return saved.page < pages.length - 1 ? saved.page : 0;
   }
 
-  Future<void> _record(int page) async => await deps.progress?.record(
-    ReadingProgress(
-      key: key,
-      chapterUrl: chapterUrl,
-      chapterNumber: progressNumber(neighbours.current, neighbours.position),
-      page: page,
-      readAt: deps.now(),
-    ),
-  );
+  Future<void> _record(int page) async {
+    final number = progressNumber(neighbours.current, neighbours.position);
+    // Unknown chapter number (offline): only markRead may land.
+    if (number == null) return;
+    await deps.progress?.record(
+      ReadingProgress(
+        key: key,
+        chapterUrl: chapterUrl,
+        chapterNumber: number,
+        page: page,
+        readAt: deps.now(),
+      ),
+    );
+  }
 
   /// The bytes of page [index].
   Future<Uint8List> image(int index) => _cache!.get(index);
@@ -208,7 +216,14 @@ class ReaderSession extends ChangeNotifier {
   }
 
   @override
+  void notifyListeners() {
+    // open() and the async setters outlive a reader that was left early.
+    if (!_disposed) super.notifyListeners();
+  }
+
+  @override
   void dispose() {
+    _disposed = true;
     _recorder?.dispose();
     _cache?.clear();
     super.dispose();

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
 import 'package:kartka/reader/data/reader_settings.dart';
@@ -216,4 +217,51 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     s.dispose();
   });
+
+  test('leaving while the chapter loads starts no fetches', () async {
+    final gate = Completer<MangaSource?>();
+    final s = ReaderSession(
+      sourceId: 'fake',
+      mangaUrl: '/m/1',
+      chapterUrl: '/c/2',
+      deps: ReaderDeps(
+        findSource: (_) => gate.future,
+        prefs: prefs,
+        loadImage: (p) async {
+          fetched.add(p.imageUrl);
+          return Uint8List(1);
+        },
+      ),
+    );
+    final opening = s.open();
+    await Future<void>.delayed(Duration.zero);
+    s.dispose();
+    gate.complete(FakeSource(pageMap: {'/c/2': fakePages('/c/2', 2)}));
+    await opening;
+    expect(fetched, isEmpty);
+    expect(s.phase, ReaderPhase.loading);
+    s
+      ..onItem(1)
+      ..retry();
+    await s.setMode(ReaderMode.webtoon);
+  });
+
+  test(
+    'offline with no chapter list: no progress record, still marks read',
+    () async {
+      final s = make(
+        source: FakeSource(id: 'other'),
+        downloads: FakeDownloads({'/c/2': fakePages('/c/2', 2)}),
+      );
+      await s.open();
+      s
+        ..onItem(1)
+        ..onItem(2);
+      await Future<void>.delayed(Duration.zero);
+      s.dispose();
+      await Future<void>.delayed(Duration.zero);
+      expect(progress.recorded, isEmpty);
+      expect(progress.markedRead, ['/c/2']);
+    },
+  );
 }

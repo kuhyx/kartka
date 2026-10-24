@@ -41,6 +41,6 @@ void main() {
   test('progress number falls back to the reading position', () {
     expect(progressNumber(ch('a', 4.5), 0), 4.5);
     expect(progressNumber(ch('a'), 2), 3);
-    expect(progressNumber(null, null), 0);
+    expect(progressNumber(null, null), isNull);
   });
 }
