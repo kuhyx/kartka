@@ -15,7 +15,7 @@ enum UptimeStatus {
   /// A full window of probes; the uptime cut rule applies.
   finalized('final');
 
-  const UptimeStatus(this.wire);
+  new(this.wire);
 
   /// The JSON value.
   final String wire;
@@ -25,7 +25,7 @@ enum UptimeStatus {
 @immutable
 class UptimeMetric {
   /// Creates an uptime block.
-  const UptimeMetric({
+  const new({
     this.windowDays,
     this.probes,
     this.ok,
@@ -89,7 +89,7 @@ class UptimeMetric {
 @immutable
 class LatencyMetric {
   /// Creates a latency block.
-  const LatencyMetric({this.p50, this.p95});
+  const new({this.p50, this.p95});
 
   /// Parses `latencyMs`; null unless [json] is a map.
   static LatencyMetric? fromJson(Object? json) {
@@ -119,7 +119,7 @@ class LatencyMetric {
 @immutable
 class BlockingMetric {
   /// Creates a blocking block.
-  const BlockingMetric({this.challengeRate, this.kinds = const []});
+  const new({this.challengeRate, this.kinds = const []});
 
   /// Parses `blocking`; null unless [json] is a map.
   static BlockingMetric? fromJson(Object? json) {
@@ -155,7 +155,7 @@ class BlockingMetric {
 @immutable
 class CoverageMetric {
   /// Creates a coverage block.
-  const CoverageMetric({this.referenceSize, this.found, this.ratio});
+  const new({this.referenceSize, this.found, this.ratio});
 
   /// Parses `coverage`; null unless [json] is a map.
   static CoverageMetric? fromJson(Object? json) {

@@ -9,7 +9,7 @@ import 'package:kartka/source_health/model/json_read.dart';
 @immutable
 class CompletenessMetric {
   /// Creates a completeness block.
-  const CompletenessMetric({this.sampled, this.medianRatio});
+  const new({this.sampled, this.medianRatio});
 
   /// Parses `chapterCompleteness`; null unless [json] is a map.
   static CompletenessMetric? fromJson(Object? json) {
@@ -45,11 +45,7 @@ class CompletenessMetric {
 @immutable
 class ImageQualityMetric {
   /// Creates an image-quality block.
-  const ImageQualityMetric({
-    this.sampledPages,
-    this.medianWidthPx,
-    this.medianJpegQuality,
-  });
+  const new({this.sampledPages, this.medianWidthPx, this.medianJpegQuality});
 
   /// Parses `imageQuality`; null unless [json] is a map.
   static ImageQualityMetric? fromJson(Object? json) {
@@ -86,14 +82,15 @@ class ImageQualityMetric {
       other.medianJpegQuality == medianJpegQuality;
 
   @override
-  int get hashCode => Object.hash(sampledPages, medianWidthPx, medianJpegQuality);
+  int get hashCode =>
+      Object.hash(sampledPages, medianWidthPx, medianJpegQuality);
 }
 
 /// §5 `subsetOf`: a higher-ranked source that already has this one's titles.
 @immutable
 class SubsetOfMetric {
   /// Creates a subset block.
-  const SubsetOfMetric({required this.sourceId, this.overlap});
+  const new({required this.sourceId, this.overlap});
 
   /// Parses `subsetOf`; null unless [json] is a map with a `sourceId`.
   static SubsetOfMetric? fromJson(Object? json) {
@@ -127,7 +124,7 @@ class SubsetOfMetric {
 @immutable
 class AvailabilityMetric {
   /// Creates an availability block; null flags were not reported.
-  const AvailabilityMetric({this.native, this.mangayomiJs, this.keiyoushi});
+  const new({this.native, this.mangayomiJs, this.keiyoushi});
 
   /// Parses `availability`; null unless [json] is a map.
   static AvailabilityMetric? fromJson(Object? json) {

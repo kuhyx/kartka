@@ -30,12 +30,11 @@ void main() {
     },
   );
 
-  Glados(any.healthRecord).test('toJson is a fixed point after one parse', (
-    record,
-  ) {
-    final once = record.toJson();
-    expect(SourceHealthRecord.fromJson(once)!.toJson(), once);
-  });
+  Glados(any.healthRecord)
+      .test('toJson is a fixed point after one parse', (record) {
+        final once = record.toJson();
+        expect(SourceHealthRecord.fromJson(once)!.toJson(), once);
+      });
 
   Glados2(any.intInRange(0, 6), any.list(any.bool)).test(
     'tolerates any subset of optional fields missing',

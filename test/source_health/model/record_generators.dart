@@ -15,46 +15,37 @@ extension HealthGenerators on Any {
     _count,
     _ratio,
     choose(UptimeStatus.values),
-    (int? w, int? p, int? ok, double? r, UptimeStatus s) => UptimeMetric(
-      windowDays: w,
-      probes: p,
-      ok: ok,
-      ratio: r,
-      status: s,
-    ),
+    (w, p, ok, r, s) =>
+        UptimeMetric(windowDays: w, probes: p, ok: ok, ratio: r, status: s),
   );
 
-  Generator<LatencyMetric> get latency => combine2(
-    _count,
-    _count,
-    (int? a, int? b) => LatencyMetric(p50: a, p95: b),
-  );
+  Generator<LatencyMetric> get latency =>
+      combine2(_count, _count, (a, b) => LatencyMetric(p50: a, p95: b));
 
   Generator<BlockingMetric> get blocking => combine2(
     _ratio,
     list(choose(['cloudflare', 'captcha', '403', '429', 'other'])),
-    (double? r, List<String> k) => BlockingMetric(challengeRate: r, kinds: k),
+    (r, k) => BlockingMetric(challengeRate: r, kinds: k),
   );
 
   Generator<CoverageMetric> get coverage => combine3(
     _count,
     _count,
     _ratio,
-    (int? s, int? f, double? r) =>
-        CoverageMetric(referenceSize: s, found: f, ratio: r),
+    (s, f, r) => CoverageMetric(referenceSize: s, found: f, ratio: r),
   );
 
   Generator<CompletenessMetric> get completeness => combine2(
     _count,
     _ratio,
-    (int? s, double? r) => CompletenessMetric(sampled: s, medianRatio: r),
+    (s, r) => CompletenessMetric(sampled: s, medianRatio: r),
   );
 
   Generator<ImageQualityMetric> get imageQuality => combine3(
     _count,
     _count,
     _count,
-    (int? s, int? w, int? q) => ImageQualityMetric(
+    (s, w, q) => ImageQualityMetric(
       sampledPages: s,
       medianWidthPx: w,
       medianJpegQuality: q,
@@ -64,20 +55,20 @@ extension HealthGenerators on Any {
   Generator<SubsetOfMetric> get subsetOf => combine2(
     nonEmptyLetterOrDigits,
     _ratio,
-    (String id, double? o) => SubsetOfMetric(sourceId: id, overlap: o),
+    (id, o) => SubsetOfMetric(sourceId: id, overlap: o),
   );
 
   Generator<AvailabilityMetric> get availability => combine3(
     this.bool.nullable,
     this.bool.nullable,
     this.bool.nullable,
-    (bool? n, bool? j, bool? k) =>
-        AvailabilityMetric(native: n, mangayomiJs: j, keiyoushi: k),
+    (n, j, k) => AvailabilityMetric(native: n, mangayomiJs: j, keiyoushi: k),
   );
 
-  Generator<DateTime?> get _instant => intInRange(0, 4102444800000)
-      .map((ms) => DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true))
-      .nullable;
+  Generator<DateTime?> get _instant => intInRange(
+    0,
+    4102444800000,
+  ).map((ms) => DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true)).nullable;
 
   Generator<SourceHealthRecord> get _identity => combine5(
     nonEmptyLetterOrDigits,
@@ -85,14 +76,13 @@ extension HealthGenerators on Any {
     letterOrDigits,
     choose(['native', 'suwayomi', 'plugin', 'local', 'odd']),
     _instant,
-    (String id, String name, String lang, String origin, DateTime? at) =>
-        SourceHealthRecord(
-          id: id,
-          name: name.isEmpty ? id : name,
-          lang: lang,
-          origin: origin,
-          probedAt: at,
-        ),
+    (id, name, lang, origin, at) => SourceHealthRecord(
+      id: id,
+      name: name.isEmpty ? id : name,
+      lang: lang,
+      origin: origin,
+      probedAt: at,
+    ),
   );
 
   Generator<SourceHealthRecord> get healthRecord => combine10(
@@ -108,22 +98,22 @@ extension HealthGenerators on Any {
       _ratio,
       intInRange(1, 400).nullable,
       availability.nullable,
-      (double? s, int? r, AvailabilityMetric? a) => (s, r, a),
+      (s, r, a) => (s, r, a),
     ),
     combine2(
       choose(HealthVerdict.values),
       list(choose(['uptime<0.95', 'blocking', 'coverage<0.60', 'subset'])),
-      (HealthVerdict v, List<String> c) => (v, c),
+      (v, c) => (v, c),
     ),
     (
-      SourceHealthRecord base,
-      UptimeMetric? u,
-      LatencyMetric? l,
-      BlockingMetric? b,
-      CoverageMetric? c,
-      CompletenessMetric? cc,
-      ImageQualityMetric? iq,
-      SubsetOfMetric? so,
+      base,
+      u,
+      l,
+      b,
+      c,
+      cc,
+      iq,
+      so,
       (double?, int?, AvailabilityMetric?) ranking,
       (HealthVerdict, List<String>) verdict,
     ) => SourceHealthRecord(

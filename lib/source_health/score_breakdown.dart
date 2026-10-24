@@ -9,7 +9,7 @@ import 'package:kartka/source_health/thresholds.dart';
 /// One weighted part of the score.
 class ScorePart {
   /// Creates a part.
-  const ScorePart(this.label, this.weight, this.normalized);
+  const new(this.label, this.weight, this.normalized);
 
   /// Metric name.
   final String label;

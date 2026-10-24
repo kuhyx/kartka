@@ -11,7 +11,7 @@ import 'package:kartka/source_health/model/metrics.dart';
 @immutable
 class SourceHealthRecord {
   /// Creates a record.
-  const SourceHealthRecord({
+  const new({
     required this.id,
     required this.name,
     this.lang = '',

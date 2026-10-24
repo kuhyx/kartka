@@ -16,7 +16,8 @@ void main() {
       expect(HealthThresholds.subsetOverlap, 0.90);
       expect(HealthThresholds.uptimeProbesTarget, 28);
       expect(HealthThresholds.staleAfter, const Duration(days: 8));
-      final weights = HealthThresholds.weightCoverage +
+      const weights =
+          HealthThresholds.weightCoverage +
           HealthThresholds.weightCompleteness +
           HealthThresholds.weightUptime +
           HealthThresholds.weightImageQuality +
@@ -60,6 +61,19 @@ void main() {
       expect(words[2], contains('60 %'));
       expect(words[3], contains('another source'));
       expect(words[4], 'Other reason: z');
+    });
+
+    test('subset without an overlap figure quotes the threshold', () {
+      const r = SourceHealthRecord(
+        id: 'x',
+        name: 'x',
+        subsetOf: SubsetOfMetric(sourceId: 'mangadex'),
+        cutReasons: ['subset'],
+      );
+      expect(
+        explainCutReasons(r).single,
+        contains('at least 90 % of its titles are also on mangadex'),
+      );
     });
 
     test('blocking kinds read as words, unknown kinds verbatim', () {

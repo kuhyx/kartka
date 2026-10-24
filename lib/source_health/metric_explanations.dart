@@ -29,7 +29,7 @@ enum MetricStatus {
 /// One metric, explained.
 class MetricExplanation {
   /// Creates an explanation.
-  const MetricExplanation({
+  const new({
     required this.title,
     required this.value,
     required this.meaning,
@@ -73,7 +73,8 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
   MetricExplanation(
     title: 'Latency',
     value: latencyText(r.latency),
-    meaning: 'How long the source takes to answer: the median (p50) and the '
+    meaning:
+        'How long the source takes to answer: the median (p50) and the '
         'slowest 5 % (p95).',
     threshold:
         'Never cuts. ${_weight(HealthThresholds.weightLatency)}: full marks '
@@ -84,17 +85,22 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
   MetricExplanation(
     title: 'Blocking',
     value: blockingText(r.blocking),
-    meaning: 'Share of requests answered with a Cloudflare challenge, a '
+    meaning:
+        'Share of requests answered with a Cloudflare challenge, a '
         'captcha, 403 Forbidden or 429 Too Many Requests.',
     threshold:
         'Cut above ${pct(HealthThresholds.maxChallengeRate)}: Kartka never '
         'bypasses challenges, so any blocking cuts the source.',
-    status: _below(r.blocking?.challengeRate, HealthThresholds.maxChallengeRate),
+    status: _below(
+      r.blocking?.challengeRate,
+      HealthThresholds.maxChallengeRate,
+    ),
   ),
   MetricExplanation(
     title: 'Coverage',
     value: coverageText(r.coverage),
-    meaning: 'How many reference titles (your library backup plus the AniList '
+    meaning:
+        'How many reference titles (your library backup plus the AniList '
         'top 500) the source has.',
     threshold:
         'Cut below ${pct(HealthThresholds.minCoverageRatio)}. '
@@ -104,10 +110,10 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
   MetricExplanation(
     title: 'Chapter completeness',
     value: completenessText(r.completeness),
-    meaning: "Chapters on the source compared with AniList's chapter count, "
+    meaning:
+        "Chapters on the source compared with AniList's chapter count, "
         'median over sampled titles, capped at 100 %.',
-    threshold:
-        'Never cuts. ${_weight(HealthThresholds.weightCompleteness)}.',
+    threshold: 'Never cuts. ${_weight(HealthThresholds.weightCompleteness)}.',
     status: _info(r.completeness),
   ),
   MetricExplanation(
@@ -116,7 +122,8 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
         ? notMeasured
         : '${imageWidthText(r.imageQuality)} wide, JPEG '
               '${jpegQualityText(r.imageQuality)}',
-    meaning: 'Median page width and estimated JPEG quality over sampled '
+    meaning:
+        'Median page width and estimated JPEG quality over sampled '
         'pages. Wider and higher-quality pages read better.',
     threshold:
         'Never cuts. ${_weight(HealthThresholds.weightImageQuality)}: full '
@@ -129,7 +136,8 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
         ? (r.coverage == null ? notMeasured : 'no')
         : '${pctOrDash(r.subsetOf!.overlap)} overlap with '
               '${r.subsetOf!.sourceId}',
-    meaning: 'Whether a higher-ranked source with images at least as good '
+    meaning:
+        'Whether a higher-ranked source with images at least as good '
         'already has almost all of these titles.',
     threshold:
         'Cut when ${pct(HealthThresholds.subsetOverlap)} or more of its titles '
@@ -141,7 +149,8 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
   MetricExplanation(
     title: 'Available as',
     value: availabilityText(r.availability),
-    meaning: 'Which ways of reading this site exist: a native Kartka source, '
+    meaning:
+        'Which ways of reading this site exist: a native Kartka source, '
         'a converted Mangayomi JS plugin, or a Keiyoushi extension through '
         'Suwayomi.',
     threshold: 'Informational; never cuts and is not scored.',

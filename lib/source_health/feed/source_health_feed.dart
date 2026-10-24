@@ -18,7 +18,7 @@ abstract interface class SourceHealthFeed {
 List<SourceHealthRecord> parseHealthCollection(Object? json) {
   final map = asMap(json);
   final sources = map?['sources'];
-  final Iterable<Object?> entries = switch (json) {
+  final entries = switch (json) {
     _ when sources is List => sources,
     final List<Object?> list => list,
     _ => map?.values ?? const [],

@@ -5,8 +5,7 @@ import 'package:kartka/source_health/model/source_health_record.dart';
 /// (e.g. `tools/source_eval/out/latest.json`): tests, demos and offline runs.
 class FixtureSourceHealthFeed implements SourceHealthFeed {
   /// Creates a feed over decoded [json] in any [parseHealthCollection] shape.
-  FixtureSourceHealthFeed(Object? json)
-    : _records = parseHealthCollection(json);
+  new(Object? json) : _records = parseHealthCollection(json);
 
   final List<SourceHealthRecord> _records;
 

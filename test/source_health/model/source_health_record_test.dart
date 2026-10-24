@@ -24,7 +24,7 @@ void main() {
         ),
       );
       expect(r.latency, const LatencyMetric(p50: 420, p95: 1300));
-      expect(r.blocking, const BlockingMetric(challengeRate: 0, kinds: []));
+      expect(r.blocking, const BlockingMetric(challengeRate: 0));
       expect(
         r.coverage,
         const CoverageMetric(referenceSize: 650, found: 512, ratio: 0.788),
@@ -112,7 +112,7 @@ void main() {
       expect(r.probedAt, isNull);
       expect(r.uptime, isNull);
       expect(r.latency, const LatencyMetric(p95: 13));
-      expect(r.blocking, const BlockingMetric(kinds: []));
+      expect(r.blocking, const BlockingMetric());
       expect(r.subsetOf, isNull);
       expect(r.availability, const AvailabilityMetric(keiyoushi: false));
       expect(r.score, isNull);
@@ -121,8 +121,10 @@ void main() {
     });
 
     test('uptime status parses both wire values, missing = accruing', () {
-      expect(UptimeMetric.fromJson(const {'status': 'final'})!.status,
-          UptimeStatus.finalized);
+      expect(
+        UptimeMetric.fromJson(const {'status': 'final'})!.status,
+        UptimeStatus.finalized,
+      );
       expect(UptimeMetric.fromJson(const {})!.status, UptimeStatus.accruing);
       expect(UptimeStatus.finalized.wire, 'final');
       expect(UptimeStatus.accruing.wire, 'accruing');

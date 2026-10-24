@@ -41,7 +41,7 @@ enum HealthSort {
   /// Median JPEG quality.
   jpegQuality('JPEG quality', higherIsBetter: true);
 
-  const HealthSort(this.label, {required this.higherIsBetter});
+  new(this.label, {required this.higherIsBetter});
 
   /// Menu label.
   final String label;
@@ -69,7 +69,7 @@ enum HealthSort {
 @immutable
 class HealthQuery {
   /// Creates a query; empty [verdicts] and null [lang]/[origin] mean "all".
-  const HealthQuery({
+  const new({
     this.sort = HealthSort.rank,
     this.reversed = false,
     this.verdicts = const {},

@@ -26,28 +26,33 @@ void main() {
       final sorted = HealthQuery(sort: sort).apply(all);
       final keys = [for (final r in sorted) sort.keyOf(r)];
       final present = keys.whereType<Comparable<Object>>().toList();
-      expect(keys.sublist(present.length).every((k) => k == null), isTrue,
-          reason: '$sort puts nulls last');
+      expect(
+        keys.sublist(present.length).every((k) => k == null),
+        isTrue,
+        reason: '$sort puts nulls last',
+      );
       for (var i = 1; i < present.length; i++) {
         final c = present[i - 1].compareTo(present[i]);
-        expect(sort.higherIsBetter ? c >= 0 : c <= 0, isTrue,
-            reason: '$sort order at $i');
+        expect(
+          sort.higherIsBetter ? c >= 0 : c <= 0,
+          isTrue,
+          reason: '$sort order at $i',
+        );
       }
       expect(sort.label, isNotEmpty);
     }
   });
 
   test('reversed flips the order but keeps missing values last', () {
-    final q = const HealthQuery(sort: HealthSort.coverage).copyWith(
-      reversed: true,
-    );
+    final q = const HealthQuery(sort: HealthSort.coverage)
+        .copyWith(reversed: true);
     final sorted = ids(q.apply(all));
     expect(sorted.first, 'suwayomi:1111');
     expect(sorted.last, 'suwayomi:7034581279101437511');
   });
 
   test('ties break by name so the order is stable', () {
-    final q = const HealthQuery(sort: HealthSort.uptime);
+    const q = HealthQuery(sort: HealthSort.uptime);
     expect(ids(q.apply(all)).take(3), [
       'local',
       'mangadex',
@@ -56,10 +61,10 @@ void main() {
   });
 
   test('filters by verdict, lang and origin', () {
-    expect(
-      ids(const HealthQuery(verdicts: {HealthVerdict.keep}).apply(all)),
-      ['mangadex', 'local'],
-    );
+    expect(ids(const HealthQuery(verdicts: {HealthVerdict.keep}).apply(all)), [
+      'mangadex',
+      'local',
+    ]);
     expect(ids(const HealthQuery(lang: 'pl').apply(all)), [
       'suwayomi:7034581279101437511',
     ]);
