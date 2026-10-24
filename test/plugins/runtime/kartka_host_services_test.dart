@@ -6,17 +6,17 @@ import 'support.dart';
 
 void main() {
   late FakeHttp http;
-  late MemoryKv kv;
+  late MemoryKeyValueStore kv;
   late List<String> logs;
   late KartkaHostServices s;
 
   setUp(() {
     http = FakeHttp();
-    kv = MemoryKv();
+    kv = MemoryKeyValueStore();
     logs = [];
     s = KartkaHostServices(
       pluginId: 'demo',
-      http: http,
+      http: http.client,
       store: PluginStore(kv),
       onLog: (id, m) => logs.add('$id: $m'),
     );
@@ -54,10 +54,10 @@ void main() {
     expect(logs, ['demo: hello']);
     await s.prefsSet('k', 'v');
     expect(await s.prefsGet('k'), 'v');
-    expect(kv.data.keys.single, 'plugins.prefs.demo.k');
+    expect((await kv.entries()).keys.single, 'plugins.prefs.demo.k');
     KartkaHostServices(
       pluginId: 'o',
-      http: http,
+      http: http.client,
       store: PluginStore(kv),
     ).log('x');
   });

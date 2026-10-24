@@ -41,11 +41,9 @@ self.XMLHttpRequest = function () {};
   test('routes onmessage into the prelude and answers calls', () {
     boot('function popular(p) { return p + 1; }');
     posted.clear();
+    const call = '{"t":"call","id":1,"method":"popular","args":[41]}';
     js
-      ..eval(
-        'self.onmessage({data: JSON.stringify('
-        '{t:"call", id:1, method:"popular", args:[41]})})',
-      )
+      ..eval('self.onmessage({data: \'$call\'})')
       ..runPendingAsyncTasks();
     expect(posted.single, '{"t":"result","id":1,"ok":true,"value":42}');
   });

@@ -4,9 +4,9 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/plugins/runtime/engine.dart';
 import 'package:kartka/plugins/runtime/engine_default.dart';
+import 'package:kartka/plugins/runtime/engine_interpreter.dart';
 import 'package:kartka/plugins/runtime/engine_quickjs.dart';
 import 'package:kartka/plugins/runtime/engine_unsupported.dart' as unsupported;
-import 'package:kartka/plugins/runtime/engine_interpreter.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
 import 'package:kartka/plugins/runtime/plugin_session.dart';
 
@@ -14,7 +14,7 @@ import 'support.dart';
 
 /// Engine that plays back a script of JS-to-Dart messages per call.
 class ScriptedEngine implements JsEngine {
-  ScriptedEngine(this.onCall);
+  new(this.onCall);
   final void Function(Map<String, Object?> call, EngineMessageSink send) onCall;
   late EngineMessageSink sink;
   final List<String> posted = [];
@@ -107,7 +107,9 @@ void main() {
 
   test('host replies that throw come back as ok:false', () async {
     final e = ScriptedEngine((call, send) {
-      send(jsonEncode({'t': 'host', 'id': 5, 'op': 'nope', 'args': []}));
+      send(
+        jsonEncode({'t': 'host', 'id': 5, 'op': 'nope', 'args': <Object?>[]}),
+      );
     });
     final s = make(e);
     unawaited(

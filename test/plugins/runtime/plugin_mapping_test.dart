@@ -97,10 +97,13 @@ void main() {
       ),
     );
     bad(() => m.page(PluginMethod.search, 'x'), PluginMethod.search);
-    bad(() => m.page(PluginMethod.popular, {'items': 3}), PluginMethod.popular);
+    bad(
+      () => m.page(PluginMethod.popular, <String, Object?>{'items': 3}),
+      PluginMethod.popular,
+    );
     bad(
       () => m.page(PluginMethod.popular, {
-        'items': [{}],
+        'items': [<String, Object?>{}],
       }),
       PluginMethod.popular,
     );

@@ -20,12 +20,12 @@ void main() {
 
   setUp(() {
     http = FakeHttp();
-    store = PluginStore(MemoryKv());
-    manager = PluginManager(http: http, store: store);
+    store = PluginStore(MemoryKeyValueStore());
+    manager = PluginManager(http: http.client, store: store);
     provider = PluginSourceProvider(
       registrar: manager,
       services: (id) =>
-          KartkaHostServices(pluginId: id, http: http, store: store),
+          KartkaHostServices(pluginId: id, http: http.client, store: store),
       engineFactory: InterpreterEngine.new,
     );
     emissions = [];
@@ -104,7 +104,7 @@ void main() {
         throwsA(isA<PluginException>().having((e) => e.pluginId, 'id', 'p')),
       );
       await manager.installLocal(
-        PluginManifest(
+        const PluginManifest(
           id: 'p',
           name: 'P',
           version: '2',

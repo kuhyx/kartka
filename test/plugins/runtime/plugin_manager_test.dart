@@ -9,15 +9,15 @@ import 'support.dart';
 void main() {
   const repo = 'https://repo.test/index.json';
   late FakeHttp http;
-  late MemoryKv kv;
+  late MemoryKeyValueStore kv;
   late PluginStore store;
   late PluginManager m;
 
   setUp(() {
     http = FakeHttp();
-    kv = MemoryKv();
+    kv = MemoryKeyValueStore();
     store = PluginStore(kv);
-    m = PluginManager(http: http, store: store);
+    m = PluginManager(http: http.client, store: store);
   });
 
   test('addRepo validates the index, dedupes and persists', () async {
@@ -65,8 +65,8 @@ void main() {
       r = await m.available();
       expect(r.plugins.first.availability, PluginAvailability.installed);
       await store.put(
-        InstalledPlugin(
-          manifest: const PluginManifest(
+        const InstalledPlugin(
+          manifest: PluginManifest(
             id: 'demo',
             name: 'Demo',
             version: '0.9.0',
@@ -126,7 +126,7 @@ void main() {
     http.overrides[url] = (status: 200, body: 'x' * (kMaxPluginBytes + 1));
     await expectLater(m.install(entry), throwsA(isA<PluginException>()));
     http.overrides.clear();
-    http.failWith = StateError('offline');
+    http.failWith = Exception('offline');
     await expectLater(
       m.install(entry),
       throwsA(
@@ -169,12 +169,15 @@ void main() {
         ['conv'],
         <String>[],
       ]);
-      expect(kv.data.keys.where((k) => k.contains('conv')), isEmpty);
+      expect(
+        (await kv.entries()).keys.where((k) => k.contains('conv')),
+        isEmpty,
+      );
     },
   );
 
   test('watchInstalled surfaces store errors on the stream', () async {
-    kv.data['plugins.installed.x'] = 'not json';
+    await kv.set('plugins.installed.x', 'not json');
     await expectLater(m.watchInstalled(), emitsError(isA<FormatException>()));
   });
 }
