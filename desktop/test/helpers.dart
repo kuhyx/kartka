@@ -14,7 +14,12 @@ class Harness {
   new _(this.dir, this.server);
 
   /// Starts a wrapper on an ephemeral port with a tiny web build.
-  static Future<Harness> start() async {
+  /// [upstream] replaces the proxy's HttpClient; [log] captures the
+  /// wrapper's error log instead of stderr.
+  static Future<Harness> start({
+    HttpClient? upstream,
+    void Function(String line)? log,
+  }) async {
     final dir = Directory.systemTemp.createTempSync('kartka_desktop');
     final web = Directory('${dir.path}/web')..createSync();
     File('${web.path}/index.html').writeAsStringSync('<title>Kartka</title>');
@@ -23,6 +28,8 @@ class Harness {
       webRoot: web.path,
       filesDir: '${dir.path}/files',
       secretsFile: '${dir.path}/config/kartka/secrets.json',
+      upstream: upstream,
+      log: log,
     );
     await server.start(0);
     return Harness._(dir, server);
