@@ -34,6 +34,7 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   `hlc: {<field>: "<crdt_sync Hlc>"}`, merged as per-field LWW on Hlc (device id
   breaks ties). `membership/<h>/<cat>` and `read/<h>/<c>` are
   `{member|read: bool, hlc: "<Hlc>"}`, so every LWW node uses Hlc and no raw ms.
+  `settings/<key>` (§16) is the same whole-node register on its `hlc`.
   `updatedAt` = max field Hlc millis. `progress/` and `trackers/` stay
   max-merge (a null chapterNumber sorts lowest). Change detection: tiny
   `revs/<deviceId>: "<counter>"`, polled every 5 s **only while the app is in
@@ -164,3 +165,38 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   Cancel and delete need `registry.maybe<DownloadService>()`.
 - **Old MangaDex id `3091964041986261235`** (SY "MangaDex (Revived)") maps
   to native `mangadex` with URLs unchanged, like the current per-language ids.
+
+## 16. Synced settings (2026-10-24, kuhy's decision)
+
+- **Synced**: `suwayomi.serverUrl`, `suwayomi.username`, `suwayomi.password`,
+  `mangadex.settings`, `reader.settings` (global default mode, tap zones,
+  prefetch), `plugins.repos` (native and Mangayomi repos) and
+  `downloads/auto_new_chapters`. The catalogue is
+  `lib/sync/settings/settings_catalog.dart`, and a peer's node for any
+  other key is ignored. **Device-local**: the download queue, index and
+  baselines, per-manga reader modes, installed plugins and their prefs,
+  tracker tokens, the sync credentials, and the wrapper port.
+- **Port**: `SettingsSync` (lib/core/settings/) is supplied by sync as a
+  service. Features hand their stores `syncedKv(env)` / `syncedSecrets(env)`
+  (lib/app/settings_stores.dart), a `SyncedKeyValueStore` that writes
+  locally and then reports the write. The store's `remoteChanges` are the
+  keys a peer replaced. Those keys are already written to the platform
+  store, and the Suwayomi and MangaDex stores reload on them. A remote
+  auto-download "on" clears the baselines, just as a local one does.
+- **Nodes** `settings/<rtdbKey(key)>`: a plain setting is `{key, value, hlc}`,
+  a secret is `{key, enc: {v: 1, kdf: "pbkdf2-hmac-sha256", iter, salt,
+  nonce, ct}, hlc}`, and a removal is `{key, hlc}`. The merge is whole-node
+  LWW on the Hlc, inside the normal push, change feed and pull. Saving an
+  unchanged value pushes nothing.
+- **Secrets** (everything in `KartkaPlatform.secrets`) are sealed on the
+  device. The cipher is AES-256-GCM (with the key as AAD), under a key
+  derived from the sync account password by PBKDF2-HMAC-SHA256 with
+  ≥ 200k rounds. Salt (16 B) and nonce (12 B) are random per record. The
+  password is the one crdt_sync_flutter keeps in its keystore account
+  (`storedAccount()`); no second copy exists. RTDB and the persisted shadow
+  only ever hold ciphertext.
+- **No password, or the wrong one** (a Google or seeded sign-in stores `''`):
+  secrets are neither uploaded nor applied, and the local value stays. The
+  Suwayomi screen then shows "Couldn't decrypt synced Suwayomi password",
+  or "... not synced: sign in to sync with a password". The node stays
+  unapplied, so the next start tries again.

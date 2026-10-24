@@ -13,6 +13,8 @@ const Map<String, (int, Merge)> kSyncNamespaces = {
   'progress': (1, mergeProgress),
   'read': (2, mergeRegister),
   'trackers': (2, mergeTracker),
+  // `{key, value|enc, hlc}`: whole-node LWW per setting (§16).
+  'settings': (1, mergeRegister),
 };
 
 /// One node that changed because of a remote merge.

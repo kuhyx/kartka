@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/registry.dart';
+import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/plugins/runtime/engine.dart';
 import 'package:kartka/plugins/runtime/engine_default.dart';
 import 'package:kartka/plugins/runtime/kartka_host_services.dart';
@@ -33,7 +34,8 @@ KartkaFeature pluginsFeature(
       ], kHtmlParserLicenses),
     ),
   );
-  final store = PluginStore(env.platform.kv);
+  // The repo list syncs (§16); installed plugins and prefs stay local.
+  final store = PluginStore(syncedKv(env));
   final manager = PluginManager(
     http: env.platform.http,
     store: store,

@@ -10,8 +10,10 @@ import 'package:kartka/sources/mangadex/mangadex_settings.dart';
 /// readers that need the saved value await `ready` first.
 class MangadexSettingsStore extends ValueNotifier<MangadexSettings> {
   /// Creates the store and starts loading from the given [KeyValueStore].
-  new(this._kv) : super(MangadexSettings.defaults) {
+  /// [reloadOn] carries synced keys a peer changed; [storageKey] reloads.
+  new(this._kv, {Stream<String>? reloadOn}) : super(MangadexSettings.defaults) {
     ready = _load();
+    reloadOn?.where((k) => k == storageKey).listen((_) => _load());
   }
 
   /// KeyValueStore key holding the JSON.

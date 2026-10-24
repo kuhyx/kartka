@@ -69,6 +69,11 @@ class SyncRuntime {
   /// The engine, started on first read.
   late final Future<SyncEngine> engine = _start();
 
+  final _started = Completer<SyncEngine>();
+
+  /// Completes once something has started [engine]; never starts it.
+  Future<SyncEngine> get started => _started.future;
+
   /// The shared, cached transport; null while signed out.
   Future<RtdbTransport?> transport() async =>
       _transport ??= await openTransport();
@@ -90,6 +95,7 @@ class SyncRuntime {
     if (startScheduler) {
       scheduler = SyncScheduler(e.poll, onPause: e.flush)..attach();
     }
+    _started.complete(e);
     return e;
   }
 

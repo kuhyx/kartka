@@ -20,8 +20,14 @@ class AutoDownloader {
     required this.library,
     required this.findSource,
     required this.enqueue,
+    Stream<String>? remoteChanges,
     DateTime Function()? now,
-  }) : _now = now ?? DateTime.now;
+  }) : _now = now ?? DateTime.now {
+    // Turned on from another device: the same fresh start as [setEnabled].
+    remoteChanges?.where((k) => k == autoDownloadKvKey).listen((_) async {
+      if (await enabled()) await _forgetBaselines();
+    });
+  }
 
   /// Setting and known-chapter storage.
   final KeyValueStore kv;
@@ -43,13 +49,15 @@ class AutoDownloader {
   /// Turns the setting on or off. Turning it on forgets the old baselines,
   /// so chapters released while it was off are not downloaded as a backlog.
   Future<void> setEnabled({required bool enabled}) async {
-    if (enabled) {
-      final known = await kv.entries(prefix: knownChaptersKvPrefix);
-      for (final key in known.keys) {
-        await kv.remove(key);
-      }
-    }
+    if (enabled) await _forgetBaselines();
     await kv.set(autoDownloadKvKey, '$enabled');
+  }
+
+  Future<void> _forgetBaselines() async {
+    final known = await kv.entries(prefix: knownChaptersKvPrefix);
+    for (final key in known.keys) {
+      await kv.remove(key);
+    }
   }
 
   /// Checks every library manga once; returns how many chapters were queued.

@@ -64,6 +64,7 @@ edit each other's files.
 | `progress/<mangaKeyHash>` | `{chapterNumber, chapterUrl, page, readAt}` | max(chapterNumber, page); never decreases |
 | `trackers/<mangaKeyHash>/<service>` | `{remoteId, lastPushedChapter}` | max |
 | `source_health/<sourceIdHash>` | §5 record, written by the evaluator only | evaluator wins |
+| `settings/<key>` | `{key, value}` or `{key, enc}`, plus `hlc` (§16) | LWW per key |
 
 `mangaKeyHash` = lowercase hex SHA-1 of `MangaKey` (RTDB-safe key).
 Read chapters set = derived from progress + explicit per-chapter marks in

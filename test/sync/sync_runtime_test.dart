@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:crdt_sync_flutter/testing/fake_secure_storage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,7 +27,12 @@ void main() {
       startScheduler: false,
     );
     expect(opened, 0);
+    var started = false;
+    unawaited(runtime.started.then((_) => started = true));
+    await pumpEventQueue();
+    expect(started, isFalse, reason: 'waiting on start never starts it');
     final engine = await runtime.engine;
+    expect(await runtime.started, same(engine));
     expect(engine.deviceId, 'dev-a');
     expect(await runtime.transport(), same(db));
     expect(await runtime.transport(), same(db));

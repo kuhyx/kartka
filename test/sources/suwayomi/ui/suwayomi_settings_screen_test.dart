@@ -26,6 +26,7 @@ void main() {
   Future<void> pump(
     WidgetTester tester, {
     Future<String> Function(SuwayomiSettings)? test,
+    Stream<List<String>>? problems,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -39,6 +40,7 @@ void main() {
                 return 'Suwayomi-Server v2.4.2366';
               },
           onOpenExtensions: () => opened++,
+          syncProblems: problems,
         ),
       ),
     );
@@ -126,5 +128,16 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
     expect(find.byType(SuwayomiSettingsScreen), findsNothing);
+  });
+
+  testWidgets('shows settings sync problems above the fields', (t) async {
+    await pump(
+      t,
+      problems: Stream.value(["Couldn't decrypt synced Suwayomi password"]),
+    );
+    expect(
+      find.text("Couldn't decrypt synced Suwayomi password"),
+      findsOneWidget,
+    );
   });
 }

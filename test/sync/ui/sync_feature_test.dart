@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/library/repository_decorator.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/sync/rtdb_reader.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
+import 'package:kartka/sync/settings/synced_settings.dart';
 import 'package:kartka/sync/sync_feature.dart';
 import 'package:kartka/sync/sync_runtime.dart';
 import 'package:kartka/sync/ui/sync_account_screen.dart';
@@ -38,11 +40,28 @@ Widget _app(KartkaFeature f) => MaterialApp.router(
 );
 
 void main() {
+  test(
+    'a synced setting starts the engine, signed out it stays local',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      installFakeSecureStorage();
+      final kv = MemoryKeyValueStore();
+      final registry = KartkaRegistry.build(memoryPlatform(kv: kv), [
+        syncFeature,
+      ]);
+      final settings = registry.maybe<SettingsSync>()! as SyncedSettings;
+      await settings.changed('reader.settings', '{}', SettingsVault.plain);
+      await settings.settled;
+      expect((await kv.entries(prefix: 'sync.')).keys, contains('sync.dirty'));
+    },
+  );
+
   test('the feature registers its services without starting sync', () {
     final registry = KartkaRegistry.build(memoryPlatform(), [syncFeature]);
     expect(registry.maybe<RepositoryDecorator>(), isNotNull);
     expect(registry.maybe<BindingStoreDecorator>(), isNotNull);
     expect(registry.maybe<RtdbReader>(), isNotNull);
+    expect(registry.maybe<SettingsSync>(), isA<SyncedSettings>());
     expect(registry.features.single.id, 'sync');
   });
 

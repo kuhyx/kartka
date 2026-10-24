@@ -31,6 +31,8 @@ dependencies:
       path: crdt_sync_flutter
   # SHA-1 for mangaKeyHash (RTDB-safe keys, DOCS-contracts §4).
   crypto: 3.0.7
+  # AES-GCM + PBKDF2 for synced secrets (lib/sync/settings/); WebCrypto on web.
+  cryptography: 2.9.0
   # The shared palette, scales and theme builders. Owns the tokens: there is
   # deliberately no local theme file to drift from the frozen table.
   design_system:

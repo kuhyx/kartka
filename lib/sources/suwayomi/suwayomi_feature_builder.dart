@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_settings.dart';
@@ -23,9 +24,13 @@ const suwayomiExtensionsRoute = '/suwayomi/extensions';
 /// [titleOf] finds the library title of a manga the server has not seen.
 KartkaFeature buildSuwayomiFeature(KartkaEnv env, {TitleLookup? titleOf}) {
   final platform = env.platform;
+  // Synced to the user's other devices; the credentials encrypted (§16).
+  final kv = syncedKv(env);
+  final secrets = syncedSecrets(env);
   final store = SuwayomiSettingsStore(
-    kv: platform.kv,
-    secrets: platform.secrets,
+    kv: kv,
+    secrets: secrets,
+    reloadOn: kv.remoteChanges,
   );
   // Load now (kv + secrets only, no network) so image headers and the
   // extensions screen work before Browse ever watches the sources.
@@ -63,6 +68,12 @@ KartkaFeature buildSuwayomiFeature(KartkaEnv env, {TitleLookup? titleOf}) {
             settings: () => s,
           ).testConnection(),
           onOpenExtensions: () => context.push(suwayomiExtensionsRoute),
+          syncProblems: secrets.watchProblems().map(
+            (p) => [
+              for (final MapEntry(:key, :value) in p.entries)
+                if (SuwayomiSettingsStore.keys.contains(key)) value,
+            ],
+          ),
         ),
       ),
       GoRoute(

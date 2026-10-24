@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/downloads/auto/auto_downloader.dart';
@@ -43,8 +44,11 @@ KartkaFeature downloadsFeature(KartkaEnv env) {
   Stream<List<LibraryEntry>> library() =>
       env.registry.maybe<LibraryRepositories>()?.library.watch() ??
       Stream.value(const []);
+  // The toggle syncs (§16); queue, index and baselines stay local.
+  final kv = syncedKv(env);
   auto = AutoDownloader(
-    kv: p.kv,
+    kv: kv,
+    remoteChanges: kv.remoteChanges,
     library: library,
     findSource: sources.find,
     enqueue: service.enqueue,

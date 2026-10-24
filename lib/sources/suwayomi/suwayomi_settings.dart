@@ -66,8 +66,16 @@ class SuwayomiSettings {
 /// Persists [SuwayomiSettings]: the URL in plain [kv], the credentials only
 /// in [secrets] (Android Keystore / wrapper file at 0600).
 class SuwayomiSettingsStore {
-  /// Creates a store over [kv] and [secrets].
-  new({required this.kv, required this.secrets});
+  /// Creates a store over [kv] and [secrets]. Every key on [reloadOn] (a
+  /// synced setting a peer changed) reloads the settings and notifies.
+  new({required this.kv, required this.secrets, Stream<String>? reloadOn}) {
+    reloadOn?.where(keys.contains).listen((_) async {
+      _changes.add(await load());
+    });
+  }
+
+  /// Every key the store reads.
+  static const Set<String> keys = {_urlKey, _userKey, _passKey};
 
   /// Plain settings storage.
   final KeyValueStore kv;

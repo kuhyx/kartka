@@ -19,6 +19,7 @@ import 'package:kartka/core/repositories/download_repository.dart';
 import 'package:kartka/core/repositories/library_repository.dart';
 import 'package:kartka/core/repositories/progress_repository.dart';
 import 'package:kartka/core/repositories/repositories.dart';
+import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
 

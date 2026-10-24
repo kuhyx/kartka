@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/platform/image_headers.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
@@ -13,6 +14,21 @@ import 'package:kartka/sources/suwayomi/ui/extensions_screen.dart';
 import 'fakes.dart';
 
 const _url = 'http://127.0.0.1:4599/';
+
+/// Sync with one Suwayomi problem and one for another feature.
+class _Sync implements SettingsSync {
+  @override
+  Future<void> changed(String key, String? value, SettingsVault vault) async {}
+
+  @override
+  Stream<String> get remoteChanges => const Stream.empty();
+
+  @override
+  Stream<Map<String, String>> watchProblems() => Stream.value({
+    'suwayomi.password': "Couldn't decrypt synced Suwayomi password",
+    'reader.settings': 'not mine',
+  });
+}
 
 void main() {
   final asked = <MangaKey>[];
@@ -42,6 +58,7 @@ void main() {
           return 'Sousou no Frieren';
         },
       ),
+      (_) => KartkaFeature(id: 'sync', services: [_Sync()]),
     ]);
   }
 
@@ -92,6 +109,11 @@ void main() {
     await tester.tap(find.text('Suwayomi server'));
     await tester.pumpAndSettle();
     expect(find.text(_url), findsOneWidget);
+    expect(
+      find.text("Couldn't decrypt synced Suwayomi password"),
+      findsOneWidget,
+    );
+    expect(find.text('not mine'), findsNothing);
     await tester.tap(find.text('Test connection'));
     await tester.pumpAndSettle();
     expect(find.text('Connected: Suwayomi-Server v2.4.2366'), findsOneWidget);

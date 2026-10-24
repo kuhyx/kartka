@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/routes.dart';
+import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
@@ -31,7 +32,7 @@ KartkaFeature readerFeature(KartkaEnv env, {ReaderSystem? system}) =>
         ),
       ],
       settingsTiles: [
-        (context) => ReaderSettingsTile(prefs: ReaderPrefs(env.platform.kv)),
+        (context) => ReaderSettingsTile(prefs: ReaderPrefs(syncedKv(env))),
       ],
     );
 
@@ -49,7 +50,8 @@ ReaderDeps readerDeps(KartkaEnv env) {
     findSource: (id) => findSource(registry.all<SourceProvider>(), id),
     progress: registry.maybe<LibraryRepositories>()?.progress,
     downloads: registry.maybe<DownloadRepository>(),
-    prefs: ReaderPrefs(platform.kv),
+    // The global settings sync (§16); per-manga modes are never listed.
+    prefs: ReaderPrefs(syncedKv(env)),
     loadImage: images.load,
   );
 }

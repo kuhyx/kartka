@@ -13,6 +13,7 @@ class SuwayomiSettingsScreen extends StatefulWidget {
     required this.store,
     required this.testConnection,
     required this.onOpenExtensions,
+    this.syncProblems,
     super.key,
   });
 
@@ -24,6 +25,10 @@ class SuwayomiSettingsScreen extends StatefulWidget {
 
   /// Opens the extensions screen.
   final VoidCallback onOpenExtensions;
+
+  /// Settings sync problems for these fields, e.g. a synced password this
+  /// device could not decrypt.
+  final Stream<List<String>>? syncProblems;
 
   @override
   State<SuwayomiSettingsScreen> createState() => _SettingsState();
@@ -124,6 +129,26 @@ class _SettingsState extends State<SuwayomiSettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  StreamBuilder<List<String>>(
+                    stream: widget.syncProblems,
+                    builder: (context, snap) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (final problem in snap.data ?? const <String>[])
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.md,
+                            ),
+                            child: Text(
+                              problem,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                   _field(_url, 'Server URL', keyboard: TextInputType.url),
                   _field(_user, 'Username'),
                   _field(_pass, 'Password', secret: true, last: true),
