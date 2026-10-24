@@ -18,6 +18,18 @@ void main() {
       const m = MangaSummary(sourceId: 's', url: 'u', title: 't');
       expect(m.key, 's|u');
     });
+    Glados2(any.text, any.text).test('splitMangaKey inverts mangaKeyOf', (
+      source,
+      url,
+    ) {
+      // Source ids never contain '|' (DOCS-contracts §1); URLs may.
+      final id = source.replaceAll('|', '');
+      expect(splitMangaKey(mangaKeyOf(id, url)), (id, url));
+    });
+    test('splitMangaKey splits on the first bar and rejects bare strings', () {
+      expect(splitMangaKey('local|a|b'), ('local', 'a|b'));
+      expect(() => splitMangaKey('nobar'), throwsFormatException);
+    });
     test('mangaKeyHash is lowercase hex SHA-1 of UTF-8', () {
       // printf 'abc' | sha1sum
       expect(mangaKeyHash('abc'), 'a9993e364706816aba3e25717850c26c9cd0d89d');

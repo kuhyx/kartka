@@ -8,6 +8,10 @@ abstract interface class DownloadRepository {
   /// Download state of one chapter; [DownloadState.none] when not queued.
   Stream<DownloadState> watch(MangaKey key, String chapterUrl);
 
+  /// Chapters of [key] that are fully downloaded, exactly as enqueued,
+  /// newest first.
+  Future<List<ChapterInfo>> downloadedChapters(MangaKey key);
+
   /// The stored pages (`kartka-blob://` URLs, §11), or `null` when the
   /// chapter is not fully downloaded.
   Future<List<PageRef>?> offlinePages(MangaKey key, String chapterUrl);

@@ -81,17 +81,20 @@ class FakeFilePicker implements FilePicker {
 
 /// [OAuthRedirect] that answers each authorization with a callback.
 class FakeOAuthRedirect implements OAuthRedirect {
-  /// Creates the fake; the default echoes the bare [redirectUri].
-  new([Uri Function(Uri authorizationUrl)? respond])
-    : _respond = respond ?? ((_) => Uri.parse('kartka://oauth'));
+  /// Creates the fake for [redirectUri] (default `kartka://oauth`; pass
+  /// `http://127.0.0.1:47391/oauth` to test the web flow). The default
+  /// response echoes the bare redirect URI.
+  new([Uri Function(Uri authorizationUrl)? respond, Uri? redirectUri])
+    : redirectUri = redirectUri ?? Uri.parse('kartka://oauth'),
+      _respond = respond;
 
-  final Uri Function(Uri authorizationUrl) _respond;
+  final Uri Function(Uri authorizationUrl)? _respond;
 
   /// Every authorization URL opened, in order.
   final List<Uri> authorized = [];
 
   @override
-  Uri get redirectUri => Uri.parse('kartka://oauth');
+  final Uri redirectUri;
 
   @override
   Future<Uri> authorize(
@@ -99,6 +102,6 @@ class FakeOAuthRedirect implements OAuthRedirect {
     Duration timeout = const Duration(minutes: 5),
   }) async {
     authorized.add(authorizationUrl);
-    return _respond(authorizationUrl);
+    return _respond?.call(authorizationUrl) ?? redirectUri;
   }
 }

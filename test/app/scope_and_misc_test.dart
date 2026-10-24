@@ -50,6 +50,12 @@ void main() {
   test('FakeOAuthRedirect defaults to the bare redirect', () async {
     final back = await FakeOAuthRedirect().authorize(Uri.parse('https://a/'));
     expect(back, Uri.parse('kartka://oauth'));
+    final web = FakeOAuthRedirect(
+      null,
+      Uri.parse('http://127.0.0.1:47391/oauth'),
+    );
+    expect(web.redirectUri.port, 47391);
+    expect(await web.authorize(Uri.parse('https://a/')), web.redirectUri);
     // A runtime (non-const) instance, so the constructor itself runs.
     final cancelled = [OAuthCancelled.new][0]();
     expect(cancelled, isA<Exception>());
