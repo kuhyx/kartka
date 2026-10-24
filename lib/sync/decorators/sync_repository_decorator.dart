@@ -15,7 +15,7 @@ class SyncRepositoryDecorator implements RepositoryDecorator {
   /// Creates the decorator. [engine] completes once the engine has started
   /// (device id and persisted shadow load asynchronously), so repos can be
   /// handed out synchronously before that.
-  SyncRepositoryDecorator(this.engine);
+  new(this.engine);
 
   /// The engine, once started.
   final Future<SyncEngine> engine;

@@ -75,7 +75,10 @@ void main() {
     await a.write('library/h1', _title('New', a.tick()));
     // Another device overwrote the whole node with an older copy.
     await db.patch({
-      'library/h1': _title('Old', Hlc.fromStr('2000-01-01T00:00:00.000Z-0000-x')),
+      'library/h1': _title(
+        'Old',
+        Hlc.fromStr('2000-01-01T00:00:00.000Z-0000-x'),
+      ),
       'revs/dev-x': '7',
     });
     await a.poll();
@@ -126,9 +129,11 @@ void main() {
 
   test('ticks stay ahead of every clock seen from peers', () async {
     final clock = TestClock();
-    final a = await engineFor('dev-a', db, clock: TestClock()..advance(
-      const Duration(days: 1),
-    ));
+    final a = await engineFor(
+      'dev-a',
+      db,
+      clock: TestClock()..advance(const Duration(days: 1)),
+    );
     final b = await engineFor('dev-b', db, clock: clock);
     final future = a.tick();
     await a.write('library/h1', _title('One', future));

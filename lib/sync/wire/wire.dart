@@ -125,8 +125,12 @@ Category? categoryFromNode(String path, Node n) {
 
 /// The progress in a `progress/` node, or null when malformed.
 ReadingProgress? progressFromNode(Node n) {
-  final (key, url, number, page) =
-      (n['key'], n['chapterUrl'], n['chapterNumber'], n['page']);
+  final (key, url, number, page) = (
+    n['key'],
+    n['chapterUrl'],
+    n['chapterNumber'],
+    n['page'],
+  );
   final readAt = DateTime.tryParse('${n['readAt']}');
   // A hand-edited or foreign node is skipped rather than breaking the tick.
   if (key is! String || url is! String || number is! num || page is! num) {

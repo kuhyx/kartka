@@ -14,8 +14,8 @@ import 'package:kartka/sync/wire/wire.dart';
 class SyncedCategoryRepository
     with RemoteListener
     implements CategoryRepository {
-  /// Wraps [inner]; remote changes from [engine] are applied to it.
-  SyncedCategoryRepository(this._inner, Future<SyncEngine> engine) {
+  /// Wraps `inner`; remote changes from `engine` are applied to it.
+  new(this._inner, Future<SyncEngine> engine) {
     listen(engine, {'categories', 'membership'});
   }
 
@@ -31,6 +31,10 @@ class SyncedCategoryRepository
   @override
   Future<void> upsert(Category c) async {
     final engine = await this.engine;
+    if (engine == null) {
+      await _inner.upsert(c);
+      return;
+    }
     final tick = engine.tick();
     await _inner.upsert(_restamp(c, localStamp(tick)));
     final path = categoryPath(c.id);
@@ -47,11 +51,11 @@ class SyncedCategoryRepository
     MangaKey key,
     String categoryId,
     // The contract's positional bool (§14).
-    // ignore: avoid_positional_boolean_parameters
     bool member,
   ) async {
     final engine = await this.engine;
     await _inner.setMembership(key, categoryId, member);
+    if (engine == null) return;
     await engine.write(membershipPath(key, categoryId), {
       'member': member,
       kHlcField: engine.tick().toStr(),
@@ -65,7 +69,8 @@ class SyncedCategoryRepository
     if (segments.first == 'categories') {
       final c = categoryFromNode(change.path, change.node);
       if (c == null) return;
-      return _inner.upsert(_restamp(c, localStamp(engine.tick())));
+      await _inner.upsert(_restamp(c, localStamp(engine.tick())));
+      return;
     }
     final (key, member) = (change.node['key'], change.node['member']);
     if (key is! String || member is! bool) return;
