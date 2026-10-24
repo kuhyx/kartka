@@ -7,9 +7,7 @@ import 'package:kartka/app/routes.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/platform/http_client.dart';
-import 'package:kartka/platform/memory/memory_fakes.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
-import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/reader_feature.dart';
@@ -25,23 +23,16 @@ void main() {
   late KartkaRegistry registry;
   late FakeReaderSystem system;
 
-  setUp(() {
+  void build() {
     http = FakeKartkaHttp(
-      (r) => KartkaResponse(
-        statusCode: 200,
-        bodyBytes: onePixelPng,
-        headers: const {},
-      ),
+      (r) => KartkaResponse(statusCode: 200, bodyBytes: onePixelPng),
     );
     kv = MemoryKeyValueStore();
     repos = LibraryRepositories(kv, decorators: () => []);
     system = FakeReaderSystem();
     final source = FakeSource(
       chapterList: harnessChapters,
-      pageMap: {
-        '/c/2': fakePages('/c/2', 2),
-        '/c/3': fakePages('/c/3', 2),
-      },
+      pageMap: {'/c/2': fakePages('/c/2', 2), '/c/3': fakePages('/c/3', 2)},
     );
     registry = KartkaRegistry.build(memoryPlatform(http: http, kv: kv), [
       (env) => readerFeature(env, system: system),
@@ -53,7 +44,16 @@ void main() {
         ],
       ),
     ]);
-  });
+  }
+
+  // The library's KV-backed repositories complete some futures outside the
+  // fake clock, so each step lets real microtasks run before pumping.
+  Future<void> settle(WidgetTester tester) async {
+    for (var i = 0; i < 10; i++) {
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+  }
 
   Future<void> pump(WidgetTester tester, String location) async {
     final router = GoRouter(
@@ -67,13 +67,13 @@ void main() {
       ],
     );
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
-    for (var i = 0; i < 10; i++) {
-      await tester.pump(const Duration(milliseconds: 100));
-    }
+    await settle(tester);
   }
 
-  testWidgets('the route loads pages through KartkaHttp with page headers',
-      (tester) async {
+  testWidgets('the route loads pages through KartkaHttp with page headers', (
+    tester,
+  ) async {
+    build();
     await ReaderPrefs(kv).setModeFor('fake|/m/1', ReaderMode.pagedLtr);
     await pump(tester, readRoute('fake', '/m/1', '/c/2'));
     expect(find.byType(ReaderScreen), findsOneWidget);
@@ -84,27 +84,31 @@ void main() {
 
   testWidgets('finishing a chapter records progress, marks read and opens '
       'the next one', (tester) async {
+    build();
     await ReaderPrefs(kv).setModeFor('fake|/m/1', ReaderMode.pagedLtr);
     await pump(tester, readRoute('fake', '/m/1', '/c/2'));
     for (var i = 0; i < 2; i++) {
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
-      for (var j = 0; j < 10; j++) {
-        await tester.pump(const Duration(milliseconds: 100));
-      }
+      await settle(tester);
     }
-    final saved = await repos.progress.watch('fake|/m/1').first;
+    final saved = await tester.runAsync(
+      () => repos.progress.watch('fake|/m/1').first,
+    );
     expect(saved?.chapterUrl, '/c/2');
     expect(saved?.page, 1);
-    expect(await repos.progress.readChapters('fake|/m/1').first, {'/c/2'});
+    final read = await tester.runAsync(
+      () => repos.progress.readChapters('fake|/m/1').first,
+    );
+    expect(read, {'/c/2'});
     await tester.tap(find.text('Next: Ch. 3'));
-    for (var j = 0; j < 10; j++) {
-      await tester.pump(const Duration(milliseconds: 100));
-    }
+    await settle(tester);
     expect(http.requests.last.url.path, startsWith('/c/3/'));
   });
 
-  testWidgets('Escape with nothing to pop goes to the manga page',
-      (tester) async {
+  testWidgets('Escape with nothing to pop goes to the manga page', (
+    tester,
+  ) async {
+    build();
     await pump(tester, readRoute('fake', '/m/1', '/c/2'));
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
@@ -112,11 +116,10 @@ void main() {
   });
 
   testWidgets('the settings tile edits the global settings', (tester) async {
+    build();
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: Builder(builder: registry.settingsTiles.single),
-        ),
+        home: Scaffold(body: Builder(builder: registry.settingsTiles.single)),
       ),
     );
     await tester.pumpAndSettle();

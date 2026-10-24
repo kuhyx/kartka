@@ -71,9 +71,9 @@ Widget _route(
     chapterUrl: args.chapterUrl,
     deps: readerDeps(env),
     system: system,
-    onOpenChapter: (c) => GoRouter.of(
-      context,
-    ).replace<void>(readRoute(args.sourceId, args.mangaUrl, c.url)),
+    onOpenChapter: (c) =>
+        GoRouter.of(context)
+            .replace<void>(readRoute(args.sourceId, args.mangaUrl, c.url)),
     onExit: () {
       final router = GoRouter.of(context);
       if (router.canPop()) {
