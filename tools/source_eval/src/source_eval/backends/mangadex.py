@@ -47,7 +47,9 @@ class MangaDexBackend:
         """Most-followed titles (uncached: this is the uptime probe)."""
         del cand
         url = f"{API}/manga?limit=5&order[followedCount]=desc"
-        return self._hits(cast("dict[str, object]", self._get(url, cacheable=False).json()))
+        return self._hits(
+            cast("dict[str, object]", self._get(url, cacheable=False).json())
+        )
 
     def _hits(self, data: dict[str, object]) -> list[Hit]:
         hits = []

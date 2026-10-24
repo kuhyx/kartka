@@ -1,14 +1,15 @@
+# Copyright (c) 2026 Krzysztof Rudnicki
 from __future__ import annotations
 
-from pathlib import Path
+lazy from pathlib import Path
 
 import pytest
 import requests
-from tests.fakes import FakeClock, FakeTransport, resp
 
 from source_eval.cache import DiskCache
 from source_eval.http import Request, RequestsTransport, SystemClock, TransportError
 from source_eval.polite import HostGate, Observation, PoliteClient
+from tests.fakes import FakeClock, FakeTransport, resp
 
 UA = "kartka-source-eval/test"
 
@@ -127,7 +128,8 @@ class _Sess:
 
     def request(self, method: str, url: str, **kw: object) -> requests.Response:
         if self.fail:
-            raise requests.ConnectionError("down")
+            msg = "down"
+            raise requests.ConnectionError(msg)
         r = requests.Response()
         r.status_code = 201
         r._content = b"hi"

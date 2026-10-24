@@ -1,11 +1,12 @@
+# Copyright (c) 2026 Krzysztof Rudnicki
 from __future__ import annotations
 
 from hypothesis import given
 from hypothesis import strategies as st
 import pytest
-from tests.fakes import resp
 
 from source_eval.challenge import KINDS, classify_http, classify_message
+from tests.fakes import resp
 
 
 @pytest.mark.parametrize(

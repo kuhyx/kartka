@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Krzysztof Rudnicki
 """Recognise anti-bot challenges. Detection only: nothing here solves them.
 
 A challenged request is evidence that the source fights API access. It is
@@ -8,7 +9,7 @@ from __future__ import annotations
 
 import re
 
-from source_eval.http import Response
+lazy from source_eval.http import Response
 
 #: Every kind a blocking record may list. ``webview`` = the extension needs a
 #: browser engine (disabled on purpose) to read the site.
@@ -34,18 +35,21 @@ def classify_http(response: Response) -> str | None:
     """
     if response.status == _TOO_MANY:
         return "429"
-    if response.headers.get("cf-mitigated", "").lower() == "challenge":
-        return "cloudflare"
     body = response.body[:_SNIFF_BYTES].decode("utf-8", errors="replace").lower()
-    if _JUST_A_MOMENT in body:
+    mitigated = response.headers.get("cf-mitigated", "").lower() == "challenge"
+    if mitigated or _JUST_A_MOMENT in body:
         return "cloudflare"
     if response.status not in {_FORBIDDEN, _UNAVAILABLE}:
         return None
+    return _refusal_kind(body, response.status)
+
+
+def _refusal_kind(body: str, status: int) -> str | None:
     if any(m in body for m in _CAPTCHA_MARKERS):
         return "captcha"
     if any(m in body for m in _CF_MARKERS):
         return "cloudflare"
-    return "403" if response.status == _FORBIDDEN else None
+    return "403" if status == _FORBIDDEN else None
 
 
 _MESSAGE_RULES = (

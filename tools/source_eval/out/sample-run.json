@@ -1,0 +1,604 @@
+{
+ "generatedAt": "2026-10-24T16:09:36Z",
+ "referenceSize": 30,
+ "runId": "sample",
+ "sources": [
+  {
+   "availability": {
+    "keiyoushi": true,
+    "mangayomiJs": false,
+    "native": false
+   },
+   "blocking": {
+    "challengeRate": 0.0,
+    "kinds": []
+   },
+   "chapterCompleteness": {
+    "medianRatio": 1.0,
+    "sampled": 10
+   },
+   "coverage": {
+    "found": 29,
+    "ratio": 0.967,
+    "referenceSize": 30
+   },
+   "cutReasons": [],
+   "id": "suwayomi:5900936305360403385",
+   "imageQuality": {
+    "medianJpegQuality": null,
+    "medianWidthPx": 1114,
+    "sampledPages": 6
+   },
+   "lang": "en",
+   "latencyMs": {
+    "p50": 186,
+    "p95": 445
+   },
+   "name": "MangaDot",
+   "origin": "suwayomi",
+   "probedAt": "2026-10-24T15:56:50Z",
+   "rank": 1,
+   "score": 0.946,
+   "subsetOf": null,
+   "uptime": {
+    "ok": 1,
+    "probes": 1,
+    "ratio": 1.0,
+    "status": "accruing",
+    "windowDays": 7
+   },
+   "verdict": "pending"
+  },
+  {
+   "availability": {
+    "keiyoushi": true,
+    "mangayomiJs": true,
+    "native": false
+   },
+   "blocking": {
+    "challengeRate": 0.0,
+    "kinds": []
+   },
+   "chapterCompleteness": {
+    "medianRatio": 1.0,
+    "sampled": 10
+   },
+   "coverage": {
+    "found": 26,
+    "ratio": 0.867,
+    "referenceSize": 30
+   },
+   "cutReasons": [
+    "subset"
+   ],
+   "id": "suwayomi:2131019126180322627",
+   "imageQuality": {
+    "medianJpegQuality": 75,
+    "medianWidthPx": 1114,
+    "sampledPages": 6
+   },
+   "lang": "en",
+   "latencyMs": {
+    "p50": 151,
+    "p95": 365
+   },
+   "name": "Weeb Central",
+   "origin": "suwayomi",
+   "probedAt": "2026-10-24T16:01:14Z",
+   "rank": 2,
+   "score": 0.919,
+   "subsetOf": {
+    "overlap": 1.0,
+    "sourceId": "suwayomi:5900936305360403385"
+   },
+   "uptime": {
+    "ok": 1,
+    "probes": 1,
+    "ratio": 1.0,
+    "status": "accruing",
+    "windowDays": 7
+   },
+   "verdict": "cut"
+  },
+  {
+   "availability": {
+    "keiyoushi": true,
+    "mangayomiJs": false,
+    "native": false
+   },
+   "blocking": {
+    "challengeRate": 0.06,
+    "kinds": [
+     "webview"
+    ]
+   },
+   "chapterCompleteness": {
+    "medianRatio": 1.0,
+    "sampled": 10
+   },
+   "coverage": {
+    "found": 28,
+    "ratio": 0.933,
+    "referenceSize": 30
+   },
+   "cutReasons": [
+    "blocking",
+    "subset"
+   ],
+   "id": "suwayomi:4709139914729853090",
+   "imageQuality": {
+    "medianJpegQuality": null,
+    "medianWidthPx": null,
+    "sampledPages": 0
+   },
+   "lang": "en",
+   "latencyMs": {
+    "p50": 100,
+    "p95": 770
+   },
+   "name": "AllManga",
+   "origin": "suwayomi",
+   "probedAt": "2026-10-24T15:54:47Z",
+   "rank": 3,
+   "score": 0.807,
+   "subsetOf": {
+    "overlap": 1.0,
+    "sourceId": "suwayomi:5900936305360403385"
+   },
+   "uptime": {
+    "ok": 1,
+    "probes": 1,
+    "ratio": 1.0,
+    "status": "accruing",
+    "windowDays": 7
+   },
+   "verdict": "cut"
+  },
+  {
+   "availability": {
+    "keiyoushi": true,
+    "mangayomiJs": true,
+    "native": true
+   },
+   "blocking": {
+    "challengeRate": 0.0,
+    "kinds": []
+   },
+   "chapterCompleteness": {
+    "medianRatio": 0.115,
+    "sampled": 7
+   },
+   "coverage": {
+    "found": 29,
+    "ratio": 0.967,
+    "referenceSize": 30
+   },
+   "cutReasons": [
+    "subset"
+   ],
+   "id": "suwayomi:2499283573021220255",
+   "imageQuality": {
+    "medianJpegQuality": 96,
+    "medianWidthPx": 800,
+    "sampledPages": 6
+   },
+   "lang": "en",
+   "latencyMs": {
+    "p50": 326,
+    "p95": 618
+   },
+   "name": "MangaDex",
+   "origin": "suwayomi",
+   "probedAt": "2026-10-24T15:58:46Z",
+   "rank": 4,
+   "score": 0.73,
+   "subsetOf": {
+    "overlap": 1.0,
+    "sourceId": "suwayomi:5900936305360403385"
+   },
+   "uptime": {
+    "ok": 1,
+    "probes": 1,
+    "ratio": 1.0,
+    "status": "accruing",
+    "windowDays": 7
+   },
+   "verdict": "cut"
+  },
+  {
+   "availability": {
+    "keiyoushi": true,
+    "mangayomiJs": true,
+    "native": true
+   },
+   "blocking": {
+    "challengeRate": 0.0,
+    "kinds": []
+   },
+   "chapterCompleteness": {
+    "medianRatio": 0.01,
+    "sampled": 10
+   },
+   "coverage": {
+    "found": 26,
+    "ratio": 0.867,
+    "referenceSize": 30
+   },
+   "cutReasons": [
+    "subset"
+   ],
+   "id": "mangadex",
+   "imageQuality": {
+    "medianJpegQuality": 92,
+    "medianWidthPx": 846,
+    "sampledPages": 6
+   },
+   "lang": "en",
+   "latencyMs": {
+    "p50": 319,
+    "p95": 500
+   },
+   "name": "MangaDex",
+   "origin": "native",
+   "probedAt": "2026-10-24T15:52:44Z",
+   "rank": 5,
+   "score": 0.688,
+   "subsetOf": {
+    "overlap": 0.962,
+    "sourceId": "suwayomi:5900936305360403385"
+   },
+   "uptime": {
+    "ok": 1,
+    "probes": 1,
+    "ratio": 1.0,
+    "status": "accruing",
+    "windowDays": 7
+   },
+   "verdict": "cut"
+  },
+  {
+   "availability": {
+    "keiyoushi": true,
+    "mangayomiJs": false,
+    "native": false
+   },
+   "blocking": {
+    "challengeRate": 0.75,
+    "kinds": [
+     "cloudflare"
+    ]
+   },
+   "chapterCompleteness": {
+    "medianRatio": null,
+    "sampled": 0
+   },
+   "coverage": {
+    "found": 0,
+    "ratio": 0.0,
+    "referenceSize": 30
+   },
+   "cutReasons": [
+    "blocking",
+    "coverage<0.60"
+   ],
+   "id": "suwayomi:2528986671771677900",
+   "imageQuality": {
+    "medianJpegQuality": null,
+    "medianWidthPx": null,
+    "sampledPages": 0
+   },
+   "lang": "en",
+   "latencyMs": {
+    "p50": 15,
+    "p95": 459
+   },
+   "name": "Mangakakalot",
+   "origin": "suwayomi",
+   "probedAt": "2026-10-24T15:58:56Z",
+   "rank": 6,
+   "score": 0.336,
+   "subsetOf": null,
+   "uptime": {
+    "ok": 1,
+    "probes": 1,
+    "ratio": 1.0,
+    "status": "accruing",
+    "windowDays": 7
+   },
+   "verdict": "cut"
+  },
+  {
+   "availability": {
+    "keiyoushi": false,
+    "mangayomiJs": false,
+    "native": false
+   },
+   "blocking": {
+    "challengeRate": 0.0,
+    "kinds": []
+   },
+   "chapterCompleteness": {
+    "medianRatio": null,
+    "sampled": 0
+   },
+   "coverage": {
+    "found": null,
+    "ratio": null,
+    "referenceSize": 30
+   },
+   "cutReasons": [],
+   "id": "plugin:legacy-batoto",
+   "imageQuality": {
+    "medianJpegQuality": null,
+    "medianWidthPx": null,
+    "sampledPages": 0
+   },
+   "lang": "all",
+   "latencyMs": {
+    "p50": null,
+    "p95": null
+   },
+   "name": "Bato.to",
+   "origin": "plugin",
+   "probedAt": "2026-10-24T16:09:36Z",
+   "rank": 7,
+   "score": 0.0,
+   "subsetOf": null,
+   "uptime": {
+    "ok": 0,
+    "probes": 0,
+    "ratio": null,
+    "status": "accruing",
+    "windowDays": 7
+   },
+   "verdict": "pending"
+  },
+  {
+   "availability": {
+    "keiyoushi": false,
+    "mangayomiJs": false,
+    "native": false
+   },
+   "blocking": {
+    "challengeRate": 0.0,
+    "kinds": []
+   },
+   "chapterCompleteness": {
+    "medianRatio": null,
+    "sampled": 0
+   },
+   "coverage": {
+    "found": null,
+    "ratio": null,
+    "referenceSize": 30
+   },
+   "cutReasons": [],
+   "id": "plugin:legacy-ehentai",
+   "imageQuality": {
+    "medianJpegQuality": null,
+    "medianWidthPx": null,
+    "sampledPages": 0
+   },
+   "lang": "all",
+   "latencyMs": {
+    "p50": null,
+    "p95": null
+   },
+   "name": "E-Hentai",
+   "origin": "plugin",
+   "probedAt": "2026-10-24T16:09:36Z",
+   "rank": 8,
+   "score": 0.0,
+   "subsetOf": null,
+   "uptime": {
+    "ok": 0,
+    "probes": 0,
+    "ratio": null,
+    "status": "accruing",
+    "windowDays": 7
+   },
+   "verdict": "pending"
+  },
+  {
+   "availability": {
+    "keiyoushi": false,
+    "mangayomiJs": false,
+    "native": false
+   },
+   "blocking": {
+    "challengeRate": 0.0,
+    "kinds": []
+   },
+   "chapterCompleteness": {
+    "medianRatio": null,
+    "sampled": 0
+   },
+   "coverage": {
+    "found": null,
+    "ratio": null,
+    "referenceSize": 30
+   },
+   "cutReasons": [],
+   "id": "plugin:legacy-exhentai",
+   "imageQuality": {
+    "medianJpegQuality": null,
+    "medianWidthPx": null,
+    "sampledPages": 0
+   },
+   "lang": "all",
+   "latencyMs": {
+    "p50": null,
+    "p95": null
+   },
+   "name": "ExHentai",
+   "origin": "plugin",
+   "probedAt": "2026-10-24T16:09:36Z",
+   "rank": 9,
+   "score": 0.0,
+   "subsetOf": null,
+   "uptime": {
+    "ok": 0,
+    "probes": 0,
+    "ratio": null,
+    "status": "accruing",
+    "windowDays": 7
+   },
+   "verdict": "pending"
+  },
+  {
+   "availability": {
+    "keiyoushi": false,
+    "mangayomiJs": false,
+    "native": false
+   },
+   "blocking": {
+    "challengeRate": 0.0,
+    "kinds": []
+   },
+   "chapterCompleteness": {
+    "medianRatio": null,
+    "sampled": 0
+   },
+   "coverage": {
+    "found": null,
+    "ratio": null,
+    "referenceSize": 30
+   },
+   "cutReasons": [],
+   "id": "plugin:legacy-hitomi",
+   "imageQuality": {
+    "medianJpegQuality": null,
+    "medianWidthPx": null,
+    "sampledPages": 0
+   },
+   "lang": "all",
+   "latencyMs": {
+    "p50": null,
+    "p95": null
+   },
+   "name": "Hitomi",
+   "origin": "plugin",
+   "probedAt": "2026-10-24T16:09:36Z",
+   "rank": 10,
+   "score": 0.0,
+   "subsetOf": null,
+   "uptime": {
+    "ok": 0,
+    "probes": 0,
+    "ratio": null,
+    "status": "accruing",
+    "windowDays": 7
+   },
+   "verdict": "pending"
+  },
+  {
+   "availability": {
+    "keiyoushi": false,
+    "mangayomiJs": false,
+    "native": false
+   },
+   "blocking": {
+    "challengeRate": 0.0,
+    "kinds": []
+   },
+   "chapterCompleteness": {
+    "medianRatio": null,
+    "sampled": 0
+   },
+   "coverage": {
+    "found": null,
+    "ratio": null,
+    "referenceSize": 30
+   },
+   "cutReasons": [],
+   "id": "plugin:legacy-mangapark",
+   "imageQuality": {
+    "medianJpegQuality": null,
+    "medianWidthPx": null,
+    "sampledPages": 0
+   },
+   "lang": "all",
+   "latencyMs": {
+    "p50": 19867,
+    "p95": 19867
+   },
+   "name": "MangaPark",
+   "origin": "plugin",
+   "probedAt": "2026-10-24T12:31:31Z",
+   "rank": 11,
+   "score": 0.0,
+   "subsetOf": null,
+   "uptime": {
+    "ok": 0,
+    "probes": 1,
+    "ratio": 0.0,
+    "status": "accruing",
+    "windowDays": 7
+   },
+   "verdict": "pending"
+  },
+  {
+   "availability": {
+    "keiyoushi": false,
+    "mangayomiJs": false,
+    "native": false
+   },
+   "blocking": {
+    "challengeRate": 0.0,
+    "kinds": []
+   },
+   "chapterCompleteness": {
+    "medianRatio": null,
+    "sampled": 0
+   },
+   "coverage": {
+    "found": null,
+    "ratio": null,
+    "referenceSize": 30
+   },
+   "cutReasons": [],
+   "id": "plugin:legacy-nhentai",
+   "imageQuality": {
+    "medianJpegQuality": null,
+    "medianWidthPx": null,
+    "sampledPages": 0
+   },
+   "lang": "all",
+   "latencyMs": {
+    "p50": null,
+    "p95": null
+   },
+   "name": "NHentai",
+   "origin": "plugin",
+   "probedAt": "2026-10-24T16:09:36Z",
+   "rank": 12,
+   "score": 0.0,
+   "subsetOf": null,
+   "uptime": {
+    "ok": 0,
+    "probes": 0,
+    "ratio": null,
+    "status": "accruing",
+    "windowDays": 7
+   },
+   "verdict": "pending"
+  }
+ ],
+ "summary": {
+  "hostsBlockedHere": [
+   "plugin:legacy-batoto",
+   "plugin:legacy-ehentai",
+   "plugin:legacy-exhentai",
+   "plugin:legacy-hitomi",
+   "plugin:legacy-nhentai"
+  ],
+  "keepOnlyViaKeiyoushi": [],
+  "notCutOnlyViaKeiyoushi": [
+   {
+    "id": "suwayomi:5900936305360403385",
+    "name": "MangaDot",
+    "verdict": "pending"
+   }
+  ]
+ }
+}

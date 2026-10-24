@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Krzysztof Rudnicki
 """Crash-safe JSON files: a run can be killed mid-write and still resume."""
 
 from __future__ import annotations

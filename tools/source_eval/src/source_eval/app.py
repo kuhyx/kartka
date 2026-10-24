@@ -4,10 +4,10 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from source_eval.backends.mangadex import MangaDexBackend
 from source_eval.backends.plugin import PluginBackend
@@ -15,7 +15,7 @@ from source_eval.backends.suwayomi import SuwayomiBackend, SuwayomiConfig
 from source_eval.budget import Deadline, stratified
 from source_eval.cache import DiskCache
 from source_eval.candidates import catalog
-from source_eval.evaluate import evaluate
+from source_eval.evaluate import Plan, evaluate
 from source_eval.fsio import write_json_atomic
 from source_eval.http import TransportError
 from source_eval.models import SourceError
@@ -125,7 +125,9 @@ class App:
 
     def cmd_candidates(self) -> int:
         """Refresh ``data/candidates.json`` from both indexes."""
-        cands = catalog.fetch_candidates(self.client(), self.s.data_dir / "legacy_sources.json")
+        cands = catalog.fetch_candidates(
+            self.client(), self.s.data_dir / "legacy_sources.json"
+        )
         catalog.save(self.candidates_path, cands)
         self.out(f"candidates: {len(cands)}")
         return 0
@@ -138,19 +140,16 @@ class App:
         self.out(f"reference: {len(ref.titles)} titles, complete={done}")
         return 0 if done else MORE_WORK
 
-    def cmd_init_run(
-        self,
-        run_id: str,
-        sample: int | None,
-        completeness: int,
-        images: int,
-        pages: int,
-    ) -> int:
-        """Fix the run's reference sample and step sizes (idempotent)."""
+    def cmd_init_run(self, run_id: str, sample: int | None, steps: Manifest) -> int:
+        """Fix the run's reference sample (``sample`` titles, None = all).
+
+        ``steps`` carries the per-step sizes; its own ``sample`` is ignored.
+        Idempotent: an existing run keeps its manifest.
+        """
         run = RunDir(self.s.state_dir, run_id)
         if Manifest.load(run.manifest_path) is None:
             keys = stratified([t.key for t in self.reference().titles], sample)
-            Manifest(keys, completeness, images, pages).save(run.manifest_path)
+            replace(steps, sample=keys).save(run.manifest_path)
         self.out(f"run {run_id}: ready")
         return 0
 
@@ -186,7 +185,7 @@ class App:
                 seen.append(failed(self.clock, cand.host))
             except SourceError:
                 pass
-            obs = seen[-1] if seen else Observation(self.clock.now(), cand.host, False, 0.0, None, None)
+            obs = seen[-1] if seen else Observation.failure(self.clock.now(), cand.host)
         self.uptime.append(cand.id, obs)
         return obs
 
@@ -195,7 +194,8 @@ class App:
         with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
             results = list(pool.map(self.probe_one, cands))
         for cand, obs in zip(cands, results, strict=True):
-            self.out(f"probe {cand.id} ({cand.name}): ok={obs.ok} kind={obs.kind} status={obs.status}")
+            verdict = f"ok={obs.ok} kind={obs.kind} status={obs.status}"
+            self.out(f"probe {cand.id} ({cand.name}): {verdict}")
         self.out(f"probe: {sum(1 for r in results if r.ok)}/{len(results)} ok")
         return 0
 
@@ -204,17 +204,16 @@ class App:
     ) -> int:
         """Advance every selected source; exit MORE_WORK if any is unfinished."""
         run, manifest = self._manifest(run_id)
-        refs = {t.key: t for t in self.reference().titles}
+        plan = Plan({t.key: t for t in self.reference().titles}, manifest)
         deadline = Deadline(self.clock, budget)
 
         def one(cand: Candidate) -> bool:
             state = run.source(cand.id)
             client = self.client(observe=state.observe)
-            done = evaluate(
-                cand, self.backend(cand, client), state, refs, manifest, deadline
-            )
+            done = evaluate(cand, self.backend(cand, client), state, plan, deadline)
+            progress = f"titles={len(state.titles)}/{len(manifest.sample)}"
             self.out(
-                f"{cand.id} ({cand.name}): {'done' if done else 'partial'} titles={len(state.titles)}/{len(manifest.sample)}"
+                f"{cand.id} ({cand.name}): {'done' if done else 'partial'} {progress}"
             )
             return done
 
@@ -226,11 +225,10 @@ class App:
         """Write the ranked report; publish it when a writer is given."""
         run, manifest = self._manifest(run_id)
         cands = {c.id: c for c in catalog.load(self.candidates_path)}
-        report = build_report(
-            cands, run, run_id, manifest, self.uptime, self.clock.now()
-        )
+        report = build_report(cands, run, manifest, self.uptime, self.clock.now())
         write_json_atomic(out, report)
-        self.out(f"report: {len(report['sources'])} sources -> {out}")  # type: ignore[arg-type]
+        count = len(cast("list[object]", report["sources"]))
+        self.out(f"report: {count} sources -> {out}")
         if writer is not None:
             self.out(f"published: {publish(report, writer)} records")
         return 0

@@ -1,16 +1,20 @@
+# Copyright (c) 2026 Krzysztof Rudnicki
 from __future__ import annotations
 
 import json
+from typing import TYPE_CHECKING
 
 import pytest
 
 from source_eval.backends.mangadex import API, MangaDexBackend
 from source_eval.backends.plugin import PluginBackend
 from source_eval.backends.suwayomi import SuwayomiBackend, SuwayomiConfig, judge_graphql
-from source_eval.http import Request, Response
 from source_eval.models import Candidate, Chapter, Hit, PageImage, SourceError
 from source_eval.polite import HostGate, Observation, PoliteClient
 from tests.fakes import FakeClock, FakeTransport, fixture_bytes, fixture_json, resp
+
+if TYPE_CHECKING:
+    from source_eval.http import Request, Response
 
 MD = Candidate("mangadex", "MangaDex", "en", "native", "https://mangadex.org")
 DOT = Candidate(
@@ -34,6 +38,7 @@ def test_mangadex_flow() -> None:
     t.add("https://", resp(200, fixture_bytes("page.webp")))
     md = MangaDexBackend(client(t))
     md.prepare(MD)
+    assert md.popular(MD)[0].title
     hits = md.search(MD, "Yotsuba")
     assert Hit("Yotsuba to!", "58be6aa6-06cb-4ca5-bd20-f1392ce451fb") in hits
     chapters = md.chapters(MD, hits[1])
@@ -58,6 +63,9 @@ def test_mangadex_feed_paging_externals_and_errors() -> None:
     md = MangaDexBackend(client(t))
     out = md.chapters(MD, Hit("t", "m"))
     assert out == [Chapter("a", None), Chapter("a", None)]
+    huge = FakeTransport()
+    huge.add(f"{API}/manga/m/feed", resp(200, {**big, "total": 10**6}))
+    assert len(MangaDexBackend(client(huge)).chapters(MD, Hit("t", "m"))) == 6
     t2 = FakeTransport()
     t2.add(API, resp(429, "slow down", {"retry-after": "0"}))
     with pytest.raises(SourceError) as err:
@@ -92,6 +100,7 @@ def test_suwayomi_flow_and_pacing_key() -> None:
     )
     sw = SuwayomiBackend(client(t, seen), SuwayomiConfig(SUWA, "kuhy", "pw"))
     sw.prepare(DOT)
+    assert sw.popular(DOT)[0].title == "Berserk Gaiden"
     hits = sw.search(DOT, "Berserk")
     assert hits[0] == Hit("Berserk Gaiden", "21")
     chapters = sw.chapters(DOT, hits[0])
@@ -158,7 +167,11 @@ def test_judge_graphql() -> None:
 
 
 def test_suwayomi_unknown_chapter_number() -> None:
-    body = {"data": {"fetchMangaAndChapters": {"chapters": [{"id": 5, "chapterNumber": -1.0}]}}}
+    body = {
+        "data": {
+            "fetchMangaAndChapters": {"chapters": [{"id": 5, "chapterNumber": -1.0}]}
+        }
+    }
     t = gql_router({"fetchMangaAndChapters": body})
     assert SuwayomiBackend(client(t), SuwayomiConfig(SUWA)).chapters(
         DOT, Hit("x", "3")
@@ -170,6 +183,7 @@ def test_plugin_stub() -> None:
     cand = Candidate("plugin:x", "x", "en", "plugin", "https://x")
     for call in (
         lambda: p.prepare(cand),
+        lambda: p.popular(cand),
         lambda: p.search(cand, "q"),
         lambda: p.chapters(cand, Hit("t", "r")),
         lambda: p.pages(cand, Chapter("c", 1.0)),

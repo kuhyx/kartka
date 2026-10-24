@@ -1,0 +1,137 @@
+# Source evaluator (`tools/source_eval/`)
+
+Decides, by measurement, which manga sources Kartka keeps. Output is the
+contract §5 record (plus the additive `availability` block) per source, ranked,
+written to `tools/source_eval/out/latest.json` and, with `--publish`, to RTDB
+`/kartka/source_health/<sha1(sourceId)>`.
+
+## Commands
+
+All from `tools/source_eval/` (Python 3.15, uv; deps exact-pinned, `uv.lock`
+committed):
+
+```bash
+uv run pytest                       # 100 % line+branch coverage gate
+uv run ruff check src tests && uv run ruff format --check src tests
+uv run mypy --strict src tests
+
+uv run source-eval candidates                  # data/candidates.json
+uv run source-eval reference --budget 40       # data/reference.json (resumable)
+uv run source-eval init-run --run R --sample 30 --completeness 10 --images 3 --pages 2
+uv run source-eval enrich --run R --budget 40  # MangaUpdates chapter counts
+uv run source-eval probe [--ids ...|--installed]       # one uptime probe each
+uv run source-eval run --run R --ids <id> --budget 40  # resumable, exit 10 = more
+uv run source-eval report --run R [--out F] [--publish]
+```
+
+`--suwayomi-url` (or `KARTKA_SUWAYOMI_URL`, default `http://127.0.0.1:4567`);
+basic auth from `KARTKA_SUWAYOMI_USER/PASS` or the deploy env file's
+`SUWAYOMI_USER/SUWAYOMI_PASSWORD`. State: `$XDG_STATE_HOME/kartka-source-eval`
+(runs, uptime history, per-host last-request times); cache:
+`$XDG_CACHE_HOME/kartka-source-eval`.
+
+Timers (`systemd/`, not installed by this branch): probe 4x/day, full run
+weekly via `systemd/weekly.sh` (ISO-week run id, 200-title sample, publish).
+
+## Pipeline
+
+1. **Candidates** (`candidates/`): every `en`/`all` source in Keiyoushi's
+   `index.pb` (gzipped protobuf, decoded schema-less by `protowire.py`;
+   MangaDex en decodes to `2499283573021220255`, as in the contract), native
+   MangaDex, Mangayomi **JS** sources on domains Keiyoushi does not cover
+   (`plugin:mangayomi-<id>`), and `data/legacy_sources.json`
+   (`plugin:legacy-<slug>`, see below). kuhy's installed set is flagged.
+2. **Reference** (`reference/`): AniList top 500 manga by popularity
+   (`format_not: NOVEL`) with every alt title; plus `data/sy_titles.json` if
+   present (list of strings or `{title}`; gitignored), matched to AniList.
+   Missing chapter counts (ongoing series) come from MangaUpdates.
+3. **Run** (`evaluate.py`): one deterministic stratified sample per run, the
+   same for every source. Per source: install/prepare; search each title
+   (main title, then first alt) and fuzzy-match (rapidfuzz ratio ≥ 0.90 on
+   normalised titles, any alt title); chapter lists for the first N found;
+   page images for the first M (median chapter, skip page 1, P pages).
+   Every step checkpoints to disk atomically. A source stops early after 3
+   challenged requests (`blocking`) or 5 failed first searches (`unreachable`).
+4. **Report** (`metrics.py`, `score.py`, `report.py`).
+
+## Backends (one `Backend` Protocol)
+
+- **MangaDex API**: `/manga?title=` (English-available), `/manga/{id}/feed`
+  (English, `includeExternalUrl=0`, distinct chapter numbers), `/at-home`.
+- **Suwayomi GraphQL**: `fetchSourceManga` (SEARCH/POPULAR),
+  `fetchMangaAndChapters` (`fetchChapters: true`), `fetchChapterPages`, page
+  bytes from `/api/v1/...`. Extensions are installed on demand
+  (`fetchExtensions` + `updateExtension`). Requests are paced by the
+  **source's** host, not the server's.
+- **Kartka JS plugins**: stub (`backends/plugin.py`). Plugin candidates get
+  uptime probes only and stay `pending`.
+
+## Politeness (`polite.py`)
+
+≤ 1 request / 2 s per host, last-request times persisted across processes;
+honest User-Agent `kartka-source-eval/0.1 (+https://github.com/kuhyx/kartka)`;
+429 honours `Retry-After` (cap 20 s, 2 retries); JSON responses cached 6 days.
+Cache hits are never observed, so they cannot flatten latency or uptime.
+Challenges are detected, never solved: the Suwayomi server must run with KCEF
+and FlareSolverr off (the local dev server and the live deploy both do).
+
+## Metric definitions and decisions
+
+- **uptime**: one uncached probe per source 4x/day, through the backend
+  ("popular, page 1"), because a front page can be challenged while the API
+  works (mangadot.net: Cloudflare 403 on `/`, API fine). Plugin candidates
+  fall back to a front-page GET. `final` once probes span 7 days − 6 h.
+- **hosts-blocked**: a host this machine's hosts-file blocklist sinks
+  (0.0.0.0) is recorded as `hosts-blocked`, excluded from every metric and
+  listed in `summary.hostsBlockedHere`. The evaluator never routes around it.
+- **latency** p50/p95 (nearest rank) over live responses: uptime window +
+  the run's requests.
+- **blocking**: challenged / all observations. Kinds: `cloudflare`, `captcha`,
+  `403`, `429`, plus **`webview`** = the extension needs a browser engine to
+  read the site (Suwayomi "CEF is disabled"). Counted as blocking because
+  Kartka has no browser and the evaluator must not run one.
+- **coverage**: found / sample size; `referenceSize` is the run's sample size
+  (30 in the sample run, 200 weekly), not the full 500, to stay honest.
+- **chapterCompleteness**: distinct chapter numbers / AniList (else
+  MangaUpdates `latest_chapter`) count, capped at 1, median over sampled
+  titles with a known count.
+- **imageQuality**: median width; JPEG quality estimated by inverting IJG
+  scaling of the luminance quant table (sum-based, order-independent; a
+  hypothesis test round-trips Pillow `quality=q`). Median over JPEGs only, so
+  `null` for WebP/PNG-only sources.
+- **Unmeasured metrics are `null`, never 0**: a source no backend can read
+  is never cut for coverage; it stays `pending`. It scores 0 for that term.
+- **score**: exactly the §5 formula (the §5 example's printed 0.81 is wrong;
+  its own inputs give 0.852, pinned by a test). Rounded to 3 places.
+- **subset**: ≥ 90 % of found titles also found by a higher-ranked, not-cut
+  source whose median width is ≥ (unknown width of the lower source counts as
+  ≤; unknown width of the higher one never qualifies). Same-host pairs are
+  compared too (native vs Suwayomi MangaDex): the lower one is redundant.
+  Ties rank native > suwayomi > plugin.
+- **verdict**: `cut` if any cut reason; else `pending` while uptime accrues or
+  nothing was measured; else `keep`.
+- **availability** (additive): `native` (Kartka Dart source; today
+  mangadex.org), `mangayomiJs` (a Mangayomi JS source on the same base
+  domain), `keiyoushi`. `summary.keepOnlyViaKeiyoushi` lists `keep` sources
+  that only Suwayomi can read; `summary.notCutOnlyViaKeiyoushi` adds pending.
+
+## Legacy sources in kuhy's SY backup
+
+Not in Keiyoushi or Suwayomi; identified from source names stored in older
+backups (`backupSources`) and entry URLs. All are `plugin:legacy-*`:
+
+| backup ids | site | entries | status here |
+|---|---|---|---|
+| 3091964041986261235 | MangaDex (Revived): old MangaDex id, `/manga/<uuid>` | 269 | covered by `mangadex` |
+| 4531…129, 7890…109, 4936…860, 4659…292 | Bato.to (old `all.batoto`) | 131 | hosts-blocked here |
+| 2292947733994124621 | MangaPark (`all.mangapark`; Mangayomi Dart only) | 9 | HTTP 521 |
+| 8758…879, 6901…713 | Hitomi | 3 | hosts-blocked |
+| 7309872737163460316 | NHentai | 6 | hosts-blocked |
+| 6901 / 6902 | E-Hentai / ExHentai (SY built-ins) | 97 / 109 | hosts-blocked |
+
+## Local development server
+
+Suwayomi-Server v2.4.2366 jar (sha256-checked) in
+`~/.local/share/kartka-source-eval/`, rootDir `.../suwayomi`, `127.0.0.1:4590`,
+KCEF/FlareSolverr/tray/WebUI off, run as transient user unit
+`kartka-suwayomi-eval` (`systemctl --user stop kartka-suwayomi-eval`).

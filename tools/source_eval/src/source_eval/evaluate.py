@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
 from source_eval.budget import stratified
@@ -91,54 +92,98 @@ def _image_step(
     return {"pages": samples}
 
 
-def evaluate(  # noqa: C901, PLR0912 -- one linear checklist of resumable steps
-    cand: Candidate,
-    backend: Backend,
-    state: SourceState,
-    refs: dict[str, RefTitle],
-    manifest: Manifest,
-    deadline: Deadline,
-) -> bool:
-    """Advance ``cand``'s measurement; True when it is finished."""
-    if state.done:
-        return True
-    if not state.prepared:
-        try:
-            backend.prepare(cand)
-        except SourceError as exc:
-            state.aborted, state.error, state.done = "unavailable", str(exc)[:300], True
-            state.save()
-            return True
+@dataclass(frozen=True, slots=True)
+class Plan:
+    """What every source in a run is measured against."""
+
+    refs: dict[str, RefTitle]
+    manifest: Manifest
+
+
+def _prepare(cand: Candidate, backend: Backend, state: SourceState) -> None:
+    if state.prepared:
+        return
+    try:
+        backend.prepare(cand)
+    except SourceError as exc:
+        state.aborted, state.error, state.done = "unavailable", str(exc)[:300], True
+    else:
         state.prepared = True
-        state.save()
-    for key in manifest.sample:
-        if state.aborted:
+    state.save()
+
+
+def _searches(job: _Job) -> bool:
+    for key in job.plan.manifest.sample:
+        if job.state.aborted:
             break
-        if key in state.titles:
+        if key in job.state.titles:
             continue
-        if deadline.expired():
+        if job.deadline.expired():
             return False
-        state.titles[key] = _search(backend, cand, refs[key])
-        state.aborted = _abort_reason(state)
-        state.save()
-    for key in list(state.found())[: manifest.completeness]:
+        job.state.titles[key] = _search(job.backend, job.cand, job.plan.refs[key])
+        job.state.aborted = _abort_reason(job.state)
+        job.state.save()
+    return True
+
+
+def _chapter_lists(job: _Job) -> bool:
+    state = job.state
+    for key in list(state.found())[: job.plan.manifest.completeness]:
         if key in state.chapters:
             continue
-        if deadline.expired():
+        if job.deadline.expired():
             return False
         hit = cast("dict[str, str]", state.titles[key]["hit"])
+        found = Hit(hit["title"], hit["ref"])
         state.chapters[key] = _chapter_step(
-            backend, cand, refs[key], Hit(hit["title"], hit["ref"])
+            job.backend, job.cand, job.plan.refs[key], found
         )
         state.save()
+    return True
+
+
+def _image_samples(job: _Job) -> bool:
+    state, manifest = job.state, job.plan.manifest
     picks = [(k, v["pick"]) for k, v in state.chapters.items() if v.get("pick")]
     for key, pick in picks[: manifest.images]:
         if key in state.images:
             continue
-        if deadline.expired():
+        if job.deadline.expired():
             return False
-        state.images[key] = _image_step(backend, cand, str(pick), manifest.pages)
+        state.images[key] = _image_step(
+            job.backend, job.cand, str(pick), manifest.pages
+        )
         state.save()
+    return True
+
+
+@dataclass(frozen=True, slots=True)
+class _Job:
+    cand: Candidate
+    backend: Backend
+    state: SourceState
+    plan: Plan
+    deadline: Deadline
+
+
+def evaluate(
+    cand: Candidate,
+    backend: Backend,
+    state: SourceState,
+    plan: Plan,
+    deadline: Deadline,
+) -> bool:
+    """Advance ``cand``'s measurement; True when it is finished.
+
+    Steps run in order and each checkpoints to disk, so an expired
+    ``deadline`` just means the next call carries on.
+    """
+    _prepare(cand, backend, state)
+    if state.done:
+        return True
+    job = _Job(cand, backend, state, plan, deadline)
+    if not (_searches(job) and _chapter_lists(job) and _image_samples(job)):
+        return False
     state.done = True
     state.save()
     return True

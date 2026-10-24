@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Krzysztof Rudnicki
 """The only door to the network: per-host pacing, backoff, cache, metrics.
 
 Politeness is not optional. Every request waits for its host's slot (default
@@ -10,14 +11,14 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, replace
-from pathlib import Path
 import threading
 from urllib.parse import urlsplit
+lazy from pathlib import Path
 
-from source_eval.cache import DiskCache
 from source_eval.challenge import classify_http
 from source_eval.fsio import read_json, write_json_atomic
 from source_eval.http import Clock, Request, Response, Transport, TransportError
+lazy from source_eval.cache import DiskCache
 
 _TOO_MANY = 429
 _ERROR_FLOOR = 400
@@ -33,6 +34,11 @@ class Observation:
     ms: float
     kind: str | None
     status: int | None
+
+    @classmethod
+    def failure(cls, at: float, host: str, kind: str | None = None) -> Observation:
+        """A request that never got a response."""
+        return cls(at, host, ok=False, ms=0.0, kind=kind, status=None)
 
 
 class HostGate:
@@ -75,9 +81,9 @@ def judge_http(response: Response) -> tuple[bool, str | None]:
 
 def _retry_after(response: Response, attempt: int) -> float:
     try:
-        return float(response.headers.get("retry-after", ""))
+        return float(str(response.headers.get("retry-after", "")))
     except ValueError:
-        return 2.0 * 2**attempt
+        return 2.0 * (1 << attempt)
 
 
 class PoliteClient:
@@ -109,7 +115,7 @@ class PoliteClient:
         if self.observe is not None:
             self.observe(obs)
 
-    def fetch(  # noqa: PLR0913 -- keyword-only knobs
+    def fetch(
         self,
         request: Request,
         *,
@@ -141,14 +147,23 @@ class PoliteClient:
                 response = self._transport.send(request)
             except TransportError:
                 if record:
-                    self._emit(Observation(self._clock.now(), key, False, 0.0, None, None))
+                    self._emit(Observation.failure(self._clock.now(), key))
                 raise
             ok, kind = (judge or judge_http)(response)
             if record:
-                obs = Observation(self._clock.now(), key, ok, response.elapsed_ms, kind, response.status)
+                obs = Observation(
+                    self._clock.now(),
+                    key,
+                    ok,
+                    response.elapsed_ms,
+                    kind,
+                    response.status,
+                )
                 self._emit(obs)
             if response.status == _TOO_MANY and attempt < self._max_retries:
-                self._clock.sleep(min(self._max_backoff, _retry_after(response, attempt)))
+                self._clock.sleep(
+                    min(self._max_backoff, _retry_after(response, attempt))
+                )
                 attempt += 1
                 continue
             if cache is not None and ok:

@@ -10,6 +10,7 @@ from urllib.parse import urlsplit
 Origin = Literal["native", "suwayomi", "plugin"]
 _SHORT_SLD = frozenset({"co", "com", "net", "org", "ac", "or", "ne", "go"})
 _CC_TLD_LEN = 2
+_TWO = 2  # labels in a plain registrable domain
 
 
 def base_domain(url_or_host: str) -> str:
@@ -20,8 +21,12 @@ def base_domain(url_or_host: str) -> str:
     """
     host = urlsplit(url_or_host).hostname if "//" in url_or_host else url_or_host
     labels = (host or url_or_host).lower().strip(".").split(".")
-    keep = 3 if len(labels) > 2 and len(labels[-1]) == _CC_TLD_LEN and labels[-2] in _SHORT_SLD else 2  # noqa: PLR2004
-    return ".".join(labels[-keep:])
+    cc_sld = (
+        len(labels) > _TWO
+        and len(labels[-1]) == _CC_TLD_LEN
+        and labels[-2] in _SHORT_SLD
+    )
+    return ".".join(labels[-(_TWO + 1 if cc_sld else _TWO) :])
 
 
 @dataclass(frozen=True, slots=True)
@@ -34,14 +39,22 @@ class Availability:
 
     def to_json(self) -> dict[str, bool]:
         """Contract field names."""
-        return {"native": self.native, "mangayomiJs": self.mangayomi_js, "keiyoushi": self.keiyoushi}
+        return {
+            "native": self.native,
+            "mangayomiJs": self.mangayomi_js,
+            "keiyoushi": self.keiyoushi,
+        }
 
     @classmethod
     def from_json(cls, data: object) -> Availability:
         """Inverse of :meth:`to_json`; anything else means unknown (all false)."""
         if not isinstance(data, dict):
             return cls()
-        return cls(bool(data.get("native")), bool(data.get("mangayomiJs")), bool(data.get("keiyoushi")))
+        return cls(
+            bool(data.get("native")),
+            bool(data.get("mangayomiJs")),
+            bool(data.get("keiyoushi")),
+        )
 
 
 @dataclass(frozen=True, slots=True)

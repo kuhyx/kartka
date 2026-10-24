@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Krzysztof Rudnicki
 from __future__ import annotations
 
 import io

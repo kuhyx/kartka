@@ -3,12 +3,14 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 import unicodedata
+lazy from collections.abc import Iterable
 
 from rapidfuzz import fuzz
 
-from source_eval.models import Hit, RefTitle
+if TYPE_CHECKING:
+    from source_eval.models import Hit, RefTitle
 
 #: Minimum similarity (0..1) to count a hit as the same title. Strict on
 #: purpose: "Berserk" must not match "Berserk of Gluttony".

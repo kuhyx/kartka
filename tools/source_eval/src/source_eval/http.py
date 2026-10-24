@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Krzysztof Rudnicki
 """Minimal HTTP value types plus a ``requests``-backed transport.
 
 Everything above this module talks to a :class:`Transport`, so tests swap in a
@@ -6,11 +7,11 @@ scripted fake and never touch the network.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from dataclasses import dataclass, field
 import json
 import time
-from typing import Protocol
+from typing import Protocol, cast
+lazy from collections.abc import Mapping
 
 import requests
 
@@ -92,7 +93,7 @@ class RequestsTransport:
 
     def __init__(self, session: _Session | None = None) -> None:
         """Wrap ``session`` (a fresh ``requests.Session`` by default)."""
-        self._session: _Session = session if session is not None else requests.Session()
+        self._session: _Session = session or cast("_Session", requests.Session())
 
     def send(self, request: Request) -> Response:
         """Send ``request``, timing it."""

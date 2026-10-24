@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Krzysztof Rudnicki
 """Test doubles: a fake clock that never sleeps and a scripted transport."""
 
 from __future__ import annotations

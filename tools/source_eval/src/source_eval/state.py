@@ -33,9 +33,14 @@ class Manifest:
     def load(cls, path: Path) -> Manifest | None:
         """The manifest at ``path``, if the run exists."""
         data = read_json(path)
-        return (
-            cls(**cast("dict[str, object]", data)) if isinstance(data, dict) else None
-        )  # type: ignore[arg-type]
+        if not isinstance(data, dict):
+            return None
+        return cls(
+            sample=[str(k) for k in cast("list[object]", data["sample"])],
+            completeness=int(data["completeness"]),
+            images=int(data["images"]),
+            pages=int(data["pages"]),
+        )
 
     def save(self, path: Path) -> None:
         """Persist the manifest."""
@@ -92,6 +97,7 @@ class RunDir:
 
     def __init__(self, state_dir: Path, run_id: str) -> None:
         """Point at ``<state_dir>/runs/<run_id>``."""
+        self.run_id = run_id
         self.root = state_dir / "runs" / run_id
         self.manifest_path = self.root / "manifest.json"
 

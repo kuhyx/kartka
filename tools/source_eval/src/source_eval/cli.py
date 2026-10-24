@@ -1,6 +1,8 @@
 # Copyright (c) 2026 Krzysztof Rudnicki
-"""``source-eval`` command line. Every long step takes ``--budget`` seconds and
-exits 10 when another call should continue (state is on disk).
+"""``source-eval`` command line.
+
+Every long step takes ``--budget`` seconds and exits 10 when another call
+should continue (state is on disk).
 """
 
 from __future__ import annotations
@@ -16,11 +18,17 @@ from source_eval.app import App, Settings
 from source_eval.backends.suwayomi import SuwayomiConfig
 from source_eval.http import RequestsTransport, SystemClock
 from source_eval.report import firebase_writer
+from source_eval.state import Manifest
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
 
     from source_eval.report import RtdbWriter
+
+
+def _env(*names: str, default: str = "") -> str:
+    """First non-empty variable of ``names`` (Kartka's, then the deploy env file's)."""
+    return next((v for n in names if (v := os.environ.get(n))), default)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -67,8 +75,8 @@ def _settings(args: argparse.Namespace) -> Settings:
     s = Settings(
         suwayomi=SuwayomiConfig(
             args.suwayomi_url.rstrip("/"),
-            os.environ.get("KARTKA_SUWAYOMI_USER", ""),
-            os.environ.get("KARTKA_SUWAYOMI_PASS", ""),
+            _env("KARTKA_SUWAYOMI_USER", "SUWAYOMI_USER"),
+            _env("KARTKA_SUWAYOMI_PASS", "SUWAYOMI_PASSWORD"),
         )
     )
     if args.state_dir:
@@ -82,27 +90,31 @@ def dispatch(
     app: App, args: argparse.Namespace, writer: Callable[[], RtdbWriter]
 ) -> int:
     """Run the parsed command against ``app``."""
-    match args.cmd:
-        case "candidates":
-            return app.cmd_candidates()
-        case "reference":
-            return app.cmd_reference(args.budget, args.top)
-        case "init-run":
-            return app.cmd_init_run(
-                args.run_id, args.sample, args.completeness, args.images, args.pages
-            )
-        case "enrich":
-            return app.cmd_enrich(args.run_id, args.budget)
-        case "probe":
-            return app.cmd_probe(
-                app.select(args.ids, installed=args.installed), args.workers
-            )
-        case "run":
-            cands = app.select(args.ids, installed=args.installed)
-            return app.cmd_run(args.run_id, cands, args.budget, args.workers)
-        case _:
-            out = args.out or app.s.out_dir / "latest.json"
-            return app.cmd_report(args.run_id, out, writer() if args.publish else None)
+    commands: dict[str, Callable[[], int]] = {
+        "candidates": app.cmd_candidates,
+        "reference": lambda: app.cmd_reference(args.budget, args.top),
+        "init-run": lambda: app.cmd_init_run(
+            args.run_id,
+            args.sample,
+            Manifest([], args.completeness, args.images, args.pages),
+        ),
+        "enrich": lambda: app.cmd_enrich(args.run_id, args.budget),
+        "probe": lambda: app.cmd_probe(
+            app.select(args.ids, installed=args.installed), args.workers
+        ),
+        "run": lambda: app.cmd_run(
+            args.run_id,
+            app.select(args.ids, installed=args.installed),
+            args.budget,
+            args.workers,
+        ),
+        "report": lambda: app.cmd_report(
+            args.run_id,
+            args.out or app.s.out_dir / "latest.json",
+            writer() if args.publish else None,
+        ),
+    }
+    return commands[args.cmd]()
 
 
 def main(argv: Sequence[str] | None = None) -> int:

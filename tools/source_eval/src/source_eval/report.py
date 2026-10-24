@@ -3,10 +3,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 import datetime as dt
 import json
 from typing import TYPE_CHECKING, Protocol, cast
+lazy from collections.abc import Callable
+
+import crdt_sync
 
 from source_eval.http import Request, RequestsTransport, Transport
 from source_eval.metrics import metrics
@@ -24,10 +26,9 @@ APP_NAME = "kartka-source-eval"
 _ONLY_KEIYOUSHI = {"native": False, "mangayomiJs": False, "keiyoushi": True}
 
 
-def build_report(  # noqa: PLR0913 -- inputs of one pure aggregation
+def build_report(
     cands: dict[str, Candidate],
     run: RunDir,
-    run_id: str,
     manifest: Manifest,
     log: UptimeLog,
     now: float,
@@ -53,7 +54,7 @@ def build_report(  # noqa: PLR0913 -- inputs of one pure aggregation
         "generatedAt": dt.datetime.fromtimestamp(now, dt.UTC).strftime(
             "%Y-%m-%dT%H:%M:%SZ"
         ),
-        "runId": run_id,
+        "runId": run.run_id,
         "referenceSize": len(manifest.sample),
         "sources": ranked,
         "summary": {
@@ -99,12 +100,11 @@ class FirebaseRtdb:
             raise RuntimeError(msg)
 
 
-def firebase_writer() -> FirebaseRtdb:  # pragma: no cover -- live credentials only
+def firebase_writer() -> FirebaseRtdb:
     """Writer signed in with the shared ``~/.config/crdt-sync/`` credential."""
-    from crdt_sync import FirebaseConfig, FirebaseTokenProvider, credential_store_for
-
-    config = FirebaseConfig.load()
-    auth = FirebaseTokenProvider(config.api_key, credential_store_for(APP_NAME))
+    config = crdt_sync.FirebaseConfig.load()
+    store = crdt_sync.credential_store_for(APP_NAME)
+    auth = crdt_sync.FirebaseTokenProvider(config.api_key, store)
     if not auth.has_session():
         auth.sign_in(config.email, config.read_password())
     return FirebaseRtdb(config.database_url, auth.id_token, RequestsTransport())

@@ -1,6 +1,7 @@
+# Copyright (c) 2026 Krzysztof Rudnicki
 from __future__ import annotations
 
-from pathlib import Path
+lazy from pathlib import Path
 
 from hypothesis import given
 from hypothesis import strategies as st

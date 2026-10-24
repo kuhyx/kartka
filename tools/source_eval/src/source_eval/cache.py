@@ -1,10 +1,11 @@
+# Copyright (c) 2026 Krzysztof Rudnicki
 """On-disk response cache so a resumed run does not re-hit a site."""
 
 from __future__ import annotations
 
 import base64
 import hashlib
-from pathlib import Path
+lazy from pathlib import Path
 
 from source_eval.fsio import read_json, write_json_atomic
 from source_eval.http import Clock, Request, Response

@@ -8,7 +8,7 @@ forty lines.
 
 from __future__ import annotations
 
-from collections.abc import Iterator
+lazy from collections.abc import Iterator
 
 Value = int | bytes
 

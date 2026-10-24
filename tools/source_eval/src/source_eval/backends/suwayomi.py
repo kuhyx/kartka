@@ -119,10 +119,17 @@ class SuwayomiBackend:
             self._gql(_SOURCE, variables, host=local, record=False)
 
     def _list(self, cand: Candidate, kind: str, query: str | None) -> list[Hit]:
-        variables: dict[str, object] = {"s": self._source_id(cand), "t": kind, "q": query}
+        variables: dict[str, object] = {
+            "s": self._source_id(cand),
+            "t": kind,
+            "q": query,
+        }
         data = self._gql(_LIST, variables, host=cand.host)
         block = cast("dict[str, object]", data["fetchSourceManga"])
-        return [Hit(str(m["title"]), str(m["id"])) for m in cast("list[dict[str, object]]", block["mangas"])]
+        return [
+            Hit(str(m["title"]), str(m["id"]))
+            for m in cast("list[dict[str, object]]", block["mangas"])
+        ]
 
     def popular(self, cand: Candidate) -> list[Hit]:
         """First page of the extension's popular listing."""

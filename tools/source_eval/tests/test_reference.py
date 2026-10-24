@@ -1,14 +1,15 @@
+# Copyright (c) 2026 Krzysztof Rudnicki
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from typing import TYPE_CHECKING
+lazy from pathlib import Path
 
 from hypothesis import given
 from hypothesis import strategies as st
 import pytest
 
 from source_eval.budget import Deadline, stratified
-from source_eval.http import Request, Response
 from source_eval.match import best_hit, normalize, similarity
 from source_eval.models import Hit, RefTitle
 from source_eval.polite import HostGate, PoliteClient
@@ -20,6 +21,9 @@ from source_eval.reference.build import (
     load_sy_titles,
 )
 from tests.fakes import FakeClock, FakeTransport, fixture_json, resp
+
+if TYPE_CHECKING:
+    from source_eval.http import Request, Response
 
 
 def client_for(t: FakeTransport, clock: FakeClock) -> PoliteClient:

@@ -118,7 +118,7 @@ def summarize(probes: list[Observation], now: float) -> dict[str, object]:
 def failed(clock: Clock, host: str, resolver: Resolver = resolve) -> Observation:
     """The observation for a probe that never got a response."""
     kind = HOSTS_BLOCKED if locally_blocked(host, resolver) else None
-    return Observation(clock.now(), host, False, 0.0, kind, None)
+    return Observation.failure(clock.now(), host, kind)
 
 
 def probe_front_page(

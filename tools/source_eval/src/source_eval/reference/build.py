@@ -89,8 +89,8 @@ def build(  # noqa: PLR0913 -- explicit knobs beat a config object here
             return False
         page = ref.progress["anilistPage"] + 1
         titles, has_next = anilist.top_page(client, page, per_page)
-        for title in titles[: top - (page - 1) * per_page]:
-            ref.add(title)
+        for entry in titles[: top - (page - 1) * per_page]:
+            ref.add(entry)
         ref.progress["anilistPage"] = page if has_next else top
         ref.save()
     while ref.progress["syDone"] < len(sy_titles):

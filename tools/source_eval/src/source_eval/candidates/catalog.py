@@ -5,8 +5,8 @@ from __future__ import annotations
 
 from dataclasses import replace
 import json
-from pathlib import Path
 from typing import cast
+lazy from pathlib import Path
 
 from source_eval.candidates.indexes import (
     KEEP_LANGS,
@@ -17,7 +17,7 @@ from source_eval.candidates.indexes import (
 from source_eval.fsio import read_json, write_json_atomic
 from source_eval.http import Request
 from source_eval.models import Availability, Candidate, base_domain
-from source_eval.polite import PoliteClient
+lazy from source_eval.polite import PoliteClient
 
 KEIYOUSHI_INDEX = "https://github.com/keiyoushi/extensions/raw/repo/index.pb"
 MANGAYOMI_INDEX = "https://kodjodevf.github.io/mangayomi-extensions/index.json"
@@ -37,7 +37,7 @@ NATIVE_MANGADEX = Candidate(
 
 
 def parse_legacy(data: object) -> list[Candidate]:
-    """kuhy's SY-backup sources that no current index carries (hand-identified)."""
+    """Kuhy's SY-backup sources that no current index carries (hand-identified)."""
     return [
         Candidate(
             id=f"plugin:legacy-{item['slug']}",
@@ -53,7 +53,9 @@ def parse_legacy(data: object) -> list[Candidate]:
 
 
 def merge(
-    keiyoushi: list[Candidate], mangayomi: list[MangayomiEntry], legacy: list[Candidate] | None = None
+    keiyoushi: list[Candidate],
+    mangayomi: list[MangayomiEntry],
+    legacy: list[Candidate] | None = None,
 ) -> list[Candidate]:
     """Native first, then Keiyoushi, then JS-only Mangayomi sites.
 
@@ -99,7 +101,9 @@ def _get(client: PoliteClient, url: str) -> bytes:
     return response.body
 
 
-def fetch_candidates(client: PoliteClient, legacy_path: Path | None = None) -> list[Candidate]:
+def fetch_candidates(
+    client: PoliteClient, legacy_path: Path | None = None
+) -> list[Candidate]:
     """Download both indexes and merge them (plus the legacy list, if given)."""
     keiyoushi = parse_keiyoushi(_get(client, KEIYOUSHI_INDEX))
     mangayomi = parse_mangayomi(json.loads(_get(client, MANGAYOMI_INDEX)))
