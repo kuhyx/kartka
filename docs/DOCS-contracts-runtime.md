@@ -134,7 +134,9 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   pushed: {<remoteId>: n}, lastPushedChapter}`. Sync supplies
   `SyncRepositoryDecorator`, `SyncBindingDecorator` (tracking bindings) and
   `PollingRtdbReader` as `RtdbReader` (source health). Account page
-  `/more/sync`: email/password (Google sign-in off).
+  `/more/sync`: Google sign-in (Android: plugin picker; web: the GIS button
+  in a dialog, `lib/sync/ui/google_route.dart`) or email/password. Console
+  setup: `tools/sync/register_google_signin.sh`.
 - **Tracking counts finished chapters only** (`FinishedChapters`, Mihon
   rule): explicit read marks, floor of the highest such number. Opening a
   chapter never pushes.

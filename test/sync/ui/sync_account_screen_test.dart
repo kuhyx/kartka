@@ -4,6 +4,7 @@ import 'package:crdt_sync_flutter/testing/fake_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/sync/sync_status.dart';
+import 'package:kartka/sync/ui/google_route.dart';
 import 'package:kartka/sync/ui/sync_account_controller.dart';
 import 'package:kartka/sync/ui/sync_account_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -85,13 +86,60 @@ void main() {
     await t.pumpWidget(const SizedBox());
   });
 
-  testWidgets('the shared sign-in screen builds with Google off', (t) async {
+  FilledButton googleButton(WidgetTester t) => t.widget<FilledButton>(
+    find.ancestor(
+      of: find.text('Sign in with Google'),
+      matching: find.byWidgetPredicate((w) => w is FilledButton),
+    ),
+  );
+
+  testWidgets('Google sign-in is offered when a route exists', (t) async {
     installFakeSecureStorage();
     SharedPreferences.setMockInitialValues({});
-    await t.pumpWidget(MaterialApp(home: buildAccountSettingsScreen()));
+    await t.pumpWidget(
+      MaterialApp(home: buildAccountSettingsScreen(route: GoogleRoute.plugin)),
+    );
     await t.pumpAndSettle();
     expect(find.text('Sync settings'), findsOneWidget);
-    expect(find.textContaining('Google'), findsWidgets);
+    expect(googleButton(t).onPressed, isNotNull);
+    expect(find.textContaining('not available'), findsNothing);
+  });
+
+  testWidgets('tapping Google runs the route; a dismissed picker cancels', (
+    t,
+  ) async {
+    installFakeSecureStorage();
+    SharedPreferences.setMockInitialValues({});
+    var asked = 0;
+    await t.pumpWidget(
+      MaterialApp(
+        home: buildAccountSettingsScreen(
+          route: GoogleRoute.plugin,
+          sources: GoogleTokenSources(
+            plugin: (_) async {
+              asked++;
+              return null;
+            },
+          ),
+        ),
+      ),
+    );
+    await t.pumpAndSettle();
+    await t.tap(find.text('Sign in with Google'));
+    await t.pumpAndSettle();
+    expect(asked, 1);
+    expect(find.text('Google sign-in was cancelled.'), findsOneWidget);
+  });
+
+  testWidgets('a platform with no route says why, button disabled', (t) async {
+    installFakeSecureStorage();
+    SharedPreferences.setMockInitialValues({});
+    await t.pumpWidget(
+      MaterialApp(home: buildAccountSettingsScreen(route: GoogleRoute.none)),
+    );
+    await t.pumpAndSettle();
+    expect(googleButton(t).onPressed, isNull);
+    expect(find.textContaining('not available'), findsOneWidget);
   });
 
   testWidgets('connecting with a password reaches the sync opener', (t) async {

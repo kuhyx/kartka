@@ -47,6 +47,11 @@ dependencies:
   flutter_secure_storage: 11.2.0
   # Router (DOCS-contracts §10); lib/app/routes.dart builds and parses paths.
   go_router: 18.1.1
+  # Google sign-in for the sync account. The web half renders the GIS button
+  # (lib/sync/ui/gis_button_web.dart); Android goes through
+  # crdt_sync_flutter. Same versions crdt_sync_flutter resolves.
+  google_sign_in: 7.2.0
+  google_sign_in_web: 1.1.3
   # Only lib/platform/ may import this (enforced by
   # test/platform/import_boundaries_test.dart); sources go through KartkaHttp.
   http: 1.6.0
