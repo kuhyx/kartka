@@ -1,0 +1,40 @@
+/// The HTTP contract between the web build and the desktop wrapper.
+///
+/// The wrapper is a separate pure-Dart package (`desktop/`) and cannot
+/// import this file, so `desktop/lib/src/protocol.dart` repeats these
+/// values; tests on both sides pin them to the same literals.
+abstract final class KartkaWrapper {
+  /// Fixed loopback port. It cannot move: AniList and MAL have
+  /// `http://127.0.0.1:8791/oauth` registered as the redirect URI, and the
+  /// browser keys IndexedDB (the app's data) by origin.
+  static const port = 8791;
+
+  /// Header every API call must carry (value `1`). A custom header makes a
+  /// cross-site request non-simple, so other pages cannot reach the API
+  /// without a CORS preflight the wrapper never grants.
+  static const apiHeader = 'x-kartka';
+
+  /// Prefix for upstream request headers sent through [proxyPath]; lets the
+  /// page pass headers a browser forbids it to set (Referer, Cookie).
+  static const requestHeaderPrefix = 'x-kartka-h-';
+
+  /// Prefix for upstream response headers returned by [proxyPath]; exposes
+  /// headers the browser hides from fetch (Set-Cookie).
+  static const responseHeaderPrefix = 'x-kartka-r-';
+
+  /// `<METHOD> /proxy?url=<absolute http(s) URL>`.
+  static const proxyPath = '/proxy';
+
+  /// `GET|PUT|DELETE /files/<blobKey>`, `GET /files?prefix=` (JSON list).
+  static const filesPath = '/files';
+
+  /// `GET|PUT|DELETE /secrets/<key>`, `GET /secrets?prefix=` (JSON map).
+  static const secretsPath = '/secrets';
+
+  /// OAuth redirect target (an HTML page that hands the URL back).
+  static const oauthPath = '/oauth';
+
+  /// `POST` (the callback page) / `GET` (the app; 204 while empty, consumed
+  /// on read) / `DELETE` (clear a stale result).
+  static const oauthResultPath = '/oauth/result';
+}
