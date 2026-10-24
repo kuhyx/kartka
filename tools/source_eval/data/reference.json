@@ -1,0 +1,9423 @@
+{
+ "complete": true,
+ "generatedAt": 1792844823.3387177,
+ "progress": {
+  "anilistPage": 10
+ },
+ "referenceSize": 500,
+ "syProcessed": [],
+ "titles": [
+  {
+   "anilistId": 105778,
+   "chapters": 232,
+   "chaptersFrom": "anilist",
+   "key": "anilist:105778",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Chainsaw Man",
+    "チェンソーマン",
+    "CSM",
+    "رجل المنشار",
+    "Человек-бензопила",
+    "체인소 맨",
+    "鏈鋸人",
+    "电锯人",
+    "มนุษย์เลื่อยยนต์",
+    "Testere Adam"
+   ]
+  },
+  {
+   "anilistId": 105398,
+   "chapters": 201,
+   "chaptersFrom": "anilist",
+   "key": "anilist:105398",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Solo Leveling",
+    "Na Honjaman Level Up",
+    "나 혼자만 레벨업",
+    "I Level Up Alone",
+    "Only I Level Up",
+    "俺だけレベルアップな件",
+    "我獨自升級",
+    "Ore dake Level Up na Ken",
+    "Поднятие уровня в одиночку",
+    "Тільки я візьму новий рівень",
+    "Вебтун. Поднятие уровня в одиночку. Solo Leveling"
+   ]
+  },
+  {
+   "anilistId": 101517,
+   "chapters": 272,
+   "chaptersFrom": "anilist",
+   "key": "anilist:101517",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Jujutsu Kaisen",
+    "呪術廻戦",
+    "Sorcery Fight",
+    "주술회전",
+    "咒术回战",
+    "Guerra de Hechiceros",
+    "Batalha de Feiticeiros",
+    "JJK",
+    "มหาเวทย์ผนึกมาร",
+    "Chú thuật hồi chiến",
+    "Магическая битва",
+    "La guerra màgica",
+    "Prokleté války",
+    "咒術迴戰",
+    "Contiendas de Brujería",
+    "Lanet Savaşları"
+   ]
+  },
+  {
+   "anilistId": 30002,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:30002",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Berserk",
+    "ベルセルク",
+    "بيرسيرك",
+    "Beruseruku",
+    "Берсерк",
+    "ברזרק",
+    "برزرک",
+    "เบอร์เซิร์ก",
+    "烙印勇士",
+    "烙印战士",
+    "베르세르크",
+    "Berserk Max",
+    "烙印戰士"
+   ]
+  },
+  {
+   "anilistId": 30013,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:30013",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "One Piece",
+    "ONE PIECE",
+    "원피스",
+    "וואן פיס ",
+    "One Piece - Большой куш",
+    "ワンピース",
+    "ONE PIECE～航海王～",
+    "วันพีซ"
+   ]
+  },
+  {
+   "anilistId": 53390,
+   "chapters": 141,
+   "chaptersFrom": "anilist",
+   "key": "anilist:53390",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Attack on Titan",
+    "Shingeki no Kyojin",
+    "進撃の巨人",
+    "Atak Tytanów",
+    "SnK",
+    "AoT",
+    "Ataque dos Titãs",
+    "Ataque a los Titanes",
+    "L'Attacco dei Giganti",
+    "Titana Saldırı",
+    "Útok titánů",
+    "Titaanien sota - Attack on Titan",
+    "Атака на титанов",
+    "Napad titana",
+    "ผ่าพิภพไททัน",
+    "L'Attaque des Titans",
+    "Atacul Titanilor",
+    "進擊的巨人",
+    "진격의 거인",
+    "Đại chiến Titan",
+    " Ataque de los Titanes",
+    "Atac als Titans",
+    "Атака титанів",
+    "Атаката на титаните"
+   ]
+  },
+  {
+   "anilistId": 87216,
+   "chapters": 207,
+   "chaptersFrom": "anilist",
+   "key": "anilist:87216",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Demon Slayer: Kimetsu no Yaiba",
+    "Kimetsu no Yaiba",
+    "鬼滅の刃",
+    "KnY",
+    "Guardianes de la Noche",
+    "Miecz zabójcy demonów",
+    "Les Rôdeurs de la nuit",
+    "İblis Keser",
+    "Zabiják démonů",
+    "귀멸의 칼날",
+    "قاتل الشياطين",
+    "ดาบพิฆาตอสูร",
+    "Thanh gươm diệt quỷ",
+    "Guardians de la Nit",
+    "Истребитель демонов",
+    "Ubica demona",
+    "鬼滅之刃"
+   ]
+  },
+  {
+   "anilistId": 63327,
+   "chapters": 144,
+   "chaptersFrom": "anilist",
+   "key": "anilist:63327",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tokyo Ghoul",
+    "東京喰種 トーキョーグール",
+    "Toukyou Kushu",
+    "Tokyo Guru",
+    "Tokyo Gûl",
+    "Tokijský ghúl",
+    "Токийский гуль",
+    "도쿄 구울",
+    "Tokijski gul",
+    "東京喰種"
+   ]
+  },
+  {
+   "anilistId": 34632,
+   "chapters": 147,
+   "chaptersFrom": "anilist",
+   "key": "anilist:34632",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Goodnight Punpun",
+    "Oyasumi Punpun",
+    "おやすみプンプン",
+    "Dobranoc, Punpunie",
+    "Bonne nuit Punpun!",
+    "Boa Noite Punpun",
+    "Bona nit, Punpun",
+    "Buenas noches, Punpun",
+    "Gute Nacht, Punpun",
+    "잘자 뿡뿡",
+    "晚安布布",
+    "לילה טוב, פונפון",
+    "Buonanotte, Punpun",
+    "İyi Geceler, Punpun",
+    "ฝันดีนะปุนปุน",
+    "Laku noć, Punpune",
+    "Добраніч, Пунпуне"
+   ]
+  },
+  {
+   "anilistId": 85486,
+   "chapters": 432,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85486",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "My Hero Academia",
+    "Boku no Hero Academia",
+    "僕のヒーローアカデミア",
+    "HeroAca",
+    "ヒロアカ",
+    "BNHA",
+    "MHA",
+    "My Hero Academia- Akademia bohaterów",
+    "Mitt Helteakademia",
+    "나의 히어로 아카데미아",
+    "나히아",
+    "מיי הירו אקדמיה",
+    "אקדמיית הגיבורים שלי",
+    "Kahramanlık Akademim",
+    "My Hero Academia - Moje hrdinská akademie",
+    "Моя геройская академия",
+    "Học Viện Siêu Anh Hùng",
+    "มายฮีโร่อคาเดเมีย",
+    "我的英雄學院"
+   ]
+  },
+  {
+   "anilistId": 74347,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:74347",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "One-Punch Man",
+    "One Punch-Man",
+    "ワンパンマン",
+    "OPM",
+    "One Punch Man",
+    "Wanpanman",
+    "رجل اللكمة الواحدة",
+    "One-Punch Man: Tek Yumruk",
+    "원펀맨",
+    "ONE-PUNCH MAN 一拳超人"
+   ]
+  },
+  {
+   "anilistId": 30656,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:30656",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Vagabond",
+    "バガボンド",
+    "배가본드"
+   ]
+  },
+  {
+   "anilistId": 108556,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:108556",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "SPY x FAMILY",
+    "SPY×FAMILY",
+    "SxF",
+    "스파이 패밀리",
+    "SPY×FAMILY: WJ Special Extra Mission!!",
+    "间谍过家家",
+    "スパイファミリー",
+    "Семья шпиона",
+    "SPY×FAMILY 間諜家家酒"
+   ]
+  },
+  {
+   "anilistId": 30642,
+   "chapters": 224,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30642",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Vinland Saga",
+    "ヴィンランド・サガ",
+    "Saga Winlandzka",
+    "Сага о Винланде",
+    "Сага про Вінланд",
+    "海盜戰記VINLAND SAGA",
+    "빈란드 사가",
+    "冰海战记"
+   ]
+  },
+  {
+   "anilistId": 87423,
+   "chapters": 181,
+   "chaptersFrom": "anilist",
+   "key": "anilist:87423",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Promised Neverland",
+    "Yakusoku no Neverland",
+    "約束のネバーランド",
+    "YakuNeba",
+    "Vadedilmiş Yokyer",
+    "TPN",
+    "Zaslíbená Země Nezemě",
+    "Miền đất hứa",
+    "Обещанная страна грёз",
+    "พันธสัญญาเนเวอร์แลนด์ ",
+    "約定的夢幻島",
+    "Obećana Nedođija",
+    "약속의 네버랜드"
+   ]
+  },
+  {
+   "anilistId": 119257,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:119257",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Omniscient Reader",
+    "Jeonjijeok Dokja Sijeom",
+    "전지적 독자 시점",
+    "Omniscient Reader's Viewpoint",
+    "ORV",
+    "Punkt Widzenia Wszechwiedzącego Czytelnika",
+    "Lector omnisciente",
+    "Lecteur Omniscient",
+    "Der allwissende Leser",
+    "전독시",
+    "全知读者",
+    "全知讀者視角",
+    "อ่านชะตาวันสิ้นโลก",
+    "全知的な読者の視点から",
+    "Zenchiteki na Dokusha no Shiten kara",
+    "Всеведущий читатель"
+   ]
+  },
+  {
+   "anilistId": 106130,
+   "chapters": 272,
+   "chaptersFrom": "mangaupdates",
+   "key": "anilist:106130",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Blue Lock",
+    "ブルーロック",
+    "Bluelock",
+    "BLUE LOCK ขังดวลแข้ง",
+    "Синя тюрма",
+    "블루 록",
+    "Блу Лок"
+   ]
+  },
+  {
+   "anilistId": 72451,
+   "chapters": 152,
+   "chaptersFrom": "anilist",
+   "key": "anilist:72451",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Horimiya",
+    "ホリミヤ",
+    "โฮริมิยะ สาวมั่นกับนายมืดมน",
+    "Horimiya - Hori and Miyamura",
+    "Хорімія",
+    "호리미야"
+   ]
+  },
+  {
+   "anilistId": 30012,
+   "chapters": 706,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30012",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Bleach",
+    "BLEACH",
+    "ブリーチ",
+    "بلیچ",
+    "死神",
+    "BLEACH 블리치",
+    "境·界死神（）"
+   ]
+  },
+  {
+   "anilistId": 86635,
+   "chapters": 281,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86635",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kaguya-sama: Love is War",
+    "Kaguya-sama wa Kokurasetai: Tensaitachi no Renai Zunousen",
+    "かぐや様は告らせたい～天才たちの恋愛頭脳戦～",
+    "Kaguya Wants to be Confessed To: The Geniuses' War of Love and Brains",
+    "카구야 님은 고백받고 싶어 ~천재들의 연애 두뇌전~",
+    "Miłość to wojna",
+    "Kaguya-sama wa Kokurasetai: Tensai-tachi no Renai Zunousen",
+    "Госпожа Кагуя: В любви как на войне. Любовная битва двух гениев",
+    "สารภาพรักกับคุณคางุยะซะดีๆ ~สงครามประสาทความรักของเหล่าอัจฉริยะ~",
+    "Kaguya-sama: Cuộc chiến tỏ tình",
+    "辉夜大小姐想让我告白 ~天才们的恋爱头脑战",
+    "輝夜姬想讓人告白~天才們的戀愛頭腦戰~",
+    "Kaguya-sama: Aşk Savaştır"
+   ]
+  },
+  {
+   "anilistId": 102988,
+   "chapters": 279,
+   "chaptersFrom": "anilist",
+   "key": "anilist:102988",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tokyo Revengers",
+    "Tokyo卍Revengers",
+    "東京卍リベンジャーズ",
+    "Toukyou卍Revengers",
+    "Tokyo Manji Revengers",
+    "โตเกียว卍รีเวนเจอร์ส",
+    "โตเกียว รีเวนเจอร์ส",
+    "Токійські месники",
+    "Токийские мстители",
+    "Tokijski osvetnici",
+    "Justițiarii din Tokio",
+    "도쿄 리벤저스",
+    "TOKYO REVENGERS โตเกียว รีเวนเจอร์ส",
+    "重生之道"
+   ]
+  },
+  {
+   "anilistId": 132029,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:132029",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Dandadan",
+    "ダンダダン",
+    "ดันดาดัน",
+    "膽大黨",
+    "단다단"
+   ]
+  },
+  {
+   "anilistId": 30026,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:30026",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Hunter x Hunter",
+    "HUNTER×HUNTER",
+    "ハンター×ハンター",
+    "HxH",
+    "헌터×헌터",
+    "القناص"
+   ]
+  },
+  {
+   "anilistId": 30003,
+   "chapters": 249,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30003",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "20th Century Boys",
+    "20 Seiki Shounen",
+    "20世紀少年",
+    "Nijuu Seiki Shounen",
+    "Nijuusseiki Shounen",
+    "20thCB",
+    "20th Century Boys - Chłopaki z dwudziestego wieku",
+    "فتيان القرن 20"
+   ]
+  },
+  {
+   "anilistId": 86123,
+   "chapters": 392,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86123",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Black Clover",
+    "ブラッククローバー",
+    "블랙 클로버"
+   ]
+  },
+  {
+   "anilistId": 30001,
+   "chapters": 162,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30001",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Monster",
+    "MONSTER",
+    "몬스터"
+   ]
+  },
+  {
+   "anilistId": 97852,
+   "chapters": 537,
+   "chaptersFrom": "anilist",
+   "key": "anilist:97852",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Komi Can't Communicate",
+    "Komi-san wa, Komyushou desu.",
+    "古見さんは、コミュ症です。",
+    "Comi san ha Comyusho desu",
+    "Komi-san wa Communication Shougai desu.",
+    "Komi-san wa Comyushou desu.",
+    "Miss Komi is Bad at Communication.",
+    "Komi-san Can't Communicate",
+    "Komi-san Has a Communication Disorder",
+    "Komi-san no puede comunicarse",
+    "古见同学有交流障碍症",
+    "โฉมงามพูดไม่เก่งกับผองเพื่อนไม่เต็มเต็ง",
+    "Komi cherche ses mots",
+    "Komi - Nữ thần sợ giao tiếp",
+    "Komi Não Consegue se Comunicar",
+    "Komi Konuşmaktan Korkuyor",
+    "코미 양은 커뮤증입니다",
+    "Komi Sulit Berkomunikasi",
+    "Komi ne ume da komunicira"
+   ]
+  },
+  {
+   "anilistId": 117195,
+   "chapters": 171,
+   "chaptersFrom": "anilist",
+   "key": "anilist:117195",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "[Oshi no Ko]",
+    "【推しの子】",
+    "Favorite Girl",
+    "My Idol's Child",
+    "[Mein*Star]",
+    "[เกิดใหม่เป็นลูกโอชิ]",
+    "Anak Idola",
+    "【OSHI NO KO】",
+    "【MOJA GWIAZDA】",
+    "【我推的孩子】",
+    "OSHI NO KO - DƯỚI ÁNH HÀO QUANG",
+    "Oshi no Ko: Minha Estrela Preferida",
+    "[Moje hvězda]",
+    "【OSHI NO KO】Mi Idol Favorita",
+    "【최애의 아이】"
+   ]
+  },
+  {
+   "anilistId": 120760,
+   "chapters": 129,
+   "chaptersFrom": "anilist",
+   "key": "anilist:120760",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kaiju No.8",
+    "Kaijuu 8-gou",
+    "怪獣８号",
+    "Monster #8",
+    "8Kaijuu",
+    "KAIJU No. EIGHT",
+    "Kaiju Nº8",
+    "怪兽8号",
+    "Kaidžú č. 8",
+    "괴수 8호",
+    "怪獸8號"
+   ]
+  },
+  {
+   "anilistId": 31706,
+   "chapters": 95,
+   "chaptersFrom": "anilist",
+   "key": "anilist:31706",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "JoJo's Bizarre Adventure: Part 7–Steel Ball Run",
+    "JoJo no Kimyou na Bouken: Steel Ball Run",
+    "ジョジョの奇妙な冒険 スティール・ボール・ラン",
+    "Dai 7 Bu Johnny Joestar",
+    "JoJo's Bizarre Adventure Part 7: Steel Ball Run",
+    "מרוץ כדור הפלדה",
+    "Le bizzarre avventure di JoJo: Steel Ball Run"
+   ]
+  },
+  {
+   "anilistId": 87170,
+   "chapters": 83,
+   "chaptersFrom": "anilist",
+   "key": "anilist:87170",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Fire Punch",
+    "ファイアパンチ",
+    "파이어 펀치",
+    "炎拳"
+   ]
+  },
+  {
+   "anilistId": 85611,
+   "chapters": 181,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85611",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tokyo Ghoul:re",
+    "東京喰種-トーキョーグール-:re",
+    "Tokyo Gûl: RE",
+    "Tokijský ghúl: re",
+    "Токийский гуль: re",
+    "도쿄 구울:re"
+   ]
+  },
+  {
+   "anilistId": 65243,
+   "chapters": 404,
+   "chaptersFrom": "anilist",
+   "key": "anilist:65243",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Haikyu!!",
+    "Haikyuu!!",
+    "ハイキュー！！",
+    "Ball High!!",
+    "HQ!!",
+    "High Kyuu!!",
+    "ไฮคิว!! คู่ตบฟ้าประทาน",
+    "Haikyu!! - Chàng khổng lồ tí hon",
+    "하이큐!!",
+    "排球少年!!"
+   ]
+  },
+  {
+   "anilistId": 101583,
+   "chapters": 119,
+   "chaptersFrom": "anilist",
+   "key": "anilist:101583",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "My Dress-Up Darling",
+    "Sono Bisque Doll wa Koi wo Suru",
+    "その着せ替え人形は恋をする",
+    "Sono Kisekae Ningyou wa Koi wo suru",
+    "Sexy Cosplay Doll",
+    "More Than a Doll",
+    "Projekt: Cosplay",
+    "หนุ่มเย็บผ้ากับสาวนักคอสเพลย์",
+    "更衣人偶坠入爱河",
+    "Minha Adorável Cosplayer",
+    "Ця порцелянова лялечка закохалася",
+    "戀上換裝娃娃",
+    "Láska ve střihu cosplaye",
+    "Moja lutka za oblačenje",
+    "Kisekoi",
+    "Oyuncak Bebek Sevgilim",
+    "그 비스크 돌은 사랑을 한다"
+   ]
+  },
+  {
+   "anilistId": 85143,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:85143",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tower of God",
+    "Sinui Tap",
+    "신의 탑",
+    "Kami no Tou",
+    "A Torre de Deus",
+    "ทาวเวอร์ออฟก๊อด หอคอยเทพเจ้า",
+    "神之塔"
+   ]
+  },
+  {
+   "anilistId": 30021,
+   "chapters": 108,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30021",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Death Note",
+    "DEATH NOTE",
+    "デスノート",
+    "Ölüm Defteri",
+    "Death Note - Zápisník smrti",
+    "Beležnica smrti",
+    "Τετράδιο θανάτου",
+    "Death Note: Тетрадка на смъртта",
+    "死亡筆記本",
+    "데스노트"
+   ]
+  },
+  {
+   "anilistId": 30011,
+   "chapters": 700,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30011",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Naruto",
+    "NARUTO",
+    "NARUTO -ナルト-",
+    "נארוטו",
+    "Наруто",
+    "火影忍者",
+    "나루토",
+    "นินจาคาถา โอ้โฮเฮะ"
+   ]
+  },
+  {
+   "anilistId": 100994,
+   "chapters": 127,
+   "chaptersFrom": "anilist",
+   "key": "anilist:100994",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Hell’s Paradise: Jigokuraku",
+    "Jigokuraku",
+    "地獄楽",
+    "Hell's Paradise",
+    "Paradition",
+    "Heavenhell",
+    "Jigoku Raku",
+    "Piekielny Raj",
+    "지옥락",
+    "สุขาวดีอเวจี",
+    "地獄樂"
+   ]
+  },
+  {
+   "anilistId": 85135,
+   "chapters": 64,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85135",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "A Silent Voice",
+    "Koe no Katachi",
+    "聲の形",
+    "The Shape of Voice",
+    "A Voz do Silêncio",
+    "A Forma da Voz",
+    "Kształt twojego głosu",
+    "Sessizliğin Sesi",
+    "声之形",
+    "Форма голоса",
+    "Němý hlas",
+    "รักไร้เสียง",
+    "Oblik glasa",
+    "목소리의 형태",
+    "Форма голосу",
+    "Silhuett av en stemme"
+   ]
+  },
+  {
+   "anilistId": 125828,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:125828",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Sakamoto Days",
+    "SAKAMOTO DAYS",
+    "サカモト デイズ",
+    "Дни Сакамото",
+    "SAKAMOTO DAYS 坂本日常",
+    "사카모토 데이즈"
+   ]
+  },
+  {
+   "anilistId": 98416,
+   "chapters": 236,
+   "chaptersFrom": "anilist",
+   "key": "anilist:98416",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Dr. STONE",
+    "Dr.STONE"
+   ]
+  },
+  {
+   "anilistId": 31133,
+   "chapters": 191,
+   "chaptersFrom": "anilist",
+   "key": "anilist:31133",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Dorohedoro",
+    "ドロヘドロ",
+    "דורוהדורו",
+    "도로헤도로",
+    "Дорохедоро"
+   ]
+  },
+  {
+   "anilistId": 30436,
+   "chapters": 20,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30436",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Uzumaki: Spiral into Horror",
+    "Uzumaki",
+    "うずまき",
+    "The Spiral",
+    "Spirale",
+    "Uzumaki - A Espiral do Horror",
+    "Whirlpool",
+    "漩渦",
+    "أوزوماكي",
+    "Spirála",
+    "소용돌이",
+    "Спіраль"
+   ]
+  },
+  {
+   "anilistId": 146983,
+   "chapters": 1,
+   "chaptersFrom": "anilist",
+   "key": "anilist:146983",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Goodbye, Eri",
+    "Sayonara Eri",
+    "さよなら絵梨",
+    "Adiós, Eri",
+    "Adieu, Eri",
+    "Żegnaj, Eri ",
+    "안녕, 에리",
+    "Adeus, Eri",
+    "Tạm biệt Eri",
+    "Elveda Eri"
+   ]
+  },
+  {
+   "anilistId": 118586,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:118586",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Frieren: Beyond Journey’s End",
+    "Sousou no Frieren",
+    "葬送のフリーレン",
+    "Frieren at the Funeral",
+    "장송의 프리렌",
+    "Frieren: Oltre la Fine del Viaggio",
+    "คำอธิษฐานในวันที่จากลา Frieren",
+    "Frieren e a Jornada para o Além",
+    "Frieren – Nach dem Ende der Reise",
+    "葬送的芙莉蓮",
+    "Frieren After \"The End\"",
+    "Frieren: Remnants of the Departed",
+    "Frieren. U kresu drogi",
+    "Frieren",
+    "FRIEREN: Más allá del fin del viaje",
+    "Проводжальниця Фрірен",
+    "Frieren: Ved reisens ende",
+    "Frieren - Pháp sư tiễn táng"
+   ]
+  },
+  {
+   "anilistId": 97553,
+   "chapters": 18,
+   "chaptersFrom": "anilist",
+   "key": "anilist:97553",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Three Days of Happiness",
+    "Jumyou wo Kaitotte Moratta. Ichinen ni Tsuki, Ichimanen de.",
+    "寿命を買い取ってもらった。一年につき、一万円で。",
+    "Mikkakan no Koufuku",
+    "I sold my life for ten thousand yen per year.",
+    "Sprzedałem swoje życie za 10 000 jenów rocznie",
+    "Il prezzo di una vita.",
+    "以一年一萬圓的價格，賣掉我剩餘的壽命。",
+    " Ich habe mein Leben für 10.000 Yen pro Jahr verkauft",
+    "Ba ngày hạnh phúc",
+    "Le prix du reste de ma vie",
+    "El precio de mi vida"
+   ]
+  },
+  {
+   "anilistId": 74489,
+   "chapters": 120,
+   "chaptersFrom": "anilist",
+   "key": "anilist:74489",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Land of the Lustrous",
+    "Houseki no Kuni",
+    "宝石の国",
+    "La Tierra de las Gemas",
+    "L'Ère des Cristaux",
+    "Das Land der Juwelen",
+    "Terra das Gemas",
+    "Vương quốc bảo thạch",
+    "HNK",
+    "LOTL",
+    "Kraina klejnotów",
+    "寶石之國",
+    "宝石之国",
+    "보석의 나라",
+    "Страна самоцветов",
+    "Край самоцвітів"
+   ]
+  },
+  {
+   "anilistId": 98263,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:98263",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Witch Hat Atelier",
+    "Tongari Boushi no Atelier",
+    "とんがり帽子のアトリエ",
+    "L'Atelier des Sorciers",
+    "Atelier spiczastych kapeluszy",
+    "Atelier of Witch Hat",
+    "Ателье колдовских колпаков",
+    " 고깔모자의 아틀리에",
+    "Ateliér špičatých klobouků",
+    "Xưởng phép thuật",
+    "El Atelier de Sombreros de Mago",
+    " จอมเวทฝึกหัดกับหมวกมหัศจรรย์",
+    "Ательє чаклунських капелюхів",
+    "Atelierul Vrăjitoarelor",
+    "魔法帽的工作室",
+    "Cadı Şapkası Atölyesi",
+    "尖帽子的魔法工坊",
+    "Das Geheimnis der Hexen",
+    "Heksehatt-atelieret"
+   ]
+  },
+  {
+   "anilistId": 140475,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:140475",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Fragrant Flower Blooms With Dignity",
+    "Kaoru Hana wa Rin to Saku",
+    "薫る花は凛と咲く",
+    "薰香花朵凛然綻放",
+    "Kaoruhana",
+    "La Nobleza de las Flores",
+    "Kaoru und Rin: So nah und doch so fern",
+    "Kaoru i Rin. Rozkwitając z tobą",
+    "Bloom",
+    "The Fragrant Flower Blooms With Dignity - Kaoru & Rin",
+    "A Nobreza das Flores",
+    "Güzel Kokulu Çiçekler Zarafetle Açar",
+    "향기로운 꽃은 늠름하게 핀다",
+    "Hoa thơm kiêu hãnh",
+    "Духмяна квітка в гордім цвітінні"
+   ]
+  },
+  {
+   "anilistId": 30025,
+   "chapters": 116,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30025",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Fullmetal Alchemist",
+    "Hagane no Renkinjutsushi",
+    "鋼の錬金術師",
+    "Full Metal Alchemist",
+    "FMA",
+    "HagaRen",
+    "Fullmetal Alchemist Gaiden",
+    "Çelik Simyacı",
+    "Fullmetal Alchemist - Ocelový alchymista",
+    " Стальной Алхимик",
+    "Сталевий Алхімік",
+    "Cang Giả Kim Thuật Sư",
+    "Čelični alhemičar",
+    "鋼之鍊金術師",
+    "แขนกลคนแปรธาตุ",
+    "강철의 연금술사",
+    "Железният Алхимик"
+   ]
+  },
+  {
+   "anilistId": 86964,
+   "chapters": 94,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86964",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Bastard",
+    "Hurejasik",
+    "후레자식",
+    "BASTARD",
+    "不肖子",
+    "Bâtard",
+    "Bastardo",
+    "バスタード",
+    "Kopile",
+    "Bastard. Сволочь."
+   ]
+  },
+  {
+   "anilistId": 107237,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:107237",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Blue Period",
+    "ブルーピリオド",
+    "The Blue Period",
+    "Блакитний період",
+    "藍色時期",
+    "블루 피리어드",
+    "Голубой период"
+   ]
+  },
+  {
+   "anilistId": 46765,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:46765",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kingdom",
+    "キングダム",
+    "킹덤",
+    "王者天下"
+   ]
+  },
+  {
+   "anilistId": 100664,
+   "chapters": 189,
+   "chaptersFrom": "anilist",
+   "key": "anilist:100664",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Don't Toy With Me, Miss Nagatoro",
+    "Ijiranaide, Nagatoro-san",
+    "イジらないで、長瀞さん",
+    "Please don't bully me, Nagatoro",
+    "不要欺负我、长瀞同学",
+    "No me jodas, Nagatoro",
+    "Nie drocz się ze mną, Nagatoro!",
+    "No me rayes, Nagatoro",
+    "ยัยตัวแสบแอบน่ารัก นางาโทโระ",
+    "Arrête de me chauffer, Nagatoro",
+    "Neck mich nicht, Nagatoro-san",
+    "不要欺負我，長瀞同學",
+    "Não Mexa Comigo, Nagatoro"
+   ]
+  },
+  {
+   "anilistId": 30051,
+   "chapters": 276,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30051",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Slam Dunk",
+    "SLAM DUNK",
+    "スラムダンク",
+    "Slam Dunk: 10 Days After",
+    "سلام دانك",
+    "슬램덩크 "
+   ]
+  },
+  {
+   "anilistId": 54705,
+   "chapters": 58,
+   "chaptersFrom": "anilist",
+   "key": "anilist:54705",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Flowers of Evil",
+    "Aku no Hana",
+    "惡の華",
+    "Blossom of Evil",
+    "Les Fleurs du mal",
+    "Las Flores del Mal",
+    "I fiori del male",
+    "As Flores do Mal",
+    "Die Blumen des Bösen - Aku no Hana",
+    "Kwiaty zła",
+    "惡之華 ",
+    "악의 꽃"
+   ]
+  },
+  {
+   "anilistId": 37375,
+   "chapters": 170,
+   "chaptersFrom": "anilist",
+   "key": "anilist:37375",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Climber",
+    "Kokou no Hito",
+    "孤高の人",
+    "Ascension",
+    "Koko no Hito"
+   ]
+  },
+  {
+   "anilistId": 30936,
+   "chapters": 166,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30936",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Homunculus",
+    "ホムンクルス",
+    "Homunkurusu"
+   ]
+  },
+  {
+   "anilistId": 33009,
+   "chapters": 158,
+   "chaptersFrom": "anilist",
+   "key": "anilist:33009",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "JoJo's Bizarre Adventure Part 6: Stone Ocean",
+    "JoJo no Kimyou na Bouken: Stone Ocean",
+    "ジョジョの奇妙な冒険 ストーンオーシャン",
+    "Dai 6 Bu Kuujou Jolyne: Stone Ocean",
+    "JoJo's Bizarre Adventure Part 6 Jolyne Kujo: Stone Ocean ",
+    "Le bizzarre avventure di JoJo: Stone Ocean"
+   ]
+  },
+  {
+   "anilistId": 105469,
+   "chapters": 4,
+   "chaptersFrom": "anilist",
+   "key": "anilist:105469",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Jujutsu Kaisen 0",
+    "Jujutsu Kaisen 0: Tokyo Toritsu Jujutsu Koutou Senmon Gakkou",
+    "呪術廻戦 0 東京都立呪術高等専門学校",
+    "Tokyo Metropolitan Magic Technical School",
+    "Jujutsu Kaisen vol.0: Tokyo Metropolitan Magic Technical School",
+    "Tokyo Metropolitan Magic Technical College",
+    "東京都立咒術高等專門學校",
+    "东京都立咒术高等专门学校",
+    "JJK 0",
+    "주술회전. 0(외전): 눈부신 어둠 : 도쿄 도립 주술 고등전문학교",
+    "มหาเวทย์ผนึกมาร โรงเรียนเฉพาะทางไสยศาสตร์นครโตเกียว ",
+    "มหาเวทย์ผนึกมาร 0",
+    "東京都立呪術高等専門学校",
+    "Tokyo Toritsu Jujutsu Kodo Senmon Gakko",
+    "Chú thuật hồi chiến - Trường chuyên chú thuật Tokyo",
+    "جوجوتسو كايسن 0",
+    "Jujutsu Kaisen tom 0 - Technikum Jujutsu w Tokio ",
+    "주술회전0 도쿄 도립 주술 고등전문학교"
+   ]
+  },
+  {
+   "anilistId": 98842,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:98842",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Toilet-Bound Hanako-kun",
+    "Jibaku Shounen Hanako-kun",
+    "地縛少年 花子くん",
+    "지박소년 하나코 군",
+    "Hanako, duch ze szkolnej toalety",
+    "Hanako-Kun e os mistérios do colégio Kamome",
+    "Hanako-Kun, El Fantasma del Lavabo",
+    "地缚少年花子君",
+    "ฮานาโกะคุง วิญญาณติดที่",
+    "Hanako kun - I sette misteri dell'Accademia Kamome",
+    "\"Cậu\" ma nhà xí Hanako",
+    "Туалетний привид Ханако",
+    "Туалетный мальчик Ханако",
+    "Hanako si Arwah Penasaran",
+    "Mein Schulgeist Hanako",
+    "Hanako-Kun y los misterios de la Academia Kamome"
+   ]
+  },
+  {
+   "anilistId": 169355,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:169355",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kagurabachi",
+    "カグラバチ",
+    "神樂鉢",
+    "KGB",
+    "คากุระบาจิ",
+    "카구라바치"
+   ]
+  },
+  {
+   "anilistId": 30564,
+   "chapters": 383,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30564",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Gantz",
+    "GANTZ",
+    "ガンツ",
+    "Gantz/Osaka",
+    "간츠"
+   ]
+  },
+  {
+   "anilistId": 140407,
+   "chapters": 222,
+   "chaptersFrom": "anilist",
+   "key": "anilist:140407",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Greatest Estate Developer",
+    "Yeokdaegeum Yeongji Seolgyesa",
+    "역대급 영지 설계사",
+    "The World's Best Engineer",
+    "The Greatest Estate Designer",
+    "El mejor desarrollador inmobiliario",
+    "史詩級領地設計師",
+    "史上最高の領地設計士",
+    "史诗级领地设计师",
+    "ยอดสถาปนิกผู้พิทักษ์อาณาจักร",
+    "Niezrównany Inżynier"
+   ]
+  },
+  {
+   "anilistId": 100230,
+   "chapters": 122,
+   "chaptersFrom": "anilist",
+   "key": "anilist:100230",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Quintessential Quintuplets",
+    "Go-toubun no Hanayome",
+    "五等分の花嫁",
+    "5-toubun no Hanayome",
+    "The Five Wedded Brides",
+    "Somos quintillizas",
+    "Las Quintillizas",
+    "As Quíntuplas",
+    "Sposób na pięcioraczki",
+    "Eşsiz Beşizler",
+    "Nhà có 5 Nàng dâu",
+    "เจ้าสาวผมเป็นแฝดห้า",
+    "П’ять наречених-близнят",
+    "五等分的新娘"
+   ]
+  },
+  {
+   "anilistId": 128067,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:128067",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "SSS-Class Revival Hunter",
+    "SSS-geup Jugeoya Saneun Hunter",
+    "SSS급 죽어야 사는 헌터",
+    "SSS-Class Suicide Hunter",
+    "SSS급 자살헌터",
+    "死して生きるSSS級ハンター",
+    "SSS級死而復生的獵人",
+    "นักล่าพลีชีพ ระดับ SSS",
+    "Shishite Ikiru SSS-kyuu Hunter"
+   ]
+  },
+  {
+   "anilistId": 30908,
+   "chapters": 117,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30908",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Soul Eater",
+    "ソウルイーター",
+    "소울이터(SOUL EATER)"
+   ]
+  },
+  {
+   "anilistId": 87395,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:87395",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Grand Blue Dreaming",
+    "Grand Blue",
+    "ぐらんぶる",
+    "Необъятный океан",
+    "Неосяжна блакить",
+    "ก๊วนป่วนชวนบุ๋งบุ๋ง",
+    "碧蓝之海"
+   ]
+  },
+  {
+   "anilistId": 107098,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:107098",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Record of Ragnarok",
+    "Shuumatsu no Valkyrie",
+    "終末のワルキューレ",
+    "Shuumatsu no Walkure",
+    "Valkyrie of the End",
+    "มหาศึกคนชนเทพ",
+    "Walkirie kresu dziejów",
+    "Ragnarök Valkürleri",
+    "Хроніка Раґнароку",
+    "종말의 발키리"
+   ]
+  },
+  {
+   "anilistId": 101233,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:101233",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Way of the Househusband",
+    "Gokushufudou",
+    "極主夫道",
+    "The Way of the House Husband",
+    "La Via del Grembiule",
+    "Gokushufudo: El Yakuza Amo de Casa",
+    "Yakuza w fartuszku. Kodeks perfekcyjnego pana domu",
+    "Gokushufudou: The Way of the House Husband",
+    "Yakuza goes Hausmann",
+    "La voie du tablier",
+    "Ev Erkeğinin Yolu",
+    "พ่อบ้านสุดเก๋า ",
+    "极主夫道",
+    "Đạo làm chồng đảm",
+    "Шлях домогосподаря",
+    "Gokushufudou: Tatsu Imortal",
+    "Muž v domácnosti",
+    "極道主夫",
+    "극주부도"
+   ]
+  },
+  {
+   "anilistId": 144946,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:144946",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Gachiakuta",
+    "ガチアクタ",
+    "Gachi Akuta"
+   ]
+  },
+  {
+   "anilistId": 30583,
+   "chapters": 159,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30583",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Claymore",
+    "CLAYMORE",
+    "クレイモア"
+   ]
+  },
+  {
+   "anilistId": 86218,
+   "chapters": 53,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86218",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Bloom Into You",
+    "Yagate Kimi ni Naru",
+    "やがて君になる",
+    "Eventually I Will Become Yours",
+    "YagaKimi",
+    "Gdy zakwitnie w nas miłość",
+    "終將成為妳",
+    "สุดท้ายก็คือเธอ",
+    "Rồi hoa sẽ nở",
+    "Jednou rozkvetu i já",
+    "이윽고 네가 된다"
+   ]
+  },
+  {
+   "anilistId": 98397,
+   "chapters": 153,
+   "chaptersFrom": "anilist",
+   "key": "anilist:98397",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Blood on the Tracks",
+    "Chi no Wadachi",
+    "血の轍",
+    "A Trail of Blood",
+    "Rastros de Sangre",
+    "Les Liens du sang",
+    "สายเลือดวิปริต",
+    "Tracce di Sangue",
+    "Krew na szlaku",
+    "피의 흔적"
+   ]
+  },
+  {
+   "anilistId": 86310,
+   "chapters": 305,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86310",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Fire Force",
+    "Enen no Shouboutai",
+    "炎炎ノ消防隊",
+    "หน่วยผจญคนไฟลุก",
+    "Blazing Fire Brigade",
+    "Fire Brigade of Flames",
+    "Fire Force: Alev Gücü",
+    "La brigada de bomberos de las llamas",
+    "Бригада пылающего пламени",
+    "炎炎消防隊",
+    "장장 노 소방대"
+   ]
+  },
+  {
+   "anilistId": 111233,
+   "chapters": 203,
+   "chaptersFrom": "anilist",
+   "key": "anilist:111233",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Call of the Night",
+    "Yofukashi no Uta",
+    "よふかしのうた",
+    "Night Owl Song",
+    "Song of the Night Walkers",
+    "เพลงรักมนุษย์ค้างคาว",
+    "Zew nocy",
+    "彻夜之歌",
+    "Call of the Night: Canções da Noite",
+    "El Canto de la Noche",
+    "철야의 노래",
+    "Khúc Hát Đêm Thâu"
+   ]
+  },
+  {
+   "anilistId": 30149,
+   "chapters": 66,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30149",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "BLAME!",
+    "ブラム!",
+    "Buramu!",
+    "Блам!",
+    "블레임"
+   ]
+  },
+  {
+   "anilistId": 86717,
+   "chapters": 115,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86717",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Wotakoi: Love is Hard for Otaku",
+    "Wotaku ni Koi wa Muzukashii",
+    "ヲタクに恋は難しい",
+    "WotaKoi",
+    "It’s Difficult to Love an Otaku",
+    "Love is Hard for an Otaku",
+    "Keine Cheats für die Liebe",
+    "Qué difícil es el amor para un otaku",
+    "Wotakoi: O amor é dificil para otakus",
+    "Otaku Otaku",
+    "Wotakoi. Miłość jest trudna dla otaku",
+    "Так сложно любить отаку",
+    "ยากแท้จริงหนอรักของโอตาคุ",
+    "Wotakoi - L'amore è complicato per gli otaku",
+    "阿宅的戀愛太難",
+    "오타쿠에게 사랑은 어려워",
+    "Wotakoi: Qué difícil es el amor para los otaku",
+    "Wotakoi: Otakular İçin Aşk Zordur",
+    "Так складно кохати отаку",
+    "阿宅的恋爱真难"
+   ]
+  },
+  {
+   "anilistId": 100568,
+   "chapters": 21,
+   "chaptersFrom": "anilist",
+   "key": "anilist:100568",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Horizon",
+    "Supyeongseon",
+    "수평선",
+    "Горизонт",
+    "El horizonte",
+    "水平线",
+    "เส้นขอบฟ้า",
+    "Крайнебо",
+    "Horizont"
+   ]
+  },
+  {
+   "anilistId": 136807,
+   "chapters": 1,
+   "chaptersFrom": "anilist",
+   "key": "anilist:136807",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Look Back",
+    "ルックバック",
+    "驀然回首",
+    "룩 백",
+    "Privind în urmă"
+   ]
+  },
+  {
+   "anilistId": 30104,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:30104",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Yotsuba&!",
+    "Yotsuba to!",
+    "よつばと！",
+    "Yotsuba and!",
+    "Yotsuba!",
+    "Yotsubato",
+    "Ёцуба!",
+    "요츠바랑!",
+    "四葉妹妹!"
+   ]
+  },
+  {
+   "anilistId": 79865,
+   "chapters": 99,
+   "chaptersFrom": "anilist",
+   "key": "anilist:79865",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Ajin: Demi-Human",
+    "Ajin",
+    "亜人",
+    "아인",
+    "Ajin (Semihumano)",
+    "Ajin: Yarı İnsan",
+    "Нелюдь",
+    "Ajin: สายพันธุ์อมนุษย์",
+    "亞人"
+   ]
+  },
+  {
+   "anilistId": 54692,
+   "chapters": 109,
+   "chaptersFrom": "anilist",
+   "key": "anilist:54692",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Noragami: Stray God",
+    "Noragami",
+    "ノラガミ",
+    "Бездомный Бог",
+    "Vị thần lang thang"
+   ]
+  },
+  {
+   "anilistId": 55515,
+   "chapters": 110,
+   "chaptersFrom": "anilist",
+   "key": "anilist:55515",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "JoJo’s Bizarre Adventure: Part 8—JoJolion",
+    "JoJo no Kimyou na Bouken: JoJolion",
+    "ジョジョの奇妙な冒険 ジョジョリオン",
+    "Dai 8 Bu Jousuke Higashikata",
+    "JoJo's Bizarre Adventure Part 8: Jojolion",
+    "Le bizzarre avventure di JoJo: JoJolion"
+   ]
+  },
+  {
+   "anilistId": 99943,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:99943",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Rent-A-Girlfriend",
+    "Kanojo, Okarishimasu",
+    "彼女、お借りします",
+    "여친 빌리겠습니다",
+    "女朋友、借我一下",
+    "Kanokari",
+    "Dziewczyna do wynajęcia",
+    "Namorada de Aluguel ",
+    "สะดุดรักยัยแฟนเช่า",
+    "Rental Girlfriend",
+    "Kanojo Okarishimasu: Rent-a-Girlfriend"
+   ]
+  },
+  {
+   "anilistId": 86399,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:86399",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "That Time I Got Reincarnated as a Slime",
+    "Tensei Shitara Slime datta Ken",
+    "転生したらスライムだった件",
+    "Regarding Reincarnated to Slime",
+    "TenSura",
+    "Meine Wiedergeburt als Schleim in einer anderen Welt",
+    "Aquella Vez en que me Convertí en Slime",
+    "Moi, quand je me réincarne en Slime",
+    "Vita da slime",
+    "Kun jälleensynnyin hirviönä",
+    "О моём перерождении в слизь",
+    "Odrodzony jako galareta",
+    "TTIGRAAS",
+    "關於我轉生變成史萊姆這檔事",
+    "เกิดใหม่ทั้งทีก็เป็นสไลม์ไปซะแล้ว",
+    "전생했더니 슬라임이었던 건에 대하여"
+   ]
+  },
+  {
+   "anilistId": 54294,
+   "chapters": 53,
+   "chaptersFrom": "anilist",
+   "key": "anilist:54294",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Ao Haru Ride",
+    "アオハライド",
+    "Blue Spring Ride",
+    "Aoharaido",
+    "Ścieżki Młodości - Ao Haru Ride",
+    "Omokage",
+    "Sono wo Shitteru",
+    "Strobe Edge",
+    "A un passo da te",
+    "Gençlik Yolculuğu",
+    "아오하라이드"
+   ]
+  },
+  {
+   "anilistId": 114960,
+   "chapters": 162,
+   "chaptersFrom": "anilist",
+   "key": "anilist:114960",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Mashle: Magic and Muscles",
+    "MASHLE",
+    "マッシュル-MASHLE-",
+    "MASHLE ศึกโลกเวทมนตร์คนพลังกล้าม",
+    "Mashle: Magia e Músculos",
+    "Магия и мускулы",
+    "肌肉魔法使─MASHLE─",
+    "마슐"
+   ]
+  },
+  {
+   "anilistId": 30028,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:30028",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Nana",
+    "NANA",
+    "ナナ",
+    "나나"
+   ]
+  },
+  {
+   "anilistId": 116186,
+   "chapters": 185,
+   "chaptersFrom": "anilist",
+   "key": "anilist:116186",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Boy's Abyss",
+    "Shounen no Abyss",
+    "少年のアビス",
+    "ห้วงเหวลึกของเด็กหนุ่ม"
+   ]
+  },
+  {
+   "anilistId": 86551,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:86551",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Made in Abyss",
+    "メイドインアビス",
+    "Meido in Abisu",
+    "Созданный в Бездне",
+    "ผ่าเหวนรก",
+    "Зроблено в Безодні",
+    "메이드 인 어비스",
+    "来自深渊"
+   ]
+  },
+  {
+   "anilistId": 33031,
+   "chapters": 107,
+   "chaptersFrom": "anilist",
+   "key": "anilist:33031",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Pandora Hearts",
+    "パンドラハーツ",
+    "PandoraHearts",
+    "Pandora Hearts Pilot",
+    "Сердца Пандоры",
+    "Серця Пандори"
+   ]
+  },
+  {
+   "anilistId": 30598,
+   "chapters": 549,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30598",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Fairy Tail",
+    "FAIRY TAIL",
+    "Fairy Tale",
+    "フェアリーテイル",
+    "Хвост Феи"
+   ]
+  },
+  {
+   "anilistId": 126297,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:126297",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Teenage Mercenary",
+    "Iphagyongbyeong",
+    "입학용병",
+    "Mercenary Enrollment",
+    "High School Mercenary",
+    "Mercenario adolescente",
+    "High School Soldier",
+    "入学傭兵",
+    "少年佣兵",
+    "พี่ชายสายบอดี้การ์ด",
+    "入學傭兵"
+   ]
+  },
+  {
+   "anilistId": 61499,
+   "chapters": 240,
+   "chaptersFrom": "anilist",
+   "key": "anilist:61499",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Nisekoi: False Love",
+    "Nisekoi",
+    "ニセコイ",
+    "รักลวงป่วนใจ",
+    "Nisekoi - Miłość na niby",
+    "Nisekoi - Amours, Mensonges et Yakuzas !",
+    "Nisekoi - Cặp Đôi Giả Tạo"
+   ]
+  },
+  {
+   "anilistId": 30336,
+   "chapters": 208,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30336",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "GTO: Great Teacher Onizuka",
+    "GTO",
+    "ジーティーオー",
+    "GTO: Tomoko's Big Adventures",
+    "Great Teacher Onizuka",
+    "グレート・ティーチャー・オニヅカ",
+    "GTO คุณครูพันธ์หายาก"
+   ]
+  },
+  {
+   "anilistId": 86082,
+   "chapters": 111,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86082",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Delicious in Dungeon",
+    "Dungeon Meshi",
+    "ダンジョン飯",
+    "Dungeon Food",
+    "Dungeon Meal",
+    "Tragones y Mazmorras",
+    "Gloutons et Dragons",
+    "Подземное питание",
+    "던전밥",
+    "สูตรลับตำรับดันเจียน",
+    "Mỹ vị hầm ngục",
+    "迷宮飯",
+    "Підземелля смакоти",
+    "Delicious in Dungeon: Calabouços e Delícias",
+    "Dungeon Meshi: Lochy i smakołyki"
+   ]
+  },
+  {
+   "anilistId": 100954,
+   "chapters": 141,
+   "chaptersFrom": "anilist",
+   "key": "anilist:100954",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Sweet Home",
+    "스위트홈",
+    "Dulce Hogar"
+   ]
+  },
+  {
+   "anilistId": 132182,
+   "chapters": 250,
+   "chaptersFrom": "anilist",
+   "key": "anilist:132182",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Blue Box",
+    "Ao no Hako",
+    "アオのハコ",
+    "青色之箱",
+    "กล่องรักวัยใส",
+    "Niebieskie pudełko",
+    "La caja azul",
+    "青春之箱",
+    "蓝箱",
+    "푸른 상자"
+   ]
+  },
+  {
+   "anilistId": 106064,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:106064",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Chained Soldier",
+    "Mato Seihei no Slave",
+    "魔都精兵のスレイブ",
+    "Slave of the Magic Capital's Elite Troops",
+    "Demon Slave",
+    "Slave of the Hell Soldiers",
+    "ทาสสุดแกร่งแห่งหน่วยป้องกันอสูร",
+    "Mabotai",
+    "마도정병의 슬레이브",
+    "魔都精兵的奴隸"
+   ]
+  },
+  {
+   "anilistId": 85849,
+   "chapters": 238,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85849",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "ReLIFE",
+    "Re LIFE",
+    "إعادة الحياة",
+    "리라이프",
+    "重生计划",
+    "リライフ"
+   ]
+  },
+  {
+   "anilistId": 85141,
+   "chapters": 569,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85141",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The God of High School",
+    "God of High School",
+    "갓 오브 하이스쿨",
+    "GoH",
+    "เทพเกรียน โรงเรียนมัธยม",
+    "高校之神"
+   ]
+  },
+  {
+   "anilistId": 74485,
+   "chapters": 367,
+   "chaptersFrom": "anilist",
+   "key": "anilist:74485",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Seven Deadly Sins",
+    "Nanatsu no Taizai",
+    "七つの大罪",
+    "일곱 개의 대죄",
+    "Yedi Ölümcül Günah",
+    "الخطايا السبع المميتة",
+    "七大罪",
+    "Thất hình đại tội",
+    "Семь смертных грехов",
+    "ศึกตำนาน 7 อัศวิน"
+   ]
+  },
+  {
+   "anilistId": 69883,
+   "chapters": 188,
+   "chaptersFrom": "anilist",
+   "key": "anilist:69883",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Assassination Classroom",
+    "Ansatsu Kyoushitsu",
+    "暗殺教室",
+    "Ansatsu Kyoushitsu Extra",
+    "Klasa Skrytobójców",
+    "Suikast Sınıfı",
+    "암살교실"
+   ]
+  },
+  {
+   "anilistId": 33731,
+   "chapters": 30,
+   "chaptersFrom": "anilist",
+   "key": "anilist:33731",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Solanin",
+    "ソラニン",
+    "Soranin",
+    "Соланин",
+    "Соланін"
+   ]
+  },
+  {
+   "anilistId": 51525,
+   "chapters": 295,
+   "chaptersFrom": "anilist",
+   "key": "anilist:51525",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Yona of the Dawn",
+    "Akatsuki no Yona",
+    "暁のヨナ",
+    "AkaYona",
+    "Yona: The Girl Standing in the Blush of Dawn",
+    "Yona, Princesa del Amanecer",
+    "Yona w blasku świtu",
+    "Yona - Prinzessin der Morgendämmerung",
+    "Yona - Công chúa bình minh",
+    "Yona, Princesse de l'Aube",
+    "Yona: A Princesa do Alvorecer",
+    "새벽의 연화"
+   ]
+  },
+  {
+   "anilistId": 30042,
+   "chapters": 520,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30042",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Dragon Ball",
+    "ドラゴンボール",
+    "Dragonball",
+    "Dragon Ball Z",
+    "Dragonball Z",
+    "Bola de Drac",
+    "七龍珠",
+    "드래곤볼",
+    "ดราก้อนบอล",
+    "Жемчуг дракона",
+    "Dragon Ball - 7 Viên Ngọc Rồng"
+   ]
+  },
+  {
+   "anilistId": 149544,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:149544",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Guy She Was Interested In Wasn't a Guy at All",
+    "Ki ni Natteru Hito ga Otoko ja Nakatta",
+    "気になってる人が男じゃなかった",
+    "The Person She Fell For Wasn't A Boy",
+    "คนที่เธอปิ๊ง ความจริงไม่ใช่ผู้ชาย",
+    "La persona che mi piace non è un ragazzo",
+    "我在意的對象並不是男人",
+    "Chłopak, który jej się spodobał wcale nie jest chłopakiem",
+    "O cara que estou a fim não é um cara?!",
+    "She Wasn't a Guy",
+    "El chico que me gusta no es un chico",
+    "TGSWIIWAGAA",
+    "KiniOto",
+    "Хлопець, який їй сподобався, — не хлопець",
+    "Người tôi để ý không phải là con trai",
+    "신경 쓰이는 사람이 남자가 아니었다"
+   ]
+  },
+  {
+   "anilistId": 30745,
+   "chapters": 65,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30745",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Pluto",
+    "PLUTO",
+    "プルートウ",
+    "Pluto: Urasawa x Tezuka",
+    "PLUTO冥王",
+    "플루토"
+   ]
+  },
+  {
+   "anilistId": 33986,
+   "chapters": 58,
+   "chaptersFrom": "anilist",
+   "key": "anilist:33986",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Deadman Wonderland",
+    "デッドマン・ワンダーランド",
+    "«Страна чудес смертников»"
+   ]
+  },
+  {
+   "anilistId": 86559,
+   "chapters": 314,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86559",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Golden Kamuy",
+    "ゴールデンカムイ",
+    "Golden Kamui",
+    "黃金神威",
+    "골든 카무이"
+   ]
+  },
+  {
+   "anilistId": 137280,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:137280",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "I’m the Max-Level Newbie",
+    "Na Honja Mallep Newbie",
+    "나 혼자 만렙 뉴비",
+    "Solo Max-Level Newbie",
+    "I Am The Top Ranker Newbie",
+    "俺だけレベルMAXなビギナー",
+    "ผู้เล่นหน้าใหม่เลเวลแมกซ์",
+    "滿級新手",
+    "我独自满级新手"
+   ]
+  },
+  {
+   "anilistId": 97830,
+   "chapters": 202,
+   "chaptersFrom": "anilist",
+   "key": "anilist:97830",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "To Your Eternity",
+    "Fumetsu no Anata e",
+    "不滅のあなたへ",
+    "To You, the Immortal",
+    "Ku twej wieczności",
+    "Uma vida imortal",
+    "Untukmu yang Abadi",
+    "致不灭的你",
+    "Gửi em, người bất tử",
+    "แด่เธอผู้เป็นนิรันดร์",
+    "給不滅的你"
+   ]
+  },
+  {
+   "anilistId": 85412,
+   "chapters": 47,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85412",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Girls' Last Tour",
+    "Shoujo Shuumatsu Ryokou",
+    "少女終末旅行",
+    "The End Girl Trip",
+    "GLT",
+    "Последнее путешествие девочек",
+    "Остання подорож дівчат",
+    "L'ultimo viaggio delle ragazze",
+    "Poslednje putovanje",
+    "As Viajantes do Fim",
+    "Ostatnia podróż",
+    "소녀종말여행",
+    "Lang thang giữa thế gian hoang tàn"
+   ]
+  },
+  {
+   "anilistId": 30657,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:30657",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Real",
+    "リアル"
+   ]
+  },
+  {
+   "anilistId": 105393,
+   "chapters": 268,
+   "chaptersFrom": "anilist",
+   "key": "anilist:105393",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "A Returner's Magic Should Be Special",
+    "Gwihwanjaui Mabeobeun Teukbyeolhaeya Hamnida",
+    "귀환자의 마법은 특별해야 합니다",
+    "A Magia de Um Retornado Tem de Ser Especial",
+    "พลังขั้นเทพของจอมเวทจุติใหม่",
+    "Returner's Special Magic",
+    "重生者的魔法一定要特別",
+    "Магія поверненого має бути особливою",
+    "帰還者の魔法は特別です",
+    "Kikansha no Mahou wa Tokubetsu desu"
+   ]
+  },
+  {
+   "anilistId": 126693,
+   "chapters": 78,
+   "chaptersFrom": "mangaupdates",
+   "key": "anilist:126693",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Choujin X",
+    "超人X",
+    "Superman X",
+    "Superhuman X",
+    "초인X"
+   ]
+  },
+  {
+   "anilistId": 44790,
+   "chapters": 369,
+   "chaptersFrom": "anilist",
+   "key": "anilist:44790",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Magi: The Labyrinth of Magic",
+    "Magi",
+    "マギ",
+    "Magi - Labyrinth of Magic",
+    "Mag: El Laberinto de Magia",
+    "Magi: O Labirinto da Magia",
+    "Magi El laberinto de la magia",
+    "MAGI魔奇少年",
+    "마기"
+   ]
+  },
+  {
+   "anilistId": 38967,
+   "chapters": 31,
+   "chaptersFrom": "anilist",
+   "key": "anilist:38967",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Onani Master Kurosawa",
+    "オナニーマスター黒沢",
+    "Onanie Master Kurosawa",
+    "Masturbation Master Kurosawa"
+   ]
+  },
+  {
+   "anilistId": 87178,
+   "chapters": 81,
+   "chaptersFrom": "anilist",
+   "key": "anilist:87178",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Boruto: Naruto Next Generations",
+    "BORUTO: NARUTO NEXT GENERATIONS",
+    "BORUTO-ボルト- -NARUTO NEXT GENERATIONS-",
+    "بوروتو: الأجيال القادمة من ناروتو",
+    "בורוטו",
+    "בורוטו: נארוטו הדורות הבאים",
+    "보루토"
+   ]
+  },
+  {
+   "anilistId": 85189,
+   "chapters": 201,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85189",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Mob Psycho 100",
+    "モブサイコ100",
+    "One Hundred Mob Psycho",
+    "Mob Psycho One Hundred",
+    "100 Mob Psycho",
+    "ม็อบไซโค 100 คนพลังจิต",
+    "Моб Психо 100",
+    "Mob Psycho Hyaku"
+   ]
+  },
+  {
+   "anilistId": 98587,
+   "chapters": 196,
+   "chaptersFrom": "anilist",
+   "key": "anilist:98587",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "BEASTARS",
+    "ビースターズ",
+    "Beastars - Выдающиеся звери",
+    "Видатні звірі",
+    "비스타즈 (BEASTARS)",
+    "BEASTARS 动物狂想曲"
+   ]
+  },
+  {
+   "anilistId": 120980,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:120980",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Nano Machine",
+    "나노마신",
+    "Nano Mashin",
+    "某天成为魔神",
+    "奈米魔神",
+    "ナノ魔神",
+    "นาโนมาชิน"
+   ]
+  },
+  {
+   "anilistId": 55132,
+   "chapters": 80,
+   "chaptersFrom": "anilist",
+   "key": "anilist:55132",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Akame ga KILL!",
+    "Akame ga Kill!",
+    "アカメが斬る！",
+    "Akame ga Kiru!",
+    "Red Eyes Sword",
+    "Убивця Акаме!",
+    "Akame Keser"
+   ]
+  },
+  {
+   "anilistId": 31517,
+   "chapters": 44,
+   "chaptersFrom": "anilist",
+   "key": "anilist:31517",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "JoJo's Bizarre Adventure Part 1: Phantom Blood",
+    "JoJo no Kimyou na Bouken: Phantom Blood",
+    "ジョジョの奇妙な冒険 ファントムブラッド",
+    "Dai 1 Bu Jonathan Joestar: Sono Seishun",
+    "JoJo's Bizarre Adventure Part 1 Jonathan Joestar: His Youth",
+    "Le bizzarre avventure di JoJo: Phantom Blood",
+    "죠죠의 기묘한 모험"
+   ]
+  },
+  {
+   "anilistId": 75757,
+   "chapters": 324,
+   "chaptersFrom": "anilist",
+   "key": "anilist:75757",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Food Wars!: Shokugeki no Soma",
+    "Shokugeki no Souma",
+    "食戟のソーマ",
+    "Kulinarne pojedynki"
+   ]
+  },
+  {
+   "anilistId": 106758,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:106758",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Eminence in Shadow",
+    "Kage no Jitsuryokusha ni Naritakute!",
+    "陰の実力者になりたくて！",
+    "To Be a Power in the Shadows!",
+    "ชีวิตไม่ต้องเด่น ขอแค่เป็นเทพในเงา",
+    "我想成為影之強者！",
+    "어둠의 실력자가 되고 싶어서!",
+    "Chúa tể bóng tối",
+    "想要成為影之實力者！"
+   ]
+  },
+  {
+   "anilistId": 85564,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:85564",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Mushoku Tensei: Jobless Reincarnation",
+    "Mushoku Tensei: Isekai Ittara Honki Dasu",
+    "無職転生 ～異世界行ったら本気だす～",
+    "Mushoku Tensei: Uma segunda chance"
+   ]
+  },
+  {
+   "anilistId": 30664,
+   "chapters": 120,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30664",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Akira",
+    "AKIRA",
+    "アキラ"
+   ]
+  },
+  {
+   "anilistId": 99022,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:99022",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Apothecary Diaries",
+    "Kusuriya no Hitorigoto",
+    "薬屋のひとりごと",
+    "Zapiski zielarki",
+    "Les Carnets de l'apothicaire",
+    "I diari della speziale",
+    "Dược sư tự sự",
+    "ตำรับปริศนา หมอยาแห่งวังหลัง",
+    "Монолог Травниці",
+    "Diários de Uma Apotecária",
+    "藥師少女的獨語",
+    "药屋少女的呢喃",
+    "Los diarios de la boticaria",
+    "Die Tagebücher der Apothekerin",
+    "Şifacı Günceleri",
+    "약사의 혼잣말"
+   ]
+  },
+  {
+   "anilistId": 119521,
+   "chapters": 202,
+   "chaptersFrom": "anilist",
+   "key": "anilist:119521",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Legend of the Northern Blade",
+    "Bukgeom Jeongi",
+    "북검전기",
+    "北剑江湖"
+   ]
+  },
+  {
+   "anilistId": 106929,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:106929",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Eleceed",
+    "일렉시드",
+    "Eleceed: Velocidad eléctrica",
+    "觉醒吧，铲屎官！",
+    "覺醒吧！貓奴"
+   ]
+  },
+  {
+   "anilistId": 85215,
+   "chapters": 17,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85215",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "All You Need Is Kill",
+    "オール ユー ニード イズ キル",
+    "All You Need Is Kill - Öldür Yeter",
+    "All You Need Is Kill - Stačí jen zabíjet",
+    "All you need is kill - Cuộc chiến luân hồi",
+    "Edge of Tomorrow",
+    "AYNK"
+   ]
+  },
+  {
+   "anilistId": 86770,
+   "chapters": 53,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86770",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Girl From the Other Side: Siúil, a Rún",
+    "Totsukuni no Shoujo",
+    "とつくにの少女",
+    "Foreign Girl",
+    "Siúil, a Rún",
+    "Dziewczynka w Krainie Przeklętych",
+    "A Menina do Outro Lado",
+    "L'enfant et le maudit",
+    "La Pequeña Forastera: Siúil, a Rún",
+    "Девочка из Чужеземья",
+    "Cô gái nơi Xứ ngoài",
+    "Дівчинка з того боку",
+    "A Menina Que Veio do Outro Lado",
+    "바깥 나라의 소녀 ",
+    "Dívka ze země Venku",
+    "外之國的少女",
+    "Siúil, a Rún – Das fremde Mädchen",
+    "เด็กหญิงอีกฟากฝั่ง",
+    "La Chica del Exterior",
+    "Devojčica s One Strane",
+    "Fata de dincolo"
+   ]
+  },
+  {
+   "anilistId": 85307,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:85307",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Bungo Stray Dogs",
+    "Bungou Stray Dogs",
+    "文豪ストレイドッグス",
+    "Literary Stray Dogs",
+    "Bezpańscy literaci",
+    "文豪野犬",
+    "Проза бродячих псов",
+    "คณะประพันธกรจรจัด",
+    "Văn hào lưu lạc",
+    "문호 스트레이독스",
+    "文豪Stray Dogs"
+   ]
+  },
+  {
+   "anilistId": 86848,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:86848",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Lookism",
+    "Oemo Jisangjuui",
+    "외모지상주의",
+    "外見至上主義",
+    "APARI3NCIAS"
+   ]
+  },
+  {
+   "anilistId": 86300,
+   "chapters": 961,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86300",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tomo-chan is a Girl!",
+    "Tomo-chan wa Onnanoko!",
+    "トモちゃんは女の子!",
+    "Tomo-chan wa Onna no ko!"
+   ]
+  },
+  {
+   "anilistId": 163824,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:163824",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Revenge of the Baskerville Bloodhound",
+    "Cheolhyeolgeomga Sanyanggaeui Hoegwi",
+    "철혈검가 사냥개의 회귀",
+    "Revenge of the Iron-Blooded Sword Hound",
+    "Revenge of the Sword Clan's Hound",
+    "Die Rückkehr des Jagdhundes aus Eisen und Blut",
+    "回帰した鉄血の猟犬",
+    "铁血剑家猎犬的回归",
+    "La revanche du limier des Baskerville"
+   ]
+  },
+  {
+   "anilistId": 159441,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:159441",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Pick Me Up",
+    "Pick Me Up!",
+    "픽 미 업!",
+    "Pick Me Up, Infinite Gacha",
+    "PICK ME UP～低レア★英雄の成り上がり～"
+   ]
+  },
+  {
+   "anilistId": 105097,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:105097",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Mieruko-chan",
+    "見える子ちゃん",
+    "Girl That Can See It",
+    "The Girl Who Sees \"Them\"",
+    "Can-See-Ghosts-chan",
+    "Child That Can See It",
+    "Li'l Miss Can-See-Ghosts",
+    "Mieruko-chan: Slice of Horror",
+    "看得见的女孩",
+    "มิเอรุโกะจัง ใครว่าหนูเห็นผี",
+    "Mieruko-chan. Dziewczyna, która widzi więcej",
+    "보이는 여고생"
+   ]
+  },
+  {
+   "anilistId": 123573,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:123573",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Lout of Count’s Family",
+    "Baekjakgaui Mangnaniga Doeeotda",
+    "백작가의 망나니가 되었다",
+    "TCF",
+    "Trash Count",
+    "Trash of the Count's Family",
+    "La Basura De La Familia Del Conde",
+    "伯爵家の暴れん坊になった",
+    "成为伯爵家的废物",
+    "變成伯爵家的混混",
+    "อันธพาลแห่งตระกูลเคานต์",
+    "Pembuat Onar di Keluarga Count",
+    "Je suis devenu le voyou de la famille du comte ",
+    "La Canaille du Comté"
+   ]
+  },
+  {
+   "anilistId": 132144,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:132144",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Return of the Blossoming Blade",
+    "Hwasangwihwan",
+    "화산귀환",
+    "Return of The Mount Hua Sect",
+    "Return of the Flowery Mountain Sect",
+    "Le retour du clan Hwasan",
+    "El retorno del Monte Hua",
+    "劍尊歸來",
+    "หวนคืนสู่ฮวาซาน",
+    "剑尊归来"
+   ]
+  },
+  {
+   "anilistId": 119174,
+   "chapters": 133,
+   "chaptersFrom": "anilist",
+   "key": "anilist:119174",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Boxer",
+    "더 복서",
+    "El boxeador",
+    "ザ・ボクサー",
+    "拳击手",
+    "Боксер."
+   ]
+  },
+  {
+   "anilistId": 98328,
+   "chapters": 163,
+   "chaptersFrom": "anilist",
+   "key": "anilist:98328",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Jagaaan",
+    "Jagaaaaaan",
+    "ジャガーン",
+    "คลั่งล้างคลั่ง",
+    "Jagaan",
+    "Джяґааан"
+   ]
+  },
+  {
+   "anilistId": 144957,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:144957",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The World After the Fall",
+    "Myeolmang Ihuui Segye",
+    "멸망 이후의 세계",
+    "The World After the End",
+    "หลังวันสิ้นโลก",
+    "滅亡後的世界",
+    "灭亡之后的世界",
+    "El mundo después del cataclismo"
+   ]
+  },
+  {
+   "anilistId": 109957,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:109957",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Second Life Ranker",
+    "Dubeon Saneun Ranker",
+    "두번사는랭커",
+    "The Ranker Who Lives Twice",
+    "Ranker Who Lives a Second Time",
+    "二度生きるランカー",
+    "เกมชีวิตที่สอง ของแรงเกอร์",
+    "異界攻塔戰記"
+   ]
+  },
+  {
+   "anilistId": 147149,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:147149",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Smoking Behind the Supermarket with You",
+    "Super no Ura de Yani Suu Futari",
+    "スーパーの裏でヤニ吸うふたり",
+    "A Story About Smoking at the Back of the Supermarket",
+    "スーパーの裏でヤニ吸う話",
+    "Super no Ura de Yani Suu Hanashi",
+    "Behind the Supermarket Smoking with You",
+    "躲在超市後門抽菸的兩人",
+    "Paląc z tobą na tyłach sklepu",
+    "Smoking Behind The Supermarket",
+    "Fumando juntos detrás del súper",
+    "Fumando atrás del súper con vos",
+    "Перекур за супермаркетом з тобою",
+    "ヤニすう",
+    "YaniSuu",
+    "Hiên Sau Siêu Thị, Muộn Phiền Bay Đi",
+    "在超市后门吸烟的二人",
+    "슈퍼 뒤에서 담배 피우는 두 사람"
+   ]
+  },
+  {
+   "anilistId": 149332,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:149332",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Swordmaster's Son",
+    "Geomsulmyeongga Mangnaeadeul",
+    "검술명가 막내아들",
+    "The Youngest Son of a Master Swordsman   ",
+    "Swordmaster's Youngest Son",
+    "Youngest Son of the Renowned Swordsmanship Clan",
+    "剣術名家の末息子",
+    "劍術名家的小兒子",
+    "剑术名门的小儿子"
+   ]
+  },
+  {
+   "anilistId": 150378,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:150378",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Gokurakugai",
+    "極楽街",
+    "โกคุราคุไก สุขาวดีสีเลือด",
+    "極樂街"
+   ]
+  },
+  {
+   "anilistId": 73661,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:73661",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Seraph of the End: Vampire Reign",
+    "Owari no Seraph",
+    "終わりのセラフ",
+    "Seraph of the End",
+    "Owari no Serafu",
+    "OwaSera",
+    "Seraph of the End: Serafin dni ostatnich",
+    "Seraph of the End: Kıyamet Meleği",
+    "เทวทูตแห่งโลกมืด",
+    "종말의 세라프"
+   ]
+  },
+  {
+   "anilistId": 39711,
+   "chapters": 176,
+   "chaptersFrom": "anilist",
+   "key": "anilist:39711",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Bakuman。",
+    "Bakuman.",
+    "バクマン。",
+    "Бакуман",
+    "바쿠만",
+    "爆漫王"
+   ]
+  },
+  {
+   "anilistId": 118408,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:118408",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Villains Are Destined to Die",
+    "Agyeogui Ending Jugeumppun",
+    "악역의 엔딩은 죽음뿐",
+    "Death Is The Only Ending For The Villainess ",
+    "The Villain's Ending Is Death ",
+    "Seule la mort attend la Vilaine",
+    "Penelope – Das Böse ist dem Tod geweiht",
+    "O Único Destino da Vilã é a Morte",
+    "O Único Destino dos Vilões é a Morte",
+    "Единственный конец злодейки - смерть",
+    "Єдиний фінал лиходіїв – смерть",
+    "Kötülerin Kaderi Yok Olmaktır",
+    "Kematian adalah Akhir Sang Antagonis",
+    "悪役のエンディングは死のみ",
+    "反派角色只有死亡結局",
+    "恋爱手游的男主都很危险",
+    "恶役只有死亡结局",
+    "เป็นตัวร้ายก็ต้องตายเท่านั้น",
+    "Przeznaczeniem Złoczyńców jest śmierć"
+   ]
+  },
+  {
+   "anilistId": 85802,
+   "chapters": 299,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85802",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Domestic Girlfriend",
+    "Domestic na Kanojo",
+    "ドメスティックな彼女",
+    "Dome x Kano",
+    "家有女友",
+    "חברה ביתית",
+    "บทเรียนรักเส้นทางหัวใจ",
+    "Love X Dilemma"
+   ]
+  },
+  {
+   "anilistId": 86136,
+   "chapters": 50,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86136",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Happiness",
+    "ハピネス",
+    "해피니스"
+   ]
+  },
+  {
+   "anilistId": 43492,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:43492",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Blue Exorcist",
+    "Ao no Exorcist",
+    "青の祓魔師",
+    "Ao no Futsumashi",
+    "The Blue Magic Exorcist",
+    "青の祓魔師(エクソシスト)",
+    "청의 엑소시스트",
+    "青之驅魔師"
+   ]
+  },
+  {
+   "anilistId": 38848,
+   "chapters": 181,
+   "chaptersFrom": "anilist",
+   "key": "anilist:38848",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Sun-Ken Rock",
+    "サンケンロック",
+    "Sun Ken Rock",
+    "Trigun: The Lost Plant"
+   ]
+  },
+  {
+   "anilistId": 30024,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:30024",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "D.Gray-man",
+    "ディー・グレイマン",
+    "D. Gray man",
+    "D. Grayman",
+    "D. Gray-man",
+    "DGM",
+    "Dグレ",
+    "디 그레이맨",
+    "驱魔少年"
+   ]
+  },
+  {
+   "anilistId": 138603,
+   "chapters": 51,
+   "chaptersFrom": "anilist",
+   "key": "anilist:138603",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Summer Hikaru Died",
+    "Hikaru ga Shinda Natsu",
+    "光が死んだ夏",
+    "หน้าร้อนที่ฮิคารุจากไป",
+    "Der Sommer, in dem Hikaru starb",
+    "O Verão em que Hikaru Morreu",
+    "Lato, kiedy umarł Hikaru",
+    "El verano en que Hikaru murio",
+    "L'estate in cui Hikaru è morto",
+    "光逝去的夏天",
+    "Літо, коли помер Хікару",
+    "Mùa hè Hikaru chết",
+    "히카루가 죽은 여름",
+    "Léto, kdy umřel Hikaru"
+   ]
+  },
+  {
+   "anilistId": 44440,
+   "chapters": 265,
+   "chaptersFrom": "anilist",
+   "key": "anilist:44440",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "I Am a Hero",
+    "アイアムアヒーロー",
+    "Ben Bir Kahramanım",
+    "Ja sam heroj"
+   ]
+  },
+  {
+   "anilistId": 112981,
+   "chapters": 158,
+   "chaptersFrom": "anilist",
+   "key": "anilist:112981",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kubo Won't Let Me Be Invisible",
+    "Kubo-san wa Mob wo Yurusanai",
+    "久保さんは僕を許さない",
+    " Kubo-san wa Boku (Mobu) wo Yurusanai",
+    "久保同學不放過我",
+    "Kubo-san Doesn't Leave Me Be (a Mob)",
+    "คุณคุโบะไม่ยอมให้ผมเป็นตัวประกอบ",
+    "Kubo no me deja ser invisible",
+    "쿠보 양은 나를 내버려두지 않아"
+   ]
+  },
+  {
+   "anilistId": 85911,
+   "chapters": 130,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85911",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tomodachi Game",
+    "トモダチゲーム",
+    "Friend Game",
+    "친구게임",
+    "โทโมดาจิ เกมมิตรภาพ",
+    "Tomodachi Game: Los juegos de la amistad",
+    "Przyjacielskie rozgrywki",
+    "Friends Games"
+   ]
+  },
+  {
+   "anilistId": 86099,
+   "chapters": 554,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86099",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Wind Breaker",
+    "윈드브레이커",
+    "ウインドブレーカー",
+    "冲锋衣",
+    "衝鋒衣",
+    "ปั่นสู้ฝัน Wind Breaker"
+   ]
+  },
+  {
+   "anilistId": 30912,
+   "chapters": 13,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30912",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tomie",
+    "富江",
+    "Томіе"
+   ]
+  },
+  {
+   "anilistId": 159930,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:159930",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Infinite Mage",
+    "Muhanui Mabeopsa",
+    "무한의 마법사",
+    "Infinite Mage",
+    "無限の魔法使い"
+   ]
+  },
+  {
+   "anilistId": 101177,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:101177",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Fly Me to the Moon",
+    "Tonikaku Kawaii",
+    "トニカクカワイイ",
+    "Tonikaku Cawaii",
+    "Generally Cute",
+    "จะยังไงภรรยาของผมก็น่ารัก",
+    "Fly me to the moon - Tóm lại là em dễ thương, được chưa?",
+    "總之就是很可愛",
+    "总之就是非常可爱",
+    "Così carina. Fly me to the moon",
+    "Beni Ay'a Götür"
+   ]
+  },
+  {
+   "anilistId": 63031,
+   "chapters": 87,
+   "chaptersFrom": "anilist",
+   "key": "anilist:63031",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Alice in Borderland",
+    "Imawa no Kuni no Alice",
+    "今際の国のアリス",
+    "Imawa no Kuni no Alice: Alice in Borderland",
+    "Алиса в Пограничье",
+    "Alisa u Ničijoj zemlji",
+    "今際之國的闖關者",
+    "弥留之国的爱丽丝"
+   ]
+  },
+  {
+   "anilistId": 85316,
+   "chapters": 101,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85316",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Dead Dead Demon's Dededede Destruction",
+    "Dead Dead Demon's Dededededestruction",
+    "デッドデッドデーモンズデデデデデストラクション",
+    "DDDD"
+   ]
+  },
+  {
+   "anilistId": 136220,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:136220",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Doom Breaker",
+    "Tusinjeonsaenggi",
+    "투신전생기",
+    "Reincarnation of the Suicidal Battle God",
+    "Doom Breaker: Venganza contra los Dioses",
+    "鬥神轉生記",
+    "斗神转生记",
+    "เกิดใหม่นักรบพันธุ์ระห่ำ"
+   ]
+  },
+  {
+   "anilistId": 107282,
+   "chapters": 203,
+   "chaptersFrom": "anilist",
+   "key": "anilist:107282",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Shikimori's Not Just a Cutie",
+    "Kawaii dake ja Nai Shikimori-san",
+    "可愛いだけじゃない式守さん",
+    "That Girl Isn't Just Cute",
+    "That Girl Is Not Just Cute",
+    "Kawaii Dake janai Onnanoko Manga",
+    "かわいいだけじゃない女の子漫画",
+    "Miss Shikimori Is Not Just Cute",
+    "귀엽기만 한 게 아닌 시키모리 양",
+    "คุณชิกิโมริไม่ได้น่ารักแค่อย่างเดียวนะ",
+    "Shikimori n'est pas juste mignonne",
+    "Shikimori es más que una cara bonita",
+    "我家女友可不止可爱呢",
+    "Моя девушка не только милая",
+    "式守同學不只可愛而已",
+    "Shikimori đâu chỉ dễ thương"
+   ]
+  },
+  {
+   "anilistId": 87347,
+   "chapters": 51,
+   "chaptersFrom": "anilist",
+   "key": "anilist:87347",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Given",
+    "ギヴン",
+    "GIVEN 被贈與的未來",
+    "기븐-given-"
+   ]
+  },
+  {
+   "anilistId": 98334,
+   "chapters": 54,
+   "chaptersFrom": "anilist",
+   "key": "anilist:98334",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Blue Flag",
+    "Ao no Flag",
+    "青のフラッグ",
+    "Niebieska flaga",
+    "청춘 플래그"
+   ]
+  },
+  {
+   "anilistId": 107521,
+   "chapters": 135,
+   "chaptersFrom": "anilist",
+   "key": "anilist:107521",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Who Made Me a Princess",
+    "Eoneu Nal Gongjuga Doeeobeoryeotda",
+    "어느 날 공주가 되어버렸다",
+    "Suddenly Became A Princess One Day",
+    "Dites-Moi, Princesse!",
+    "One Day, I Became a Princess",
+    "Suddenly, I Became a Princess",
+    "WMMAP",
+    "ある日、お姫様になってしまった件について",
+    "Однажды я стала принцессой",
+    "อยู่ๆ ฉันก็กลายเป็นเจ้าหญิง",
+    "Plötzlich Prinzessin",
+    "Un día me convertí en princesa",
+    "De repente me convertí en una princesa",
+    "某天成为公主",
+    "某天成為公主",
+    "Одного разу я стала принцесою"
+   ]
+  },
+  {
+   "anilistId": 41054,
+   "chapters": 165,
+   "chaptersFrom": "anilist",
+   "key": "anilist:41054",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Billy Bat",
+    "ビリーバット",
+    "BILLY BAT比利蝙蝠"
+   ]
+  },
+  {
+   "anilistId": 38586,
+   "chapters": 72,
+   "chaptersFrom": "anilist",
+   "key": "anilist:38586",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "THE BREAKER",
+    "The Breaker",
+    "브레이커"
+   ]
+  },
+  {
+   "anilistId": 117460,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:117460",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Overgeared",
+    "Temppal",
+    "템빨",
+    "裝備仔",
+    "装备我最强",
+    "テムパル〜アイテムの力〜",
+    "Sobreequipado"
+   ]
+  },
+  {
+   "anilistId": 33008,
+   "chapters": 155,
+   "chaptersFrom": "anilist",
+   "key": "anilist:33008",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "JoJo's Bizarre Adventure Part 5: Golden Wind",
+    "JoJo no Kimyou na Bouken: Ougon no Kaze",
+    "ジョジョの奇妙な冒険 黄金の風",
+    "Dai 5 Bu Giorno Giovana: Ougon naru Isan",
+    "JoJo's Bizarre Adventure Part 5: Vento Aureo",
+    "JoJo's Bizarre Adventure Part 5 Giorno Giovanna: Golden Heritage",
+    "Le Bizzarre Avventure di GioGio",
+    "ההרפתקה המוזרה של ג'וג'ו: רוח מוזהבת",
+    "Le bizzarre avventure di JoJo: Vento Aureo"
+   ]
+  },
+  {
+   "anilistId": 114416,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:114416",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The 100 Girlfriends Who Really, Really, Really, Really, Really Love You",
+    "Kimi no Koto ga Dai Dai Dai Dai Daisuki na 100-nin no Kanojo",
+    "君のことが大大大大大好きな100人の彼女",
+    "รักรักรักรักรักเธอหมดหัวใจจากแฟนสาว100คน",
+    "100 Kanojo",
+    "100Kano",
+    "Hyakkano",
+    "너를 너무너무너무너무 좋아하는 100명의 그녀",
+    "超超超超超喜歡你的100個女朋友",
+    "Les 100 petites amies qui t'aiiiment à en mourir",
+    "Le 100 ragazze che ti amano tanto tanto tanto tanto tanto",
+    "Mis 100 novias que me quieren mogollón mogollón",
+    "Mis 100 novias que me quieren mucho mucho"
+   ]
+  },
+  {
+   "anilistId": 65573,
+   "chapters": 39,
+   "chaptersFrom": "anilist",
+   "key": "anilist:65573",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "orange",
+    "orange [オレンジ]",
+    "Mirai",
+    "Future",
+    "Suwa Hiroto",
+    "Haruiro Astronaut",
+    "Orange - Lá thư từ tương lai",
+    "Oranž"
+   ]
+  },
+  {
+   "anilistId": 143056,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:143056",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Return of the Disaster-Class Hero",
+    "Jaeanggeup Yeongungnimi Gwihwanhasyeotda",
+    "재앙급 영웅님이 귀환하셨다",
+    "A Disaster-Class Hero Has Returned",
+    "灾难级英雄归来",
+    "災いクラスの俺様英雄の帰還",
+    "การกลับมาของฮีโร่ระดับหายนะ"
+   ]
+  },
+  {
+   "anilistId": 30698,
+   "chapters": 97,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30698",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Neon Genesis Evangelion",
+    "Shin Seiki Evangelion",
+    "新世紀エヴァンゲリオン",
+    "Shinseiki Evangelion",
+    "Neogénesis Evangelion",
+    "เอวานเกเลี่ยน",
+    "Новый век: Евангелион",
+    "신세기 에반게리온",
+    "新世紀福音戰士"
+   ]
+  },
+  {
+   "anilistId": 109501,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:109501",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "My Love Story with Yamada-kun at Lv999",
+    "Yamada-kun to Lv999 no Koi wo Suru",
+    "山田くんとLv999の恋をする",
+    "My Lv999 Love for Yamada-kun",
+    "Loving Yamada at LV999!",
+    "Mi amor por Yamada está al Nv. 999",
+    "Kocham Yamadę na 999 poziomie!",
+    "Tình yêu lvl.999 của Yamada và ",
+    "Minha História de Amor com Yamada-kun Nível 999",
+    "야마다 군과 Lv999의 사랑을 하다"
+   ]
+  },
+  {
+   "anilistId": 85734,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:85734",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tamen De Gushi",
+    "她们的故事",
+    "Their Story",
+    "SQ: Cong Ni De Mingzi Kaishi",
+    "SQ: Begin With Your Name!",
+    "SQ从你的名字开始",
+    "SQ 君の名前から始まる",
+    "SQ: Begin W/Your Name!"
+   ]
+  },
+  {
+   "anilistId": 33866,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:33866",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Black Butler",
+    "Kuroshitsuji",
+    "黒執事",
+    "Dark Butler",
+    "Kuroshitsuzi",
+    "Kuro Shitsuji",
+    "흑집사",
+    "Mroczny Kamerdyner",
+    "Kara Kâhya",
+    "คนลึกไขปริศนาลับ",
+    "Hắc Quản Gia",
+    "Темний дворецький",
+    "黑執事",
+    "Crni batler"
+   ]
+  },
+  {
+   "anilistId": 118424,
+   "chapters": 279,
+   "chaptersFrom": "mangaupdates",
+   "key": "anilist:118424",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Archmage Returns After 4000 Years",
+    "4000 Nyeon Mane Gwihwanhan Daemadosa",
+    "4000년 만에 귀환한 대마도사",
+    "The Great Mage Returns After 4000 Years",
+    "Le retour du grand Mage",
+    "4000年ぶりに帰還した大魔導士",
+    "มหาจอมเวทผู้กลับมาอีกครั้งหลัง 4000 ปี"
+   ]
+  },
+  {
+   "anilistId": 99324,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:99324",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Welcome to Demon School! Iruma-kun",
+    "Mairimashita! Iruma-kun",
+    "魔入りました！入間くん",
+    "入间同学入魔了",
+    "Welcome to Demon School, Iruma-kun!",
+    "Iruma w szkole demonów",
+    "อิรุมะคุง พจญในแดนปีศาจ!",
+    "Iruma giá đáo!",
+    "Iruma-kun en el instituto demoníaco",
+    "Iruma à l’école des démons",
+    "入間同學入魔了！ "
+   ]
+  },
+  {
+   "anilistId": 55297,
+   "chapters": 279,
+   "chaptersFrom": "anilist",
+   "key": "anilist:55297",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Prison School",
+    "監獄学園",
+    "감옥학원",
+    "โรงเรียนคุกนรก",
+    "Kangoku Gakuen"
+   ]
+  },
+  {
+   "anilistId": 33378,
+   "chapters": 127,
+   "chaptersFrom": "anilist",
+   "key": "anilist:33378",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kimi ni Todoke: From Me to You",
+    "Kimi ni Todoke",
+    "君に届け",
+    "Reaching You",
+    "Llegando a Ti",
+    "Que Chegue a Você",
+    "Sawako",
+    "Nguyện ước yêu thương",
+    "Nah bei dir – Kimi ni todoke",
+    "너에게 닿기를"
+   ]
+  },
+  {
+   "anilistId": 30743,
+   "chapters": 16,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30743",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "21st Century Boys",
+    "21 Seiki Shounen",
+    "21世紀少年",
+    "21stCB"
+   ]
+  },
+  {
+   "anilistId": 31630,
+   "chapters": 69,
+   "chaptersFrom": "anilist",
+   "key": "anilist:31630",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "JoJo's Bizarre Adventure Part 2: Battle Tendency",
+    "JoJo no Kimyou na Bouken: Sentou Chouryuu",
+    "ジョジョの奇妙な冒険 戦闘潮流",
+    "Dai 2 Bu Joseph Joestar: Sono Hokoritakaki Kettou",
+    "JoJo's Bizarre Adventure Part 2 Joseph Joestar: His Proud Lineage",
+    "Le bizzarre avventure di JoJo: Battle Tendency"
+   ]
+  },
+  {
+   "anilistId": 87208,
+   "chapters": 23,
+   "chaptersFrom": "anilist",
+   "key": "anilist:87208",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Our Dreams at Dusk: Shimanami Tasogare",
+    "Shimanami Tasogare",
+    "しまなみ誰そ彼",
+    "岛并黄昏",
+    "Éclat(s) d'âme",
+    "Sombras sobre Shimanami",
+    "Wer bist du zur blauen Stunde?",
+    "เพียงพบ บรรจบฝัน",
+    "Nasze marzenia o zmierzchu",
+    "Oltre le Onde",
+    "Shimanami Tasogare: Sonhos ao Amanhecer ",
+    "Giấc Mộng Buổi Tà Dương",
+    "島波黃昏 來者何人",
+    "Naši snovi u sumrak "
+   ]
+  },
+  {
+   "anilistId": 105011,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:105011",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "More Than a Married Couple, but Not Lovers.",
+    "Fuufu Ijou, Koibito Miman.",
+    "夫婦以上、恋人未満。",
+    "More than a Couple, Less than Lovers.",
+    "แผนสมรสไม่สมเลิฟ",
+    "Fukomi",
+    "부부 이상, 연인 미만",
+    "夫婦以上，戀人未滿",
+    "Presque Mariés, loin d'être Amoureux"
+   ]
+  },
+  {
+   "anilistId": 110462,
+   "chapters": 411,
+   "chaptersFrom": "anilist",
+   "key": "anilist:110462",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tomb Raider King",
+    "Dogul Wang",
+    "도굴왕",
+    "Der König der Grabräuber",
+    "盗掘王",
+    "盜墓王",
+    "我独自盗墓",
+    "El rey saqueador de tumbas"
+   ]
+  },
+  {
+   "anilistId": 87459,
+   "chapters": 6,
+   "chaptersFrom": "anilist",
+   "key": "anilist:87459",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "My Lesbian Experience With Loneliness",
+    "Sabishisugite Rezu Fuzoku ni Ikimashita Report",
+    "さびしすぎてレズ風俗に行きましたレポ",
+    "The Private Report on My Lesbian Experience With Loneliness",
+    " Minha Experiência Lésbica Com A Solidão ",
+    "Solitude d'un autre genre",
+    "Moje lesbijskie doświadczenia w walce z samotnością ",
+    "Моя интимная жизнь с одиночеством",
+    "Mi experiencia lesbiana con la soledad",
+    "Мій лесбійський досвід самотности",
+    "Meine lesbische Erfahrung mit Einsamkeit",
+    "La mia prima volta - My Lesbian Experience with Loneliness",
+    "我可以被擁抱嗎？因為太過寂寞而叫了蕾絲邊應召"
+   ]
+  },
+  {
+   "anilistId": 32921,
+   "chapters": 99,
+   "chaptersFrom": "anilist",
+   "key": "anilist:32921",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Maid-sama!",
+    "Kaichou wa Maid-sama!",
+    "会長はメイド様！",
+    "Class President is a Maid!",
+    "Kaichou wa Maidsama",
+    "Toumei na Sekai",
+    "Transparent World",
+    "Służąca Przewodnicząca ",
+    "Староста-горничная",
+    "Maid Sama!",
+    "My Sweet Kaicho",
+    "學生會長是女僕！",
+    "會長是女僕大人！",
+    "非常女會長",
+    "회장님은 메이드 사마"
+   ]
+  },
+  {
+   "anilistId": 30004,
+   "chapters": 144,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30004",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Yokohama Kaidashi Kikou",
+    "ヨコハマ買い出し紀行",
+    "Yokohama Shopping Log",
+    "Yokohama Shopping Trip",
+    "Touge",
+    "Quiet Country Cafe",
+    "YKK",
+    "Escale à Yokohama",
+    "Путевые заметки о поездке за покупками в Йокогаму",
+    "Поездка за покупками в Иокогаму"
+   ]
+  },
+  {
+   "anilistId": 114605,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:114605",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Latna Saga: Survival of a Sword King",
+    "Igye Geomwang Saengjongi",
+    "이계 검왕 생존기",
+    "Survival Story of a Sword King in a Fantasy World",
+    "Otherworldly Sword King's Survival Records",
+    "Latna Saga: A Jornada do Rei Espadachim",
+    "異世界剣王生存記",
+    "拔剑九亿次",
+    "異界劍王生存記",
+    "การเอาชีวิตรอดของราชาดาบในต่างโลก"
+   ]
+  },
+  {
+   "anilistId": 33006,
+   "chapters": 174,
+   "chaptersFrom": "anilist",
+   "key": "anilist:33006",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "JoJo's Bizarre Adventure Part 4: Diamond is Unbreakable",
+    "JoJo no Kimyou na Bouken: Diamond wa Kudakenai",
+    "ジョジョの奇妙な冒険 ダイヤモンドは砕けない",
+    "Dai 4 Bu Higashikata Jousuke",
+    "JoJo's Bizarre Adventure Part 4: Jōsuke Higashikata",
+    "JoJo's Bizarre Adventure Part 4: Diamond is Not Crash",
+    "Le bizzarre avventure di JoJo: Diamond is Unbreakable"
+   ]
+  },
+  {
+   "anilistId": 111189,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:111189",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "A Sign of Affection",
+    "Yubisaki to Renren",
+    "ゆびさきと恋々",
+    "Ein Zeichen der Zuneigung",
+    "손끝과 연연",
+    "Signos de Afecto",
+    "Кохання на кінчиках пальців",
+    "Znaki naszych uczuć",
+    "Yubiren",
+    "Um Sinal de Afeto",
+    "Ngôn ngữ yêu thương",
+    "Sinais de Afeto",
+    "指尖相触，恋恋不舍"
+   ]
+  },
+  {
+   "anilistId": 101557,
+   "chapters": 199,
+   "chaptersFrom": "anilist",
+   "key": "anilist:101557",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Dangers in My Heart",
+    "Boku no Kokoro no Yabai Yatsu",
+    "僕の心のヤバイやつ",
+    "The Bad Part of My Heart",
+    "내 마음의 위험한 녀석",
+    "BokuYaba",
+    "เธอผู้อันตรายต่อใจผม",
+    "Czarne chmury w moim sercu",
+    "僕ヤバ",
+    "Kalbimdeki Deli"
+   ]
+  },
+  {
+   "anilistId": 116671,
+   "chapters": 234,
+   "chaptersFrom": "anilist",
+   "key": "anilist:116671",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Juujika no Rokunin",
+    "十字架のろくにん",
+    "Cross of the Cross",
+    "X6 - CRUCISIX",
+    "Six People on Crosses",
+    "Cross of Six Men"
+   ]
+  },
+  {
+   "anilistId": 86568,
+   "chapters": 29,
+   "chaptersFrom": "mangaupdates",
+   "key": "anilist:86568",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Case Study of Vanitas",
+    "Vanitas no Carte",
+    "ヴァニタスの手記",
+    "Memoir of Vanitas",
+    "Vanitas no Tehai",
+    "Vanitas no Shuki",
+    "Księga Vanitasa",
+    "Los Apuntes de Vanitas",
+    "Les mémoires de Vanitas",
+    "瓦尼塔斯的手记",
+    "Мемуары Ванитаса",
+    "บันทึกแวมไพร์วานิทัส",
+    "Hồi kí Vanitas",
+    "As Memórias de Vanitas",
+    "Мемуари Ванітаса",
+    "바니타스의 수기"
+   ]
+  },
+  {
+   "anilistId": 130511,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:130511",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Player Who Can't Level Up",
+    "Level-Up Motaneun Player",
+    "레벨업 못하는 플레이어",
+    "The Player That Can't Level Up",
+    "The Player Who Can't Level Up: O Mestre dos Egos",
+    "เพลเยอร์เลเวลไม่อัป",
+    "无法升级的玩家"
+   ]
+  },
+  {
+   "anilistId": 30872,
+   "chapters": 152,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30872",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "JoJo's Bizarre Adventure Part 3: Stardust Crusaders",
+    "JoJo no Kimyou na Bouken: Stardust Crusaders",
+    "ジョジョの奇妙な冒険スターダストクルセイダース",
+    "Dai 3 Bu Kuujou Joutarou: Mirai e no Isan",
+    "JoJo's Bizarre Adventure Part 3 Jotaro Kujo: Heritage for the Future",
+    "Stardust Crusaders",
+    "スターダストクルセイダース",
+    "Le bizzarre avventure di JoJo: Stardust Crusaders",
+    "JoJo的奇妙冒险 第三部 星尘斗士"
+   ]
+  },
+  {
+   "anilistId": 30007,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:30007",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Hajime no Ippo: Fighting Spirit!",
+    "Hajime no Ippo",
+    "はじめの一歩",
+    "The Fighting!",
+    "Fighting Spirit",
+    "The Fighting! Ippo",
+    "Hajime no Ippo Gaiden: Naniwa Tiger",
+    "Fight!! Ippo"
+   ]
+  },
+  {
+   "anilistId": 151512,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:151512",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "My Blasted Reincarnated Life",
+    "Bireomeogeul Hwansaeng",
+    "빌어먹을 환생",
+    "Damn Reincarnation"
+   ]
+  },
+  {
+   "anilistId": 85165,
+   "chapters": 99,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85165",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Innocent",
+    "イノサン",
+    "純真之人"
+   ]
+  },
+  {
+   "anilistId": 85442,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:85442",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Rising of the Shield Hero",
+    "Tate no Yuusha no Nariagari",
+    "盾の勇者の成り上がり",
+    "Восхождение Героя Щита",
+    "ผู้กล้าโล่ผงาด",
+    "盾之勇者成名錄"
+   ]
+  },
+  {
+   "anilistId": 86508,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:86508",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Dragon Ball Super",
+    "ドラゴンボール超",
+    "Dragon Ball Chou",
+    "Bola de Drac Super"
+   ]
+  },
+  {
+   "anilistId": 59983,
+   "chapters": 544,
+   "chaptersFrom": "anilist",
+   "key": "anilist:59983",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Noblesse",
+    "노블레스",
+    "大貴族",
+    "โนเบลส"
+   ]
+  },
+  {
+   "anilistId": 30102,
+   "chapters": 137,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30102",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Fruits Basket",
+    "フルーツバスケット",
+    "Furuba",
+    "Fruba",
+    "フルバ",
+    "水果篮子",
+    "후르츠 바스켓 "
+   ]
+  },
+  {
+   "anilistId": 135325,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:135325",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Lazy Lord Masters the Sword",
+    "Natae Gongja, Nolyeog Cheonjae Doeda",
+    "나태 공자, 노력 천재 되다",
+    "The Lazy Prince Becomes a Genius",
+    "Reformation of the Deadbeat Noble",
+    "Der faule Lord meistert die Schwertkunst",
+    "懶惰公子成長記"
+   ]
+  },
+  {
+   "anilistId": 150440,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:150440",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "RuriDragon",
+    "Ruri Dragon",
+    "ルリドラゴン",
+    "瑠璃龍龍 ",
+    "รูริดราก้อน",
+    "루리 드래곤"
+   ]
+  },
+  {
+   "anilistId": 47465,
+   "chapters": 9,
+   "chaptersFrom": "anilist",
+   "key": "anilist:47465",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Memories of Emanon",
+    "Omoide Emanon",
+    "おもいでエマノン",
+    "Wspomnienia Emanon",
+    "Souvenirs d'Emanon",
+    "Emanon Recuerdos",
+    "Lembranças de Emanon",
+    "Воспоминания Эманон",
+    "Спогади Еманон"
+   ]
+  },
+  {
+   "anilistId": 31224,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:31224",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "March Comes in Like a Lion",
+    "3-gatsu no Lion",
+    "3月のライオン",
+    "Sangatsu no Lion",
+    "Lion of March",
+    "Un marzo da leoni",
+    "El león de marzo",
+    "Marcowy lew",
+    "O Leão de Março",
+    "Sư Tử Tháng 3",
+    "3月的獅子",
+    "3월의 라이온"
+   ]
+  },
+  {
+   "anilistId": 98235,
+   "chapters": 187,
+   "chaptersFrom": "anilist",
+   "key": "anilist:98235",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "We Never Learn",
+    "Bokutachi wa Benkyou ga Dekinai",
+    "ぼくたちは勉強ができない",
+    "BokuBen",
+    "We Can't Study",
+    "Boku-tachi wa Benkyou ga Dekinai",
+    "เรื่องนี้ตําราไม่มีสอน "
+   ]
+  },
+  {
+   "anilistId": 113501,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:113501",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Please Go Home, Miss Akutsu!",
+    "Kaette Kudasai! Akutsu-san",
+    "帰ってください! 阿久津さん",
+    "求妳快走吧，阿久津！",
+    "Please Go Home, Akutsu-san!",
+    "Yankee Musume",
+    "ヤンキー娘",
+    "Bitte geh heim, Akutsu-san!",
+    "กลับบ้านไปเถอะครับ! คุณอาคุตสึ"
+   ]
+  },
+  {
+   "anilistId": 65003,
+   "chapters": 246,
+   "chaptersFrom": "anilist",
+   "key": "anilist:65003",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Yamada-kun and the Seven Witches",
+    "Yamada-kun to 7-nin no Majo",
+    "山田くんと7人の魔女",
+    "Yamada-kun to Nananin no Majo",
+    "Yamajo",
+    "Maou no Kyoushitsu",
+    "The Devil's Classroom",
+    "Yamada-kun e le 7 streghe",
+    "ยามาดะคุงกับแม่มดทั้ง 7",
+    "야마다와 7명의 마녀"
+   ]
+  },
+  {
+   "anilistId": 31649,
+   "chapters": 201,
+   "chaptersFrom": "anilist",
+   "key": "anilist:31649",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "LIAR GAME",
+    "ライアーゲーム",
+    "Liar Game: El Juego de los Mentirosos",
+    "라이어 게임"
+   ]
+  },
+  {
+   "anilistId": 39982,
+   "chapters": 539,
+   "chaptersFrom": "anilist",
+   "key": "anilist:39982",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Usogui",
+    "嘘喰い",
+    "The Lie Eater",
+    "บาคุ ลับ ลวง หลอก"
+   ]
+  },
+  {
+   "anilistId": 179445,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:179445",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Solo Leveling: Ragnarok",
+    "Na Honjaman Level Up: Ragnarok",
+    "나 혼자만 레벨업 : 라그나로크",
+    "俺だけレベルアップな件〜ラグナロク〜",
+    "我独自升级 : 诸神黄昏"
+   ]
+  },
+  {
+   "anilistId": 112579,
+   "chapters": 6,
+   "chaptersFrom": "anilist",
+   "key": "anilist:112579",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "My Broken Mariko",
+    "マイ・ブロークン・マリコ",
+    "Nàng Mariko vụn vỡ của tôi",
+    "แด่มาริโกะของฉัน",
+    "Moje vadná Mariko",
+    "Моя зломлена Маріко"
+   ]
+  },
+  {
+   "anilistId": 170400,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:170400",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Stellar Swordmaster",
+    "Byeoreul Pumeun Swordmaster",
+    "별을 품은 소드마스터",
+    "Star-Embracing Swordmaster",
+    "ยอดนักดาบผู้โอบอุ้มดารา",
+    "星剑大师",
+    "星耀劍士",
+    "Maestro de espadas estelar"
+   ]
+  },
+  {
+   "anilistId": 30145,
+   "chapters": 103,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30145",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "BECK",
+    "ベック",
+    "Beck: Mongolian Chop Squad"
+   ]
+  },
+  {
+   "anilistId": 109285,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:109285",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Skip and Loafer",
+    "Skip to Loafer",
+    "スキップとローファー",
+    "Skip and Loafer - Nhịp Bước Tuổi Xanh",
+    "Skip y Loafer",
+    "スキロー",
+    "스킵과 로퍼"
+   ]
+  },
+  {
+   "anilistId": 76716,
+   "chapters": 54,
+   "chaptersFrom": "anilist",
+   "key": "anilist:76716",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Masamune-kun’s Revenge",
+    "Masamune-kun no Revenge",
+    "政宗くんのリベンジ",
+    "政宗君的復仇"
+   ]
+  },
+  {
+   "anilistId": 30401,
+   "chapters": 64,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30401",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Parasyte",
+    "Kiseijuu",
+    "寄生獣",
+    "Parasite",
+    "Parasitic Beasts",
+    "Ký Sinh Thú",
+    "Паразит",
+    "Kiseiju - L'ospite indesiderato",
+    "Pasożyt",
+    "기생수",
+    "寄生獸"
+   ]
+  },
+  {
+   "anilistId": 153284,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:153284",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "After Ten Millennia in Hell",
+    "Man Nyeon Mane Gwihwanhan Player",
+    "만 년 만에 귀환한 플레이어",
+    "Player Who Returned 10,000 Years Later",
+    "1万年ぶりに帰還したプレイヤー",
+    "歷經萬年回歸的玩家",
+    "เพลเยอร์ผู้กลับมาในรอบหมื่นปี"
+   ]
+  },
+  {
+   "anilistId": 47353,
+   "chapters": 20,
+   "chaptersFrom": "anilist",
+   "key": "anilist:47353",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "A Girl on the Shore",
+    "Umibe no Onnanoko",
+    "うみべの女の子",
+    "Umibe no Onna no Ko",
+    "The Girl of the Beach",
+    "A Girl by the Sea",
+    "La Chica a la Orilla del Mar",
+    "La fille de la plage",
+    "Dziewczyna znad morza",
+    "Mädchen am Strand",
+    "La ragazza in riva al mare",
+    "Девушка у моря",
+    "Devojka na obali",
+    "Garota à Beira-Mar"
+   ]
+  },
+  {
+   "anilistId": 80145,
+   "chapters": 50,
+   "chaptersFrom": "anilist",
+   "key": "anilist:80145",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Citrus",
+    "citrus",
+    "citrus: secret love affair with sister",
+    "citrus: saburouta presents secret love affair with sister",
+    "citrus～柑橘味香气～",
+    "citrus~柑橘味香氣~"
+   ]
+  },
+  {
+   "anilistId": 30658,
+   "chapters": 219,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30658",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Blade of the Immortal",
+    "Mugen no Juunin",
+    "無限の住人",
+    "La Espada del Inmortal",
+    "Blade den udødelige",
+    "Blade - A Lâmina do Imortal",
+    "Клинок бессмертного",
+    "ฤทธิ์ดาบไร้ปรานี",
+    "Miecz nieśmiertelnego",
+    "Oštrica besmrtnika",
+    "L'Immortale",
+    "L'Habitant de l'infini"
+   ]
+  },
+  {
+   "anilistId": 172619,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:172619",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Extra’s Academy Survival Guide",
+    "Academy-eseo Saranamgi",
+    "아카데미에서 살아남기",
+    "三流反派的學院生存記"
+   ]
+  },
+  {
+   "anilistId": 33285,
+   "chapters": 182,
+   "chaptersFrom": "anilist",
+   "key": "anilist:33285",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Holyland",
+    "ホーリーランド",
+    "Holy Land"
+   ]
+  },
+  {
+   "anilistId": 110473,
+   "chapters": 125,
+   "chaptersFrom": "anilist",
+   "key": "anilist:110473",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Insomniacs After School",
+    "Kimi wa Houkago Insomnia",
+    "君は放課後インソムニア",
+    "Insomniaques",
+    "ถ้านอนไม่หลับไปนับดาวกันไหม",
+    "Bezsenność po szkole",
+    "Insones – Caçando Estrelas Depois da Aula",
+    "Insomnes después de la escuela",
+    "君ソム",
+    "Kimisomu",
+    "너는 방과후 인섬니아"
+   ]
+  },
+  {
+   "anilistId": 106867,
+   "chapters": 98,
+   "chaptersFrom": "anilist",
+   "key": "anilist:106867",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "My Dearest Self With Malice Aforethought",
+    "Shinai naru Boku e Satsui wo Komete",
+    "親愛なる僕へ殺意をこめて",
+    "The Killer Inside",
+    "Morderca w mojej głowie"
+   ]
+  },
+  {
+   "anilistId": 66267,
+   "chapters": 80,
+   "chaptersFrom": "anilist",
+   "key": "anilist:66267",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Inside Mari",
+    "Boku wa Mari no Naka",
+    "ぼくは麻理のなか",
+    "I'm in Mari",
+    "Dans l'intimité de Marie",
+    "Dentro Mari"
+   ]
+  },
+  {
+   "anilistId": 86707,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:86707",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tales of Demons and Gods",
+    "Yao Shen Ji",
+    "妖神记",
+    "Tales of Demons & Gods",
+    "TODAG",
+    "Una Vida Del Demonio",
+    "Cuentos de Demonios y Dioses",
+    "Historias De Dioses Y Demonios",
+    "เรื่องราวของปีศาจและเทพเจ้า",
+    "요신기"
+   ]
+  },
+  {
+   "anilistId": 30044,
+   "chapters": 709,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30044",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Gin Tama",
+    "Gintama",
+    "銀魂",
+    "Dandelion",
+    "Shiro Kuro",
+    "Black and White",
+    "גינטמה",
+    "กินทามะ",
+    "은혼"
+   ]
+  },
+  {
+   "anilistId": 125636,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:125636",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Max Level Hero Strikes Back!",
+    "Mallep Yeongungnim Kkeseo Gwihwan Hasinda!",
+    "만렙 영웅님 께서 귀환 하신다!",
+    "Max Level Hero is Making a Comeback!",
+    "The Max Level Hero has Returned!",
+    "Max Level Hero",
+    "最終レベル英雄のご帰還",
+    "Saishuu Level Eiyuu no go Kikan",
+    "英雄大人滿級回歸",
+    "การกลับมาของวีรบุรุษเวลตัน"
+   ]
+  },
+  {
+   "anilistId": 142568,
+   "chapters": 16,
+   "chaptersFrom": "anilist",
+   "key": "anilist:142568",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Takopi's Original Sin",
+    "Takopii no Genzai",
+    "タコピーの原罪",
+    "Octoppi's Original Sin",
+    "El Pecado Original de Takopi",
+    "O Pecado Original de Takopi",
+    "章魚嗶的原罪",
+    "Takopi und die Sache mit dem Glück",
+    "Pierwszy grzech Takopiiego",
+    "Le Péché originel de Takopi",
+    "Takopího prvotní hřích",
+    "Nguyên tội của Takopi",
+    "타코피의 원죄"
+   ]
+  },
+  {
+   "anilistId": 43702,
+   "chapters": 69,
+   "chaptersFrom": "anilist",
+   "key": "anilist:43702",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "My Little Monster",
+    "Tonari no Kaibutsu-kun",
+    "となりの怪物くん",
+    "Tonari no Kaibutsukun",
+    "The Monster Next Door",
+    "My Neighbor Monster-kun",
+    "El Monstruo de al Lado",
+    "Bestia z ławki obok",
+    "Чудовище за соседней партой",
+    "Le Garçon d'à côté"
+   ]
+  },
+  {
+   "anilistId": 115122,
+   "chapters": 1,
+   "chaptersFrom": "anilist",
+   "key": "anilist:115122",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Death Note: a-Kira",
+    "DEATH NOTE: Tokubetsu Yomikiri",
+    "DEATH NOTE 特別読切",
+    "デスノート",
+    "Death Note: Special One-Shot",
+    "Death Note: Never Complete"
+   ]
+  },
+  {
+   "anilistId": 87321,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:87321",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Goblin Slayer",
+    "ゴブリンスレイヤー",
+    "Убийца Гоблинов",
+    "Убивця гоблінів",
+    "고블린 슬레이어"
+   ]
+  },
+  {
+   "anilistId": 30768,
+   "chapters": 54,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30768",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Battle Angel Alita",
+    "GUNNM",
+    "銃夢",
+    "Tsutsu Yume GUNNM",
+    "Ganmu",
+    "Gunmu",
+    "Savaş Meleği Alita",
+    "Bojový anděl Alita",
+    "Alita l'angelo della battaglia",
+    "GUNNM Оружие Мечты",
+    "Borbeni anđeo Alita",
+    "총몽 완전판",
+    "铳梦"
+   ]
+  },
+  {
+   "anilistId": 94490,
+   "chapters": 240,
+   "chaptersFrom": "anilist",
+   "key": "anilist:94490",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Fable",
+    "ザ・ファブル",
+    "殺手寓言"
+   ]
+  },
+  {
+   "anilistId": 41734,
+   "chapters": 8,
+   "chaptersFrom": "anilist",
+   "key": "anilist:41734",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Watashitachi no Shiawase na Jikan",
+    "私たちの幸せな時間",
+    "Our Happy Hours",
+    "Our Happy Time"
+   ]
+  },
+  {
+   "anilistId": 85533,
+   "chapters": 190,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85533",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Teasing Master Takagi-san",
+    "Karakai Jouzu no Takagi-san",
+    "からかい上手の高木さん",
+    "Skilled Teaser Takagi-san",
+    "Takagi-san Experta en Bromas Pesadas",
+    "Nicht schon wieder, Takagi-san!",
+    "Quand Takagi me taquine",
+    "Takagi - A Mestra das Pegadinhas",
+    "แกล้งนัก รักนะ รู้ยัง ",
+    "Nhất quỷ nhì ma, thứ ba Takagi",
+    "Teasing Master, Takagi"
+   ]
+  },
+  {
+   "anilistId": 41514,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:41514",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "A Bride's Story",
+    "Otoyomegatari",
+    "乙嫁語り",
+    "Otome-Katari",
+    "Otoyome Gatari",
+    "Otomegatari",
+    "Young Bride's Story",
+    "Opowieść Panny Młodej",
+    "Cô dâu thảo nguyên",
+    "เจ้าสาวแห่งทางสายไหม",
+    "Bride Stories",
+    "姊嫁物語",
+    "I Giorni Della Sposa",
+    "The Bride's Stories",
+    "신부 이야기"
+   ]
+  },
+  {
+   "anilistId": 30756,
+   "chapters": 110,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30756",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Banana Fish",
+    "BANANA FISH",
+    "バナナフィッシュ",
+    "바나나 피시"
+   ]
+  },
+  {
+   "anilistId": 104660,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:104660",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Zom 100: Bucket List of the Dead",
+    "Zom 100: Zombie ni Naru Made ni Shitai 100 no Koto",
+    "ゾン100 ～ゾンビになるまでにしたい100のこと～",
+    "Zon 100",
+    "Bucket list of the dead",
+    "Zombie 100 ~100 Things I Want to do Before I Become a Zombie~",
+    "Zombie 100 ~Zombie ni Naru Made ni Shitai 100 no Koto~",
+    "ซอม 100 : 100 สิ่งที่อยากทำก่อนจะกลายเป็นซอมบี้",
+    "100 rzeczy do zrobienia, zanim zostanę zombie",
+    "Zom 100: Coisas para Fazer antes de Virar Zumbi",
+    "좀100 -좀비가 되기 전에 하고 싶은 100가지-",
+    "Zombie 100 – Bucket List of the Dead",
+    "100 бажань до перетворення на зомбі"
+   ]
+  },
+  {
+   "anilistId": 152128,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:152128",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Novel's Extra",
+    "Soseol Sok Extra",
+    "소설 속 엑스트라",
+    "The Novel's Extra (2022)",
+    "The Novel's Extra (Remake)",
+    "The Ghost Writing Hero",
+    "小説の中のエキストラ",
+    "ผมก็แค่ตัวประกอบในนิยาย",
+    "成為我筆下小說的路人甲"
+   ]
+  },
+  {
+   "anilistId": 100805,
+   "chapters": 157,
+   "chaptersFrom": "anilist",
+   "key": "anilist:100805",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Here U Are",
+    "Te encontré",
+    "原来你在这里"
+   ]
+  },
+  {
+   "anilistId": 86952,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:86952",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "So I'm a Spider, So What?",
+    "Kumo desu ga, Nani ka?",
+    "蜘蛛ですが、なにか？",
+    "So I'm a spider what about it?",
+    " what about it?",
+    "แมงมุมแล้วไง ข้องใจเหรอคะ ",
+    "Sí, soy una araña, ¿qué pasa?",
+    "轉生成蜘蛛又怎樣！"
+   ]
+  },
+  {
+   "anilistId": 180752,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:180752",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Ichi the Witch",
+    "Madan no Ichi",
+    "魔男のイチ",
+    "Ichi, el brujo.",
+    "พ่อมดอิจิ",
+    "마남 이치",
+    "Ichi, o Bruxo"
+   ]
+  },
+  {
+   "anilistId": 167649,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:167649",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Academy's Genius Swordsman",
+    "Academy Cheonjaekaljabi",
+    "아카데미의 천재칼잡이",
+    "Academy's Genius Swordmaster",
+    "L'épéiste prodige de l'Académie",
+    "皇家学院的天才剑豪",
+    "學院天才劍客"
+   ]
+  },
+  {
+   "anilistId": 30030,
+   "chapters": 97,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30030",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Ouran High School Host Club",
+    "Ouran Koukou Host Club",
+    "桜蘭高校ホスト部",
+    "OHSHC",
+    "Romantic Egoist",
+    "Colégio Ouran Host Club",
+    "Гостевой клуб лицея Оран",
+    "Instituto Ouran Host Club",
+    "Host Club - Amore in affitto",
+    "오란고교 호스트부",
+    "Host club - Le Lycée de la séduction",
+    "櫻蘭高校男公關部 "
+   ]
+  },
+  {
+   "anilistId": 101315,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:101315",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Anjo the Mischievous Gal",
+    "Yancha Gal no Anjou-san",
+    "やんちゃギャルの安城さん",
+    "Anjou-san",
+    "Yancha Gal's Anjou-san",
+    "Anjou, A Naughty Girl",
+    "คุณอันโจหยอกนักเพราะรักนะ",
+    "Anjo, la chica traviesa",
+    "Mischievous Gal Anjou-san"
+   ]
+  },
+  {
+   "anilistId": 138072,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:138072",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "JoJo no Kimyou na Bouken: The JOJOLands",
+    "ジョジョの奇妙な冒険 The JOJOLands",
+    "JoJo's Bizarre Adventure Part 9: The JOJOLands"
+   ]
+  },
+  {
+   "anilistId": 107987,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:107987",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Whisper Me a Love Song",
+    "Sasayaku You ni Koi wo Utau",
+    "ささやくように恋を唄う",
+    "Whispering You a Love Song",
+    "SasaKoi",
+    "ささこい",
+    "Cicha piosenka o miłości",
+    "Flüster mir ein Liebeslied",
+    "恰如細語般的戀歌",
+    "Khẽ Hát Lời Yêu",
+    "กระซิบรักเป็นทำนองร้องบอกเธอ ",
+    "Sussurrando uma canção de amor"
+   ]
+  },
+  {
+   "anilistId": 69325,
+   "chapters": 49,
+   "chaptersFrom": "anilist",
+   "key": "anilist:69325",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Erased",
+    "Boku dake ga Inai Machi",
+    "僕だけがいない街",
+    "The Town Where Only I am Missing",
+    "Desaparecido",
+    "Poissa - Erased",
+    "Город, в котором меня нет",
+    "รีไววัล ย้อนอดีตไขปริศนา",
+    "Thị trấn vắng mình tôi",
+    "Die Stadt, in der es mich nicht gibt",
+    "Erased - A Cidade Onde Só Eu Não Existo",
+    "ERASED Miasto, z którego zniknąłem",
+    "Місто, де немає лиш мене",
+    "나만이 없는 거리"
+   ]
+  },
+  {
+   "anilistId": 114791,
+   "chapters": 244,
+   "chaptersFrom": "anilist",
+   "key": "anilist:114791",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Undead Unluck",
+    "アンデッドアンラック",
+    "不死不運"
+   ]
+  },
+  {
+   "anilistId": 30418,
+   "chapters": 50,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30418",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Mushishi",
+    "蟲師",
+    "Mushi-shi",
+    "Bug Master",
+    "Знаток муси",
+    "Trùng Sư"
+   ]
+  },
+  {
+   "anilistId": 104973,
+   "chapters": 158,
+   "chaptersFrom": "anilist",
+   "key": "anilist:104973",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Reason Why Raeliana Ended Up at the Duke's Mansion",
+    "Geunyeoga Gongjakjeoro Gaya Haetdeon Sajeong",
+    "그녀가 공작저로 가야 했던 사정",
+    "Why Raeliana Ended Up at the Duke's Mansion",
+    "Cómo Raeliana acabó en la mansión del Duque",
+    "Raeliana – Warum sie die Verlobte des Dukes wurde",
+    "Comment j'ai survécu au Manoir Wynknight",
+    "彼女が公爵邸に行った理由",
+    "Kanojo ga Koushaku Yashiki ni itta Riyuu",
+    "公爵的契约未婚妻",
+    "Vị Hôn Thê Khế Ước Của Công Tước",
+    "พระเอกของฉันเป็นท่านดยุค",
+    "Реліана: Наречена герцога за контрактом",
+    "Tunangan Kontrak Duke",
+    "Okoliczności, które sprawiły, że Raeliana trafiła do posiadłości diuka"
+   ]
+  },
+  {
+   "anilistId": 31303,
+   "chapters": 171,
+   "chaptersFrom": "anilist",
+   "key": "anilist:31303",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Ashita no Joe: Fighting for Tomorrow",
+    "Ashita no Joe",
+    "あしたのジョー",
+    "Rocky Joe",
+    "Tomorrow's Joe",
+    "Joe del Mañana",
+    "Boy Action II",
+    "Ashita no Joe - Em Busca do Amanhã"
+   ]
+  },
+  {
+   "anilistId": 138222,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:138222",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Level Up with the Gods",
+    "Singwa Hamkke Level Up",
+    "신과 함께 레벨업",
+    "Leveling With The Gods",
+    "เลเวลอัปไปกับเทพเจ้า",
+    "神と共にレベルアップ",
+    "Subi de Nível Com os Deuses"
+   ]
+  },
+  {
+   "anilistId": 121991,
+   "chapters": 222,
+   "chaptersFrom": "anilist",
+   "key": "anilist:121991",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Viral Hit",
+    "Ssaumdokak",
+    "싸움독학",
+    "How to Fight",
+    "喧嘩独学",
+    "格鬥實況",
+    "นักสู้ทูปเบอร์",
+    "Hit Viral",
+    "Kenka Dougaku"
+   ]
+  },
+  {
+   "anilistId": 85435,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:85435",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Ancient Magus' Bride",
+    "Mahoutsukai no Yome",
+    "魔法使いの嫁",
+    "The Magician's Bride",
+    "Mahou Tsukai no Yome",
+    "Oblubienica czarnoksiężnika",
+    "Čarodějova nevěsta",
+    "Cô Dâu Pháp Sư",
+    "Невеста чародея",
+    "Mireasa Străvechiului Mag",
+    "Наречена чаклуна",
+    "The Ancient Mage's Bride",
+    "마법사의 신부"
+   ]
+  },
+  {
+   "anilistId": 100557,
+   "chapters": 69,
+   "chaptersFrom": "anilist",
+   "key": "anilist:100557",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "One Room of Happiness",
+    "Sachi-iro no One Room",
+    "幸色のワンルーム",
+    "Sachiiro no One Room",
+    "Pokój w kolorach szczęścia",
+    "Una Habitación del Color de la Felicidad",
+    "Color of Happiness",
+    "Una stanza di felicità",
+    "Pokoj v barvách štěstí"
+   ]
+  },
+  {
+   "anilistId": 107559,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:107559",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Please Put Them On, Takamine-san",
+    "Haite Kudasai, Takamine-san",
+    "履いてください、鷹峰さん",
+    "Please Put These On, Takamine-san",
+    "หยุดถอดเถอะครับ คุณทาคามิเนะ ",
+    "拜託請穿上，鷹峰同學",
+    "입어주세요, 타카미네 양"
+   ]
+  },
+  {
+   "anilistId": 137304,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:137304",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Return of the Mad Demon",
+    "Gwangmahoegwi",
+    "광마회귀",
+    "The Return of the Crazy Demon",
+    "อสูรคลั่งผู้หวนคืน",
+    "狂魔重生記",
+    "狂魔重生"
+   ]
+  },
+  {
+   "anilistId": 146139,
+   "chapters": 132,
+   "chaptersFrom": "anilist",
+   "key": "anilist:146139",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Maybe Meant to Be",
+    "Eojjeodaboni Cheonsaengyeonbun",
+    "어쩌다보니 천생연분",
+    "Match Made in Heaven by Chance",
+    "偶然成了天生一對",
+    "Quizás fue el Destino",
+    "โชคชะตานำพารัก"
+   ]
+  },
+  {
+   "anilistId": 116353,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:116353",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Devil Butler",
+    "Mo Huang Da Guanjia",
+    "魔皇大管家",
+    "Magic Emperor",
+    "Housekeeper is the Magic Emperor",
+    "Demon King Steward",
+    "Devil's Butler",
+    "The Servant Is the Demon King?!",
+    "Demonic Emperor",
+    "The Demon King Butler"
+   ]
+  },
+  {
+   "anilistId": 177706,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:177706",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Knight Only Lives Today",
+    "Oneulman Saneun Gisa",
+    "오늘만 사는 기사",
+    "Eternally Regressing Knight",
+    "Der Ritter lebt nur heute",
+    "死に戻り騎士は今日も生きる",
+    "只活今天的轮回骑士",
+    "今日騎士",
+    "อัศวินวันเดียว"
+   ]
+  },
+  {
+   "anilistId": 30047,
+   "chapters": 411,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30047",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Reborn!",
+    "Katekyo Hitman REBORN!",
+    "家庭教師ヒットマンREBORN!",
+    "Kateikyoushi Hitman Reborn!",
+    "Home Tutor Hitman Reborn!",
+    "Tutor Hitman Reborn!",
+    "家庭教師HITMAN REBORN!",
+    "가정교사 히트맨 리본!"
+   ]
+  },
+  {
+   "anilistId": 136331,
+   "chapters": 81,
+   "chaptersFrom": "anilist",
+   "key": "anilist:136331",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Return of the 8th Class Mage",
+    "8 Class Mabeopsaui Hoegwi",
+    "8클래스 마법사의 회귀",
+    "Return of the 8th Class Magician",
+    "Le Retour du magicien de classe 8",
+    "การกลับมาของจอมเวทระดับ 8",
+    "8級魔法師再臨"
+   ]
+  },
+  {
+   "anilistId": 30267,
+   "chapters": 92,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30267",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "HELLSING",
+    "Hellsing Cross Fire",
+    "Crossfire",
+    "ヘルシング"
+   ]
+  },
+  {
+   "anilistId": 105263,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:105263",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Dai Dark",
+    "大ダーク",
+    "대다크"
+   ]
+  },
+  {
+   "anilistId": 30053,
+   "chapters": 176,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30053",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Yu Yu Hakusho",
+    "Yuu☆Yuu☆Hakusho",
+    "幽☆遊☆白書",
+    "Yuu Yuu Hakusho",
+    "YuYu Hakusho",
+    "YYH",
+    "Yu degli spettri",
+    "Hành trình U Linh Giới",
+    "Yu Yu Hakusho - archiwum duchów",
+    "幽遊白書",
+    "유유백서"
+   ]
+  },
+  {
+   "anilistId": 100991,
+   "chapters": 123,
+   "chaptersFrom": "anilist",
+   "key": "anilist:100991",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "ACT-AGE",
+    "act-age",
+    "アクタージュ act-age",
+    "ดารายอดอัจฉริยะ"
+   ]
+  },
+  {
+   "anilistId": 86265,
+   "chapters": 260,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86265",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kengan Ashura",
+    "ケンガンアシュラ",
+    "Kengan Asura"
+   ]
+  },
+  {
+   "anilistId": 105332,
+   "chapters": 110,
+   "chaptersFrom": "anilist",
+   "key": "anilist:105332",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Sweat and Soap",
+    "Ase to Sekken",
+    "あせとせっけん",
+    "Love Fragance",
+    "Du riechst so gut",
+    "Zapach miłości",
+    "Sudore e sapone",
+    "땀과 비누"
+   ]
+  },
+  {
+   "anilistId": 86279,
+   "chapters": 121,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86279",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Boarding School Juliet",
+    "Kishuku Gakkou no Juliet",
+    "寄宿学校のジュリエット",
+    "Kushuku Gakkou no Alice",
+    "寄宿学校的朱丽叶",
+    "รักลับๆ ข้ามหอของนายหมากับน้องแมว",
+    "Romio vs Juliet",
+    "寄宿學校的茱麗葉"
+   ]
+  },
+  {
+   "anilistId": 117540,
+   "chapters": 144,
+   "chaptersFrom": "anilist",
+   "key": "anilist:117540",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Beware the Villainess!",
+    "Geu Angnyeoreul Josimhaseyo!",
+    "그 악녀를 조심하세요!",
+    "Gare à la vilaine!",
+    "その悪女に気をつけてください",
+    "小心那个恶女！",
+    "恶毒女配今天不营业",
+    "ระวังไว้ ยัยตัวร้ายกำลังมา",
+    "惡女出沒請小心",
+    "請小心那個惡女！"
+   ]
+  },
+  {
+   "anilistId": 101942,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:101942",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Heavenly Delusion",
+    "Tengoku Daimakyou",
+    "天国大魔境",
+    "The Grand Devil's Cave of Heaven",
+    "The Heaven Delusion",
+    "Heavenly Delusion: Tengoku Daimakyo",
+    "O Paraíso Ilusório",
+    "A Journey beyond Heaven",
+    "Heavenly Delusion – Das verlorene Paradies",
+    "Złudne niebo",
+    "天國大魔境",
+    "الوهم السماوي"
+   ]
+  },
+  {
+   "anilistId": 130870,
+   "chapters": 231,
+   "chaptersFrom": "mangaupdates",
+   "key": "anilist:130870",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Frozen Player Returns",
+    "Eoreobuteun Peulleieoui Gwihwan",
+    "얼어붙은 플레이어의 귀환",
+    "Return Of The Frozen Player",
+    "闇夜英雄破冰而出",
+    "การกลับมาของเพลเยอร์แช่แข็ง"
+   ]
+  },
+  {
+   "anilistId": 105577,
+   "chapters": 157,
+   "chaptersFrom": "anilist",
+   "key": "anilist:105577",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Giji Harem",
+    "疑似ハーレム",
+    "Pseudo Harem",
+    "ฮาเร็มนี้มีแต่เธอ"
+   ]
+  },
+  {
+   "anilistId": 85395,
+   "chapters": 138,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85395",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Cheeky Brat",
+    "Namaiki Zakari.",
+    "なまいきざかり。",
+    "His Cheekiness is in Full Bloom.",
+    "Namaikizakari.",
+    "Full Bloom Cheekiness",
+    "Cheeky love"
+   ]
+  },
+  {
+   "anilistId": 85226,
+   "chapters": 85,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85226",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Inuyashiki",
+    "いぬやしき",
+    "Last Hero Inuyashiki",
+    "이누야시키"
+   ]
+  },
+  {
+   "anilistId": 151025,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:151025",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Mythic Item Obtained",
+    "Sinhwageup Gwisok Item-eul Sone Neoeotda",
+    "신화급 귀속 아이템을 손에 넣었다",
+    "I Obtained a Mythic Item",
+    "À moi, l'item légendaire",
+    "神話級の帰属アイテムを手に入れた",
+    "神話級道具入手了！",
+    "入手神话级专属装备",
+    "พลิกชะตาคว้าไอเทมระดับเทพ"
+   ]
+  },
+  {
+   "anilistId": 105641,
+   "chapters": 120,
+   "chaptersFrom": "anilist",
+   "key": "anilist:105641",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Girl I Like Forgot Her Glasses",
+    "Suki na Ko ga Megane wo Wasureta",
+    "好きな子がめがねを忘れた",
+    "Sukinako ga Megane wo Wasureta",
+    "Sukimega",
+    "สาวลืมแว่นแสนวุ่นละมุนรัก",
+    "Cô bạn tôi thầm thích lại quên mang kính rồi",
+    "Tellement flou d'elle"
+   ]
+  },
+  {
+   "anilistId": 97897,
+   "chapters": 71,
+   "chaptersFrom": "anilist",
+   "key": "anilist:97897",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Killing Stalking",
+    "킬링 스토킹",
+    "キリング・ストーキング"
+   ]
+  },
+  {
+   "anilistId": 59211,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:59211",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Monthly Girls' Nozaki-kun",
+    "Gekkan Shoujo Nozaki-kun",
+    "月刊少女野崎くん",
+    "Gekkan Shoujo Nozaki Kun",
+    "Mistrz romansu Nozaki",
+    "Nozaki & Truyện tranh thiếu nữ",
+    "L'Assistente Del Mese",
+    "Nozaki y su revista mensual para chicas",
+    "Nozaki, mistr romantiky",
+    "月刊少女野崎同"
+   ]
+  },
+  {
+   "anilistId": 30481,
+   "chapters": 28,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30481",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Planetes",
+    "プラネテス",
+    "Red Star/White Ball",
+    "ΠΛΑΝΗΤΕΣ",
+    "Странники",
+    "Блукальці"
+   ]
+  },
+  {
+   "anilistId": 30022,
+   "chapters": 259,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30022",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Rurouni Kenshin",
+    "Rurouni Kenshin: Meiji Kenkaku Romantan",
+    "るろうに剣心 -明治剣客浪漫譚-",
+    "Rurouni Kenshin: Meiji Swordsman Romantic Story",
+    "Samurai X",
+    "Sengoku no Mikazuki",
+    "Crescent Moon in the Warring States",
+    "Rurouni Kenshin - Η ρομαντική ιστορία του ξιφομάχου της εποχής Μέιτζι",
+    "Kenshin, o Samurai Errante",
+    "Kenshin le Vagabond",
+    "Kenshin - Samurai vagabondo",
+    "Kenshin "
+   ]
+  },
+  {
+   "anilistId": 31474,
+   "chapters": 53,
+   "chaptersFrom": "anilist",
+   "key": "anilist:31474",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Devilman",
+    "デビルマン",
+    "Devil man",
+    "Debiruman",
+    "Devilman: The Classic Collection"
+   ]
+  },
+  {
+   "anilistId": 134369,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:134369",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Medaka Kuroiwa is Impervious to My Charms",
+    "Kuroiwa Medaka ni Watashi no Kawaii ga Tsuujinai",
+    "黒岩メダカに私の可愛いが通じない",
+    "My Charms Are Wasted On Kuroiwa Medaka",
+    "คุโรอิวะ เมดากะ ไม่เข้าใจความน่ารักของฉันเลย",
+    "쿠로이와 메다카에게 내 귀여움이 통하지 않아",
+    "Craque pour moi, Medaka !"
+   ]
+  },
+  {
+   "anilistId": 137595,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:137595",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "66,666 Years: Advent of the Dark Mage",
+    "66666-nyeonmane Hwansaenghan Heungmabeopsa",
+    "66666년만에 환생한 흑마법사",
+    "The Dark Magician Transmigrates After 66666 Years",
+    "66666年後轉生的黑魔法師",
+    "จอมเวทเกิดใหม่ในรอบ 66666 ปี"
+   ]
+  },
+  {
+   "anilistId": 85850,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:85850",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "19 Tian",
+    "19天",
+    "19 Days",
+    "19日"
+   ]
+  },
+  {
+   "anilistId": 103156,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:103156",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Skeleton Soldier Failed to Defend the Dungeon",
+    "Haegolbyeongsaneun Dungeon-eul Jikiji Motaetda",
+    "해골병사는 던전을 지키지 못했다",
+    "Skeleton Soldier Couldn't Protect the Dungeon",
+    "骸骨兵士はダンジョンを守れなかった",
+    "骷髏士兵卷土重來",
+    "从1级开始的异世界骑士",
+    "พลทหารโครงกระดูกผู้มิอาจปกป้องดันเจี้ยน"
+   ]
+  },
+  {
+   "anilistId": 115000,
+   "chapters": 93,
+   "chaptersFrom": "anilist",
+   "key": "anilist:115000",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Unholy Blood",
+    "White Blood",
+    "화이트 블러드",
+    "Sangre Vengadora",
+    "Queen of Thorns",
+    "ホワイト・ブラッド",
+    "血紅的白玫瑰",
+    "荆棘女王",
+    "Unholy Blood – Die Rache der Vampirin",
+    "Белая кровь."
+   ]
+  },
+  {
+   "anilistId": 30909,
+   "chapters": 21,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30909",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Gyo",
+    "ギョ",
+    "The Sad Tale of the Principal Post",
+    "The Enigma of Amigara Fault",
+    "ปลามรณะ",
+    "Gjo",
+    "ギョうごめく不気味",
+    "Gyo: Ugomeku Bukimi"
+   ]
+  },
+  {
+   "anilistId": 107279,
+   "chapters": 410,
+   "chaptersFrom": "anilist",
+   "key": "anilist:107279",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Aoashi",
+    "アオアシ",
+    "AOASHI แข็งเด็กหัวใจนักสู้",
+    "Ao Ashi - Playmaker"
+   ]
+  },
+  {
+   "anilistId": 117324,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:117324",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Nan Hao Shang Feng",
+    "南号尚风",
+    "Nan Hao & Shang Feng the Odd Couple",
+    "Nam Hào Thượng Phong"
+   ]
+  },
+  {
+   "anilistId": 117620,
+   "chapters": 32,
+   "chaptersFrom": "anilist",
+   "key": "anilist:117620",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Summer You Were There",
+    "Kimi to Tsuzuru Utakata",
+    "君と綴るうたかた",
+    "KimiTsuzu",
+    "きみつづ",
+    "ร้อยเรียงรักไปกับเธอ",
+    "Notre été éphémère",
+    "Der Sommer, als du da warst",
+    "Un amor de tinta y espuma",
+    "Áng phù du mùa hạ"
+   ]
+  },
+  {
+   "anilistId": 104494,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:104494",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Martial Peak",
+    "Wu Lian Dianfeng",
+    "武炼巅峰",
+    "The Pinnacle of Martial Arts",
+    "무련전봉",
+    "武錬天下"
+   ]
+  },
+  {
+   "anilistId": 37519,
+   "chapters": 271,
+   "chaptersFrom": "anilist",
+   "key": "anilist:37519",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kami nomi zo Shiru Sekai",
+    "神のみぞ知るセカイ",
+    "Kaminomi",
+    "Kami nomizo Shiru Sekai",
+    "TWGOK",
+    "Que sa volonté soit faite",
+    "The World God Only Knows",
+    "只有神知道的世界"
+   ]
+  },
+  {
+   "anilistId": 111403,
+   "chapters": 123,
+   "chaptersFrom": "anilist",
+   "key": "anilist:111403",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Hokkaido Gals Are Super Adorable!",
+    "Dosanko Gal wa Namara Menkoi",
+    "道産子ギャルはなまらめんこい",
+    "Dosanko Gyaru Is Mega Cute",
+    "Dosanko Gyaru wa Namaramenkoi",
+    "Dosanko Gyaru ha Namaramenkoi",
+    "สาวแกลเมืองเหนือน่าฮักขนาด",
+    "Esa gal de Hokkaido es demasiado linda",
+    "Dosakoi",
+    "どさこい",
+    "도산코 갸루는 참말로 귀여워"
+   ]
+  },
+  {
+   "anilistId": 130429,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:130429",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "I Shall Master this Family!",
+    "Ibeon Saengeun Gajuga Doegetseumnida",
+    "이번 생은 가주가 되겠습니다",
+    "I'll Be the Matriarch in This Life",
+    "In This Life, I Will Be the Lord",
+    "На сей раз я - хозяйка этой жизни",
+    "今世は当主になります",
+    "今生我來當家主",
+    "这一世我来当家主",
+    "เกิดใหม่ชาตินี้ฉันจะเป็นเจ้าตระกูล",
+    "La Nouvelle Cheffe de Clan",
+    "Serei A Matriarca Nesta Vida"
+   ]
+  },
+  {
+   "anilistId": 144866,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:144866",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Akane-banashi",
+    "あかね噺",
+    "Akane Banashi",
+    "朱音落語",
+    "아카네 이야기"
+   ]
+  },
+  {
+   "anilistId": 119276,
+   "chapters": 223,
+   "chaptersFrom": "anilist",
+   "key": "anilist:119276",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Advanced Player of the Tutorial Tower",
+    "Tutorial Tabui Goinmul",
+    "튜토리얼 탑의 고인물",
+    "The Tutorial Tower of the Advanced Player ",
+    "L'Expert de la Tour Tutoriel",
+    "El jugador avanzado de la torre del tutorial",
+    "Der Fortgeschrittene Spieler des Tutorialturms",
+    "チュートリアル塔の廃人",
+    "被塔诅咒的猎人",
+    "被塔詛咒的獵人",
+    "ผู้เล่นขั้นเทพแห่งหอคอยฝึกสอน"
+   ]
+  },
+  {
+   "anilistId": 182066,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:182066",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Regressed Mercenary Has a Plan",
+    "Hoegwihan Yongbyeongeun Da Gyehoegi Itda",
+    "회귀한 용병은 다 계획이 있다",
+    "The Regressed Mercenary’s Machinations",
+    "El mercenario que regresó tiene un plan",
+    "逆行傭兵は全て計画済み",
+    "重生佣兵王的复仇",
+    "重生傭兵的完美計畫",
+    "แผนเปลี่ยนชะตาของทหารรับจ้าง"
+   ]
+  },
+  {
+   "anilistId": 80217,
+   "chapters": 5,
+   "chaptersFrom": "anilist",
+   "key": "anilist:80217",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "the gods lie.",
+    "Kamisama ga Uso wo Tsuku.",
+    "神様がうそをつく。",
+    "Kami-sama ga Uso o Tsuku.",
+    "Gods Tell Lies",
+    "Los Dioses Mienten",
+    "Kłamstwa bogów",
+    "Ông trời nói dối",
+    "Our summer holiday",
+    "Даже боги лгут ",
+    "Bogovi lažu",
+    "Божа брехня"
+   ]
+  },
+  {
+   "anilistId": 74929,
+   "chapters": 53,
+   "chaptersFrom": "anilist",
+   "key": "anilist:74929",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Scum's Wish",
+    "Kuzu no Honkai",
+    "クズの本懐",
+    "人渣的本願"
+   ]
+  },
+  {
+   "anilistId": 141007,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:141007",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "How to Use a Returner",
+    "Hoegwija Sayongseolmyeongseo",
+    "회귀자 사용설명서",
+    "Regressor Instruction Manual",
+    "重生使用說明書",
+    "คู่มือการใช้งานของนักข้ามเวลา",
+    "Como Usar um Regressor"
+   ]
+  },
+  {
+   "anilistId": 86526,
+   "chapters": 58,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86526",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Platinum End",
+    "プラチナエンド",
+    "Platina End",
+    "白金终局"
+   ]
+  },
+  {
+   "anilistId": 60315,
+   "chapters": 66,
+   "chaptersFrom": "anilist",
+   "key": "anilist:60315",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Last Game",
+    "ラストゲーム"
+   ]
+  },
+  {
+   "anilistId": 56736,
+   "chapters": 70,
+   "chaptersFrom": "anilist",
+   "key": "anilist:56736",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "House of the Sun",
+    "Taiyou no Ie",
+    "たいようのいえ",
+    "Haus der Sonne",
+    "La maison du soleil",
+    "Taino no Ie",
+    "Дом Солнца",
+    "بيت الشمس",
+    "บ้านแสงตะวัน",
+    "太阳之家",
+    "太陽之家",
+    "A Casa do Sol"
+   ]
+  },
+  {
+   "anilistId": 85793,
+   "chapters": 9,
+   "chaptersFrom": "mangaupdates",
+   "key": "anilist:85793",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kakegurui - Compulsive Gambler -",
+    "Kakegurui",
+    "賭ケグルイ",
+    "Kakegurui - Szał hazardu",
+    "Kakegurui – Das Leben ist ein Spiel",
+    "โคตรเซียนโรงเรียนพนัน",
+    "Gambling School",
+    "Kakegurui: Jugadores dementes"
+   ]
+  },
+  {
+   "anilistId": 75143,
+   "chapters": 158,
+   "chaptersFrom": "anilist",
+   "key": "anilist:75143",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kono Oto Tomare!",
+    "この音とまれ！",
+    "Stop this sound!",
+    "ฝากฝันไว้ที่เสียงโคโตะ!",
+    "Sounds of Life",
+    "一弦定音！"
+   ]
+  },
+  {
+   "anilistId": 101724,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:101724",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Uzaki-chan Wants to Hang Out!",
+    "Uzaki-chan wa Asobitai!",
+    "宇崎ちゃんは遊びたい！",
+    "Uzaki-chan Wants to Play!",
+    "우자키 양은 놀고 싶어!",
+    "รุ่นน้องตัวป่วน อยากชวนเที่ยวเล่น"
+   ]
+  },
+  {
+   "anilistId": 113666,
+   "chapters": 172,
+   "chaptersFrom": "anilist",
+   "key": "anilist:113666",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "FFF-Class Trashero",
+    "FFF Geum Gwansimyongsa",
+    "FFF급 관심용사",
+    "FFF-Class Trash hero",
+    "FFF级勇士求关注"
+   ]
+  },
+  {
+   "anilistId": 43949,
+   "chapters": 194,
+   "chaptersFrom": "anilist",
+   "key": "anilist:43949",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Medaka Box",
+    "めだかボックス",
+    "Good Loser Kumagawa"
+   ]
+  },
+  {
+   "anilistId": 105791,
+   "chapters": 67,
+   "chaptersFrom": "anilist",
+   "key": "anilist:105791",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Higehiro: After Being Rejected, I Shaved and Took In a High School Runaway",
+    "Hige wo Soru. Soshite Joshikousei wo Hirou.",
+    "ひげを剃る。そして女子高生を拾う。",
+    "I Shaved. Then I Brought a High School Girl Home.",
+    "โกนหนวดไปทำงาน แล้วกลับบ้านมาพบเธอ",
+    "Higehiro. Me rechazaron. Me afeité. Una chica más joven se vino a casa conmigo. ",
+    "刮掉鬍子的我與撿到的女高中生"
+   ]
+  },
+  {
+   "anilistId": 116170,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:116170",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Veil",
+    "面纱"
+   ]
+  },
+  {
+   "anilistId": 111149,
+   "chapters": 259,
+   "chaptersFrom": "anilist",
+   "key": "anilist:111149",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Mission: Yozakura Family",
+    "Yozakura-san Chi no Daisakusen",
+    "夜桜さんちの大作戦",
+    "Missão: Família Yozakura",
+    "Misión: Familia Yozakura",
+    "ปฏิบัติการลับบ้านโยซากุระ",
+    "La misión de la familia Yozakura",
+    "Миссия семьи Ёдзакура",
+    "Nhiệm vụ tối thượng nhà Yozakura",
+    "夜櫻家大作戰",
+    "요자쿠라 일가의 대작전"
+   ]
+  },
+  {
+   "anilistId": 175262,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:175262",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Reborn Young Lord is an Assassin",
+    "Hoegwihan Gongjakgaui Mangnaedoryeonnimeun Amsalja",
+    "회귀한 공작가의 막내도련님은 암살자",
+    "The Regressed Son of a Duke Is an Assassin",
+    "The Regressed Youngest Son of the Duke is an Assassin",
+    "ลูกชายคนเล็กของดยุกคือมือสังหาร",
+    "El joven señor renacido es un asesino"
+   ]
+  },
+  {
+   "anilistId": 120385,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:120385",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Log-in Murim",
+    "Login Murim",
+    "로그인 무림",
+    "Murim Login",
+    "ログイン武林",
+    "登录武林系统",
+    "Logando no Murim"
+   ]
+  },
+  {
+   "anilistId": 85388,
+   "chapters": 258,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85388",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "High-Rise Invasion",
+    "Tenkuu Shinpan",
+    "天空侵犯",
+    "Sky-High Survival",
+    "Tenku Shinpan - Sem Saída",
+    "Sky Violation"
+   ]
+  },
+  {
+   "anilistId": 30010,
+   "chapters": 214,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30010",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "xxxHOLiC",
+    "xxxHolic•籠",
+    "×××ホリック•ロウ",
+    "xxxHolic Rou",
+    "xxxHolic Cage",
+    "Holic",
+    "×××HOLiC (×××홀릭)"
+   ]
+  },
+  {
+   "anilistId": 38157,
+   "chapters": 154,
+   "chaptersFrom": "anilist",
+   "key": "anilist:38157",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kamisama Kiss",
+    "Kamisama Hajimemashita",
+    "神様はじめました",
+    "Kami-sama Hajimemashita",
+    "Jak zostałam bóstwem!?",
+    "Divine Nanami",
+    "Очень приятно, бог",
+    "Божественний цілунок"
+   ]
+  },
+  {
+   "anilistId": 40010,
+   "chapters": 252,
+   "chaptersFrom": "anilist",
+   "key": "anilist:40010",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Beelzebub",
+    "べるぜバブ",
+    "벨제바브"
+   ]
+  },
+  {
+   "anilistId": 85247,
+   "chapters": 142,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85247",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Twin Star Exorcists",
+    "Sousei no Onmyouji",
+    "双星の陰陽師",
+    "Sousei no Onmyouji Adashino Benio-hen",
+    "双星の陰陽師 化野紅緒編",
+    "ทวิดารา มหาองเมียวจิ",
+    "쌍성의 음양사"
+   ]
+  },
+  {
+   "anilistId": 114383,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:114383",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "A Couple of Cuckoos",
+    "Kakkou no Iinazuke",
+    "カッコウの許嫁",
+    "The Cuckoo’s Fiancee",
+    "รักอลวนคนสลับบ้าน",
+    "Una pareja de cucos"
+   ]
+  },
+  {
+   "anilistId": 102989,
+   "chapters": 139,
+   "chaptersFrom": "anilist",
+   "key": "anilist:102989",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Summertime Rendering",
+    "Summer Time Render",
+    "サマータイムレンダ",
+    "Summertime Render",
+    "Bright Sun – Dark Shadows",
+    "Time Shadows",
+    "ปริศนาบ้านเก่า เงามรณะ",
+    "夏日重现",
+    "Summer Time Rendering",
+    "Vòng lặp mùa hè",
+    "서머타임 렌더"
+   ]
+  },
+  {
+   "anilistId": 30731,
+   "chapters": 131,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30731",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Eden: It's an Endless World!",
+    "EDEN: It's an Endless World!",
+    "EDEN 〜It's an Endless World!〜",
+    "エデン イッツ・アン・エンドレス・ワールド"
+   ]
+  },
+  {
+   "anilistId": 66413,
+   "chapters": 132,
+   "chaptersFrom": "anilist",
+   "key": "anilist:66413",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Hinamatsuri",
+    "ヒナまつり",
+    "Hina Festival",
+    "極道超女"
+   ]
+  },
+  {
+   "anilistId": 198372,
+   "chapters": 25,
+   "chaptersFrom": "anilist",
+   "key": "anilist:198372",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Jujutsu Kaisen Modulo",
+    "呪術廻戦≡",
+    "呪術廻戦 モジュロ",
+    "Jujutsu Kaisen Mojuro",
+    "มหาเวทย์ผนึกมาร : MODULO",
+    "มหาเวทย์ผนึกมาร : โมดูโล"
+   ]
+  },
+  {
+   "anilistId": 104063,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:104063",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Shadows House",
+    "シャドーハウス",
+    "Shadow House",
+    "影之宅",
+    "影宅",
+    "섀도 하우스"
+   ]
+  },
+  {
+   "anilistId": 126135,
+   "chapters": 12,
+   "chaptersFrom": "anilist",
+   "key": "anilist:126135",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Bibliomania",
+    "ビブリオマニア",
+    "Бібліоманія"
+   ]
+  },
+  {
+   "anilistId": 103082,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:103082",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Pumpkin Night",
+    "パンプキンナイト"
+   ]
+  },
+  {
+   "anilistId": 33438,
+   "chapters": 151,
+   "chaptersFrom": "anilist",
+   "key": "anilist:33438",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "PSYЯEN",
+    "PSYЯEN -サイレン-",
+    "Siren",
+    "Psyren"
+   ]
+  },
+  {
+   "anilistId": 104503,
+   "chapters": 72,
+   "chaptersFrom": "anilist",
+   "key": "anilist:104503",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs",
+    "Otomege Sekai wa Mob ni Kibishii Sekai desu",
+    "乙女ゲー世界はモブに厳しい世界です",
+    "The World of Otome Games is a Tough for Mobs",
+    "mobuseka",
+    "ชีวิตตัวประกอบอย่างตูช่างอยู่ยากเมื่ออยู่ในโลกเกมจีบหนุ่ม"
+   ]
+  },
+  {
+   "anilistId": 43245,
+   "chapters": 248,
+   "chaptersFrom": "anilist",
+   "key": "anilist:43245",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Chihayafuru",
+    "ちはやふる",
+    "치하야후루",
+    "花牌情緣"
+   ]
+  },
+  {
+   "anilistId": 116506,
+   "chapters": 266,
+   "chaptersFrom": "anilist",
+   "key": "anilist:116506",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Dungeon Reset",
+    "던전 리셋",
+    "Tencen Liseys",
+    "ダンジョンリセット",
+    "สมรภูมิไม่สิ้นสุด",
+    "副本重置"
+   ]
+  },
+  {
+   "anilistId": 173020,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:173020",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "I Killed the Main Player",
+    "Academy Player-reul Jungnyeotda",
+    "아카데미 플레이어를 죽였다",
+    "I Killed an Academy Player",
+    "ไอ้เพลเยอร์นั่น ฉันฆ่ามันเอง",
+    "我杀了学院玩家"
+   ]
+  },
+  {
+   "anilistId": 150836,
+   "chapters": 168,
+   "chaptersFrom": "anilist",
+   "key": "anilist:150836",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Academy's Undercover Professor",
+    "Academy Wijangchwieopdanghaetda",
+    "아카데미에 위장취업당했다",
+    "Academy's Undercover Professor",
+    "I Got a Fake Job at the Academy",
+    "魔法学院的伪装教师"
+   ]
+  },
+  {
+   "anilistId": 122063,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:122063",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Shangri-La Frontier",
+    "Shangri-La Frontier: Kusoge Hunter, Kami ge ni Idoman to su",
+    "シャングリラ・フロンティア〜クソゲーハンター, 神ゲーに挑まんとす〜",
+    "ShanFro",
+    "ShangriLa Frontier: Shitty Games Hunter Challenges Godly Game",
+    "Shangri-La Frontier เมื่อนักล่าเกมขยะ ท้าสู้ในเกมเทพ",
+    "香格里拉・開拓異境~糞作獵手挑戰神作~",
+    "샹그릴라 프론티어"
+   ]
+  },
+  {
+   "anilistId": 30584,
+   "chapters": 59,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30584",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Future Diary",
+    "Mirai Nikki",
+    "未来日記",
+    "Pamiętnik Przyszłości",
+    "Diário do Futuro",
+    "Дневник будущего",
+    "미래일기"
+   ]
+  },
+  {
+   "anilistId": 30894,
+   "chapters": 40,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30894",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Rosario+Vampire",
+    "Rosario to Vampire",
+    "ロザリオとバンパイア",
+    "Rosario and Vampire",
+    "Rosario+Vampire - Tılsımlı Kolye ve Vampir"
+   ]
+  },
+  {
+   "anilistId": 152404,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:152404",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Alya Sometimes Hides Her Feelings in Russian",
+    "Tokidoki Bosotto Rossiya-go de Dereru Tonari no Alya-san",
+    "時々ボソッとロシア語でデレる隣のアーリャさん",
+    "Tokidoki Bosotto Russiago de Dereru Tonari no Aarya-san",
+    "My Deskmate Alya Sometimes Hides Her Feelings in Russian",
+    "Roshidere",
+    "ロシデレ",
+    "Alya a veces me susurra en ruso",
+    "가끔씩 툭하고 러시아어로 부끄러워하는 옆자리의 아랴 양"
+   ]
+  },
+  {
+   "anilistId": 57231,
+   "chapters": 86,
+   "chaptersFrom": "anilist",
+   "key": "anilist:57231",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Daytime Shooting Star",
+    "Hirunaka no Ryuusei",
+    "ひるなかの流星",
+    "Hirunaka no Ryusei",
+    "Cookie Girl Cream Boy",
+    "Tsuyu Kaoru",
+    "A Love Story in Moist Rainy Days",
+    "Heroine no Ryuusei",
+    "Heroine's Shooting Star",
+    "More than Words",
+    "Hibi Ryuusei: Suzume no Parallel Koukou Nikki",
+    "Daily Shooting Star: Suzume's Parallel School Diary",
+    "Gwiazda spadająca za dnia",
+    "白晝的流星",
+    "Sao băng ban ngày"
+   ]
+  },
+  {
+   "anilistId": 141261,
+   "chapters": 25,
+   "chaptersFrom": "anilist",
+   "key": "anilist:141261",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Ayashimon",
+    "アヤシモン",
+    "妖しき裏社会バトル",
+    "Ayashiki Ura Shakai Battle"
+   ]
+  },
+  {
+   "anilistId": 168468,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:168468",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Boruto: Two Blue Vortex",
+    "BORUTO: TWO BLUE VORTEX",
+    "BORUTO-ボルト- -TWO BLUE VORTEX-",
+    "BORUTO - TWO BLUE VORTEX -",
+    "BORUTO -TWO BLUE VORTEX-",
+    "보루토 -TWO BLUE VORTEX-"
+   ]
+  },
+  {
+   "anilistId": 117536,
+   "chapters": 153,
+   "chaptersFrom": "anilist",
+   "key": "anilist:117536",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kill the Hero",
+    "킬 더 히어로"
+   ]
+  },
+  {
+   "anilistId": 116382,
+   "chapters": 125,
+   "chaptersFrom": "anilist",
+   "key": "anilist:116382",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Villainess Turns the Hourglass",
+    "Agnyeoneun Molaesigyeleul Doedollinda",
+    "악녀는 모래시계를 되돌린다",
+    "The Villainess Reverses the Hourglass",
+    "La villana retrocede el reloj de arena",
+    "反派女主的时间沙漏",
+    "悪女は砂時計をひっくり返す",
+    "时光沙漏·逆转命运的少女",
+    "ย้อนเวลากลับมาร้าย",
+    "惡女翻轉時光沙漏",
+    "Aria & Die goldene Sanduhr der Zeit"
+   ]
+  },
+  {
+   "anilistId": 99609,
+   "chapters": 10,
+   "chaptersFrom": "anilist",
+   "key": "anilist:99609",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "I Want to Eat Your Pancreas",
+    "Kimi no Suizou wo Tabetai",
+    "君の膵臓をたべたい",
+    "Je veux manger ton pancréas",
+    "Chcę zjeść twoją trzustkę",
+    "ตับอ่อนเธอนั้น ขอฉันเถอะนะ",
+    "Chci sníst tvoji slinivku",
+    "Quiero comerme tu páncreas",
+    "我想吃掉你的胰臟",
+    "Quero Comer Seu Pâncreas",
+    "Хочу з’їсти твою підшлункову",
+    "Sakura - I want to eat your pancreas",
+    "Želim da pojedem tvoj pankreas",
+    "Tớ muốn ăn tụy của cậu"
+   ]
+  },
+  {
+   "anilistId": 153432,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:153432",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Reaper",
+    "Sasinpyowol",
+    "사신표월",
+    "Reaper of the Drifting Moon",
+    "Death God of the Drifting Moon",
+    "Grim Reaper's Floating Moon"
+   ]
+  },
+  {
+   "anilistId": 96834,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:96834",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Arifureta: From Commonplace to World’s Strongest",
+    "Arifureta Shokugyou de Sekai Saikyou",
+    "ありふれた職業で世界最強",
+    "From Common Job Class to the Strongest in the World",
+    "Arifureta: Der Kampf zurück in meine Welt",
+    "อาชีพกระจอกแล้วทำไม ยังไงข้าก็เทพ"
+   ]
+  },
+  {
+   "anilistId": 75275,
+   "chapters": 260,
+   "chaptersFrom": "anilist",
+   "key": "anilist:75275",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Girls of the Wild's",
+    "Sonyeo the Wild's",
+    "소녀더와일즈",
+    "Girl the Wild's",
+    "Las chicas de Wilds",
+    "少女・ザ・ワイルズ",
+    "狂野少女",
+    "วีน เหวี่ยง WILD มัธยมสาวพันธุ์ดุ"
+   ]
+  },
+  {
+   "anilistId": 170894,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:170894",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The 100th Regression of the Max-Level Player",
+    "Mallep Player-ui 100-beonjjae Hoegwi",
+    "만렙 플레이어의 100번째 회귀",
+    "The Max-Level Player's 100th Regression",
+    "การกลับมาครั้งที่ 100 ของผู้เล่นเลเวลแม็กซ์",
+    "重生百次的最強玩家"
+   ]
+  },
+  {
+   "anilistId": 87225,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:87225",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tsukimichi: Moonlit Fantasy",
+    "Tsuki ga Michibiku Isekai Douchuu",
+    "月が導く異世界道中",
+    "Moon-led Journey Across Another World",
+    "Podróżując pod księżycem przez inny świat"
+   ]
+  },
+  {
+   "anilistId": 128882,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:128882",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Jungle Juice",
+    "정글쥬스",
+    "Jugo de Jungla",
+    "ジャングルジュース",
+    "丛林果汁",
+    "叢林果汁"
+   ]
+  },
+  {
+   "anilistId": 52651,
+   "chapters": 203,
+   "chaptersFrom": "anilist",
+   "key": "anilist:52651",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "THE BREAKER - NEW WAVES",
+    "The Breaker: New Waves",
+    "브레이커NW",
+    "The Breaker 2",
+    "The Breaker: NW",
+    "The Breaker: Part 2"
+   ]
+  },
+  {
+   "anilistId": 67707,
+   "chapters": 44,
+   "chaptersFrom": "anilist",
+   "key": "anilist:67707",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Your Lie in April",
+    "Shigatsu wa Kimi no Uso",
+    "四月は君の嘘",
+    "Twoje kwietniowe kłamstwo",
+    "Bugie d'aprile",
+    "Твоя апрельская ложь",
+    "Minciuna ta din aprilie",
+    "Tvá dubnová lež",
+    "Твоя квітнева брехня",
+    "4월은 너의 거짓말",
+    "四月是你的謊言"
+   ]
+  },
+  {
+   "anilistId": 30029,
+   "chapters": 48,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30029",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Paradise Kiss",
+    "パラダイス・キス",
+    "ParaKiss"
+   ]
+  },
+  {
+   "anilistId": 176740,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:176740",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Centuria",
+    "ケントゥリア",
+    "켄투리아",
+    "เคนทูเรีย"
+   ]
+  },
+  {
+   "anilistId": 114027,
+   "chapters": 7,
+   "chaptersFrom": "anilist",
+   "key": "anilist:114027",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Boy Meets Maria",
+    "Boy meets Maria",
+    "ボーイミーツマリア",
+    "當男孩遇上瑪麗亞",
+    "보이 미츠 마리아"
+   ]
+  },
+  {
+   "anilistId": 30043,
+   "chapters": 333,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30043",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Eyeshield 21",
+    "アイシールド21"
+   ]
+  },
+  {
+   "anilistId": 114542,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:114542",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Your Throne",
+    "Haruman Nega Doego Sipeo",
+    "하루만 네가 되고 싶어",
+    "I Want to Be You, Just for a Day",
+    "I Wanna Be U",
+    "La duchesse déchue",
+    "Tu trono",
+    "Dein Thron",
+    "惡女的變身",
+    "以你之名",
+    "君の全てを奪いたい",
+    "ชิงชีวิตพลิกลิขิตชะตา"
+   ]
+  },
+  {
+   "anilistId": 130149,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:130149",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Villain to Kill",
+    "빌런투킬",
+    "Un villano para matar",
+    "反派绝杀",
+    "反派絕殺"
+   ]
+  },
+  {
+   "anilistId": 51419,
+   "chapters": 117,
+   "chaptersFrom": "anilist",
+   "key": "anilist:51419",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "No Zo Ki A Na",
+    "ノ・ゾ・キ・ア・ナ",
+    "A Peephole",
+    "Podejrzane sekrety",
+    "Nozoki Ana",
+    "Heimliche Blicke",
+    "Nozokiana"
+   ]
+  },
+  {
+   "anilistId": 120502,
+   "chapters": 45,
+   "chaptersFrom": "anilist",
+   "key": "anilist:120502",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "In the Clear Moonlit Dusk",
+    "Uruwashi no Yoi no Tsuki",
+    "うるわしの宵の月",
+    "El ocaso de la luna",
+    "皎潔深宵之月",
+    "Ton visage au clair de lune",
+    "Mooning Over You",
+    "En La Hermosa Luna Crepuscular",
+    "Чарівний місяць у повечір’ї",
+    "Sob a Luz da Lua",
+    "Trăng chiều rực "
+   ]
+  },
+  {
+   "anilistId": 116266,
+   "chapters": 144,
+   "chaptersFrom": "anilist",
+   "key": "anilist:116266",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Girlfriend, Girlfriend",
+    "Kanojo mo Kanojo",
+    "カノジョも彼女",
+    "Two-Timing Fair and Square",
+    "She is also my Girlfriend",
+    "Girlfriend and Girlfriend",
+    "KanoKano",
+    "จะคนไหนก็แฟนสาว ",
+    "Kanojo Mo Kanojo - Confissões e Namoradas"
+   ]
+  },
+  {
+   "anilistId": 98544,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:98544",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Moriarty the Patriot",
+    "Yuukoku no Moriarty",
+    "憂国のモリアーティ",
+    "Moriarty's Patriotism",
+    "Moriarty el Patriota",
+    "Moriarty, o patriota",
+    "Moriarty",
+    "Patriootti Moriarty",
+    "우국의 모리아티",
+    "憂國的莫里亞蒂"
+   ]
+  },
+  {
+   "anilistId": 119968,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:119968",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tougen Anki: Legend of the Cursed Blood",
+    "Tougen Anki",
+    "桃源暗鬼",
+    "สงครามเลือดอสูร",
+    "Tougen anki Sangue maledetto"
+   ]
+  },
+  {
+   "anilistId": 31101,
+   "chapters": 162,
+   "chaptersFrom": "anilist",
+   "key": "anilist:31101",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Akumetsu",
+    "アクメツ"
+   ]
+  },
+  {
+   "anilistId": 135083,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:135083",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "WIND BREAKER",
+    "ウィンドブレイカ",
+    "วินด์เบรกเกอร์",
+    "WIND BREAKER—防風少年—"
+   ]
+  },
+  {
+   "anilistId": 86607,
+   "chapters": 88,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86607",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Gleipnir",
+    "グレイプニル"
+   ]
+  },
+  {
+   "anilistId": 85155,
+   "chapters": 510,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85155",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Gamer",
+    "더 게이머"
+   ]
+  },
+  {
+   "anilistId": 101311,
+   "chapters": 193,
+   "chaptersFrom": "anilist",
+   "key": "anilist:101311",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Bakemonogatari",
+    "化物語",
+    "Monster Tale",
+    "Monogatari Series: First Season",
+    "Истории монстров",
+    "ปกรณัมของเหล่าภูต",
+    "化物语",
+    "괴물 이야기"
+   ]
+  },
+  {
+   "anilistId": 113488,
+   "chapters": 268,
+   "chaptersFrom": "anilist",
+   "key": "anilist:113488",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Weak Hero",
+    "Yakanyeongung",
+    "약한영웅",
+    "Weak Hero: Un héroe débil",
+    "Héros fragile",
+    "WEAK HERO นักเรียนดีเดือด"
+   ]
+  },
+  {
+   "anilistId": 130229,
+   "chapters": 69,
+   "chaptersFrom": "anilist",
+   "key": "anilist:130229",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Shotgun Boy",
+    "Yeopchongsonyeon",
+    "엽총소년",
+    "Chico escopeta",
+    "Le Garçon au fusil",
+    "猎枪少年"
+   ]
+  },
+  {
+   "anilistId": 97842,
+   "chapters": 133,
+   "chaptersFrom": "anilist",
+   "key": "anilist:97842",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "My Hero Academia: Vigilantes",
+    "Vigilante: Boku no Hero Academia ILLEGALS",
+    "ヴィジランテ -僕のヒーローアカデミア ILLEGALS-",
+    "BNH Ilegals",
+    "MHA Vigilantes",
+    "My Hero Academia Vigilante Illegals",
+    "Vigilante: My Hero Academia Illegals",
+    "Học viện siêu anh hùng Vigilantes - My hero Academia Illegals",
+    "Občanská hlídka: Moje hrdinská akademie",
+    "비질랜티"
+   ]
+  },
+  {
+   "anilistId": 104241,
+   "chapters": 141,
+   "chaptersFrom": "anilist",
+   "key": "anilist:104241",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "How Do We Relationship?",
+    "Tsukiatte Agete mo Ii ka na",
+    "付き合ってあげてもいいかな",
+    "Tsukiatte Agete mo Ii kana",
+    "So, Do You Wanna Go Out, Or?",
+    "Lust auf ein Date?",
+    "ลองใจให้ตกหลุมรัก"
+   ]
+  },
+  {
+   "anilistId": 50593,
+   "chapters": 125,
+   "chaptersFrom": "anilist",
+   "key": "anilist:50593",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Btooom!",
+    "BTOOOM!",
+    "BTOOOM!-ブトゥーム"
+   ]
+  },
+  {
+   "anilistId": 141958,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:141958",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "My S-Class Hunters",
+    "Naega Kiun S-Geupdeul",
+    "내가 키운 S급들",
+    "The S-Classes That I Raised",
+    "The S-Grades I Raised",
+    "我培育的S級們",
+    "我培养的S级们",
+    "Los clase S que crié"
+   ]
+  },
+  {
+   "anilistId": 110605,
+   "chapters": 115,
+   "chaptersFrom": "anilist",
+   "key": "anilist:110605",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Leviathan",
+    "Simhaesu",
+    "심해수",
+    "DeepWater",
+    "Leviatã",
+    "Leviatán",
+    "深海獸",
+    "深海兽",
+    "末世泽国",
+    "เลวีอาธาน อสูรใต้ทะเลลึก"
+   ]
+  },
+  {
+   "anilistId": 48597,
+   "chapters": 59,
+   "chaptersFrom": "anilist",
+   "key": "anilist:48597",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Sankarea: Undying Love",
+    "Sankarea",
+    "さんかれあ",
+    "Shiromabito",
+    "산카레아"
+   ]
+  },
+  {
+   "anilistId": 101434,
+   "chapters": 131,
+   "chaptersFrom": "anilist",
+   "key": "anilist:101434",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "How to Treat a Lady Knight Right",
+    "Ima made Ichido mo Onna Atsukaisareta Koto ga nai Jokishi wo Onna Atsukai Suru",
+    "今まで一度も女扱いされたことがない女騎士を女扱いする漫画",
+    "A Story About Treating a Female Knight Who Has Never Been Treated as a Woman as a Woman"
+   ]
+  },
+  {
+   "anilistId": 155485,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:155485",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Dungeon Odyssey",
+    "Dungeon Gyeonmullok",
+    "던전 견문록",
+    "Dungeon Experience Book",
+    "ダンジョン見聞録"
+   ]
+  },
+  {
+   "anilistId": 164857,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:164857",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Surviving the Game as a Barbarian",
+    "Game Sok Babarian-euro Saranamgi",
+    "게임 속 바바리안으로 살아남기",
+    "เอาชีวิตรอดในเกมฉบับคนเถื่อน",
+    "化身野蛮人在异界生存",
+    "變成蠻族！遊戲生存戰",
+    "Sobreviviendo al juego como un bárbaro"
+   ]
+  },
+  {
+   "anilistId": 178379,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:178379",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Blink Master of the Magic Academy",
+    "Mabeop Hakgyo Apjeommyeol Cheonjae-ga Doeeotda",
+    "마법학교 앞점멸 천재가 되었다",
+    "I Became a Flashing Genius at the Magic Academy",
+    "Quick Teleporting Genius from Magic School",
+    "Magic Academy's Genius Blinker",
+    "Gênio do Teletransporte da Academia Mágica"
+   ]
+  },
+  {
+   "anilistId": 65719,
+   "chapters": 83,
+   "chaptersFrom": "anilist",
+   "key": "anilist:65719",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Like a Butterfly",
+    "Hibi Chouchou",
+    "日々蝶々",
+    "Daily Butterfly",
+    "日日蝶蝶",
+    "매일나비",
+    "ปล่อยหัวใจโบยบินดั่งผีเสื้อ",
+    "Hibi Chouchou - Edelweiss et papillons"
+   ]
+  },
+  {
+   "anilistId": 147997,
+   "chapters": 76,
+   "chaptersFrom": "anilist",
+   "key": "anilist:147997",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "You and I Are Polar Opposites",
+    "Seihantai na Kimi to Boku",
+    "正反対な君と僕",
+    "相反的你和我",
+    "Tú y yo somos polos opuestos",
+    "ลุ้นรักฉบับคู่ต่างขั้ว",
+    "Tentang Kita yang Bertolak Belakang",
+    "Tani & Suzuki - You and I are polar opposites",
+    "Przeciwieństwa do szaleństwa"
+   ]
+  },
+  {
+   "anilistId": 107120,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:107120",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Chillin’ in Another World with Level 2 Super Cheat Powers",
+    "Lv2 Kara Cheat datta Moto Yuusha Kouho no Mattari Isekai Life",
+    "Lv2からチートだった元勇者候補のまったり異世界ライフ",
+    "Chillin Different World Life of the Ex-Brave Candidate Was Cheat from Lv2",
+    "Chillin' Life in a Different World",
+    "Непринужденная жизнь в другом мире экс-кандидата в герои, оказавшегося читером со 2 уровня"
+   ]
+  },
+  {
+   "anilistId": 100476,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:100476",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kaifuku Jutsushi no Yarinaoshi",
+    "回復術士のやり直し",
+    "回復術士のやり直し ～即死魔法とスキルコピーの超越ヒール～",
+    "Kaifuku Jutsushi Yarinaoshi: Sokushi Mahou to Skill Copy no Chouetsu Heal",
+    "Redo of Healer",
+    "회복술사의 재시작"
+   ]
+  },
+  {
+   "anilistId": 85671,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:85671",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "DEAD Tube",
+    "DEAD Tube ～デッドチューブ～"
+   ]
+  },
+  {
+   "anilistId": 66213,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:66213",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Monster Musume",
+    "Monster Musume no Iru Nichijou",
+    "モンスター娘のいる日常",
+    "Everyday That There Is a Monster Girl",
+    "몬스터 아가씨가 있는 일상",
+    "บันทึกอุ่นรักสาวมอนสเตอร์",
+    "Codzienność z potworzycami",
+    "Die Monster Mädchen",
+    "Monmusu"
+   ]
+  },
+  {
+   "anilistId": 85235,
+   "chapters": 78,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85235",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "School-Live!",
+    "Gakkou Gurashi!",
+    "がっこうぐらし!",
+    "School Live",
+    "Szkolne Życie!",
+    "Gakkougurashi!",
+    "Живем в школе!",
+    "โรงเรียนของเราน่าอยู่",
+    "學園孤島",
+    "학교생활",
+    "Hidup di Sekolah !",
+    "Cuộc sống học đường"
+   ]
+  },
+  {
+   "anilistId": 129210,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:129210",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Roxana",
+    "Yeojuingongui Oppareul Jikineun Bangbeop",
+    "여주인공의 오빠를 지키는 방법",
+    "How to Protect the Heroine’s Older Brother",
+    "The Way to Protect the Female Lead's Older Brother",
+    "Как защитить старшего брата главной героини",
+    "保护女主角哥哥的方法",
+    "ロクサナ〜悪女がヒロインの兄を守る方法〜",
+    "ฉันขอปกป้องพี่ชายนางเอก"
+   ]
+  },
+  {
+   "anilistId": 60079,
+   "chapters": 28,
+   "chaptersFrom": "anilist",
+   "key": "anilist:60079",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Sound of Magic: Annarasumanara",
+    "Annarasumanara",
+    "안나라수마나라",
+    "Annarasumanara: El sonido de la magia",
+    "АН НА РА СУ МА НА РА"
+   ]
+  },
+  {
+   "anilistId": 30651,
+   "chapters": 59,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30651",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Nausicaä of the Valley of the Wind",
+    "Kaze no Tani no Nausicaä",
+    "風の谷のナウシカ",
+    "Kaze no Tani no Naushika",
+    "Kaze no Tani no Nausicaa",
+    "Nausicaä do Vale do Vento",
+    "Nausicaä de la Vallée du Vent",
+    "Nausicaä della Valle del vento",
+    "Nausicaä aus dem Tal der Winde",
+    "Nausikaja od Vetrovite doline",
+    "Nausicaä z Doliny Wiatru",
+    "Naušika z Větrného údolí"
+   ]
+  },
+  {
+   "anilistId": 78881,
+   "chapters": 125,
+   "chaptersFrom": "anilist",
+   "key": "anilist:78881",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Darwin's Game",
+    "ダーウィンズゲーム",
+    "Darwins Game",
+    "達爾文遊戲"
+   ]
+  },
+  {
+   "anilistId": 125624,
+   "chapters": 90,
+   "chaptersFrom": "anilist",
+   "key": "anilist:125624",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Even If You Slit My Mouth",
+    "Kuchi ga Saketemo Kimi ni wa",
+    "口が裂けても君には",
+    "ต่อให้ปากจะฉีก ก็ไม่บอกรักเธอหรอก",
+    "Nawet jeśli rozetniesz mi usta..."
+   ]
+  },
+  {
+   "anilistId": 100937,
+   "chapters": 60,
+   "chaptersFrom": "anilist",
+   "key": "anilist:100937",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "DARLING in the FRANXX",
+    "Darling in the Franxx",
+    "ダーリン・イン・ザ・フランキス"
+   ]
+  },
+  {
+   "anilistId": 86481,
+   "chapters": 212,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86481",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tsuredure Children",
+    "Tsurezure Children",
+    "徒然チルドレン",
+    "Tsure x dure Children"
+   ]
+  },
+  {
+   "anilistId": 201773,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:201773",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Haimiya Is Scary Cute",
+    "Haimiya-senpai wa Kowakute Kawaii",
+    "灰宮先輩は怖くてかわいい",
+    "Haimiya Senpai is Scary but Cute"
+   ]
+  },
+  {
+   "anilistId": 74155,
+   "chapters": 13,
+   "chaptersFrom": "anilist",
+   "key": "anilist:74155",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kimi wa Midara na Boku no Joou",
+    "君は淫らな僕の女王",
+    "You Are Dirty My Queen",
+    "No Control!",
+    "Subaru - My Dirty Mistress",
+    "You Are Obscene, My Queen",
+    "You Are the Queen for Indecent Me"
+   ]
+  },
+  {
+   "anilistId": 153880,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:153880",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Art of Reincarnation",
+    "Hwansaengui Jeongseok",
+    "환생의 정석",
+    "The Essence of Reincarnation",
+    "Standard of Reincarnation",
+    "転生の定石",
+    "轉世定律",
+    "สูตรสำเร็จแห่งการเกิดใหม่"
+   ]
+  },
+  {
+   "anilistId": 108105,
+   "chapters": 240,
+   "chaptersFrom": "anilist",
+   "key": "anilist:108105",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "When Will Ayumu Make His Move?",
+    "Soredemo Ayumu wa Yosetekuru",
+    "それでも歩は寄せてくる",
+    "Shogi Senpai",
+    "Even so, Ayumu draws closer to the endgame",
+    " ขอรุกเข้าไปใกล้ๆ ใจเธอ",
+    "À quoi tu joues, Ayumu ?!"
+   ]
+  },
+  {
+   "anilistId": 113055,
+   "chapters": 247,
+   "chaptersFrom": "anilist",
+   "key": "anilist:113055",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Remarried Empress",
+    "Jaehon Hwanghu",
+    "재혼 황후",
+    "The Second Marriage",
+    "L'Impératrice Remariée",
+    "Die neuvermählte Kaiserin",
+    "La emperatriz divorciada",
+    "再婚承認を要求します",
+    "再婚皇后",
+    "การแต่งงานครั้งใหม่ของจักรพรรดินี"
+   ]
+  },
+  {
+   "anilistId": 141013,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:141013",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "How to Win My Husband Over",
+    "Nampyeoneul Nae Pyeoneuro Mandeuneun Bangbeop",
+    "남편을 내 편으로 만드는 방법",
+    "How to Get My Husband on My Side",
+    "วิธีดึงสามีมาเป็นพวก",
+    "Les Intrigues d'une Borgia",
+    "Como Fazer de Um Marido Uma Aliança"
+   ]
+  },
+  {
+   "anilistId": 159142,
+   "chapters": 79,
+   "chaptersFrom": "anilist",
+   "key": "anilist:159142",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Firefly Wedding",
+    "Hotaru no Yomeiri",
+    "ホタルの嫁入り",
+    "Les noces des lucioles",
+    "La boda de las luciérnagas",
+    "螢火蟲的出嫁",
+    "반딧불이의 혼례",
+    "Zaślubiny świetlików",
+    "Casamento dos Vaga-lumes"
+   ]
+  },
+  {
+   "anilistId": 113076,
+   "chapters": 296,
+   "chaptersFrom": "anilist",
+   "key": "anilist:113076",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Sometimes Even Reality Is a Lie!",
+    "Real mo Tama ni wa Uso wo Tsuku",
+    "現実もたまには嘘をつく",
+    "Hanging Out With A Gamer Girl",
+    "Gemuzuki no Tomodachi to Iroiro Suru Hanashi",
+    "ゲーム好きの友達と色々する話",
+    "Sometimes Reality Lies Too",
+    "Genjitsu mo Tama ni wa Uso wo Tsuku"
+   ]
+  },
+  {
+   "anilistId": 58361,
+   "chapters": 9,
+   "chaptersFrom": "anilist",
+   "key": "anilist:58361",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "HIDEOUT",
+    "Сховок",
+    "Skrovište",
+    "Dark Hideout"
+   ]
+  },
+  {
+   "anilistId": 106726,
+   "chapters": 49,
+   "chaptersFrom": "anilist",
+   "key": "anilist:106726",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Shimeji Simulation",
+    "シメジ シミュレーション",
+    "蘑菇的拟态日常"
+   ]
+  },
+  {
+   "anilistId": 40552,
+   "chapters": 65,
+   "chaptersFrom": "anilist",
+   "key": "anilist:40552",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Lucifer and the Biscuit Hammer",
+    "Hoshi no Samidare",
+    "惑星のさみだれ",
+    "Wakusei no Samidare",
+    "The Lucifer and Biscuit Hammer",
+    "Lucifer BH",
+    "Lúcifer e O Martelo",
+    "Samidare - Lucifer and the biscuit hammer"
+   ]
+  },
+  {
+   "anilistId": 136204,
+   "chapters": 209,
+   "chaptersFrom": "mangaupdates",
+   "key": "anilist:136204",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Descended from Divinity",
+    "Cheonmaneun Pyeongbeomhage Sal Su Eopda",
+    "천마는 평범하게 살 수 없다",
+    "The Heavenly Demon Can’t Live a Normal Life"
+   ]
+  },
+  {
+   "anilistId": 85495,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:85495",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Re:Monster",
+    "Re:Monster -リ・モンスター",
+    "Reincarnated: Monster"
+   ]
+  },
+  {
+   "anilistId": 30735,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:30735",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Black Lagoon",
+    "BLACK LAGOON",
+    "ブラック・ラグーン",
+    "Burakku Laguun",
+    "블랙 라군"
+   ]
+  },
+  {
+   "anilistId": 99897,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:99897",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Yakuza Fiancé: Raise wa Tanin ga Ii",
+    "Raise wa Tanin ga Ii",
+    "来世は他人がいい",
+    "내세에는 남남이 좋겠어",
+    "รักอันตรายของเจ้าสาวยากูซ่า",
+    "Criminelles Fiançailles",
+    "Niech śmierć nas rozdzieli",
+    "Mi Prometido Yakuza",
+    "Nella prossima vita non voglio conoscerti",
+    "Наречена Якудзи"
+   ]
+  },
+  {
+   "anilistId": 30933,
+   "chapters": 113,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30933",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Elfen Lied",
+    "エルフェンリート",
+    "Elven Song",
+    "Elfenlied"
+   ]
+  },
+  {
+   "anilistId": 98370,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:98370",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Sasaki and Miyano",
+    "Sasaki to Miyano",
+    "佐々木と宮野",
+    "Sasaki và Miyano",
+    "ซาซากิกับมิยาโนะ",
+    "Sasaki i Miyano",
+    "Sasaki y Miyano",
+    "Sasaki e Miyano",
+    "사사키와 미야노 "
+   ]
+  },
+  {
+   "anilistId": 175946,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:175946",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Myst, Might, Mayhem",
+    "Goeryeok Nansin",
+    "괴력 난신",
+    "The Chaotic God of Extraordinary Strength",
+    "怪力 亂神",
+    "ลับลางลวง"
+   ]
+  },
+  {
+   "anilistId": 85616,
+   "chapters": 4,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85616",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Seaside Stranger: Umibe no Étranger",
+    "Umibe no Étranger",
+    "海辺のエトランゼ",
+    "Étranger de la plage",
+    "Umibe no Etranger",
+    "Un extraño a la orilla del mar",
+    "Ein Fremder am Strand",
+    "Nieznajomy na Plaży",
+    "Estranho à Beira-Mar",
+    "Người lạ bên bờ biển",
+    "Незнайомець з узбережжя"
+   ]
+  },
+  {
+   "anilistId": 78151,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:78151",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "World Trigger",
+    "ワールドトリガー",
+    "境界觸發者",
+    "월드 트리거"
+   ]
+  },
+  {
+   "anilistId": 111075,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:111075",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "A Stepmother’s Märchen",
+    "Eotteon Gyemonimui Marchen",
+    "어떤 계모님의 메르헨",
+    "The Fantasie of a Stepmother",
+    "Merveilleuse marâtre",
+    "Das Märchen von der Stiefmutter",
+    "El cuento de hadas de una madrastra",
+    "ある継母のメルヘン",
+    "某個繼母的童話",
+    "某个继母的童话",
+    "เทพนิยายของแม่เลี้ยงชูริ"
+   ]
+  },
+  {
+   "anilistId": 34571,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:34571",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Snow White with the Red Hair",
+    "Akagami no Shirayuki-hime",
+    "赤髪の白雪姫",
+    "Akagami no Shirayukihime",
+    "Red-haired Snow White",
+    "Hachigatsu no Shikisai",
+    "Bokura wo Tsunaide",
+    "Four-season Color of August",
+    "Bind Us",
+    "La Blancanieves Pelirroja",
+    "Shirayuki. Śnieżka o czerwonych włosach",
+    "Natsuyasumi 00 Nichime",
+    "สโนไวท์ผมแดง",
+    "Bạch tuyết tóc đỏ",
+    "Shirayuki aux cheveux rouges"
+   ]
+  },
+  {
+   "anilistId": 111258,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:111258",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Bocchi the Rock!",
+    "ぼっち・ざ・ろっく！",
+    "봇치 더 록!",
+    "Самітниця-рокерка!",
+    "Boççi the Rock!"
+   ]
+  },
+  {
+   "anilistId": 101625,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:101625",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Berserk of Gluttony",
+    "Boushoku no Berserk: Ore Dake Level to Iu Gainen wo Toppa Suru THE COMIC",
+    "暴食のベルセルク～俺だけレベルという概念を突破する～ THE COMIC",
+    "Berserk of Gluttony: The One That Exceeds The Concept Of Levels",
+    "Boushoku no Berserk",
+    "จอมตะกละดาบคลั่ง -ข้านี่แหละจะทะลวงแนวความคิดที่เรียกว่าเลเวลเอง- The comic",
+    "Берсерк Ненажерливості",
+    "暴食狂戰士 唯有我突破了所謂「等級」的概念"
+   ]
+  },
+  {
+   "anilistId": 86549,
+   "chapters": 11,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86549",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Go For It, Nakamura!",
+    "Ganbare! Nakamura-kun!!",
+    "ガンバレ！中村くん！！",
+    "¡¡No te rindas, Nakamura!!",
+    "Força, Nakamura!!",
+    "힘내라! 나카무라군!!",
+    "Fatti forza, Nakamura!",
+    "Cố lên Nakamura!",
+    "Accroche-toi, Nakamura !!"
+   ]
+  },
+  {
+   "anilistId": 103111,
+   "chapters": 294,
+   "chaptersFrom": "anilist",
+   "key": "anilist:103111",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "My Senpai is Annoying",
+    "Senpai ga Uzai Kouhai no Hanashi",
+    "先輩がうざい後輩の話",
+    "前輩有夠煩 "
+   ]
+  },
+  {
+   "anilistId": 121565,
+   "chapters": 130,
+   "chaptersFrom": "anilist",
+   "key": "anilist:121565",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Seasons of Blossom",
+    "Cheongchun Blossom",
+    "청춘 블라썸",
+    "Youth Blossom",
+    "Cheongchun Beullasseom",
+    "青春选择题",
+    "戀愛的季節",
+    "青春ブロッサム",
+    "Temporada de flores"
+   ]
+  },
+  {
+   "anilistId": 112544,
+   "chapters": 108,
+   "chaptersFrom": "anilist",
+   "key": "anilist:112544",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kowloon Generic Romance",
+    "九龍ジェネリックロマンス",
+    "Kyuuryuu Generic Romance",
+    "เกาลูน อุบัติรักปริศนาลับ",
+    "九龍大眾浪漫",
+    "Chuyện Tình Cửu Long",
+    "구룡 제네릭 로맨스"
+   ]
+  },
+  {
+   "anilistId": 147329,
+   "chapters": 183,
+   "chaptersFrom": "mangaupdates",
+   "key": "anilist:147329",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Marriage Toxin",
+    "Marriagetoxin",
+    "マリッジトキシン",
+    "MARRIAGETOXIN",
+    "매리지 톡신"
+   ]
+  },
+  {
+   "anilistId": 98112,
+   "chapters": 69,
+   "chaptersFrom": "anilist",
+   "key": "anilist:98112",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Gal Gohan",
+    "ギャルごはん",
+    "Gyaru Gohan",
+    "ครัวสาวแกล"
+   ]
+  },
+  {
+   "anilistId": 143031,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:143031",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "I Want to End This Love Game",
+    "Aishiteru Game wo Owarasetai",
+    "愛してるゲームを終わらせたい",
+    "I Want to End the Game That I Love",
+    "想結束這場「我愛你」的遊戲",
+    "Zakończmy grę w „Kocham cię”",
+    "To end this love game..."
+   ]
+  },
+  {
+   "anilistId": 167834,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:167834",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Martial God Who Regressed Back to Level 2",
+    "2 Level Hoegwihan Musin",
+    "2레벨로 회귀한 무신",
+    "Martial God Regressed to Level 2",
+    "The God Who Regressed To Level 2",
+    "The Warlord Returned to Level 2",
+    "レベル2から始まるやり直し"
+   ]
+  },
+  {
+   "anilistId": 112621,
+   "chapters": 37,
+   "chaptersFrom": "anilist",
+   "key": "anilist:112621",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "I Can't Say No to the Lonely Girl",
+    "Lonely Girl ni Sakaraenai",
+    "ロンリーガールに逆らえない",
+    "Can't Defy the Lonely Girl",
+    "I can't refuse Lonely Girl's request.",
+    "無法拒絕孤單女孩",
+    "론리 걸에게 거역할 수 없어",
+    "คำขอวันละข้อจากสาวน้อยเดียวดาย",
+    "Un secreto entre ella y yo"
+   ]
+  },
+  {
+   "anilistId": 97337,
+   "chapters": 9,
+   "chaptersFrom": "anilist",
+   "key": "anilist:97337",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "your name.",
+    "Kimi no Na wa.",
+    "君の名は。",
+    "Twoje imię.",
+    "Senin adın.",
+    "To bylo tvé jméno.",
+    "너의 이름은。"
+   ]
+  },
+  {
+   "anilistId": 124577,
+   "chapters": 250,
+   "chaptersFrom": "anilist",
+   "key": "anilist:124577",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Return to Player",
+    "리턴 투 플레이어",
+    "重生最强玩家",
+    "重返玩家：Return to Player",
+    "リターン・トゥ・プレイヤー"
+   ]
+  },
+  {
+   "anilistId": 187944,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:187944",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "My Bias Gets on the Last Train",
+    "Nae Choeaeneun Makchareul Tanda",
+    "내 최애는 막차를 탄다",
+    "末班车上的Crush",
+    "Mi bias toma el último tren"
+   ]
+  },
+  {
+   "anilistId": 68071,
+   "chapters": 46,
+   "chaptersFrom": "anilist",
+   "key": "anilist:68071",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Spirit Circle",
+    "スピリットサークル",
+    "Spirit Circle. Krąg Dusz"
+   ]
+  },
+  {
+   "anilistId": 112275,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:112275",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Heaven Official's Blessing",
+    "Tian Guan Ci Fu",
+    "天官赐福",
+    "Heaven Official’s Blessing",
+    "TGCF",
+    "La Bendicion Oficial Del Cielo",
+    "천관사복",
+    "สวรรค์ประทานพร",
+    "Thiên quan tứ phúc",
+    "天官賜福"
+   ]
+  },
+  {
+   "anilistId": 101860,
+   "chapters": 293,
+   "chaptersFrom": "anilist",
+   "key": "anilist:101860",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "EDENS ZERO",
+    "エデンズゼロ",
+    "EDEN’S ZERO",
+    "เอเดนส์ซีโร่",
+    "EDENS ZERO伊甸星原"
+   ]
+  },
+  {
+   "anilistId": 30074,
+   "chapters": 358,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30074",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Air Gear",
+    "エア・ギア",
+    "AirGear"
+   ]
+  },
+  {
+   "anilistId": 171729,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:171729",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Love Bullet",
+    "LOVE-BULLET",
+    "ラブ・バレット",
+    "ラブバレット",
+    "LOVE BULLET",
+    "러브 불릿"
+   ]
+  },
+  {
+   "anilistId": 109728,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:109728",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Ice Guy and the Cool Girl",
+    "Koori Zokusei Danshi to Cool na Douryou Joshi",
+    "氷属性男子とクールな同僚女子",
+    "Koori Zokusei Danshi to Cool na Douryo Joshi",
+    "Ice Attribute Boys and Cool Colleagues Women",
+    "Śnieżny chłopak i cool dziewczyna",
+    "บริษัทลุ้นรัก หนุ่มหิมะกับสาวสุดคูล",
+    "The Ice Guy and His Cool Female Colleague",
+    "冰屬性男子與無表情女子",
+    "Chàng băng giá và Nàng lạnh lùng",
+    "O Homem de Gelo e sua Fria Colega de Trabalho"
+   ]
+  },
+  {
+   "anilistId": 107780,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:107780",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Fukushuu wo Koinegau Saikyou Yuusha wa, Yami no Chikara de Senmetsu Musou suru",
+    "復讐を希う最強勇者は、闇の力で殲滅無双する",
+    "The Hero Who Seeks Revenge Shall Exterminate With Darkness",
+    " The Strongest Brave Who Craves for Revenge, Extinguish with the Power of Darkness",
+    "The Dark Massacre of the Vengeful Hero",
+    "こいねが勇者",
+    "Koinega Yuusha",
+    "สุดยอดผู้กล้าเปิดบัญชีแค้น",
+    "The Brave Wish Revenging",
+    "渴望復仇的最強勇者憑藉黑暗之力展開殲滅無雙"
+   ]
+  },
+  {
+   "anilistId": 165287,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:165287",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Singwahamkke Doraon Gisawangnim",
+    "신과함께 돌아온 기사왕님",
+    "The Knight King Who Returned with a God",
+    "ราชาอัศวินผู้มากับเทพ",
+    "与神同归的骑士",
+    "与神同归的骑士王",
+    "與神同歸的騎士王",
+    "300年ぶりに神と帰還した騎士王"
+   ]
+  },
+  {
+   "anilistId": 103255,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:103255",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Fairy Tail: 100 Years Quest",
+    "FAIRY TAIL: 100 YEARS QUEST",
+    "FAIRY TAIL 100 YEARS QUEST",
+    "フェアリーテイル",
+    "FAIRY TAIL 100年クエスト",
+    "FAIRY TAIL: 100-nen Quest",
+    "FAIRY TAIL魔導少年 百年任務"
+   ]
+  },
+  {
+   "anilistId": 58533,
+   "chapters": 243,
+   "chaptersFrom": "mangaupdates",
+   "key": "anilist:58533",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "No Matter How I Look at It, It's You Guys' Fault I'm Not Popular!",
+    "Watashi ga Motenai no wa Dou Kangaete mo Omaera ga Warui!",
+    "私がモテないのはどう考えてもお前らが悪い!",
+    "Watashi ga Motenai no wa Dou Kangaetemo Omaera ga Warui!",
+    "Watamote",
+    "สาวมืดมนอลวนหารัก",
+    "내가 인기 없는 건 아무리 생각해도 너희들 탓이야!"
+   ]
+  },
+  {
+   "anilistId": 87260,
+   "chapters": 87,
+   "chaptersFrom": "anilist",
+   "key": "anilist:87260",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "World's End Harem",
+    "Shuumatsu no Harem",
+    "終末のハーレム",
+    "종말의 하렘"
+   ]
+  },
+  {
+   "anilistId": 106454,
+   "chapters": 47,
+   "chaptersFrom": "anilist",
+   "key": "anilist:106454",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Sensei wa Koi wo Oshierarenai",
+    "先生は恋を教えられない",
+    "Sensei Can't Teach Me About Love",
+    "Sensei wa Koi o Oshie Rarenai",
+    "선생님은 사랑을 가르칠 수 없어",
+    "วิชาความรัก คุณครูไม่ยักสอน"
+   ]
+  },
+  {
+   "anilistId": 165182,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:165182",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Time-Limited Genius Dark Knight",
+    "Sihanbu Cheonjae Amheukgisa",
+    "시한부 천재 암흑기사",
+    "Terminally-Ill Genius Dark Knight",
+    "Terminally ill Dark Knight",
+    "อัศวินดำล่าท้าเวลา",
+    "身患绝症的天才黑暗骑士",
+    "絕症天才暗黑騎士"
+   ]
+  },
+  {
+   "anilistId": 97812,
+   "chapters": 1,
+   "chaptersFrom": "anilist",
+   "key": "anilist:97812",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Toki Doki",
+    "Tokidoki",
+    "刻どキ"
+   ]
+  },
+  {
+   "anilistId": 107720,
+   "chapters": 62,
+   "chaptersFrom": "anilist",
+   "key": "anilist:107720",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Her Summon",
+    "Geunyeoui Sohwansu",
+    "그녀의 소환수",
+    "A Invocação"
+   ]
+  },
+  {
+   "anilistId": 180891,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:180891",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Absolute Regression",
+    "Jeoldaehoegwi",
+    "절대회귀",
+    "絕對回歸",
+    "绝对回归",
+    "ย้อนชะตาล่าข้ามภพ"
+   ]
+  },
+  {
+   "anilistId": 110042,
+   "chapters": 143,
+   "chaptersFrom": "anilist",
+   "key": "anilist:110042",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "I Am the Sorcerer King",
+    "Naneun Madowangida",
+    "나는 마도왕이다"
+   ]
+  },
+  {
+   "anilistId": 30050,
+   "chapters": 288,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30050",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Shaman King",
+    "シャーマンキング",
+    "Exotica",
+    "Diary of Exotica",
+    "Funbari no Uta",
+    "Mappa Douji",
+    "Βασιλιάς Σαμάνος",
+    "Shaman King: Król szamanów",
+    "通靈童子"
+   ]
+  },
+  {
+   "anilistId": 141479,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:141479",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Legendary Spearman Returns",
+    "Yeokdaegeup Changgisaui Hoegwi",
+    "역대급 창기사의 회귀",
+    "Return of The Unrivaled Spear Knight",
+    "Return of the Legendary Spear Knight",
+    "歴代級槍騎士の回帰",
+    "การกลับมาของอัศวินผู้ใช้หอกแห่งยุค"
+   ]
+  },
+  {
+   "anilistId": 107918,
+   "chapters": 156,
+   "chaptersFrom": "anilist",
+   "key": "anilist:107918",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Doctor Elise: The Royal Lady with the Lamp",
+    "Oegwauisa Elise",
+    "외과의사 엘리제",
+    "Queen with a Scalpel",
+    "Surgeon Elise",
+    "Doctor Elise",
+    "Oegwauisa Ellije",
+    "L'Impèrieux Destin du Dr Élise",
+    "外科医エリーゼ",
+    "Dokter Elise",
+    "女王的手术刀",
+    "เอลิเซ่ แพทย์หญิงทะลุมิติ",
+    "外科醫生愛麗絲",
+    "Gekai Elise"
+   ]
+  },
+  {
+   "anilistId": 30106,
+   "chapters": 50,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30106",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Cardcaptor Sakura",
+    "カードキャプターさくら",
+    "Card Captor Sakura",
+    "Cardcaptors",
+    "Cardcaptor Sakura: Master of the Clow",
+    "CCS",
+    "Sakura, Cazadora de Cartas",
+    "Sakura, la Caçadora de Cartes",
+    "סאקורה לוכדת הקלפים",
+    "Сакура, собирательница карт",
+    "庫洛魔法使",
+    "카드캡터 사쿠라",
+    "魔卡少女樱"
+   ]
+  },
+  {
+   "anilistId": 125116,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:125116",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Wistoria: Wand and Sword",
+    "Tsue to Tsurugi no Wistoria",
+    "杖と剣のウィストリア",
+    "The Wistoria of Staves and Swords",
+    "ดาบและคทาแห่งวิสตอเรีย",
+    "Wistoria – Zauberstab & Schwert"
+   ]
+  },
+  {
+   "anilistId": 151194,
+   "chapters": 1,
+   "chaptersFrom": "anilist",
+   "key": "anilist:151194",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Just Listen to the Song",
+    "Futsuu ni Kiite Kure",
+    "フツーに聞いてくれ",
+    "Solamente Escúchala"
+   ]
+  },
+  {
+   "anilistId": 31373,
+   "chapters": 15,
+   "chaptersFrom": "anilist",
+   "key": "anilist:31373",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Nijigahara Holograph",
+    "虹ヶ原 ホログラフ",
+    "Rainbow Field Holograph",
+    "Le champ de l'arc-en-ciel",
+    "Das Feld des Regenbogens",
+    "Il Campo dell’Arcobaleno",
+    "Nijigahara Holograf",
+    "Голограф Веселкового поля"
+   ]
+  },
+  {
+   "anilistId": 119363,
+   "chapters": 264,
+   "chaptersFrom": "anilist",
+   "key": "anilist:119363",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Player",
+    "플레이어"
+   ]
+  },
+  {
+   "anilistId": 30463,
+   "chapters": 40,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30463",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Welcome to the N.H.K.",
+    "NHK ni Youkoso!",
+    "NHKにようこそ!",
+    "Welcome to the NHK",
+    "Bem-vindo a N.H.K"
+   ]
+  },
+  {
+   "anilistId": 120440,
+   "chapters": 82,
+   "chaptersFrom": "anilist",
+   "key": "anilist:120440",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Positively Yours",
+    "Agiga Saenggyeosseoyo",
+    "아기가 생겼어요",
+    "我有孩子了",
+    "子供ができました",
+    "理事長和我的祕密關係",
+    "Plötzlich ein Baby",
+    "Sweet Baby",
+    "Positivamente tuya"
+   ]
+  },
+  {
+   "anilistId": 153513,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:153513",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tyrant of the Tower Defense Game",
+    "Defense Game Pokguni Doeeotda",
+    "디펜스 게임의 폭군이 되었다",
+    "I Became the Tyrant of a Defense Game",
+    "成为塔防游戏里的暴君",
+    "成為塔防遊戲的暴君"
+   ]
+  },
+  {
+   "anilistId": 35293,
+   "chapters": 21,
+   "chaptersFrom": "anilist",
+   "key": "anilist:35293",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Doubt",
+    "ダウト",
+    "Rabbit Doubt"
+   ]
+  },
+  {
+   "anilistId": 99549,
+   "chapters": 314,
+   "chaptersFrom": "anilist",
+   "key": "anilist:99549",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Karakai Jouzu no (Moto) Takagi-san",
+    "からかい上手の（元）高木さん",
+    "Skilled Teaser (Former) Takagi-san",
+    "Nhất quỷ nhì ma, thứ ba (vẫn là) Takagi "
+   ]
+  },
+  {
+   "anilistId": 169272,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:169272",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Tune In to the Midnight Heart",
+    "Mayonaka Heart Tune",
+    "真夜中ハートチューン",
+    "Sintonía Del Corazón a Medianoche",
+    "午夜的傾心旋律",
+    "Mayochu"
+   ]
+  },
+  {
+   "anilistId": 30142,
+   "chapters": 119,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30142",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Battle Royale",
+    "バトル・ロワイアル"
+   ]
+  },
+  {
+   "anilistId": 54903,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:54903",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "GANGSTA.",
+    "ギャングスタ",
+    "ҐЕНҐСТА",
+    "갱스타."
+   ]
+  },
+  {
+   "anilistId": 86303,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:86303",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Miss Kobayashi's Dragon Maid",
+    "Kobayashi-san Chi no Maidragon",
+    "小林さんちのメイドラゴン",
+    "Kobayashi-san Chi no Maid Dragon",
+    "The maid dragon of Kobayashi-san",
+    "Дракорничная госпожи Кобаяси",
+    "น้องเมดมังกรของคุณโคบายาชิ",
+    "Драконопокоïвка в домі Кобаяші-сан",
+    "고바야시네 메이드래곤",
+    "Kobayaşi Hanesi’nin Hizmetçi Ejderhası"
+   ]
+  },
+  {
+   "anilistId": 116534,
+   "chapters": 40,
+   "chaptersFrom": "anilist",
+   "key": "anilist:116534",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Welcome Back, Alice",
+    "Okaeri Alice",
+    "おかえりアリス",
+    "การกลับมาของอลิซ",
+    "Bentornato, Alice"
+   ]
+  },
+  {
+   "anilistId": 96518,
+   "chapters": 87,
+   "chaptersFrom": "anilist",
+   "key": "anilist:96518",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Bokutachi ga Yarimashita",
+    "僕たちがやりました",
+    "We Did It",
+    "On l'a fait"
+   ]
+  },
+  {
+   "anilistId": 107518,
+   "chapters": 252,
+   "chaptersFrom": "anilist",
+   "key": "anilist:107518",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Heavenly Demon Reborn!",
+    "Shinma Gyeongcheongi",
+    "신마경천기",
+    "Chronicles of Heavenly Demon"
+   ]
+  },
+  {
+   "anilistId": 31149,
+   "chapters": 245,
+   "chaptersFrom": "anilist",
+   "key": "anilist:31149",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Fist of the North Star",
+    "Hokuto no Ken",
+    "北斗の拳",
+    "El Puño de la Estrella del Norte",
+    "Pięść Gwiazd Północy ",
+    "북두의 권",
+    "北斗之拳",
+    "Ken le survivant"
+   ]
+  },
+  {
+   "anilistId": 87234,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:87234",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Elder Sister-Like One",
+    "Ane Naru Mono",
+    "姉なるもの",
+    "The Sister of the Woods with a Thousand Young",
+    "An Elder Sister",
+    "My Ancient Sister",
+    "L'Innominabile Sorella",
+    "The Demon Who Became My Sister",
+    "姊姊",
+    "누이 되는 자"
+   ]
+  },
+  {
+   "anilistId": 30671,
+   "chapters": 167,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30671",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "To Love Ru",
+    "To LOVE-Ru",
+    "To LOVEる -とらぶる-",
+    "To LOVE-Ru Trouble",
+    "To-Love-Ru",
+    "To Love You",
+    "To Love You - Trouble",
+    "วุ่นรักยัยต่างดาว ",
+    "Love Trouble"
+   ]
+  },
+  {
+   "anilistId": 30085,
+   "chapters": 69,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30085",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Azumanga Daioh",
+    "Azumanga Daiou",
+    "あずまんが大王",
+    "Адзуманга"
+   ]
+  },
+  {
+   "anilistId": 68105,
+   "chapters": 25,
+   "chaptersFrom": "anilist",
+   "key": "anilist:68105",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kase-san and...",
+    "Kase-san Series",
+    "加瀬さんシリーズ",
+    "Morning Glory and Kase-san.",
+    "Asagao to Kase-san.",
+    "Obentou to Kase-san. ",
+    "Kase-san and Bento",
+    "Kase-san and Shortcake",
+    "Shoutokeiki to Kase-san. ",
+    "Kase-san and an Apron",
+    "Epuron to Kase-san. ",
+    "Kase-san and Cherry Blossoms",
+    "Sakura to Kase-san.",
+    "คุณคาเซะกับดอกบานเช้า",
+    "คุณคาเซะกับเบนโต",
+    "Kase và bìm bìm biếc",
+    "Kase y las campanillas azules"
+   ]
+  },
+  {
+   "anilistId": 30092,
+   "chapters": 61,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30092",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Sailor Moon",
+    "Bishoujo Senshi Sailor Moon",
+    "美少女戦士セーラームーン",
+    "Pretty Soldier Sailor Moon",
+    "Pretty Guardian Sailor Moon",
+    "Czarodziejka z księżyca",
+    "美少女戰士",
+    "미소녀 전사 세일러 문",
+    "เซเลอร์มูน"
+   ]
+  },
+  {
+   "anilistId": 31131,
+   "chapters": 84,
+   "chaptersFrom": "anilist",
+   "key": "anilist:31131",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Freesia",
+    "フリージア"
+   ]
+  },
+  {
+   "anilistId": 85139,
+   "chapters": 276,
+   "chaptersFrom": "anilist",
+   "key": "anilist:85139",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "My Monster Secret: Actually, I Am…",
+    "Jitsu wa Watashi wa",
+    "実は私は",
+    "The Truth Is I am...",
+    "จุ๊จุ๊ จะบอกว่าฉันคือ…"
+   ]
+  },
+  {
+   "anilistId": 107540,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:107540",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Loner Life in Another World",
+    "Hitoribocchi no Isekai Kouryaku",
+    "ひとりぼっちの異世界攻略",
+    "Lonely Attack on a Different World",
+    "외톨이의 이세계 공략",
+    "獨自一人的異世界攻略",
+    "นายโดดเดี่ยวพิชิตต่างโลก"
+   ]
+  },
+  {
+   "anilistId": 86720,
+   "chapters": 117,
+   "chaptersFrom": "anilist",
+   "key": "anilist:86720",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Helck",
+    "ヘルク",
+    "Helck the Hero",
+    "ยอดผู้กล้า Helck",
+    "勇者赫鲁库",
+    "勇者赫魯庫-Helck-",
+    "Helck-勇者赫魯庫-"
+   ]
+  },
+  {
+   "anilistId": 100207,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:100207",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "The Great Jahy Will Not Be Defeated!",
+    "Jahy-sama wa Kujikenai!",
+    "ジャヒー様はくじけない！",
+    "Jahy-sama Won't Be Discouraged!",
+    "迦希女王不会放弃 ",
+    "賈希大人不氣餒！",
+    "Niepokonana Jahy",
+    "ท่านจาฮี ชีวิตนี้ไม่มีถอย",
+    "La grande Jahy ne perd jamais!"
+   ]
+  },
+  {
+   "anilistId": 98466,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:98466",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Kemono Jihen",
+    "怪物事変",
+    "Demon Incident",
+    "けものじへん",
+    "Kemono Incidents",
+    "Kaibutsu Jihen",
+    "คดีประหลาดคนปีศาจ",
+    "Kemono Jihen. Niesamowite zdarzenia",
+    "Văn phòng thám tử quái vật",
+    "Kemono Jihen: Incidentes Sobrenaturais",
+    "怪物事變",
+    "Kemono Jihen – Gefährlichen Phänomenen auf der Spur"
+   ]
+  },
+  {
+   "anilistId": 30904,
+   "chapters": 142,
+   "chaptersFrom": "anilist",
+   "key": "anilist:30904",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Lone Wolf and Cub",
+    "Kozure Ookami",
+    "子連れ狼",
+    "Lobo Solitário",
+    "Lobo solitario y su cachorro",
+    "Yalnız Kurt ve Yavrusu",
+    "Samotny wilk i szczenię"
+   ]
+  },
+  {
+   "anilistId": 35255,
+   "chapters": 80,
+   "chaptersFrom": "anilist",
+   "key": "anilist:35255",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Dengeki Daisy",
+    "電撃デイジー",
+    "The Hopeless Cupid",
+    "Hetakuso Cupid",
+    "หนุ่มแสบมาช็อตรัก",
+    "Elettroshock Daisy"
+   ]
+  },
+  {
+   "anilistId": 106434,
+   "chapters": 156,
+   "chaptersFrom": "anilist",
+   "key": "anilist:106434",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Hitomi-chan is Shy With Strangers",
+    "Hitomi-chan wa Hitomishiri",
+    "瞳ちゃんは人見知り"
+   ]
+  },
+  {
+   "anilistId": 141705,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:141705",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Reality Quest",
+    "Hyeonsil Quest",
+    "현실퀘스트",
+    "IRL Quest",
+    "现实闯关",
+    "現實遊戲"
+   ]
+  },
+  {
+   "anilistId": 87213,
+   "chapters": 222,
+   "chaptersFrom": "anilist",
+   "key": "anilist:87213",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Yuuna and the Haunted Hot Springs",
+    "Yuragi-sou no Yuuna-san",
+    "ゆらぎ荘の幽奈さん",
+    "Yunas Geisterhaus",
+    "Yuuna e a Pensão Assombrada",
+    "Yuna de la posada Yuragi",
+    "ยูรากิโซ ที่นี่ผีน่ารักนะ "
+   ]
+  },
+  {
+   "anilistId": 118695,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:118695",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "I’m in Love with the Villainess",
+    "Watashi no Oshi wa Akuyaku Reijou.",
+    "私の推しは悪役令嬢。",
+    "I Favor the Villainess",
+    "WataOshi",
+    "Watashino Oshiwa Akuyakureijou",
+    "ทำไงดีเกมนี้นางร้ายน่ารัก",
+    "Me Enamoré de la Villana",
+    "我的推是壞人大小姐。",
+    "Tôi yêu nữ phản diện",
+    "내 최애는 악역 영애"
+   ]
+  },
+  {
+   "anilistId": 110785,
+   "chapters": 241,
+   "chaptersFrom": "anilist",
+   "key": "anilist:110785",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "2.5 Dimensional Seduction",
+    "2.5 Jigen no Ririsa",
+    "2.5次元の誘惑",
+    "2.5 Jigen no Yuuwaku",
+    "2.5D Seduction",
+    "Ririsa of 2.5 Dimension",
+    "2.5 มิติ ริริสะ",
+    "2.5次元的誘惑",
+    "にごリリ",
+    "Nigoriri"
+   ]
+  },
+  {
+   "anilistId": 159439,
+   "chapters": 177,
+   "chaptersFrom": "anilist",
+   "key": "anilist:159439",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Boundless Ascension",
+    "Na Honja Teukseongppallo Muhan Seongjang",
+    "나 혼자 특성빨로 무한 성장",
+    "The Boundless Necromancer",
+    "นักล่าไร้ลิมิต"
+   ]
+  },
+  {
+   "anilistId": 123739,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:123739",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Under the Oak Tree",
+    "Sangsurinamu Arae",
+    "상수리나무 아래",
+    "Debajo del roble",
+    "橡树之下",
+    "オークの樹の下",
+    "Sous le vieux chêne"
+   ]
+  },
+  {
+   "anilistId": 110472,
+   "chapters": null,
+   "chaptersFrom": null,
+   "key": "anilist:110472",
+   "origins": [
+    "anilist"
+   ],
+   "titles": [
+    "Study Group",
+    "스터디그룹",
+    "スタディー・グループ",
+    "流氓讀書會",
+    "痞子学霸",
+    "Grupo de estudio"
+   ]
+  }
+ ]
+}

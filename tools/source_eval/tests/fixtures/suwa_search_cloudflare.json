@@ -1,0 +1,19 @@
+{
+ "data": {
+  "fetchSourceManga": null
+ },
+ "errors": [
+  {
+   "message": "Exception while fetching data (/fetchSourceManga) : Cloudflare bypass currently disabled\n\njava.io.IOException: Cloudflare bypass currently disabled",
+   "locations": [
+    {
+     "line": 1,
+     "column": 61
+    }
+   ],
+   "path": [
+    "fetchSourceManga"
+   ]
+  }
+ ]
+}

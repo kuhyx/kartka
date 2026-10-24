@@ -1,0 +1,207 @@
+{
+ "total_hits": 10000,
+ "page": 1,
+ "per_page": 25,
+ "results": [
+  {
+   "record": {
+    "series_id": 55099564912,
+    "title": "One Piece",
+    "type": "Manga"
+   },
+   "hit_title": "One Piece"
+  },
+  {
+   "record": {
+    "series_id": 34866131632,
+    "title": "Odekake One Piece",
+    "type": "Manga"
+   },
+   "hit_title": "Odekake One Piece"
+  },
+  {
+   "record": {
+    "series_id": 49512032547,
+    "title": "One Piece Party",
+    "type": "Manga"
+   },
+   "hit_title": "One Piece Party"
+  },
+  {
+   "record": {
+    "series_id": 77556276839,
+    "title": "Koisuru One Piece",
+    "type": "Manga"
+   },
+   "hit_title": "Koisuru One Piece"
+  },
+  {
+   "record": {
+    "series_id": 69500658401,
+    "title": "One Piece dj - Short Piece",
+    "type": "Doujinshi"
+   },
+   "hit_title": "One Piece dj - Short Piece"
+  },
+  {
+   "record": {
+    "series_id": 15967490973,
+    "title": "One Piece Gakuen",
+    "type": "Manga"
+   },
+   "hit_title": "One Piece Gakuen"
+  },
+  {
+   "record": {
+    "series_id": 48642213704,
+    "title": "Boku no One Piece",
+    "type": "Manga"
+   },
+   "hit_title": "Boku no One Piece"
+  },
+  {
+   "record": {
+    "series_id": 4449274402,
+    "title": "Noroi no one piece",
+    "type": "Manga"
+   },
+   "hit_title": "Noroi no one piece"
+  },
+  {
+   "record": {
+    "series_id": 42064105448,
+    "title": "One Piece Film: Gold",
+    "type": "Manga"
+   },
+   "hit_title": "One Piece Film: Gold"
+  },
+  {
+   "record": {
+    "series_id": 66041204484,
+    "title": "One Piece Color Walk",
+    "type": "Artbook"
+   },
+   "hit_title": "One Piece Color Walk"
+  },
+  {
+   "record": {
+    "series_id": 51801206166,
+    "title": "Kenkoukotsu to One Piece",
+    "type": "Manga"
+   },
+   "hit_title": "Kenkoukotsu to One Piece"
+  },
+  {
+   "record": {
+    "series_id": 27737197150,
+    "title": "One Piece dj - Closed-Door One",
+    "type": "Doujinshi"
+   },
+   "hit_title": "One Piece dj - Closed-Door One"
+  },
+  {
+   "record": {
+    "series_id": 9082699179,
+    "title": "Show Love",
+    "type": "Manga"
+   },
+   "hit_title": "Mizutama no One Piece"
+  },
+  {
+   "record": {
+    "series_id": 52853121761,
+    "title": "One Piece dj - Don't Take Off My One Piece",
+    "type": "Doujinshi"
+   },
+   "hit_title": "One Piece dj - Don't Take Off My One Piece"
+  },
+  {
+   "record": {
+    "series_id": 29914497193,
+    "title": "One Piece (Databook)",
+    "type": "Artbook"
+   },
+   "hit_title": "One Piece (Databook)"
+  },
+  {
+   "record": {
+    "series_id": 20243120110,
+    "title": "One Piece dj - ALL",
+    "type": "Doujinshi"
+   },
+   "hit_title": "One Piece dj - ALL"
+  },
+  {
+   "record": {
+    "series_id": 45420990700,
+    "title": "One Piece dj - Blue",
+    "type": "Doujinshi"
+   },
+   "hit_title": "One Piece dj - Blue"
+  },
+  {
+   "record": {
+    "series_id": 71565992699,
+    "title": "One Piece dj - Chianti",
+    "type": "Doujinshi"
+   },
+   "hit_title": "One Piece dj - Chianti"
+  },
+  {
+   "record": {
+    "series_id": 74643008872,
+    "title": "One Piece dj - Hanaori",
+    "type": "Doujinshi"
+   },
+   "hit_title": "One Piece dj - Hanaori"
+  },
+  {
+   "record": {
+    "series_id": 4898820078,
+    "title": "One Piece dj - Himitsu",
+    "type": "Doujinshi"
+   },
+   "hit_title": "One Piece dj - Himitsu"
+  },
+  {
+   "record": {
+    "series_id": 49451656424,
+    "title": "One Piece dj - Hokaku!",
+    "type": "Doujinshi"
+   },
+   "hit_title": "One Piece dj - Hokaku!"
+  },
+  {
+   "record": {
+    "series_id": 57251757850,
+    "title": "One Piece dj - Hologram",
+    "type": "Doujinshi"
+   },
+   "hit_title": "One Piece dj - Hologram"
+  },
+  {
+   "record": {
+    "series_id": 36605421604,
+    "title": "One Piece dj - I-",
+    "type": "Doujinshi"
+   },
+   "hit_title": "One Piece dj - I-"
+  },
+  {
+   "record": {
+    "series_id": 32197810620,
+    "title": "One Piece dj - Innamoerati",
+    "type": "Doujinshi"
+   },
+   "hit_title": "One Piece dj - Innamoerati"
+  },
+  {
+   "record": {
+    "series_id": 470553721,
+    "title": "One Piece dj - Lawpai",
+    "type": "Doujinshi"
+   },
+   "hit_title": "One Piece dj - Lawpai"
+  }
+ ]
+}

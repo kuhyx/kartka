@@ -1,0 +1,8 @@
+.venv/
+state/
+cache/
+.coverage
+coverage.xml
+out/latest.json
+__pycache__/
+*.egg-info/

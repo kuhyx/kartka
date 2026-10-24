@@ -1,0 +1,19 @@
+[
+ {"slug": "batoto", "name": "Bato.to", "lang": "all", "baseUrl": "https://bato.to",
+  "backupSourceIds": ["4531444389842992129", "7890050626002177109", "4936142045476640860", "4659522191388348292"],
+  "backupEntries": 131,
+  "note": "Old Tachiyomi all.batoto; ids 4936.. and 4659.. are SY 'Bato.to (Revived)'. Not in Keiyoushi; no Mangayomi source."},
+ {"slug": "mangapark", "name": "MangaPark", "lang": "all", "baseUrl": "https://mangapark.net",
+  "backupSourceIds": ["2292947733994124621"], "backupEntries": 9,
+  "note": "Old Tachiyomi all.mangapark. Not in Keiyoushi; Mangayomi has a Dart-only source (mangapark.io)."},
+ {"slug": "hitomi", "name": "Hitomi", "lang": "all", "baseUrl": "https://hitomi.la",
+  "backupSourceIds": ["8758194323514078879", "690123758188633713"], "backupEntries": 3,
+  "note": "Old Tachiyomi all.hitomi (removed from Keiyoushi)."},
+ {"slug": "nhentai", "name": "NHentai", "lang": "all", "baseUrl": "https://nhentai.net",
+  "backupSourceIds": ["7309872737163460316"], "backupEntries": 6,
+  "note": "Old Tachiyomi all.nhentai (removed from Keiyoushi; nhentai.com/.to/.xxx mirrors are different sites)."},
+ {"slug": "ehentai", "name": "E-Hentai", "lang": "all", "baseUrl": "https://e-hentai.org",
+  "backupSourceIds": ["6901"], "backupEntries": 97, "note": "TachiyomiSY built-in source; no extension anywhere."},
+ {"slug": "exhentai", "name": "ExHentai", "lang": "all", "baseUrl": "https://exhentai.org",
+  "backupSourceIds": ["6902"], "backupEntries": 109, "note": "TachiyomiSY built-in; needs an E-Hentai login cookie."}
+]
