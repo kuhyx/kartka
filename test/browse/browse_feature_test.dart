@@ -11,6 +11,7 @@ import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
+import 'package:kartka/tracking/common/chapter_url_resolver.dart';
 
 import 'fakes.dart';
 import 'ui/harness.dart';
@@ -77,8 +78,10 @@ void main() {
     final key = mangaKeyOf('mangadex', '/m/1');
     final counts = reg.maybe<UnreadCounts>()!;
     expect(await counts.watch(key).first, isNull);
-    final resolver = reg.maybe<BrowseResolverPort>()!;
+    final resolver = reg.maybe<ChapterUrlResolver>()!;
     expect(await resolver.resolve(key, 2), '/c/2');
+    final port = reg.maybe<BrowseResolverPort>()!;
+    expect(await port.numberOf(key, '/c/3'), 3);
     expect(await counts.watch(key).first, 3);
   });
 

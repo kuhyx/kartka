@@ -24,4 +24,19 @@ class BrowseChapterUrlResolver {
     }
     return null;
   }
+
+  /// Number of the chapter at [chapterUrl] in [key], or null when the
+  /// chapter is unknown, unnumbered, or the chapters cannot be loaded.
+  Future<double?> numberOf(MangaKey key, String chapterUrl) async {
+    final List<ChapterInfo> chapters;
+    try {
+      chapters = await _store.load(key);
+    } on Object {
+      return null;
+    }
+    for (final c in chapters) {
+      if (c.url == chapterUrl) return c.number;
+    }
+    return null;
+  }
 }
