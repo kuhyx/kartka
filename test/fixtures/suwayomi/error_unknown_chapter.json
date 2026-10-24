@@ -1,0 +1,19 @@
+{
+  "data": {
+    "fetchChapterPages": null
+  },
+  "errors": [
+    {
+      "message": "Exception while fetching data (/fetchChapterPages) : Collection is empty.\r\n\r\njava.util.NoSuchElementException: Collection is empty.\n\tat kotlin.collections.CollectionsKt___CollectionsKt.first(_Collections.kt:209)\n\tat suwayomi.tachidesk.manga.impl.chapter.ChapterForDownload.freshChapterEntry$lambda$0(ChapterForDownload.kt:209)\n\tat org.jetbrains.exposed.v1.jdbc.transactions.TransactionsKt.inTopLevelTransaction$lambda$0(Transactions.kt:219)\n\tat org.jetbrains.exposed.v1.core.transactions.TransactionsKt.withThreadLocalTransaction(Transactions.kt:53)\n\tat org.jetbrains.exposed.v1.jdbc.transactions.TransactionsKt.inTopLevelTransaction(Transactions.kt:215)\n\tat org.jetbrains.exposed.v1.jdbc.transactions.TransactionsKt.transaction(Transactions.kt:160)\n\tat org.jetbrains.exposed.v1.jdbc.transactions.TransactionsKt.transaction$default(Transactions.kt:133)\n\tat suwayomi.tachidesk.manga.impl.chapter.ChapterForDownload.freshChapterEntry(ChapterForDownload.kt:198)\n\tat suwayomi.tachidesk.manga.impl.chapter.ChapterForDownload.<init>(ChapterForDownload.kt:183)\n\tat suwayomi.tachidesk.manga.impl.chapter.ChapterForDownloadKt.getChapterDownloadReady(ChapterForDownload.kt:122)\n\tat suwayomi.tachidesk.manga.impl.chapter.ChapterForDownloadKt.getChapterDownloadReady$default(ChapterForDownload.kt:117)\n\tat suwayomi.tachidesk.manga.impl.chapter.ChapterForDownloadKt.getChapterDownloadReadyById(ChapterForDownload.kt:126)\n\tat suwayomi.tachidesk.graphql.mutations.ChapterMutation$fetchChapterPages$1.invokeSuspend(ChapterMutation.kt:411)\n\tat kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)\n\tat kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:100)\n\tat kotlinx.coroutines.internal.LimitedDispatcher$Worker.run(LimitedDispatcher.kt:124)\n\tat kotlinx.coroutines.scheduling.TaskImpl.run(Tasks.kt:89)\n\tat kotlinx.coroutines.scheduling.CoroutineScheduler.runSafely(CoroutineScheduler.kt:586)\n\tat kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.executeTask(CoroutineScheduler.kt:798)\n\tat kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.runWorker(CoroutineScheduler.kt:717)\n\tat kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.run(CoroutineScheduler.kt:704)\n",
+      "locations": [
+        {
+          "line": 1,
+          "column": 12
+        }
+      ],
+      "path": [
+        "fetchChapterPages"
+      ]
+    }
+  ]
+}

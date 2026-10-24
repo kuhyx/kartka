@@ -1,0 +1,91 @@
+{
+  "_note": "backupSources of syncyomi snapshot 2026-10-24T12:00Z vs sources{} after installing 5 Keiyoushi extensions on Suwayomi v2.4.2366. 6901/6902 are SY built-ins (E-/ExHentai), absent from Suwayomi by design.",
+  "matched": [
+    {
+      "backupSourceId": "2499283573021220255",
+      "backupName": "MangaDex",
+      "suwayomi": {
+        "name": "MangaDex",
+        "lang": "en",
+        "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+      }
+    },
+    {
+      "backupSourceId": "4709139914729853090",
+      "backupName": "AllManga",
+      "suwayomi": {
+        "name": "AllManga",
+        "lang": "en",
+        "pkgName": "eu.kanade.tachiyomi.extension.en.allanime"
+      }
+    },
+    {
+      "backupSourceId": "2528986671771677900",
+      "backupName": "Mangakakalot",
+      "suwayomi": {
+        "name": "Mangakakalot",
+        "lang": "en",
+        "pkgName": "eu.kanade.tachiyomi.extension.en.mangakakalot"
+      }
+    },
+    {
+      "backupSourceId": "1998944621602463790",
+      "backupName": "MANGA Plus by SHUEISHA",
+      "suwayomi": {
+        "name": "MANGA Plus by SHUEISHA",
+        "lang": "en",
+        "pkgName": "eu.kanade.tachiyomi.extension.all.mangaplus"
+      }
+    },
+    {
+      "backupSourceId": "8033579885162383068",
+      "backupName": "MangaDex",
+      "suwayomi": {
+        "name": "MangaDex",
+        "lang": "pl",
+        "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex"
+      }
+    },
+    {
+      "backupSourceId": "5900936305360403385",
+      "backupName": "MangaDot",
+      "suwayomi": {
+        "name": "MangaDot",
+        "lang": "en",
+        "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+      }
+    },
+    {
+      "backupSourceId": "516446519459282312",
+      "backupName": "MangaDot",
+      "suwayomi": {
+        "name": "MangaDot",
+        "lang": "pl",
+        "pkgName": "eu.kanade.tachiyomi.extension.en.mangadotnet"
+      }
+    }
+  ],
+  "notInstalledOrBuiltin": [
+    "6902",
+    "6901",
+    "4006397036545425884",
+    "3091964041986261235",
+    "4531444389842992129",
+    "7890050626002177109",
+    "2292947733994124621",
+    "684582342346256208",
+    "285164574089229147",
+    "3112384885023225761",
+    "7689478295161479290",
+    "491094567635736188",
+    "8254209929759906152",
+    "8758194323514078879",
+    "690123758188633713",
+    "7309872737163460316",
+    "4870917758913494428",
+    "4936142045476640860",
+    "4659522191388348292",
+    "2220258354919443918",
+    "7266624490370375187"
+  ]
+}

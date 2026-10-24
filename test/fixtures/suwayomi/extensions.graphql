@@ -1,0 +1,6 @@
+# $name filters by extension display name, e.g. "MangaDex".
+query Extensions($name: String!) {
+  extensions(filter: { name: { includesInsensitive: $name } }) {
+    nodes { pkgName name lang versionName isInstalled hasUpdate isObsolete iconUrl storeIndexUrl }
+  }
+}

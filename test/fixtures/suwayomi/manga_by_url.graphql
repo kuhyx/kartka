@@ -1,0 +1,8 @@
+# Look up a manga Suwayomi already knows by Kartka's MangaKey parts
+# (sourceId + url). Returns no nodes for a manga the server has never seen:
+# reach it first via fetchSourceManga (search) or restoreBackup (.tachibk).
+query MangaByUrl($sourceId: LongString!, $url: String!) {
+  mangas(condition: { sourceId: $sourceId, url: $url }) {
+    nodes { id sourceId url title initialized }
+  }
+}

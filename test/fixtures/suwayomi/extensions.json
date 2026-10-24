@@ -1,0 +1,19 @@
+{
+  "data": {
+    "extensions": {
+      "nodes": [
+        {
+          "pkgName": "eu.kanade.tachiyomi.extension.all.mangadex",
+          "name": "MangaDex",
+          "lang": "all",
+          "versionName": "1.6.0",
+          "isInstalled": false,
+          "hasUpdate": false,
+          "isObsolete": false,
+          "iconUrl": "/api/v1/extension/icon/eu.kanade.tachiyomi.extension.all.mangadex",
+          "storeIndexUrl": "https://github.com/keiyoushi/extensions/raw/repo/index.pb"
+        }
+      ]
+    }
+  }
+}

@@ -60,6 +60,8 @@ verify_cmd() {
 	check "$(jq -r '.data.settings | "\(.ip):\(.port)"' <<<"${settings}")" "127.0.0.1:${SUWAYOMI_PORT}" "server binds loopback only"
 	check "$(jq -r '.data.settings | "\(.systemTrayEnabled)/\(.initialOpenInBrowserEnabled)"' <<<"${settings}")" \
 		"false/false" "no tray icon, no browser on the desktop"
+	check "$(jq -r '.data.settings | "\(.kcefEnabled)/\(.authMode)"' <<<"${settings}")" \
+		"false/NONE" "no bundled Chromium; Caddy is the only auth gate"
 	check "$(local_gql '{ extensionStores { nodes { indexUrl } } }' |
 		jq -r --arg u "${KEIYOUSHI_INDEX}" '[.data.extensionStores.nodes[].indexUrl] | index($u) != null')" \
 		true "Keiyoushi store configured"
