@@ -65,7 +65,8 @@ edit each other's files.
 
 `mangaKeyHash` = lowercase hex SHA-1 of `MangaKey` (RTDB-safe key).
 Read chapters set = derived from progress + explicit per-chapter marks in
-`read/<mangaKeyHash>/<chapterUrlHash>: true` (grow-only set).
+`read/<mangaKeyHash>/<chapterUrlHash>: {read: bool, at: ms}` (LWW per chapter, so
+markUnread is a `read: false` tombstone).
 
 ## 5. Source-health record (evaluator → RTDB → app UI)
 
@@ -139,6 +140,7 @@ abstract interface class ProgressRepository {
   Stream<ReadingProgress?> watch(MangaKey key);
   Future<void> record(ReadingProgress p);       // ignored if not > current
   Future<void> markRead(MangaKey key, String chapterUrl);
+  Future<void> markUnread(MangaKey key, String chapterUrl);
   Stream<Set<String>> readChapters(MangaKey key);
 }
 abstract interface class DownloadRepository {   // owner: downloads part
@@ -181,3 +183,16 @@ owners via the registry): `UnreadCounts.watch(key) → Stream<int?>` (browse
 supplies, from its chapter cache), `DownloadedLookup.hasDownloads(key) →
 Stream<bool>` (downloads supplies), `TrackedLookup.isTracked(key) →
 Stream<bool>` (tracking-anilist supplies from TrackingService bindings).
+
+## 10. Service lookup, routes, keys (owner: foundation)
+
+- `KartkaFeature` gets `List<Object> services` (default empty). Consumers ask
+  `registry.all<T>()` / `registry.maybe<T>()`, which is how every port is supplied
+  (SourceHealthLookup, UnreadCounts, DownloadedLookup, TrackedLookup,
+  Tracker, MangaDetailSlot, ...). Ports live in the CONSUMER's dir;
+  foundation never imports feature dirs.
+- `lib/app/routes.dart`: `mangaRoute(sourceId, mangaUrl)`,
+  `readRoute(sourceId, mangaUrl, chapterUrl)` + matching parsers;
+  every segment is `Uri.encodeComponent`-encoded. Router: go_router (foundation pins it).
+- `lib/core/models/manga_key.dart`: `MangaKey mangaKeyOf(String sourceId,
+  String url)` and `String mangaKeyHash(MangaKey)` (sha1 hex, §4).
