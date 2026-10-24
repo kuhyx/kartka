@@ -45,6 +45,13 @@ void main() {
     ]);
   }
 
+  test('loads settings at startup, before anyone watches', () async {
+    final r = registry();
+    await pumpEventQueue();
+    final headers = r.all<ImageHeaders>().single;
+    expect(headers.forUrl('${_url}api/v1/manga/1/thumbnail'), isNotEmpty);
+  });
+
   test('supplies the source provider and the image headers', () async {
     final r = registry();
     final sources = await r.all<SourceProvider>().single.watch().first;

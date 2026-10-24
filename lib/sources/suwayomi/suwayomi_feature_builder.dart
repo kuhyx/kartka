@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
@@ -25,6 +27,9 @@ KartkaFeature buildSuwayomiFeature(KartkaEnv env, {TitleLookup? titleOf}) {
     kv: platform.kv,
     secrets: platform.secrets,
   );
+  // Load now (kv + secrets only, no network) so image headers and the
+  // extensions screen work before Browse ever watches the sources.
+  unawaited(store.load());
   SuwayomiSettings current() => store.current ?? const SuwayomiSettings();
   final client = SuwayomiClient(http: platform.http, settings: current);
   final provider = SuwayomiSourceProvider(

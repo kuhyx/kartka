@@ -5,7 +5,9 @@
 # The server needs the Keiyoushi store and the MangaDex extension installed.
 # Each fixture is {request, status, response}; the documents below must stay
 # byte-identical to lib/sources/suwayomi/suwayomi_queries.dart, and
-# test/sources/suwayomi/fixture_queries_test.dart fails when they drift.
+# test/sources/suwayomi/suwayomi_mappers_test.dart fails when they drift.
+# The manga_id_unseen/search/details_unseen trio needs a fresh server root
+# (a search registers the manga, so a rerun records a hit instead of a miss).
 # The documents are single-quoted on purpose: their $vars belong to GraphQL.
 # shellcheck disable=SC2016
 set -euo pipefail
