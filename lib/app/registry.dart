@@ -1,0 +1,14 @@
+/// The feature registry (DOCS-contracts §3).
+///
+/// APPEND-ONLY: each part adds exactly one import and one line to
+/// [kartkaFeatureFactories], at the end. Parts never edit each other's lines.
+library;
+
+import 'package:kartka/app/feature.dart';
+
+export 'package:kartka/app/feature.dart';
+
+/// Every part's feature factory, in registry order.
+final List<KartkaFeatureFactory> kartkaFeatureFactories = [
+  // Parts append below this line, one entry each.
+];
