@@ -54,7 +54,7 @@ import 'package:kartka/platform/wrapper_stores.dart';
 
 void main() {
   test('imports every lib/ file except coverage:ignore-file wiring', () {
-    final imported = RegExp(r"^import 'package:kartka/(.+)';", multiLine: true)
+    final imported = RegExp("^import 'package:kartka/(.+)';", multiLine: true)
         .allMatches(File('test/all_imports_test.dart').readAsStringSync())
         .map((m) => 'lib/${m.group(1)}')
         .toSet();
