@@ -196,3 +196,16 @@ Stream<bool>` (tracking-anilist supplies from TrackingService bindings).
   every segment is `Uri.encodeComponent`-encoded. Router: go_router (foundation pins it).
 - `lib/core/models/manga_key.dart`: `MangaKey mangaKeyOf(String sourceId,
   String url)` and `String mangaKeyHash(MangaKey)` (sha1 hex, §4).
+
+## 11. Blob page URLs and FilePicker (owner: foundation)
+
+- A page stored in BlobStore is `PageRef(imageUrl: 'kartka-blob://<blobKey>',
+  headers: {})`. Not `blob:`, which is the browser's object-URL scheme on web.
+  `lib/platform/page_image.dart` (foundation) resolves either scheme:
+  kartka-blob → BlobStore bytes, http(s) → KartkaHttp with headers. Reader,
+  downloads and local all use it.
+- `FilePicker.pickFiles({List<String> extensions, bool multiple})` and
+  `FilePicker.pickDirectory()` return `List<PickedFile>`, where
+  `PickedFile {String name; String? relativePath; Future<Uint8List> readBytes()}`.
+  On web, directory picking uses webkitdirectory. Android path reads stay in
+  lib/platform/io/.
