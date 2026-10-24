@@ -209,3 +209,19 @@ Stream<bool>` (tracking-anilist supplies from TrackingService bindings).
   `PickedFile {String name; String? relativePath; Future<Uint8List> readBytes()}`.
   On web, directory picking uses webkitdirectory. Android path reads stay in
   lib/platform/io/.
+
+## 12. Sync clocks and DownloadState
+
+- Sync (§4 refined): `library/<h>` and `categories/<id>` keep flat fields plus
+  `hlc: {<field>: "<crdt_sync Hlc>"}`, merged as per-field LWW on Hlc (device id
+  breaks ties). `membership/<h>/<cat>` and `read/<h>/<c>` are
+  `{member|read: bool, hlc: "<Hlc>"}`, so every LWW node uses Hlc and no raw ms.
+  `updatedAt` = max field Hlc millis. `progress/` and `trackers/` stay
+  max-merge (a null chapterNumber sorts lowest). Change detection: tiny
+  `revs/<deviceId>: "<counter>"`, polled every 5 s **only while the app is in
+  the foreground**. Subtrees are fetched only when it changes. RTDB is reached
+  with crdt_sync's own client (RTDB allows CORS, so no /proxy is needed).
+- `DownloadState` (in `lib/core/models/download_state.dart`, foundation):
+  `sealed class DownloadState` = `NotDownloaded | Queued |
+  Downloading(done, total) | Paused(done, total) |
+  Downloaded(pageCount, bytes) | DownloadFailed(message)`.
