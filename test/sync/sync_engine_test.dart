@@ -1,5 +1,6 @@
 import 'package:crdt_sync/crdt_sync.dart' show FirebaseSyncError, Hlc;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/sync/merge/merge_rules.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/sync_engine.dart';
@@ -82,7 +83,7 @@ void main() {
   });
 
   test('nodes only the shadow holds are pushed by a forced sync', () async {
-    final kv = MemoryKv();
+    final kv = MemoryKeyValueStore();
     final offline = await engineFor('dev-a', db, kv: kv, signedIn: false);
     await offline.write('progress/h1', {'chapterNumber': 3, 'page': 1});
     final a = await engineFor('dev-a', db, kv: kv);
@@ -109,7 +110,7 @@ void main() {
 
   test('a failing sign-in is an error, not a crash', () async {
     final a = SyncEngine(
-      shadow: await SyncShadow.load(MemoryKv()),
+      shadow: await SyncShadow.load(MemoryKeyValueStore()),
       deviceId: 'dev-a',
       open: () async => throw FirebaseSyncError('no session'),
     );
@@ -136,7 +137,7 @@ void main() {
   });
 
   test('the shadow survives a restart', () async {
-    final kv = MemoryKv();
+    final kv = MemoryKeyValueStore();
     final a = await engineFor('dev-a', db, kv: kv);
     await a.write('library/h1', _title('One', a.tick()));
     final b = await engineFor('dev-b', db);
@@ -151,9 +152,10 @@ void main() {
   });
 
   test('corrupt persisted entries are skipped', () async {
-    final kv = MemoryKv()
-      ..data['sync.node.library/x'] = '{bad'
-      ..data['sync.node.library/y'] = '[1]';
+    final kv = MemoryKeyValueStore({
+      'sync.node.library/x': '{bad',
+      'sync.node.library/y': '[1]',
+    });
     final shadow = await SyncShadow.load(kv);
     expect(shadow.paths, isEmpty);
   });
