@@ -1,5 +1,5 @@
 import 'package:kartka/plugins/runtime/engine.dart';
-import 'package:kartka/plugins/runtime/engine_interpreter.dart';
+import 'package:kartka/plugins/runtime/engine_quickjs.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
 
 import 'support.dart';
@@ -20,7 +20,7 @@ typedef Replay = ({
 Future<Replay> replay(
   String name, {
   String? pagesUrl,
-  JsEngineFactory engine = InterpreterEngine.new,
+  JsEngineFactory engine = QuickJsEngine.new,
 }) async {
   final rec = recording(name);
   final services = ReplayServices(rec.exchanges);

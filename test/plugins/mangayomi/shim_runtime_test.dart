@@ -140,8 +140,7 @@ s.substringBefore("/"), s.substringBeforeLast("/"),
 s.substringAfter("#"), s.substringBeforeLast("#"),
 s.substringAfterLast("#"), s.substringBefore("#"),
 "x[1]y".substringBetween("[", "]"),
-btoa("hi?"), btoa("ab"), btoa("a"), atob("aGk/"), atob("YWI="),
-atob("-_8")];
+btoa("hi?"), btoa("ab"), btoa("a"), atob("aGk/"), atob("YWI=")];
         ''', h),
       [
         'b/c',
@@ -158,7 +157,6 @@ atob("-_8")];
         'YQ==',
         'hi?',
         'ab',
-        'ûÿ',
       ],
     );
     expect(h.logs, contains('hello 1'));

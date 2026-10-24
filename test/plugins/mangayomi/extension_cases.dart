@@ -5,8 +5,7 @@ import 'package:kartka/plugins/runtime/engine.dart';
 import 'replay.dart';
 
 /// The three real Mangayomi extensions, replayed offline from recordings,
-/// on [engine]. `extensions_test.dart` (interpreter) and
-/// `extensions_quickjs_test.dart` call this.
+/// on [engine] (`extensions_test.dart` runs them on QuickJS).
 void extensionCases(JsEngineFactory engine) {
   const slow = Timeout(Duration(seconds: 50));
   Map<String, Object?> first(Map<String, Object?> page) =>

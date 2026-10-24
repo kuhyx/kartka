@@ -2,24 +2,27 @@ import 'package:kartka/plugins/mangayomi/mangayomi_converter.dart';
 import 'package:kartka/plugins/mangayomi/mangayomi_entry.dart';
 import 'package:kartka/plugins/mangayomi/mangayomi_index.dart';
 import 'package:kartka/plugins/runtime/plugin_index.dart';
+import 'package:kartka/plugins/runtime/plugin_repo_adapter.dart';
 
 /// Makes a Mangayomi repo `index.json` a plugin repo type: its JS manga
 /// extensions are offered as Kartka plugins and converted on install.
 ///
-/// Shaped as the runtime's `PluginRepoAdapter` port (accepts / parse /
-/// buildSource) so the Plugins screen lists Mangayomi repos next to Kartka
-/// ones.
-class MangayomiRepoAdapter {
+/// Supplied to the runtime as a [PluginRepoAdapter], so the one Plugins
+/// screen lists Mangayomi repos next to Kartka ones and installs through the
+/// plugins feature's single `SourceProvider`.
+class MangayomiRepoAdapter implements PluginRepoAdapter {
   /// Index entries seen by [parse], by plugin id; [buildSource] needs the
   /// full entry (`this.source`, e.g. `apiUrl`), which `PluginIndexEntry`
   /// does not carry.
   final Map<String, MangayomiEntry> _seen = {};
 
   /// True when [indexJson] is a Mangayomi index (a top-level array).
+  @override
   bool accepts(Object? indexJson) => MangayomiIndex.looksLike(indexJson);
 
   /// The convertible sources of [json] as plugin offers. The JS file URL is
   /// the entry's `sourceCodeUrl`; Mangayomi indexes carry no checksum.
+  @override
   List<PluginIndexEntry> parse(Object? json, Uri indexUrl) {
     final out = <PluginIndexEntry>[];
     for (final e in MangayomiIndex.parse(json)) {
@@ -31,6 +34,7 @@ class MangayomiRepoAdapter {
           manifest: e.toManifest(),
           url: url,
           repoUrl: indexUrl.toString(),
+          adapter: this,
         ),
       );
     }
@@ -40,6 +44,7 @@ class MangayomiRepoAdapter {
   /// The Kartka plugin JS for offer [e] given its fetched extension JS.
   ///
   /// Throws [StateError] when [e] did not come from this adapter's [parse].
+  @override
   Future<String> buildSource(PluginIndexEntry e, String fetchedJs) async {
     final entry = _seen[e.manifest.id];
     if (entry == null) {

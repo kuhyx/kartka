@@ -4,12 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
-import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/plugins/mangayomi/mangayomi_feature.dart';
-import 'package:kartka/plugins/mangayomi/mangayomi_repo_adapter.dart';
-import 'package:kartka/plugins/mangayomi/mangayomi_repo_service.dart';
-import 'package:kartka/plugins/runtime/engine_interpreter.dart';
+import 'package:kartka/plugins/runtime/engine_quickjs.dart';
+import 'package:kartka/plugins/runtime/plugin_manager.dart';
+import 'package:kartka/plugins/runtime/plugin_repo_adapter.dart';
 import 'package:kartka/plugins/runtime/plugin_source.dart';
 import 'package:kartka/plugins/runtime/plugins_feature.dart';
 
@@ -38,23 +37,30 @@ FakeKartkaHttp recordedNetwork(String name) {
 
 void main() {
   test(
-    'install Weeb Central from a Mangayomi repo URL and read with it',
+    'add a Mangayomi repo on the Plugins manager, install Weeb Central, read',
     () async {
-      final http = recordedNetwork('weebcentral');
-      final registry = KartkaRegistry.build(memoryPlatform(http: http), [
-        (env) => pluginsFeature(env, engineFactory: InterpreterEngine.new),
-        mangayomiFeature,
-      ]);
-      expect(registry.maybe<MangayomiRepoAdapter>(), isNotNull);
-      final service = registry.maybe<MangayomiRepoService>()!;
-      final offers = await service.browse(indexUrl);
-      await service.install(
-        offers.firstWhere((o) => o.manifest.name == 'Weeb Central'),
+      final registry = KartkaRegistry.build(
+        memoryPlatform(http: recordedNetwork('weebcentral')),
+        [
+          (env) => pluginsFeature(env, engineFactory: QuickJsEngine.new),
+          mangayomiFeature,
+        ],
       );
+      expect(registry.all<PluginRepoAdapter>(), hasLength(1));
+      final manager = registry.maybe<PluginManager>()!;
+      await manager.addRepo(indexUrl);
+      final offers = (await manager.available()).plugins;
+      expect(offers.length, 115);
+      final wc = offers.firstWhere(
+        (o) => o.entry.manifest.name == 'Weeb Central',
+      );
+      expect(wc.availability, PluginAvailability.available);
+      await manager.install(wc.entry);
 
       final provider = registry.maybe<SourceProvider>()!;
       final sources = await provider.watch().firstWhere((l) => l.isNotEmpty);
-      final src = sources.single;
+      final src = sources.single as PluginSource;
+      addTearDown(src.session.dispose);
       expect(src.ref.id, 'plugin:mangayomi-693275080');
       final popular = await src.popular(1);
       expect(popular.items.first.title, 'Junjou Romantica');
@@ -72,37 +78,7 @@ void main() {
       expect(pages.length, 12);
       expect(pages.first.index, 0);
       expect(pages.first.headers['Referer'], 'https://weebcentral.com/');
-      for (final s in sources) {
-        await (s as PluginSource).session.dispose();
-      }
     },
     timeout: const Timeout(Duration(seconds: 50)),
   );
-
-  test('browse and install failures', () async {
-    final http = FakeKartkaHttp((r) {
-      if (r.url.path == '/bad.json') return FakeKartkaHttp.text('{nope');
-      if (r.url.path == '/kartka.json') {
-        return FakeKartkaHttp.text('{"plugins":[]}');
-      }
-      return FakeKartkaHttp.text('', status: 404);
-    });
-    final service = MangayomiRepoService(http: http, registrar: () => null);
-    await expectLater(
-      service.browse('https://r.test/bad.json'),
-      throwsFormatException,
-    );
-    await expectLater(
-      service.browse('https://r.test/kartka.json'),
-      throwsFormatException,
-    );
-    await expectLater(
-      service.browse('https://r.test/gone.json'),
-      throwsA(isA<KartkaHttpException>()),
-    );
-    final offer = service.adapter.parse([
-      testEntry().raw,
-    ], Uri.parse(indexUrl)).single;
-    await expectLater(service.install(offer), throwsStateError);
-  });
 }

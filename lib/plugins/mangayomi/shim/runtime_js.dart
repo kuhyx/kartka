@@ -1,6 +1,7 @@
 /// JS part 4 of the Mangayomi shim: `MProvider`, `Client`,
-/// `SharedPreferences`, `console`, `atob`/`btoa` and the `String.prototype`
-/// helpers Mangayomi exposes, built on `kartka.http` / `kartka.prefs` / `kartka.log`.
+/// `SharedPreferences`, `console` and the `String.prototype` helpers
+/// Mangayomi exposes, built on `kartka.http` / `kartka.prefs` / `kartka.log`
+/// (`atob`/`btoa` come from the runtime's polyfills).
 /// Written for Kartka from Mangayomi's public extension API; no Mangayomi
 /// code is used.
 ///
@@ -9,7 +10,7 @@
 library;
 
 /// JS source defining the Mangayomi runtime globals.
-const String kShimRuntimeJs = r'''
+const String kShimRuntimeJs = '''
 // Extension logging always reaches the plugin log, whatever the engine has.
 globalThis.console = {
   log: (...a) => kartka.log(...a),
@@ -140,38 +141,6 @@ __kmStrHelper("substringBeforeLast", function (d) {
 __kmStrHelper("substringBetween", function (a, b) {
   return this.substringAfter(a).substringBefore(b);
 });
-
-// atob / btoa over Latin-1 strings (QuickJS has neither).
-const __kmB64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-if (typeof globalThis.btoa !== "function") {
-  globalThis.btoa = function (input) {
-    const s = String(input);
-    let out = "";
-    for (let i = 0; i < s.length; i += 3) {
-      const a = s.charCodeAt(i), b = s.charCodeAt(i + 1), c = s.charCodeAt(i + 2);
-      if (a > 255 || b > 255 || c > 255) throw new Error("btoa: non Latin-1 character");
-      const n = (a << 16) | ((b || 0) << 8) | (c || 0);
-      out += __kmB64[n >> 18] + __kmB64[(n >> 12) & 63] +
-        (i + 1 < s.length ? __kmB64[(n >> 6) & 63] : "=") +
-        (i + 2 < s.length ? __kmB64[n & 63] : "=");
-    }
-    return out;
-  };
-}
-if (typeof globalThis.atob !== "function") {
-  globalThis.atob = function (input) {
-    const s = String(input).replace(/[\s=]/g, "");
-    let out = "";
-    let bits = 0, acc = 0;
-    for (const ch of s) {
-      const v = __kmB64.indexOf(ch === "-" ? "+" : ch === "_" ? "/" : ch);
-      if (v < 0) throw new Error("atob: invalid character");
-      acc = (acc << 6) | v; bits += 6;
-      if (bits >= 8) { bits -= 8; out += String.fromCharCode((acc >> bits) & 255); }
-    }
-    return out;
-  };
-}
 
 function __kmNotImplemented(name) {
   return new Error(name + " not implemented");

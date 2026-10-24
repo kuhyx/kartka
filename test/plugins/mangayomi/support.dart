@@ -4,9 +4,8 @@ import 'dart:io';
 import 'package:kartka/plugins/mangayomi/mangayomi_converter.dart';
 import 'package:kartka/plugins/mangayomi/mangayomi_entry.dart';
 import 'package:kartka/plugins/runtime/engine.dart';
-import 'package:kartka/plugins/runtime/engine_interpreter.dart';
+import 'package:kartka/plugins/runtime/engine_quickjs.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
-import 'package:kartka/plugins/runtime/html_select.dart';
 import 'package:kartka/plugins/runtime/plugin_session.dart';
 
 const fixtureDir = 'test/fixtures/mangayomi';
@@ -90,9 +89,6 @@ class ReplayServices implements PluginHostServices {
   }) => _serve('POST', url, headers, body);
 
   @override
-  List<HtmlMatch> htmlSelect(String html, String css) => selectHtml(html, css);
-
-  @override
   void log(String message) => logs.add(message);
 
   @override
@@ -116,12 +112,12 @@ MangayomiEntry testEntry({String baseUrl = 'https://site.test'}) =>
       'itemType': 0,
     });
 
-/// Session running [extension] (converted) on the interpreter engine.
+/// Session running [extension] (converted), on QuickJS by default.
 PluginSession sessionFor(
   MangayomiEntry entry,
   String extension,
   PluginHostServices services, {
-  JsEngineFactory engine = InterpreterEngine.new,
+  JsEngineFactory engine = QuickJsEngine.new,
 }) {
   final plugin = MangayomiConverter.convert(entry, extension);
   return PluginSession(

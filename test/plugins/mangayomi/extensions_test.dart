@@ -1,5 +1,5 @@
-import 'package:kartka/plugins/runtime/engine_interpreter.dart';
+import 'package:kartka/plugins/runtime/engine_quickjs.dart';
 
 import 'extension_cases.dart';
 
-void main() => extensionCases(InterpreterEngine.new);
+void main() => extensionCases(QuickJsEngine.new);
