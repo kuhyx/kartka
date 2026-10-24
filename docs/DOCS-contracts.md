@@ -287,3 +287,8 @@ Stream<bool>` (tracking-anilist supplies from TrackingService bindings).
   `kartkaUserAgent` (http_client.dart).
 - Repos: consumers NEVER use `registry.maybe<LibraryRepository>()`. They use
   library's accessor, which applies `RepositoryDecorator`s (§13).
+- Accessors: `env.registry.maybe<LibraryRepositories>()` from
+  `package:kartka/library/library_repositories.dart`, with getters `library`,
+  `categories` and `progress`, each already decorated. `env.registry.maybe<DownloadRepository>()`
+  is supplied only by downloads. `KartkaHttp.send(method, url, {headers, body})`
+  covers PATCH/PUT/DELETE/HEAD, and /proxy forwards the method and body unchanged.
