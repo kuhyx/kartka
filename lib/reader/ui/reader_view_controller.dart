@@ -12,8 +12,14 @@ abstract interface class ReaderViewHandle {
 class ReaderViewController {
   ReaderViewHandle? _handle;
 
-  /// Called by a view when it mounts.
-  void attach(ReaderViewHandle handle) => _handle = handle;
+  /// Called by a view when it mounts; returns the matching detach call.
+  ///
+  /// A view remounting under a new key replaces the old one, which then
+  /// detaches harmlessly because [detach] checks identity.
+  void Function() attach(ReaderViewHandle handle) {
+    _handle = handle;
+    return () => detach(handle);
+  }
 
   /// Called by a view when it unmounts; ignores a stale handle.
   void detach(ReaderViewHandle handle) {

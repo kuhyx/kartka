@@ -56,16 +56,17 @@ class _PagedReaderViewState extends State<PagedReaderView>
     initialPage: widget.initialItem,
   );
   bool _zoomed = false;
+  late final void Function() _detach;
 
   @override
   void initState() {
     super.initState();
-    widget.controller.attach(this);
+    _detach = widget.controller.attach(this);
   }
 
   @override
   void dispose() {
-    widget.controller.detach(this);
+    _detach();
     _pages.dispose();
     super.dispose();
   }
