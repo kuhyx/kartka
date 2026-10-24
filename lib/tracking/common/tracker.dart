@@ -36,7 +36,7 @@ abstract interface class Tracker {
 /// One remote search hit.
 class TrackSearchResult {
   /// Creates a search hit.
-  const TrackSearchResult({
+  const new({
     required this.remoteId,
     required this.title,
     this.coverUrl,
@@ -73,7 +73,7 @@ class TrackSearchResult {
 /// The user's list entry on a remote service.
 class TrackStatus {
   /// Creates a list entry snapshot.
-  const TrackStatus({
+  const new({
     required this.remoteId,
     required this.chaptersRead,
     required this.status,

@@ -6,7 +6,7 @@ import 'package:kartka/tracking/common/tracker.dart';
 /// An AniList GraphQL error, whatever HTTP status carried it.
 class AniListException implements Exception {
   /// Creates an error with AniList's [message] and optional [status].
-  const AniListException(this.message, {this.status});
+  const new(this.message, {this.status});
 
   /// Error text from the `errors` array.
   final String message;
@@ -75,16 +75,20 @@ TrackSearchResult _searchHit(Map<String, Object?> m) {
   );
 }
 
-Map<String, Object?> _data(Map<String, Object?> body) {
+/// Throws the first GraphQL error in [body] as an [AniListException].
+void parseErrors(Map<String, Object?> body) {
   final errors = body['errors'];
-  if (errors != null) {
-    final first = errors is List && errors.isNotEmpty ? errors.first : null;
-    final e = first is Map<String, Object?> ? first : const <String, Object?>{};
-    throw AniListException(
-      e['message'] as String? ?? 'unknown AniList error',
-      status: (e['status'] as num?)?.toInt(),
-    );
-  }
+  if (errors == null) return;
+  final first = errors is List && errors.isNotEmpty ? errors.first : null;
+  final e = first is Map<String, Object?> ? first : const <String, Object?>{};
+  throw AniListException(
+    e['message'] as String? ?? 'unknown AniList error',
+    status: (e['status'] as num?)?.toInt(),
+  );
+}
+
+Map<String, Object?> _data(Map<String, Object?> body) {
+  parseErrors(body);
   return _map(body['data']);
 }
 

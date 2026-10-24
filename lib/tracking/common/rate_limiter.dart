@@ -12,7 +12,7 @@ const _window = Duration(minutes: 1);
 /// `X-RateLimit-Remaining` signals reported through [observe].
 class RateLimiter {
   /// Creates a limiter allowing [perMinute] requests per rolling minute.
-  RateLimiter({
+  new({
     required this.perMinute,
     this.minGap = const Duration(milliseconds: 500),
     DateTime Function()? now,

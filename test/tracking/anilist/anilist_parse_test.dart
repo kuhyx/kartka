@@ -5,11 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/tracking/anilist/anilist_parse.dart';
 import 'package:kartka/tracking/common/tracker.dart';
 
-Map<String, Object?> fixture(String name) =>
-    jsonDecode(
-          File('test/fixtures/tracking-anilist/$name.json').readAsStringSync(),
-        )
-        as Map<String, Object?>;
+Map<String, Object?> fixture(String name) => jsonDecode(
+  File('test/fixtures/tracking-anilist/$name.json').readAsStringSync(),
+) as Map<String, Object?>;
 
 void main() {
   group('parseSearch', () {
@@ -21,8 +19,7 @@ void main() {
         const TrackSearchResult(
           remoteId: '30104',
           title: 'Yotsuba to!',
-          coverUrl:
-              'https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx30104-sUVzNlTWZ5cu.jpg',
+          coverUrl: 'https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx30104-sUVzNlTWZ5cu.jpg',
         ),
       );
       expect(hits[1].chapters, 1);
@@ -42,8 +39,10 @@ void main() {
           },
         },
       };
-      expect(parseSearch(page({'english': 'E', 'romaji': 'R'})).single.title,
-          'E');
+      expect(
+        parseSearch(page({'english': 'E', 'romaji': 'R'})).single.title,
+        'E',
+      );
       expect(parseSearch(page({'romaji': 'R'})).single.title, 'R');
       expect(parseSearch(page({})).single.title, '7');
     });
@@ -74,7 +73,12 @@ void main() {
     });
 
     test('missing Media is null', () {
-      expect(parseFetch({'data': {'Media': null}}), isNull);
+      expect(
+        parseFetch({
+          'data': {'Media': null},
+        }),
+        isNull,
+      );
     });
   });
 
