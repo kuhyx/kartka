@@ -28,13 +28,16 @@ dependencies:
   file_picker: 13.2.0
   flutter:
     sdk: flutter
+  flutter_js: 0.8.7
   # Router (DOCS-contracts §10); lib/app/routes.dart builds and parses paths.
   go_router: 18.1.1
+  html: 0.15.7
   # Only lib/platform/ may import this (enforced by
   # test/platform/import_boundaries_test.dart); sources go through KartkaHttp.
   http: 1.6.0
   # IndexedDB on web (KeyValueStore); the in-memory backend keeps tests fast.
   idb_shim: 2.10.1+1
+  js_interpreter: 0.0.5
   path: 1.9.1
   path_provider: 2.1.6
   url_launcher: 6.3.3
