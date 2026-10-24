@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/progress_repository.dart';
 import 'package:kartka/library/data/kv_table.dart';
+import 'package:kartka/library/data/lww.dart';
 import 'package:kartka/library/data/mark_set.dart';
 import 'package:kartka/platform/key_value_store.dart';
 
@@ -19,7 +20,7 @@ import 'package:kartka/platform/key_value_store.dart';
 class LocalProgressRepository implements ProgressRepository {
   /// Creates the repository; [now] stamps read marks.
   new(KeyValueStore store, {DateTime Function()? now})
-    : _now = now ?? _utcNow,
+    : _now = now ?? utcNow,
       _progress = KvTable(
         store,
         'progress/',
@@ -97,5 +98,3 @@ class LocalProgressRepository implements ProgressRepository {
       )
       .distinct(setEquals);
 }
-
-DateTime _utcNow() => DateTime.now().toUtc();

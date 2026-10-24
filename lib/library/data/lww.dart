@@ -29,3 +29,6 @@ DateTime nextStamp(DateTime now, DateTime? current) {
   if (current == null || now.isAfter(current)) return now;
   return current.add(const Duration(milliseconds: 1));
 }
+
+/// The current instant in UTC (the default clock of every repository).
+DateTime utcNow() => DateTime.now().toUtc();

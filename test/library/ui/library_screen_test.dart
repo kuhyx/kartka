@@ -82,6 +82,22 @@ void main() {
     await tester.tap(find.byTooltip('Close search'));
     await tester.pumpAndSettle();
     expect(find.text('Akira'), findsOneWidget);
+    await tester.tap(find.byTooltip('Search'));
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Search'), findsOneWidget);
+  });
+
+  testWidgets('keyboard focus reaches a cover and Enter opens it', (
+    tester,
+  ) async {
+    await pumpLibrary(tester, (await _seed()).deps);
+    Focus.of(tester.element(find.text('Akira'))).requestFocus();
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(find.text('detail mangadex /manga/aaa'), findsOneWidget);
   });
 
   testWidgets('sort and filter sheet', (tester) async {

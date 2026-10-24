@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:kartka/core/source/source_provider.dart';
+import 'package:kartka/library/data/lww.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
 
@@ -43,6 +44,3 @@ class LibraryDeps {
   /// offers get the "source unavailable" badge.
   final List<SourceProvider> sourceProviders;
 }
-
-/// The current instant in UTC.
-DateTime utcNow() => DateTime.now().toUtc();

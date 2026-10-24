@@ -47,6 +47,17 @@ void main() {
     expect((await repo.watch().first).single.order, 5);
   });
 
+  test('equal updatedAt resolves deterministically in either order', () async {
+    final x = _cat('a', order: 1);
+    final y = _cat('a', order: 2);
+    await repo.upsert(x);
+    await repo.upsert(y);
+    final other = LocalCategoryRepository(MemoryKeyValueStore());
+    await other.upsert(y);
+    await other.upsert(x);
+    expect(await other.watch().first, await repo.watch().first);
+  });
+
   test('membership: set, unset, and only true values are reported', () async {
     await repo.setMembership('s|/m', 'a', true);
     await repo.setMembership('s|/m', 'b', true);
