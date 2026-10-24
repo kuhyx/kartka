@@ -19,6 +19,7 @@ Future<SyncEngine> engineFor(
   TestClock? clock,
   MemoryKeyValueStore? kv,
   bool signedIn = true,
+  Duration deferFor = const Duration(seconds: 3),
 }) async {
   final c = clock ?? TestClock();
   return SyncEngine(
@@ -26,5 +27,6 @@ Future<SyncEngine> engineFor(
     deviceId: deviceId,
     open: () async => signedIn ? db : null,
     now: () => c.now,
+    deferFor: deferFor,
   );
 }
