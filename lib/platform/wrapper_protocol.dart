@@ -1,13 +1,22 @@
 /// The HTTP contract between the web build and the desktop wrapper.
+library;
+
+/// The desktop wrapper's fixed loopback port: the one definition.
+///
+/// It cannot move once in use: the OAuth redirect registered at AniList and
+/// MAL is `http://127.0.0.1:47391/oauth`, and the browser keys IndexedDB
+/// (the app's data) by origin. Out of the crowded 87xx range on purpose
+/// (sufler's TTS holds 8791). `desktop/` mirrors it; a test there reads this
+/// file to keep the two equal.
+const kartkaWrapperPort = 47391;
+
 ///
 /// The wrapper is a separate pure-Dart package (`desktop/`) and cannot
 /// import this file, so `desktop/lib/src/protocol.dart` repeats these
 /// values; tests on both sides pin them to the same literals.
 abstract final class KartkaWrapper {
-  /// Fixed loopback port. It cannot move: AniList and MAL have
-  /// `http://127.0.0.1:8791/oauth` registered as the redirect URI, and the
-  /// browser keys IndexedDB (the app's data) by origin.
-  static const port = 8791;
+  /// See [kartkaWrapperPort].
+  static const int port = kartkaWrapperPort;
 
   /// Header every API call must carry (value `1`). A custom header makes a
   /// cross-site request non-simple, so other pages cannot reach the API
