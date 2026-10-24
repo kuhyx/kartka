@@ -62,8 +62,7 @@ class LocalProgressRepository implements ProgressRepository {
         (current) => flip(current, key, chapterUrl, on: on, now: _now()),
       );
 
-  /// Every explicit mark for [key]: chapter url to read (`false` is an
-  /// unread tombstone).
+  @override
   Stream<Map<String, bool>> readMarks(MangaKey key) => _marks
       .watch()
       .map(

@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/library/data/local_progress_repository.dart';
 
-import '../support/memory_kv.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 
 final _t0 = DateTime.utc(2026, 10, 24);
 const _k = 'mangadex|/m';
@@ -16,10 +16,10 @@ ReadingProgress _p(double ch, int page, {String key = _k}) => ReadingProgress(
 );
 
 void main() {
-  late MemoryKv kv;
+  late MemoryKeyValueStore kv;
   late LocalProgressRepository repo;
   setUp(() {
-    kv = MemoryKv();
+    kv = MemoryKeyValueStore();
     repo = LocalProgressRepository(kv, now: () => _t0);
   });
 
@@ -35,7 +35,7 @@ void main() {
     expect(await repo.watch(_k).first, _p(2, 5));
     await repo.record(_p(2, 6));
     expect(await repo.watch(_k).first, _p(2, 6));
-    expect(kv.data.keys.single, 'progress/${mangaKeyHash(_k)}');
+    expect((await kv.entries()).keys.single, 'progress/${mangaKeyHash(_k)}');
   });
 
   test('watch emits per key and only when that key changes', () async {
@@ -70,7 +70,7 @@ void main() {
 
   test('unmarking an unknown chapter writes nothing', () async {
     await repo.markUnread(_k, '/c1');
-    expect(kv.data, isEmpty);
+    expect(await kv.entries(), isEmpty);
   });
 
   test('state survives a restart over the same store', () async {

@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/library/data/local_category_repository.dart';
 
-import '../support/memory_kv.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 
 final _t0 = DateTime.utc(2026, 10, 24);
 
@@ -16,11 +16,11 @@ Category _cat(String id, {int order = 0, int at = 0, bool removed = false}) =>
     );
 
 void main() {
-  late MemoryKv kv;
+  late MemoryKeyValueStore kv;
   late LocalCategoryRepository repo;
   var clock = _t0;
   setUp(() {
-    kv = MemoryKv();
+    kv = MemoryKeyValueStore();
     clock = _t0;
     repo = LocalCategoryRepository(kv, now: () => clock);
   });
@@ -35,7 +35,10 @@ void main() {
 
   test('category ids with slashes are stored under a hashed key', () async {
     await repo.upsert(_cat('Reading/Now'));
-    expect(kv.data.keys.single, 'categories/${mangaKeyHash('Reading/Now')}');
+    expect(
+      (await kv.entries()).keys.single,
+      'categories/${mangaKeyHash('Reading/Now')}',
+    );
   });
 
   test('upsert is last-writer-wins on updatedAt', () async {
@@ -67,11 +70,11 @@ void main() {
 
   test('redundant membership writes touch nothing', () async {
     await repo.setMembership('s|/m', 'a', false);
-    expect(kv.data, isEmpty);
+    expect(await kv.entries(), isEmpty);
     await repo.setMembership('s|/m', 'a', true);
-    final before = Map.of(kv.data);
+    final before = await kv.entries();
     await repo.setMembership('s|/m', 'a', true);
-    expect(kv.data, before);
+    expect(await kv.entries(), before);
   });
 
   test('state survives a restart over the same store', () async {
