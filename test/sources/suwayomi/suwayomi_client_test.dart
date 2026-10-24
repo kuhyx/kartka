@@ -14,19 +14,22 @@ void main() {
   ]) => SuwayomiClient(http: http, settings: () => settings);
 
   test('posts operationName, query and variables with basic auth', () async {
-    final http = FixtureHttp(['about']);
+    final http = fixtureHttp(['about']);
     expect(await client(http).testConnection(), 'Suwayomi-Server v2.4.2366');
-    expect(http.requests.single, {
+    expect(bodies(http).single, {
       'operationName': 'KartkaAbout',
       'query': SuwayomiQueries.about,
       'variables': <String, Object?>{},
     });
-    expect(http.headers.single['Authorization'], 'Basic a2FydGthOmZpeHR1cmU=');
-    expect(http.headers.single['Content-Type'], 'application/json');
+    expect(
+      http.requests.single.headers['Authorization'],
+      'Basic a2FydGthOmZpeHR1cmU=',
+    );
+    expect(http.requests.single.headers['Content-Type'], 'application/json');
   });
 
   test('a 401 is an auth failure', () {
-    final http = FixtureHttp(['unauthorized']);
+    final http = fixtureHttp(['unauthorized']);
     expect(
       () => client(http).testConnection(),
       throwsA(isA<SuwayomiAuthException>()),
@@ -35,15 +38,17 @@ void main() {
 
   test('GraphQL errors keep only the first line', () {
     expect(
-      () => client(CannedHttp(200, '{"errors":[{"message":"boom\\r\\nat x"}]}'))
-          .run(SuwayomiQueries.about),
+      () =>
+          client(cannedHttp(200, '{"errors":[{"message":"boom\\r\\nat x"}]}'))
+              .run(SuwayomiQueries.about),
       throwsA(
         isA<SuwayomiException>().having((e) => e.message, 'message', 'boom'),
       ),
     );
     expect(
-      () => client(CannedHttp(200, '{"errors":["flat"]}'))
-          .run(SuwayomiQueries.about),
+      () =>
+          client(cannedHttp(200, '{"errors":["flat"]}'))
+              .run(SuwayomiQueries.about),
       throwsA(
         isA<SuwayomiException>().having((e) => e.message, 'message', 'flat'),
       ),
@@ -55,30 +60,30 @@ void main() {
       isA<SuwayomiException>().having((e) => e.message, 'message', message),
     );
     expect(
-      () => client(CannedHttp(502, 'bad gateway')).run(SuwayomiQueries.about),
+      () => client(cannedHttp(502, 'bad gateway')).run(SuwayomiQueries.about),
       fails('HTTP 502'),
     );
     expect(
-      () => client(CannedHttp(200, '<html>')).run(SuwayomiQueries.about),
+      () => client(cannedHttp(200, '<html>')).run(SuwayomiQueries.about),
       fails('not a GraphQL response'),
     );
     expect(
-      () => client(CannedHttp(200, '[1]')).run(SuwayomiQueries.about),
+      () => client(cannedHttp(200, '[1]')).run(SuwayomiQueries.about),
       fails('not a GraphQL response'),
     );
     expect(
-      () => client(CannedHttp(200, '{"data":null}')).run(SuwayomiQueries.about),
+      () => client(cannedHttp(200, '{"data":null}')).run(SuwayomiQueries.about),
       fails('response has no data'),
     );
   });
 
   test('nothing is sent before a server URL is configured', () {
-    final http = FixtureHttp([]);
+    final http = fixtureHttp([]);
     expect(
       () => client(http, const SuwayomiSettings()).testConnection(),
       throwsA(isA<SuwayomiNotConfiguredException>()),
     );
-    expect(http.requests, isEmpty);
+    expect(bodies(http), isEmpty);
   });
 
   test('exceptions describe themselves', () {

@@ -6,11 +6,7 @@ import 'package:kartka/platform/key_value_store.dart';
 /// Connection settings for one Suwayomi-Server.
 class SuwayomiSettings {
   /// Creates settings; an empty [serverUrl] means "not configured".
-  const new({
-    this.serverUrl = '',
-    this.username = '',
-    this.password = '',
-  });
+  const new({this.serverUrl = '', this.username = '', this.password = ''});
 
   /// Base URL, e.g. `https://manga.example.org` (no trailing slash needed).
   final String serverUrl;

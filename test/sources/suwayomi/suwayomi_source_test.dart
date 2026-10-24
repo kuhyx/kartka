@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_exceptions.dart';
@@ -8,9 +9,18 @@ import 'package:kartka/sources/suwayomi/suwayomi_source.dart';
 import 'fakes.dart';
 
 const _all = [
-  'popular', 'latest', 'search', 'manga_id', 'manga_id_miss',
-  'manga_id_unseen', 'details', 'details_unseen', 'chapters', 'chapter_id',
-  'pages', 'source_error',
+  'popular',
+  'latest',
+  'search',
+  'manga_id',
+  'manga_id_miss',
+  'manga_id_unseen',
+  'details',
+  'details_unseen',
+  'chapters',
+  'chapter_id',
+  'pages',
+  'source_error',
 ];
 
 const _info = SuwayomiSourceInfo(
@@ -33,7 +43,7 @@ String _firstUrl(String name, [int i = 0]) {
 }
 
 void main() {
-  late FixtureHttp http;
+  late FakeKartkaHttp http;
   SuwayomiSource source({
     SuwayomiSourceInfo info = _info,
     TitleLookup? titleOf,
@@ -44,7 +54,7 @@ void main() {
     titleOf: titleOf,
   );
 
-  setUp(() => http = FixtureHttp(_all));
+  setUp(() => http = fixtureHttp(_all));
 
   test('popular maps summaries with absolute covers', () async {
     final page = await source().popular(1);
@@ -72,7 +82,7 @@ void main() {
     final page = await source(info: noLatest).latest(1);
     expect(page.items, isEmpty);
     expect(page.hasNext, isFalse);
-    expect(http.requests, isEmpty);
+    expect(bodies(http), isEmpty);
   });
 
   test('details resolves the server id by url, then fetches', () async {
@@ -82,7 +92,7 @@ void main() {
     expect(details.authors, isNotEmpty);
     expect(details.description, isNotEmpty);
     expect(details.genres, isNotEmpty);
-    expect(http.requests.map((r) => r['operationName']), [
+    expect(bodies(http).map((r) => r['operationName']), [
       'KartkaMangaId',
       'KartkaDetails',
     ]);
@@ -92,9 +102,11 @@ void main() {
     final s = source();
     await s.popular(1);
     await s.details(_firstUrl('popular'));
-    expect(http.requests.last['operationName'], 'KartkaDetails');
-    expect(http.requests.where((r) => r['operationName'] == 'KartkaMangaId'),
-        isEmpty);
+    expect(bodies(http).last['operationName'], 'KartkaDetails');
+    expect(
+      bodies(http).where((r) => r['operationName'] == 'KartkaMangaId'),
+      isEmpty,
+    );
   });
 
   test('chapters map numbers, dates and scanlators', () async {
@@ -104,7 +116,10 @@ void main() {
     expect(chapters.first.uploadedAt!.isUtc, isTrue);
     expect(chapters.first.scanlator, isNotNull);
     final numbers = [for (final c in chapters) c.number!];
-    expect(numbers, orderedEquals([...numbers]..sort((a, b) => b.compareTo(a))));
+    expect(
+      numbers,
+      orderedEquals([...numbers]..sort((a, b) => b.compareTo(a))),
+    );
   });
 
   test('pages carry absolute urls and the basic-auth header', () async {
@@ -121,11 +136,11 @@ void main() {
   test('pages resolve a chapter id by url when not cached', () async {
     final pages = await source().pages(_firstUrl('chapters'));
     expect(pages, isNotEmpty);
-    expect(http.requests.first['operationName'], 'KartkaChapterId');
+    expect(bodies(http).first['operationName'], 'KartkaChapterId');
   });
 
   test('unknown chapter urls are not on the server', () async {
-    http = FixtureHttp(_all)..add('chapter_id');
+    http = fixtureHttp(_all);
     expect(
       () => source(info: _otherSource).pages(_firstUrl('chapters')),
       throwsA(isA<SuwayomiNotOnServerException>()),
@@ -145,7 +160,7 @@ void main() {
       ).details(unseen);
       expect(details.url, unseen);
       expect(asked, [mangaKeyOf('suwayomi:$mangadexEn', unseen)]);
-      expect(http.requests.map((r) => r['operationName']), [
+      expect(bodies(http).map((r) => r['operationName']), [
         'KartkaMangaId',
         'KartkaSourceManga',
         'KartkaDetails',
@@ -161,14 +176,17 @@ void main() {
               .having((e) => e.sourceId, 'sourceId', 'suwayomi:$mangadexEn'),
         ),
       );
-      expect(() => source().chapters(unseen),
-          throwsA(isA<SuwayomiNotOnServerException>()));
+      expect(
+        () => source().chapters(unseen),
+        throwsA(isA<SuwayomiNotOnServerException>()),
+      );
     });
 
     test('throw when the search has no exact url match', () async {
       expect(
-        () => source(titleOf: (_) async => 'Sousou no Frieren')
-            .details('/manga/not-on-server'),
+        () =>
+            source(titleOf: (_) async => 'Sousou no Frieren')
+                .details('/manga/not-on-server'),
         throwsA(isA<SuwayomiNotOnServerException>()),
       );
     });
@@ -182,8 +200,13 @@ void main() {
     );
     expect(
       () => source(info: broken).popular(1),
-      throwsA(isA<SuwayomiException>()
-          .having((e) => e.message, 'message', contains('fetchSourceManga'))),
+      throwsA(
+        isA<SuwayomiException>().having(
+          (e) => e.message,
+          'message',
+          contains('fetchSourceManga'),
+        ),
+      ),
     );
   });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 
@@ -8,7 +9,7 @@ const _spare = 'eu.kanade.tachiyomi.extension.en.weebcentral';
 const _mangadex = 'eu.kanade.tachiyomi.extension.all.mangadex';
 
 void main() {
-  late FixtureHttp http;
+  late FakeKartkaHttp http;
   late int changes;
   SuwayomiExtensionsApi api() => SuwayomiExtensionsApi(
     client: SuwayomiClient(http: http, settings: () => fixtureSettings),
@@ -17,8 +18,11 @@ void main() {
   );
 
   setUp(() {
-    http = FixtureHttp([
-      'extensions', 'ext_install', 'ext_update', 'ext_uninstall',
+    http = fixtureHttp([
+      'extensions',
+      'ext_install',
+      'ext_update',
+      'ext_uninstall',
     ]);
     changes = 0;
   });
@@ -33,7 +37,11 @@ void main() {
       'http://127.0.0.1:4599/api/v1/extension/icon/$_mangadex',
     );
     final available = list.skip(1).map((e) => e.name).toList();
-    expect(available, [...available]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase())));
+    expect(
+      available,
+      [...available]
+        ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase())),
+    );
     expect(list.skip(1).every((e) => !e.isInstalled), isTrue);
     expect(changes, 0);
   });
@@ -47,7 +55,7 @@ void main() {
     expect(removed.isInstalled, isFalse);
     expect(changes, 3);
     expect(
-      [for (final r in http.requests) (r['variables']! as Map)['patch']],
+      [for (final r in bodies(http)) (r['variables']! as Map)['patch']],
       [
         {'install': true},
         {'update': true},

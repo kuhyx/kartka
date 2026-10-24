@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:kartka/platform/http_client.dart';
-import 'package:kartka/platform/key_value_store.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_settings.dart';
 
 /// Settings matching the server the fixtures were recorded from.
@@ -40,94 +38,34 @@ Object? _sorted(Object? v) => switch (v) {
 };
 
 /// Serves recorded fixtures by (operationName, variables); anything else
-/// fails the test with a 599, so unexpected requests are loud.
-class FixtureHttp extends KartkaHttp {
-  /// Serves the named fixtures.
-  new(Iterable<String> names) {
-    for (final name in names) add(name);
-  }
-
-  final _byRequest = <String, Map<String, Object?>>{};
-
-  /// Bodies of every POST, decoded.
-  final requests = <Map<String, Object?>>[];
-
-  /// Headers of every POST.
-  final headers = <Map<String, String>>[];
-
-  /// Adds (or replaces) the fixture [name].
-  void add(String name) {
-    final f = fixture(name);
-    final req = f['request']! as Map<String, Object?>;
-    _byRequest[_key(req)] = f;
-  }
-
-  static String _key(Map<String, Object?> req) =>
-      '${req['operationName']} ${canonical(req['variables'])}';
-
-  @override
-  Future<KartkaResponse> send(
-    String method,
-    Uri url, {
-    Map<String, String> headers = const {},
-    String? body,
-  }) async {
-    if (method != 'POST') throw UnsupportedError('$method $url');
-    final req = jsonDecode(body!) as Map<String, Object?>;
-    requests.add(req);
-    this.headers.add(headers);
-    final f = _byRequest[_key(req)];
-    if (f == null) return _response(599, 'no fixture for ${_key(req)}');
+/// answers 599, so unexpected requests are loud.
+FakeKartkaHttp fixtureHttp(Iterable<String> names) {
+  final byKey = {
+    for (final name in names)
+      _key(fixture(name)['request']! as Map<String, Object?>): fixture(name),
+  };
+  return FakeKartkaHttp((request) {
+    final key = _key(jsonDecode(request.body!) as Map<String, Object?>);
+    final f = byKey[key];
+    if (request.method != 'POST' || f == null) {
+      return FakeKartkaHttp.text('no fixture for $key', status: 599);
+    }
     final response = f['response'];
-    return _response(
-      f['status']! as int,
+    return FakeKartkaHttp.text(
       response is String ? response : jsonEncode(response),
+      status: f['status']! as int,
     );
-  }
+  });
 }
 
-KartkaResponse _response(int status, String body) => KartkaResponse(
-  statusCode: status,
-  bodyBytes: Uint8List.fromList(utf8.encode(body)),
-);
+String _key(Map<String, Object?> req) =>
+    '${req['operationName']} ${canonical(req['variables'])}';
 
 /// Answers every request with [status] and [body].
-class CannedHttp extends KartkaHttp {
-  /// Creates the fake.
-  new(this.status, this.body);
+FakeKartkaHttp cannedHttp(int status, String body) =>
+    FakeKartkaHttp((_) => FakeKartkaHttp.text(body, status: status));
 
-  /// Status to answer with.
-  final int status;
-
-  /// Body to answer with.
-  final String body;
-
-  @override
-  Future<KartkaResponse> send(
-    String method,
-    Uri url, {
-    Map<String, String> headers = const {},
-    String? body,
-  }) async => _response(status, this.body);
-}
-
-/// In-memory [KeyValueStore].
-class MemoryKv implements KeyValueStore {
-  /// Stored values.
-  final values = <String, String>{};
-
-  @override
-  Future<String?> get(String key) async => values[key];
-
-  @override
-  Future<void> set(String key, String value) async => values[key] = value;
-
-  @override
-  Future<void> remove(String key) async => values.remove(key);
-
-  @override
-  Future<Map<String, String>> entries({String prefix = ''}) async => {
-    for (final e in values.entries)
-      if (e.key.startsWith(prefix)) e.key: e.value,
-  };
-}
+/// Decoded GraphQL bodies of every request [http] received.
+List<Map<String, Object?>> bodies(FakeKartkaHttp http) => [
+  for (final r in http.requests) jsonDecode(r.body!) as Map<String, Object?>,
+];

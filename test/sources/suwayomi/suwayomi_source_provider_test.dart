@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
@@ -9,7 +10,12 @@ import 'fakes.dart';
 
 void main() {
   late SuwayomiSettingsStore store;
-  setUp(() => store = SuwayomiSettingsStore(kv: MemoryKv(), secrets: MemoryKv()));
+  setUp(
+    () => store = SuwayomiSettingsStore(
+      kv: MemoryKeyValueStore(),
+      secrets: MemoryKeyValueStore(),
+    ),
+  );
 
   SuwayomiSourceProvider provider(KartkaHttp http) => SuwayomiSourceProvider(
     store: store,
@@ -23,7 +29,7 @@ void main() {
 
   test('lists every installed source except Suwayomi\'s local one', () async {
     await store.save(fixtureSettings);
-    final p = provider(FixtureHttp(['sources']));
+    final p = provider(fixtureHttp(['sources']));
     final sources = await p.watch().first;
     expect(ids(sources), [
       'suwayomi:1411768577036936240',
@@ -36,13 +42,13 @@ void main() {
   });
 
   test('is empty while unconfigured and while the server is down', () async {
-    expect(await provider(FixtureHttp([])).watch().first, isEmpty);
+    expect(await provider(fixtureHttp([])).watch().first, isEmpty);
     await store.save(fixtureSettings);
-    expect(await provider(CannedHttp(502, '')).watch().first, isEmpty);
+    expect(await provider(cannedHttp(502, '')).watch().first, isEmpty);
   });
 
   test('re-lists after the settings change and on refresh', () async {
-    final http = FixtureHttp(['sources']);
+    final http = fixtureHttp(['sources']);
     final p = provider(http);
     final emitted = <int>[];
     final sub = p.watch().listen((s) => emitted.add(s.length));
@@ -57,7 +63,7 @@ void main() {
   });
 
   test('sends basic auth only to the configured server', () async {
-    final p = provider(FixtureHttp([]));
+    final p = provider(fixtureHttp([]));
     expect(p.forUrl('http://127.0.0.1:4599/api/v1/manga/1/thumbnail'), isEmpty);
     await store.save(fixtureSettings);
     expect(

@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_settings.dart';
 
 import 'fakes.dart';
@@ -35,7 +36,10 @@ void main() {
 
     test('value equality', () {
       const a = SuwayomiSettings(serverUrl: 'u', username: 'n', password: 'p');
-      expect(a, const SuwayomiSettings(serverUrl: 'u', username: 'n', password: 'p'));
+      expect(
+        a,
+        const SuwayomiSettings(serverUrl: 'u', username: 'n', password: 'p'),
+      );
       expect(a.hashCode, isNot(const SuwayomiSettings().hashCode));
       expect(a == const SuwayomiSettings(serverUrl: 'u'), isFalse);
     });
@@ -43,14 +47,17 @@ void main() {
 
   group('SuwayomiSettingsStore', () {
     test('keeps credentials out of the plain store', () async {
-      final kv = MemoryKv();
-      final secrets = MemoryKv();
+      final kv = MemoryKeyValueStore();
+      final secrets = MemoryKeyValueStore();
       final store = SuwayomiSettingsStore(kv: kv, secrets: secrets);
       final saved = expectLater(store.changes, emits(fixtureSettings));
       await store.save(fixtureSettings);
       await saved;
-      expect(kv.values.values, ['http://127.0.0.1:4599/']);
-      expect(secrets.values.values, containsAll(['kartka', 'fixture']));
+      expect((await kv.entries()).values, ['http://127.0.0.1:4599/']);
+      expect(
+        (await secrets.entries()).values,
+        containsAll(['kartka', 'fixture']),
+      );
       expect(store.current, fixtureSettings);
 
       final reloaded = SuwayomiSettingsStore(kv: kv, secrets: secrets);
@@ -59,7 +66,10 @@ void main() {
     });
 
     test('loads empty settings when nothing is stored', () async {
-      final store = SuwayomiSettingsStore(kv: MemoryKv(), secrets: MemoryKv());
+      final store = SuwayomiSettingsStore(
+        kv: MemoryKeyValueStore(),
+        secrets: MemoryKeyValueStore(),
+      );
       expect(await store.load(), const SuwayomiSettings());
     });
   });

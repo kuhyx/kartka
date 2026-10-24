@@ -79,7 +79,8 @@ class SuwayomiSource implements MangaSource {
     final payload = data['fetchMangaAndChapters']! as Map<String, Object?>;
     final rows = _maps(payload['chapters'])
       ..sort(
-        (a, b) => (b['sourceOrder']! as int).compareTo(a['sourceOrder']! as int),
+        (a, b) =>
+            (b['sourceOrder']! as int).compareTo(a['sourceOrder']! as int),
       );
     for (final row in rows) {
       _chapterIds[row['url']! as String] = row['id']! as int;

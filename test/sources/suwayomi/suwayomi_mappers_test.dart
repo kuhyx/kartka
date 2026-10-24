@@ -14,11 +14,16 @@ String _resolve(String p) => 'https://h$p';
 void main() {
   test('every fixture was recorded with the client\'s own documents', () {
     const documents = {
-      SuwayomiQueries.about, SuwayomiQueries.sources,
-      SuwayomiQueries.sourceManga, SuwayomiQueries.mangaId,
-      SuwayomiQueries.details, SuwayomiQueries.chapters,
-      SuwayomiQueries.chapterId, SuwayomiQueries.pages,
-      SuwayomiQueries.extensions, SuwayomiQueries.updateExtension,
+      SuwayomiQueries.about,
+      SuwayomiQueries.sources,
+      SuwayomiQueries.sourceManga,
+      SuwayomiQueries.mangaId,
+      SuwayomiQueries.details,
+      SuwayomiQueries.chapters,
+      SuwayomiQueries.chapterId,
+      SuwayomiQueries.pages,
+      SuwayomiQueries.extensions,
+      SuwayomiQueries.updateExtension,
     };
     final names = fixtureNames();
     expect(names, hasLength(greaterThanOrEqualTo(19)));
@@ -45,8 +50,9 @@ void main() {
   });
 
   test('details map authors, genres, status and cover', () {
-    final manga = (_data('details')['fetchMangaAndChapters']! as Map)['manga']!
-        as Map<String, Object?>;
+    final manga =
+        (_data('details')['fetchMangaAndChapters']! as Map)['manga']!
+            as Map<String, Object?>;
     final d = mangaDetailsFrom(manga, 'suwayomi:1', _resolve);
     expect(d.authors, ['Tsutsumi Kotatsu']);
     expect(d.genres, contains('Comedy'));
@@ -74,9 +80,11 @@ void main() {
     expect(d.status, MangaStatus.onHiatus);
     expect(d.coverUrl, isNull);
     expect(
-      mangaDetailsFrom(const {'url': '/m', 'title': 't', 'status': '?'}, 's',
-              _resolve)
-          .status,
+      mangaDetailsFrom(
+        const {'url': '/m', 'title': 't', 'status': '?'},
+        's',
+        _resolve,
+      ).status,
       MangaStatus.unknown,
     );
   });
@@ -117,9 +125,11 @@ void main() {
   });
 
   test('pages are indexed in order with the given headers', () {
-    final refs = pageRefsFrom(const ['/p0', 'https://cdn/p1'], (p) => p.startsWith('/') ? _resolve(p) : p, {
-      'a': 'b',
-    });
+    final refs = pageRefsFrom(
+      const ['/p0', 'https://cdn/p1'],
+      (p) => p.startsWith('/') ? _resolve(p) : p,
+      {'a': 'b'},
+    );
     expect(refs.map((r) => r.imageUrl), ['https://h/p0', 'https://cdn/p1']);
     expect(refs.map((r) => r.index), [0, 1]);
     expect(refs.last.headers, {'a': 'b'});
