@@ -136,4 +136,25 @@ void main() {
     await pumpEventQueue();
     expect(c.selectionMembership(), {'x': false, 'y': false});
   });
+
+  test('source availability: unknown until every provider emitted', () async {
+    bool available(String key) =>
+        c.items.firstWhere((i) => i.key == key).sourceAvailable;
+    expect(available(a), isTrue);
+    f.sources.emit(['other']);
+    await pumpEventQueue();
+    expect(available(a), isFalse);
+    f.sources.emit(['mangadex']);
+    await pumpEventQueue();
+    expect(available(a), isTrue);
+  });
+
+  test('no providers means no source is available', () async {
+    final none = Fakes(providers: const []);
+    await none.deps.repos.library.upsert(entry('/a'));
+    final c2 = LibraryController(none.deps)..start();
+    await pumpEventQueue();
+    expect(c2.items.single.sourceAvailable, isFalse);
+    c2.dispose();
+  });
 }

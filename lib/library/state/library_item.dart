@@ -20,6 +20,7 @@ class LibraryItem {
     this.downloaded = false,
     this.tracked = false,
     this.categoryIds = const {},
+    this.sourceAvailable = true,
   });
 
   /// `<sourceId>|<mangaUrl>`.
@@ -55,6 +56,9 @@ class LibraryItem {
   /// Ids of the categories it belongs to.
   final Set<String> categoryIds;
 
+  /// Whether any registered source provider currently offers [sourceId].
+  final bool sourceAvailable;
+
   /// [unread] with unknown treated as zero.
   int get unreadCount => unread ?? 0;
 
@@ -71,7 +75,8 @@ class LibraryItem {
       other.unread == unread &&
       other.downloaded == downloaded &&
       other.tracked == tracked &&
-      setEquals(other.categoryIds, categoryIds);
+      setEquals(other.categoryIds, categoryIds) &&
+      other.sourceAvailable == sourceAvailable;
 
   @override
   int get hashCode => Object.hash(
@@ -86,5 +91,6 @@ class LibraryItem {
     downloaded,
     tracked,
     Object.hashAllUnordered(categoryIds),
+    sourceAvailable,
   );
 }
