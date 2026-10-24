@@ -5,10 +5,12 @@
 library;
 
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/sources/mangadex/mangadex_feature.dart';
 
 export 'package:kartka/app/feature.dart';
 
 /// Every part's feature factory, in registry order.
 final List<KartkaFeatureFactory> kartkaFeatureFactories = [
   // Parts append below this line, one entry each.
+  mangadexFeature,
 ];
