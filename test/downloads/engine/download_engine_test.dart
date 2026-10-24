@@ -23,7 +23,7 @@ void main() {
       DownloadEngine(
         blobs: blobs,
         loadPage: loader.call,
-        sourceFor: (id) => id == 'mangadex' ? source : null,
+        sourceFor: (id) async => id == 'mangadex' ? source : null,
         policy: RetryPolicy(maxAttempts: maxAttempts),
         sleep: (_) async {},
         now: () => DateTime.utc(2026, 10, 24),

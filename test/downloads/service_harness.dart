@@ -28,7 +28,7 @@ class Harness {
         engine: DownloadEngine(
           blobs: blobs,
           loadPage: (p) => loader.call(p),
-          sourceFor: (id) => id == source.id ? source : null,
+          sourceFor: (id) async => id == source.id ? source : null,
           limiter: HostLimiter(perHost: perHost),
           policy: const RetryPolicy(maxAttempts: 2),
           sleep: (_) async {},

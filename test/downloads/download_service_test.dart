@@ -161,15 +161,12 @@ void main() {
   });
 }
 
-class _NoHttp implements KartkaHttp {
+class _NoHttp extends KartkaHttp {
   @override
-  Future<KartkaResponse> get(Uri url, {Map<String, String>? headers}) =>
-      throw UnimplementedError();
-
-  @override
-  Future<KartkaResponse> post(
+  Future<KartkaResponse> send(
+    String method,
     Uri url, {
-    Map<String, String>? headers,
+    Map<String, String> headers = const {},
     String? body,
   }) => throw UnimplementedError();
 }

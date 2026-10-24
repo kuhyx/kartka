@@ -13,7 +13,7 @@ import 'package:kartka/platform/platform.dart';
 typedef PageLoader = Future<Uint8List> Function(PageRef page);
 
 /// Finds the source serving `sourceId`, or `null` when none is installed.
-typedef SourceLookup = MangaSource? Function(String sourceId);
+typedef SourceLookup = Future<MangaSource?> Function(String sourceId);
 
 /// Thrown inside a download when it was paused or cancelled.
 class DownloadStopped implements Exception {
@@ -77,7 +77,7 @@ class DownloadEngine {
     required void Function(DownloadState state) onProgress,
     bool Function() shouldStop = _never,
   }) async {
-    final source = sourceFor(task.sourceId);
+    final source = await sourceFor(task.sourceId);
     if (source == null) throw StateError('source ${task.sourceId} missing');
     final url = task.chapter.url;
     final pages = await _guarded(
