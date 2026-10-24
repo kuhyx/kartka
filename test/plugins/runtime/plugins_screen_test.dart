@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kartka/app/registry.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/plugins/runtime/engine_quickjs.dart';
+import 'package:kartka/plugins/runtime/host_api.dart';
 import 'package:kartka/plugins/runtime/plugin_index.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
 import 'package:kartka/plugins/runtime/plugin_registrar.dart';
@@ -12,6 +13,7 @@ import 'package:kartka/plugins/runtime/plugin_repo_adapter.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
 import 'package:kartka/plugins/runtime/plugins_feature.dart';
 import 'package:kartka/plugins/runtime/plugins_screen.dart';
+import 'package:kartka/plugins/runtime/plugins_sections.dart';
 
 import 'support.dart';
 
@@ -57,6 +59,30 @@ void main() {
     await t.tap(find.byTooltip('Add repository'));
     await t.pumpAndSettle();
   }
+
+  testWidgets('submitting from the keyboard adds the repo', (t) async {
+    await open(t);
+    await t.enterText(find.byType(TextField), repo);
+    await t.testTextInput.receiveAction(TextInputAction.done);
+    await t.pumpAndSettle();
+    expect(find.text(repo), findsOneWidget);
+  });
+
+  testWidgets('the add row shows a spinner while busy', (t) async {
+    await t.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: AddRepoRow(
+            controller: TextEditingController(),
+            busy: true,
+            onAdd: () {},
+          ),
+        ),
+      ),
+    );
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byTooltip('Add repository'), findsNothing);
+  });
 
   testWidgets('empty state explains what to do', (t) async {
     await open(t);
@@ -111,6 +137,9 @@ void main() {
     );
     await open(t);
     expect(find.text('Update'), findsOneWidget);
+    await t.tap(find.text('Update'));
+    await t.pumpAndSettle();
+    expect(find.text('Update'), findsNothing);
   });
 
   testWidgets('a failing repo shows its error and can be removed', (t) async {
@@ -176,6 +205,22 @@ void main() {
     );
     await t.runAsync(() => manager.addRepo('https://repo.test/foreign.json'));
     expect(adapter.parsed, 1);
+
+    await t.runAsync(() async {
+      await manager.installLocal(
+        const PluginManifest(
+          id: 'demo',
+          name: 'Demo',
+          version: '1',
+          lang: 'en',
+          baseUrl: 'https://demo.test',
+        ),
+        fixture('demo.js'),
+        origin: 'test',
+      );
+      final sources = await registry.all<SourceProvider>().single.watch().first;
+      expect((await sources.single.popular(1)).items, hasLength(2));
+    });
 
     final router = GoRouter(
       routes: [
