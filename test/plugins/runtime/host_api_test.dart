@@ -33,15 +33,13 @@ void main() {
     );
   });
 
-  test('response and match serialise; exception names the plugin', () {
+  test('response serialises; exception names the plugin', () {
     const r = HostHttpResponse(status: 200, headers: {'a': 'b'}, body: 'x');
     expect(r.toJson(), {
       'status': 200,
       'headers': {'a': 'b'},
       'body': 'x',
     });
-    const h = HtmlMatch(text: 't', attrs: {'k': 'v'}, html: '<a/>');
-    expect(h.toJson()['attrs'], {'k': 'v'});
     const e = PluginException('demo', 'boom', method: PluginMethod.search);
     expect(e.toString(), 'Plugin "demo" search(): boom');
     expect(const PluginException('demo', 'boom').toString(), contains('demo'));

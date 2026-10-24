@@ -10,18 +10,25 @@
 /// ```text
 /// kartka.http.get(url, {headers})        -> Promise<HttpResponse>
 /// kartka.http.post(url, {headers, body}) -> Promise<HttpResponse>
-/// kartka.html.select(html, css)          -> Promise<[{text, attrs, html}]>
+/// kartka.html.select(html, css)          -> [{text, attrs, html}]   (sync)
+/// kartka.html.parse(html)                -> node-html-parser root   (sync)
 /// kartka.log(...args)                    -> void
 /// kartka.prefs.get(key)                  -> Promise<string | null>
 /// kartka.prefs.set(key, value)           -> Promise<void>
 /// HttpResponse = {status: int, headers: {string: string}, body: string}
 /// ```
 ///
-/// CLARIFICATION of section 6: every host function except `kartka.log` is
-/// asynchronous (returns a Promise), because the host crosses an isolate or
-/// worker boundary. `html.select` is therefore `await`ed too. Plugins must
-/// declare these six global functions, each returning JSON-able values (or a
-/// Promise of them) in the section 1 shapes:
+/// CLARIFICATION of section 6: `kartka.http.*` and `kartka.prefs.*` are
+/// asynchronous (they return Promises) because the host crosses an isolate or
+/// worker boundary; `kartka.log` is fire-and-forget. `kartka.html` is NOT a
+/// host call: a bundled MIT HTML parser (node-html-parser, licences in
+/// `js/THIRD_PARTY_LICENSES.txt`) runs inside the sandbox, so it is
+/// synchronous and identical on Android and web. `html.parse` returns the
+/// parser's root `HTMLElement` (`querySelector[All]`, `parentNode`,
+/// `childNodes`, `getAttribute`, `text`, `outerHTML`, ...) so the Mangayomi
+/// `Document` shim can be written in JS on top of it. Plugins must declare
+/// these six global functions, each returning JSON-able values (or a Promise
+/// of them) in the section 1 shapes:
 ///
 /// ```text
 /// popular(page), latest(page), search(query, page)
@@ -158,25 +165,8 @@ class HostHttpResponse {
   };
 }
 
-/// One `kartka.html.select` match.
-class HtmlMatch {
-  /// Creates a match.
-  const new({required this.text, required this.attrs, required this.html});
-
-  /// Text content.
-  final String text;
-
-  /// Element attributes.
-  final Map<String, String> attrs;
-
-  /// Outer HTML.
-  final String html;
-
-  /// JSON handed to the plugin.
-  Map<String, Object?> toJson() => {'text': text, 'attrs': attrs, 'html': html};
-}
-
-/// Dart-side implementation of everything under `kartka.*`.
+/// Dart-side implementation of the host calls under `kartka.*` (http, prefs
+/// and log; `kartka.html` lives in the sandbox).
 ///
 /// One instance is created per plugin so prefs and logs are scoped to it.
 abstract interface class PluginHostServices {
@@ -192,9 +182,6 @@ abstract interface class PluginHostServices {
     Map<String, String> headers = const {},
     String? body,
   });
-
-  /// `kartka.html.select`: CSS selection over [html] (package:html).
-  List<HtmlMatch> htmlSelect(String html, String css);
 
   /// `kartka.log`.
   void log(String message);

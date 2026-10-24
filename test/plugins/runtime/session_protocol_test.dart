@@ -4,9 +4,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/plugins/runtime/engine.dart';
 import 'package:kartka/plugins/runtime/engine_default.dart';
-import 'package:kartka/plugins/runtime/engine_interpreter.dart';
 import 'package:kartka/plugins/runtime/engine_quickjs.dart';
-import 'package:kartka/plugins/runtime/engine_unsupported.dart' as unsupported;
 import 'package:kartka/plugins/runtime/host_api.dart';
 import 'package:kartka/plugins/runtime/plugin_session.dart';
 
@@ -144,6 +142,5 @@ void main() {
 
   test('platform engine selection', () {
     expect(createDefaultEngine(), isA<QuickJsEngine>());
-    expect(unsupported.createPlatformEngine(), isA<InterpreterEngine>());
   });
 }

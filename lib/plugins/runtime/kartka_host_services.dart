@@ -1,11 +1,10 @@
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
-import 'package:kartka/plugins/runtime/html_select.dart';
 import 'package:kartka/plugins/runtime/plugin_index.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
 
 /// [PluginHostServices] for one installed plugin: HTTP only through
-/// [KartkaHttp], HTML through package:html, prefs scoped to the plugin id.
+/// [KartkaHttp], prefs scoped to the plugin id.
 class KartkaHostServices implements PluginHostServices {
   /// Creates the services for plugin [pluginId].
   const new({
@@ -51,9 +50,6 @@ class KartkaHostServices implements PluginHostServices {
     String? body,
   }) async =>
       _wrap(await http.post(_checked(url), headers: headers, body: body));
-
-  @override
-  List<HtmlMatch> htmlSelect(String html, String css) => selectHtml(html, css);
 
   @override
   void log(String message) => onLog?.call(pluginId, message);

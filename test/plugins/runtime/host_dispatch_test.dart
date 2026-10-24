@@ -28,9 +28,7 @@ void main() {
     expect((miss! as Map)['status'], 404);
   });
 
-  test('html.select, log and prefs', () async {
-    final m = await d.dispatch('html.select', ['<b class="x">hi</b>', 'b.x']);
-    expect((m! as List).single, containsPair('text', 'hi'));
+  test('log and prefs', () async {
     expect(await d.dispatch('log', ['msg']), isNull);
     expect(services.logs, ['msg']);
     expect(await d.dispatch('prefs.get', ['k']), isNull);

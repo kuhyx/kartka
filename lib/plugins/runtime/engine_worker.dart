@@ -5,46 +5,55 @@ import 'package:kartka/plugins/runtime/engine.dart';
 import 'package:kartka/plugins/runtime/worker_script.dart';
 import 'package:web/web.dart' as web;
 
-/// Web engine: the plugin runs in a dedicated Web Worker created from a Blob.
+/// Web engine: the plugin runs in a blob Web Worker inside a hidden iframe
+/// with `sandbox="allow-scripts"` (opaque origin) and a CSP of
+/// `connect-src 'none'`. The only way out is a `MessageChannel` whose Dart end
+/// carries the prelude protocol, so HTTP goes through `KartkaHttp` only.
 ///
-/// The worker has no network or storage (see `kWorkerBanned`), and
-/// [dispose] terminates it, which stops even a synchronous infinite loop.
+/// [dispose] removes the iframe, which kills the worker even in a
+/// synchronous infinite loop.
 class WorkerEngine implements JsEngine {
-  web.Worker? _worker;
-  String? _url;
+  web.HTMLIFrameElement? _frame;
+  web.MessagePort? _port;
 
   @override
   Future<void> start(String pluginSource, EngineMessageSink onMessage) async {
-    final blob = web.Blob(
-      [buildWorkerScript(pluginSource).toJS].toJS,
-      web.BlobPropertyBag(type: 'text/javascript'),
-    );
-    final url = _url = web.URL.createObjectURL(blob);
-    final worker = _worker = web.Worker(url.toJS);
+    final channel = web.MessageChannel();
+    final port = _port = channel.port1;
     final ready = Completer<void>();
-    worker
-      ..onerror = ((web.Event e) {
-        if (!ready.isCompleted) ready.completeError('worker error');
-      }).toJS
-      ..onmessage = ((web.MessageEvent e) {
-        final json = (e.data! as JSString).toDart;
-        if (ready.isCompleted) return onMessage(json);
-        if (json.contains('"ready"')) return ready.complete();
-        ready.completeError(json);
-      }).toJS;
+    port.onmessage = ((web.MessageEvent e) {
+      final json = (e.data! as JSString).toDart;
+      if (ready.isCompleted) return onMessage(json);
+      if (json.contains('"ready"')) return ready.complete();
+      ready.completeError(json);
+    }).toJS;
+    final frame = _frame =
+        web.document.createElement('iframe') as web.HTMLIFrameElement
+          ..setAttribute('sandbox', 'allow-scripts')
+          ..style.display = 'none'
+          ..srcdoc = buildHostPage(pluginSource).toJS;
+    frame.onload = ((web.Event _) {
+      frame.contentWindow!.postMessage(
+        'kartka-init'.toJS,
+        web.WindowPostMessageOptions(
+          targetOrigin: '*',
+          transfer: [channel.port2].toJS,
+        ),
+      );
+    }).toJS;
+    web.document.body!.append(frame);
     await ready.future.timeout(const Duration(seconds: 10));
   }
 
   @override
-  void post(String json) => _worker!.postMessage(json.toJS);
+  void post(String json) => _port!.postMessage(json.toJS);
 
   @override
   Future<void> dispose() async {
-    _worker?.terminate();
-    _worker = null;
-    final url = _url;
-    if (url != null) web.URL.revokeObjectURL(url);
-    _url = null;
+    _port?.close();
+    _port = null;
+    _frame?.remove();
+    _frame = null;
   }
 }
 

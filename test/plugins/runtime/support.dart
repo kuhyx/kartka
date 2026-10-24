@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
-import 'package:kartka/plugins/runtime/html_select.dart';
 
 export 'package:kartka/platform/memory/memory_platform.dart';
 
@@ -32,6 +31,7 @@ class FakeServices implements PluginHostServices {
     Map<String, String> headers = const {},
   }) async {
     requested.add(url);
+    if (url.contains('fail.test')) throw StateError('network down');
     if (delay != null) await Future<void>.delayed(delay!);
     final f = _routes[url];
     if (f == null) {
@@ -46,9 +46,6 @@ class FakeServices implements PluginHostServices {
     Map<String, String> headers = const {},
     String? body,
   }) => httpGet(url, headers: headers);
-
-  @override
-  List<HtmlMatch> htmlSelect(String html, String css) => selectHtml(html, css);
 
   @override
   void log(String message) => logs.add(message);

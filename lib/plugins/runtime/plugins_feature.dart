@@ -5,6 +5,7 @@ import 'package:kartka/plugins/runtime/engine.dart';
 import 'package:kartka/plugins/runtime/engine_default.dart';
 import 'package:kartka/plugins/runtime/kartka_host_services.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
+import 'package:kartka/plugins/runtime/plugin_repo_adapter.dart';
 import 'package:kartka/plugins/runtime/plugin_source_provider.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
 import 'package:kartka/plugins/runtime/plugins_screen.dart';
@@ -22,7 +23,12 @@ KartkaFeature pluginsFeature(
   JsEngineFactory engineFactory = createDefaultEngine,
 }) {
   final store = PluginStore(env.platform.kv);
-  final manager = PluginManager(http: env.platform.http, store: store);
+  final manager = PluginManager(
+    http: env.platform.http,
+    store: store,
+    // Lazy: the registry is only complete after every factory has run.
+    adapters: () => env.registry.all<PluginRepoAdapter>(),
+  );
   final provider = PluginSourceProvider(
     registrar: manager,
     services: (id) =>

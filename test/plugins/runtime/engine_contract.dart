@@ -113,14 +113,49 @@ void engineContractTests(JsEngineFactory factory) {
       manifest: session.manifest,
       source: '''
 async function popular(p) {
-  try { await kartka.html.select('<a/>', 'a[[['); } catch (e) { return e.message; }
+  try { await kartka.http.get('https://fail.test/'); } catch (e) { return e.message; }
   return 'no error';
 }
 ''',
       services: services,
       engineFactory: factory,
     );
-    expect(await s.call(PluginMethod.popular, [1]), contains('bad CSS'));
+    expect(await s.call(PluginMethod.popular, [1]), contains('network down'));
+    await s.dispose();
+  });
+
+  test('kartka.html is synchronous and parses real-world markup', () async {
+    final s = PluginSession(
+      manifest: session.manifest,
+      source: '''
+function popular(p) {
+  var rows = kartka.html.select(
+    '<ul><li class="a"><a href="/x?a=1&amp;b=2">Caf&eacute;</a></li>'
+    + '<li><a href="/y">Two<br>lines</a></li></ul>', 'li a');
+  var root = kartka.html.parse('<div id="d"><p>one</p><p>two</p></div>');
+  var second = root.querySelectorAll('p')[1];
+  return {
+    rows: rows,
+    sibling: second.parentNode.id,
+    count: root.querySelectorAll('div > p').length,
+    atob: atob(btoa('hello')),
+    leaked: [typeof __kartka_html_parse, typeof __kartka_send]
+  };
+}
+''',
+      services: services,
+      engineFactory: factory,
+    );
+    final r =
+        (await s.call(PluginMethod.popular, [1]))! as Map<String, Object?>;
+    final rows = (r['rows']! as List).cast<Map<String, Object?>>();
+    expect(rows.first['text'], 'Café');
+    expect((rows.first['attrs']! as Map)['href'], '/x?a=1&b=2');
+    expect(rows.last['html'], contains('<br'));
+    expect(r['sibling'], 'd');
+    expect(r['count'], 2);
+    expect(r['atob'], 'hello');
+    expect(r['leaked'], ['undefined', 'undefined']);
     await s.dispose();
   });
 
