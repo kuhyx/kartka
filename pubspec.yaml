@@ -28,6 +28,8 @@ dependencies:
   file_picker: 13.2.0
   flutter:
     sdk: flutter
+  # Credentials in the Android Keystore (KartkaPlatform.secrets on io).
+  flutter_secure_storage: 11.2.0
   # Router (DOCS-contracts §10); lib/app/routes.dart builds and parses paths.
   go_router: 18.1.1
   # Only lib/platform/ may import this (enforced by
@@ -41,6 +43,8 @@ dependencies:
   web: 1.1.2
 
 dev_dependencies:
+  # Depended on directly so tests can swap in a fake file picker.
+  file_picker_platform_interface: 4.2.0
   # Generates the Android launcher icons from assets/icon/ (shared generator:
   # ~/src/testsAndMisc/python_pkg/app_icons).
   flutter_launcher_icons: 0.14.4
@@ -48,6 +52,7 @@ dev_dependencies:
     sdk: flutter
   # Property-based tests for models, parsers and merge rules.
   glados: 1.1.7
+  plugin_platform_interface: 2.1.8
   very_good_analysis: ^11.0.0
 
 flutter:
