@@ -44,7 +44,7 @@ void main() {
     expect(find.text('MangaUpdates links'), findsOneWidget);
     expect(find.text('Source unavailable'), findsOneWidget);
     expect(find.text('E-Hentai (6901)'), findsOneWidget);
-    expect(find.textContaining('kitsu'), findsNothing);
+    expect(find.textContaining('kitsu 1'), findsOneWidget);
     expect(find.text('History-only records skipped'), findsOneWidget);
 
     await tester.tap(find.text('Import 6 entries'));

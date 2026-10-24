@@ -89,6 +89,7 @@ void main() {
         'anilist': 1,
         'mal': 1,
         'mangaupdates': 1,
+        'kitsu': 1,
       });
       expect(plan.summary.trackersImported, 3);
       expect(plan.summary.chaptersRead, 6);
