@@ -1,0 +1,17 @@
+name: kartka_desktop
+description: >-
+  Local wrapper for the Kartka desktop app: serves the Flutter web build on
+  127.0.0.1:8791, proxies source HTTP (CORS), stores page files and secrets
+  on disk, and catches OAuth redirects. Pure Dart, no Flutter.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.13.5
+
+dependencies:
+  path: 1.9.1
+
+dev_dependencies:
+  test: 1.33.0
+  very_good_analysis: ^11.0.0
