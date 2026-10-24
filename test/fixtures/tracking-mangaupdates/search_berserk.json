@@ -1,0 +1,49 @@
+{
+  "total_hits": 3,
+  "page": 1,
+  "per_page": 10,
+  "results": [
+    {
+      "record": {
+        "series_id": 51239621230,
+        "title": "Berserk",
+        "url": "https://www.mangaupdates.com/series/njeqwry/berserk",
+        "description": "Guts, a former mercenary now known as the Black Swordsman.",
+        "image": {
+          "url": {
+            "original": "https://cdn.mangaupdates.com/image/i501230.png",
+            "thumb": "https://cdn.mangaupdates.com/image/thumb/i501230.png"
+          },
+          "height": 350,
+          "width": 245
+        },
+        "type": "Manga",
+        "year": "1989",
+        "bayesian_rating": 9.08,
+        "rating_votes": 18000,
+        "genres": [{"genre": "Action"}, {"genre": "Drama"}],
+        "latest_chapter": 382
+      },
+      "hit_title": "Berserk"
+    },
+    {
+      "record": {
+        "series_id": 15180124327,
+        "title": "Berserk Official Guidebook",
+        "url": "https://www.mangaupdates.com/series/6z7bm0n/berserk-official-guidebook",
+        "image": {"url": {"original": "https://cdn.mangaupdates.com/image/i1.jpg"}},
+        "type": "Artbook",
+        "year": "2016"
+      },
+      "hit_title": "Berserk Official Guidebook"
+    },
+    {
+      "record": {
+        "series_id": 1,
+        "title": "Berserk (Novel)",
+        "type": "Novel"
+      },
+      "hit_title": "Berserk (Novel)"
+    }
+  ]
+}
