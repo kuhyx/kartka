@@ -9,6 +9,7 @@
 library;
 
 import 'package:kartka/sync/rtdb_transport.dart';
+import 'package:kartka/sync/sync_shadow.dart';
 
 /// Revisions kept per device in `log/`.
 const int kFeedWindow = 50;
@@ -66,4 +67,25 @@ Future<PullPlan> planPull(
     if (paths.length > kFeedMaxDelta) return _full;
   }
   return (full: false, paths: paths);
+}
+
+/// Pushes every dirty node of [shadow] in chunks of [kPushChunk], with the
+/// revision and feed entry in the last chunk; false when nothing was dirty.
+Future<bool> pushDirty(
+  RtdbTransport transport,
+  SyncShadow shadow,
+  String deviceId,
+) async {
+  final pending = shadow.dirty.toList()..sort();
+  if (pending.isEmpty) return false;
+  for (var i = 0; i < pending.length; i += kPushChunk) {
+    final end = (i + kPushChunk).clamp(0, pending.length);
+    await transport.patch({
+      for (final path in pending.sublist(i, end)) path: shadow.node(path),
+      if (end == pending.length)
+        ...feedUpdates(deviceId, await shadow.nextRev(), pending),
+    });
+  }
+  await shadow.clearDirty(pending);
+  return true;
 }

@@ -13,27 +13,13 @@ import 'dart:async';
 
 import 'package:crdt_sync/crdt_sync.dart' show Hlc, RemoteSyncError;
 import 'package:kartka/sync/merge/merge_rules.dart';
-import 'package:kartka/sync/merge/tracker_merge.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/sync_feed.dart';
+import 'package:kartka/sync/sync_namespaces.dart';
 import 'package:kartka/sync/sync_shadow.dart';
 import 'package:kartka/sync/sync_status.dart';
 
-/// Merge rule and key depth of each synced namespace.
-const Map<String, (int, Merge)> kSyncNamespaces = {
-  'library': (1, mergeLwwNode),
-  'categories': (1, mergeLwwNode),
-  'membership': (2, mergeRegister),
-  'progress': (1, mergeProgress),
-  'read': (2, mergeRegister),
-  'trackers': (2, mergeTracker),
-};
-
-/// One node that changed because of a remote merge.
-typedef RemoteChange = ({String path, Node node});
-
-/// Opens a transport, or returns null while this device is signed out.
-typedef TransportOpener = Future<RtdbTransport?> Function();
+export 'package:kartka/sync/sync_namespaces.dart';
 
 /// The sync engine; one per app.
 class SyncEngine {
@@ -187,7 +173,7 @@ class SyncEngine {
   Future<void> _mergeRemote(String path, Node theirs) async {
     final rule = kSyncNamespaces[path.split('/').first];
     if (rule == null) return;
-    _observeClocks(theirs);
+    shadow.lastHlc = newestClock(theirs, shadow.lastHlc);
     final mine = shadow.node(path);
     final merged = mine == null ? theirs : rule.$2(mine, theirs);
     final behind = canon(merged) != canon(theirs);
@@ -201,21 +187,8 @@ class SyncEngine {
 
   Future<void> _push(RtdbTransport? transport) async {
     if (transport == null) return;
-    final pending = shadow.dirty.toList()..sort();
-    if (pending.isEmpty) return;
     try {
-      for (var i = 0; i < pending.length; i += kPushChunk) {
-        final chunk = pending.sublist(
-          i,
-          (i + kPushChunk).clamp(0, pending.length),
-        );
-        final last = i + kPushChunk >= pending.length;
-        await transport.patch({
-          for (final path in chunk) path: shadow.node(path),
-          if (last) ...feedUpdates(deviceId, await shadow.nextRev(), pending),
-        });
-      }
-      await shadow.clearDirty(pending);
+      if (!await pushDirty(transport, shadow, deviceId)) return;
       if (_current.phase == SyncPhase.error) {
         _emit(SyncStatus(phase: SyncPhase.idle, lastSync: shadow.lastSync));
       }
@@ -235,17 +208,6 @@ class SyncEngine {
       _emit(SyncStatus(phase: SyncPhase.signedOut, lastSync: shadow.lastSync));
     }
     return _transport;
-  }
-
-  void _observeClocks(Node node) {
-    final clocks = switch (node[kHlcField]) {
-      final String c => [c],
-      final Map<Object?, Object?> m => m.values.whereType<String>(),
-      _ => const <String>[],
-    };
-    for (final c in clocks) {
-      if (compareHlc(c, shadow.lastHlc) > 0) shadow.lastHlc = c;
-    }
   }
 
   void _fail(RemoteSyncError e) {
@@ -274,22 +236,4 @@ class SyncEngine {
     await _changes.close();
     await _status.close();
   }
-}
-
-/// Flattens a namespace subtree into `{<ns>/<k1>[/<k2>]: node}`.
-Map<String, Node> flattenNodes(String ns, Object? tree, int depth) {
-  final out = <String, Node>{};
-  void walk(String prefix, Object? node, int level) {
-    if (node is! Map<String, Object?>) return;
-    if (level == depth) {
-      out[prefix] = node;
-      return;
-    }
-    for (final e in node.entries) {
-      walk('$prefix/${e.key}', e.value, level + 1);
-    }
-  }
-
-  walk(ns, tree, 0);
-  return out;
 }
