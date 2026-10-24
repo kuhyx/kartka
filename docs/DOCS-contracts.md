@@ -233,8 +233,8 @@ Stream<bool>` (tracking-anilist supplies from TrackingService bindings).
   `progress/<h>` gains `key`.
 - DownloadState: foundation's `lib/core/models/download_state.dart` is the
   source of truth and overrides the §12 sketch. Pause is a queue-level flag.
-- The desktop wrapper binds a fixed `127.0.0.1:8791`. OAuth web redirect is
-  `http://127.0.0.1:8791/oauth`, Android `kartka://oauth`. AniList and MAL each
+- The desktop wrapper binds a fixed `127.0.0.1:47391`. OAuth web redirect is
+  `http://127.0.0.1:47391/oauth`, Android `kartka://oauth`. AniList and MAL each
   get TWO clients (android + web). Client ids live in ONE file,
   `~/.config/kartka/oauth.json` (keys `KARTKA_{ANILIST,MAL}_CLIENT_ID_{ANDROID,WEB}`),
   passed with `--dart-define-from-file` by run.sh and the APK build.
