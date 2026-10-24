@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:kartka/platform/blob_store.dart';
+import 'package:kartka/platform/coalescing_saver.dart';
 import 'package:kartka/platform/key_value_store.dart';
 import 'package:path/path.dart' as p;
 
@@ -55,16 +56,25 @@ class FileBlobStore implements BlobStore {
 
 /// [KeyValueStore] as one JSON object in [file] (Android).
 ///
-/// Small state only: every write rewrites the whole file (write-then-rename,
-/// so a crash leaves the previous version, never half a file).
+/// A save rewrites the whole file (write-then-rename, so a crash leaves the
+/// previous version, never half a file). The file reaches several MB after
+/// a backup import, so saves are coalesced: changes within one window
+/// (250 ms) cost one write, and the app shell calls [flush] when the app
+/// leaves the foreground (`flushOnBackground` in create_platform_io.dart).
 class FileKeyValueStore implements KeyValueStore {
-  /// Persists to [file].
-  new(this.file);
+  /// Persists to [file], at most once per [window] while changes keep coming.
+  new(this.file, {Duration window = const Duration(milliseconds: 250)}) {
+    _saver = CoalescingSaver(_save, window: window);
+  }
 
   /// The JSON file.
   final File file;
 
+  late final CoalescingSaver _saver;
   Map<String, String>? _cache;
+
+  /// Writes any pending change to [file] now.
+  Future<void> flush() => _saver.flush();
 
   Future<Map<String, String>> _load() async {
     if (_cache != null) return _cache!;
@@ -80,10 +90,11 @@ class FileKeyValueStore implements KeyValueStore {
     return _cache = values;
   }
 
-  Future<void> _save(Map<String, String> values) async {
+  Future<void> _save() async {
     await file.parent.create(recursive: true);
     final tmp = File('${file.path}.tmp');
-    await tmp.writeAsString(jsonEncode(values), flush: true);
+    // Encoded at write time, so it holds every change made so far.
+    await tmp.writeAsString(jsonEncode(_cache), flush: true);
     await tmp.rename(file.path);
   }
 
@@ -94,13 +105,13 @@ class FileKeyValueStore implements KeyValueStore {
   Future<void> set(String key, String value) async {
     final values = await _load();
     values[key] = value;
-    await _save(values);
+    _saver.schedule();
   }
 
   @override
   Future<void> remove(String key) async {
     final values = await _load();
-    if (values.remove(key) != null) await _save(values);
+    if (values.remove(key) != null) _saver.schedule();
   }
 
   @override

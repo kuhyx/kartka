@@ -3,6 +3,7 @@
 // ignore_for_file: unused_import
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/platform/blob_store.dart';
+import 'package:kartka/platform/coalescing_saver.dart';
 import 'package:kartka/platform/create_platform.dart';
 import 'package:kartka/platform/file_picker.dart';
 import 'package:kartka/platform/fullscreen.dart';

@@ -38,6 +38,7 @@ void main() {
     await kv.set('b', '3');
     await kv.remove('b');
     await kv.remove('missing');
+    await kv.flush();
     final again = FileKeyValueStore(file);
     expect(await again.entries(prefix: 'a.'), {'a.x': '1', 'a.y': 'ż'});
     expect(await again.get('b'), isNull);
@@ -49,7 +50,26 @@ void main() {
     final kv = FileKeyValueStore(file);
     expect(await kv.entries(), isEmpty);
     await kv.set('k', 'v');
+    await kv.flush();
     expect(await FileKeyValueStore(file).get('k'), 'v');
+  });
+
+  test('FileKeyValueStore coalesces sets into one deferred write', () async {
+    final file = File('${dir.path}/kv.json');
+    final kv = FileKeyValueStore(
+      file,
+      window: const Duration(milliseconds: 20),
+    );
+    for (var i = 0; i < 100; i++) {
+      await kv.set('k$i', '$i');
+    }
+    expect(file.existsSync(), isFalse, reason: 'no write per set');
+    expect(await kv.get('k99'), '99', reason: 'reads see the cache');
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    expect(await FileKeyValueStore(file).entries(), hasLength(100));
+    await kv.remove('k0');
+    await kv.flush();
+    expect(await FileKeyValueStore(file).get('k0'), isNull);
   });
 
   test('SecureKeyValueStore maps onto flutter_secure_storage', () async {
