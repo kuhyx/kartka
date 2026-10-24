@@ -49,7 +49,8 @@ void main() {
     );
     expect(service.tracker('mangaupdates'), same(tracker));
 
-    await progress.record(progressAt(_key, 40));
+    // Only finished chapters count (tracking/common FinishedChapters).
+    await finish(progress, _key, 40);
     await pumpEventQueue();
     final calls = [for (final r in http.requests) '${r.method} ${r.url.path}'];
     expect(calls, [
