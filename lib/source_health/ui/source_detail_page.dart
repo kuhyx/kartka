@@ -105,6 +105,18 @@ class SourceDetailPage extends StatelessWidget {
                   'so some requests fail; flagged, not cut.',
                 ),
               ],
+              if (r.reprobedOnly) ...[
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: ReprobeChip(),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                const Text(
+                  'Cut by the last run as unreachable or blocking; this run '
+                  'sent it one reachability request, which failed, so it '
+                  'was not measured again.',
+                ),
+              ],
               if (r.cutReasons.isNotEmpty) ...[
                 SectionHeader(
                   warn

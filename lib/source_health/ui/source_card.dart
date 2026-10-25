@@ -108,6 +108,7 @@ class SourceCard extends StatelessWidget {
               ],
             ),
             if (r.needsBrowserEngine) const BrowserEngineChip(),
+            if (r.reprobedOnly) const ReprobeChip(),
             Wrap(
               spacing: AppSpacing.md,
               runSpacing: AppSpacing.xs,

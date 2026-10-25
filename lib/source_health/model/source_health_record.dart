@@ -10,6 +10,10 @@ import 'package:kartka/source_health/model/metrics.dart';
 /// The §5 `flags` entry for a source whose extension needs a browser engine.
 const needsBrowserEngineFlag = 'needs-browser-engine';
 
+/// The §5 `flags` entry for a source the previous run hard-cut whose one
+/// reachability request this run failed: only re-probed, not measured.
+const reprobeOnlyFlag = 'reprobe-only';
+
 /// One source's evaluation. Only [id] is required; every metric block is
 /// null until the evaluator has measured it.
 @immutable
@@ -189,6 +193,9 @@ class SourceHealthRecord {
 
   /// True when the source needs a browser engine Kartka does not ship.
   bool get needsBrowserEngine => flags.contains(needsBrowserEngineFlag);
+
+  /// True when this run only re-probed the source (one failed request).
+  bool get reprobedOnly => flags.contains(reprobeOnlyFlag);
 
   /// The §5 JSON, omitting fields that are missing.
   Map<String, Object?> toJson() => compact({

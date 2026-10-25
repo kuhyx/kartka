@@ -79,6 +79,23 @@ class BrowserEngineChip extends StatelessWidget {
   );
 }
 
+/// The chip for a source this run only re-probed: it was hard-cut last run
+/// and its one reachability request failed again.
+class ReprobeChip extends StatelessWidget {
+  /// Creates the chip.
+  const new({super.key});
+
+  /// The visible label.
+  static const label = 'Re-probed only';
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: 'Only re-probed this run: still unreachable',
+    excludeSemantics: true,
+    child: StatusPill(text: label, fill: statusColors(context).warning),
+  );
+}
+
 /// Compact source-health badge for source lists: `#3 Cut`, with the
 /// [BrowserEngineChip] under it when [needsBrowserEngine].
 class HealthBadge extends StatelessWidget {
