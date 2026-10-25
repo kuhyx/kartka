@@ -17,6 +17,12 @@ embedder, which manages ~20 fps at 4K.
 - lint: `fvm dart analyze --fatal-infos && fvm dart format --set-exit-if-changed lib test desktop`
 - coverage: `scripts/coverage.sh`
 - coverage-gaps: `coverage-gaps coverage/lcov.info`
+- build-android: `scripts/build_android.sh [release|profile] [step]` (arm64 APK in `build/app/outputs/flutter-apk/`)
+
+Android builds under the 60 s cap: prefix each call with
+`CAP_MEM=4G CAP_CPU_PCT=20 ~/.claude/scripts/capped.sh`. Cold tree: run the
+steps `kernel`, `aot`, `java`, `r8` (release only), `apk`, one call each
+(each < 40 s measured). Warm tree (only lib/ changed): `apk` alone (~36 s).
 
 Inner loop: `~/.claude/scripts/capped.sh fvm flutter test <changed paths>`.
 A whole-suite run under `capped.sh` can be SIGTERMed by the shared memory
