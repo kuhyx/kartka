@@ -35,10 +35,12 @@ so a copied clearance cookie is not expected to pass. Login / session cookies
 do carry over. Nothing here may be "fixed" by spoofing the UA.
 
 Detection (`kind` values: `cloudflare`, `captcha`, `ddos-guard`):
-- in the engine, on the rendered DOM (`kEngineProbeJs`): titles "Just a
+- in the engine, on the rendered DOM (`engineProbeJs`): titles "Just a
   moment...", "Attention Required!", "DDoS-Guard"; `#challenge-form`,
-  `#cf-challenge-running`, `.cf-turnstile`, `iframe[src*=
-  "challenges.cloudflare.com"]`, `.g-recaptcha`, `.h-captcha`;
+  `#cf-challenge-running`, `iframe[src*="challenges.cloudflare.com"]`;
+  `.cf-turnstile`, `.g-recaptcha`, `.h-captcha` (and their iframes) only
+  on a near-empty page (< 3000 chars of text: a comment form's captcha is
+  not a wall);
 - on plain HTTP (`challengeKindOf(KartkaResponse)`, plugin `kartka.http.*`):
   a `cf-mitigated: challenge` header, or status 403/429/503 with one of the
   markers above (or `cf_chl_opt` / `/cdn-cgi/challenge-platform/`) in the
@@ -154,8 +156,9 @@ headless chromium over CDP. The app side is `WrapperBrowser`
   the window SIGTERM (chromium flushes cookies), waits for it, and registers
   the host in `<data dir>/engine-hosts.json`.
 - `/proxy` to a registered host (or subdomain): the wrapper asks the
-  headless engine `Network.getCookies({urls: [target]})` and appends that
-  to any page-supplied `cookie` header. Cookie values are never logged.
+  headless engine (`Storage.getCookies`, matched to the target by domain,
+  path, secure and expiry: `cookieHeaderFor`) and appends that to any
+  page-supplied `cookie` header. Cookie values are never logged.
   Session cookies (no expiry) do not survive closing the window; persistent
   ones (most "remember me" logins) do.
 
