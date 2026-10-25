@@ -16,6 +16,10 @@ abstract final class HealthThresholds {
   /// Overlap with a better source at or above this makes a source a subset.
   static const double subsetOverlap = 0.90;
 
+  /// A score at or above this keeps a source despite cut reasons; the app
+  /// then shows those reasons as warnings.
+  static const double keepOverrideScore = 0.90;
+
   /// Uptime window length.
   static const int uptimeWindowDays = 7;
 

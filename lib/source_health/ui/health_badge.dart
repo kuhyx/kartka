@@ -120,3 +120,27 @@ class HealthBadge extends StatelessWidget {
     );
   }
 }
+
+/// One reason a kept source was warned about: a warning icon, then [text].
+class WarningLine extends StatelessWidget {
+  /// Creates the line.
+  const new(this.text, {super.key});
+
+  /// The reason in words.
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: AppSpacing.xs,
+    children: [
+      Icon(
+        Icons.warning_amber_rounded,
+        size: AppTextSize.body,
+        color: statusColors(context).warning,
+        semanticLabel: 'Warning',
+      ),
+      Expanded(child: Text(text)),
+    ],
+  );
+}

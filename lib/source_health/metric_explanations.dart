@@ -158,6 +158,15 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
     threshold: 'Informational; never cuts and is not scored.',
     status: _info(r.availability),
   ),
+  if (r.pagesLoad != null)
+    MetricExplanation(
+      title: 'Pages load',
+      value: pagesLoadText(r.pagesLoad),
+      meaning:
+          'Share of sampled chapter pages whose images actually downloaded.',
+      threshold: 'Shown for information; the app applies no threshold to it.',
+      status: MetricStatus.info,
+    ),
 ];
 
 MetricStatus _info(Object? block) =>

@@ -32,6 +32,7 @@ class SourceCard extends StatelessWidget {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
     final subset = r.subsetOf;
+    final warn = keptDespiteReasons(r);
     return Card(
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -51,10 +52,7 @@ class SourceCard extends StatelessWidget {
                       children: [
                         Text(r.name, style: theme.textTheme.titleMedium),
                         Text(
-                          [
-                            originLabel(r.origin),
-                            r.lang,
-                          ].where((s) => s.isNotEmpty).join(' · '),
+                          sourceLine(r),
                           style: TextStyle(
                             color: muted,
                             fontSize: AppTextSize.label,
@@ -80,6 +78,8 @@ class SourceCard extends StatelessWidget {
                   _Metric('Image width', imageWidthText(r.imageQuality)),
                   _Metric('JPEG', jpegQualityText(r.imageQuality)),
                   _Metric('Available as', availabilityText(r.availability)),
+                  if (r.pagesLoad != null)
+                    _Metric('Pages load', pagesLoadText(r.pagesLoad)),
                 ],
               ),
               if (subset != null)
@@ -94,7 +94,10 @@ class SourceCard extends StatelessWidget {
                     '(${pctOrDash(subset.overlap)})',
                   ),
                 ),
-              for (final why in explainCutReasons(r, nameOf: nameOf)) Text(why),
+              if (warn)
+                Text('$keptDespiteHeading:', style: TextStyle(color: muted)),
+              for (final why in explainCutReasons(r, nameOf: nameOf))
+                if (warn) WarningLine(why) else Text(why),
             ],
           ),
         ),

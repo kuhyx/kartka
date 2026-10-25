@@ -3,6 +3,7 @@
 library;
 
 import 'package:kartka/browse/source_health_lookup.dart';
+import 'package:kartka/source_health/model/source_health_record.dart';
 
 /// Display name of a §5 origin.
 String originLabel(String origin) => switch (origin) {
@@ -26,3 +27,12 @@ String langScopeLabel(String scope) => switch (scope) {
   'unrestricted' => 'tested all languages',
   _ => 'tested $scope',
 };
+
+/// `Suwayomi · en · tested EN + JA only` (plus the id when [withId]),
+/// skipping parts the record does not have.
+String sourceLine(SourceHealthRecord r, {bool withId = false}) => [
+  originLabel(r.origin),
+  r.lang,
+  if (r.langScope case final scope?) langScopeLabel(scope),
+  if (withId) r.id,
+].where((s) => s.isNotEmpty).join(' · ');

@@ -1,15 +1,18 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
+import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ranking.dart';
+import 'package:kartka/source_health/ui/counts_header.dart';
+import 'package:kartka/source_health/ui/filter_bar.dart';
 import 'package:kartka/source_health/ui/freshness_banner.dart';
 import 'package:kartka/source_health/ui/query_bar.dart';
 import 'package:kartka/source_health/ui/source_card.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
 
-/// The Sources tab: the evaluator's ranking with every metric, sortable and
-/// filterable, live from [feed].
+/// The Sources tab: the evaluator's ranking with every metric, searchable,
+/// sortable and filterable, live from [feed].
 class SourcesTab extends StatefulWidget {
   /// Creates the tab; [clock] is injectable for the stale check.
   const new({required this.feed, this.clock = DateTime.now, super.key});
@@ -26,29 +29,53 @@ class SourcesTab extends StatefulWidget {
 
 class _SourcesTabState extends State<SourcesTab> {
   late final Stream<List<SourceHealthRecord>> _records = widget.feed.watch();
+  late final Stream<SourceHealthMeta?> _meta = widget.feed.watchMeta();
+  // Owned here, not by the field: the query must survive the field being
+  // rebuilt (and the text must stay in step with it).
+  final _search = TextEditingController();
   HealthQuery _query = const HealthQuery();
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<List<SourceHealthRecord>>(
-    stream: _records,
-    builder: (context, snap) {
-      if (snap.hasError) return _ReadError(snap.error!);
-      final records = snap.data;
-      if (records == null) {
-        return const Center(child: CircularProgressIndicator());
-      }
-      if (records.isEmpty) {
-        return const EmptyState(
-          icon: Icons.insights_outlined,
-          title: 'No source health yet',
-          message: 'The weekly source evaluator has not published results.',
-        );
-      }
-      return _ranking(context, records);
-    },
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  void _setSearch(String text) =>
+      setState(() => _query = _query.copyWith(search: text));
+
+  // The meta builder is outermost so its (possibly single-subscription)
+  // stream is listened to once, whatever the records stream does. A meta
+  // read error only costs the header its run totals.
+  @override
+  Widget build(BuildContext context) => StreamBuilder<SourceHealthMeta?>(
+    stream: _meta,
+    builder: (context, metaSnap) => StreamBuilder<List<SourceHealthRecord>>(
+      stream: _records,
+      builder: (context, snap) {
+        if (snap.hasError) return _ReadError(snap.error!);
+        final records = snap.data;
+        if (records == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (records.isEmpty) {
+          return const EmptyState(
+            icon: Icons.insights_outlined,
+            title: 'No source health yet',
+            message: 'The weekly source evaluator has not published results.',
+          );
+        }
+        final meta = metaSnap.hasError ? null : metaSnap.data;
+        return _ranking(context, records, meta);
+      },
+    ),
   );
 
-  Widget _ranking(BuildContext context, List<SourceHealthRecord> records) {
+  Widget _ranking(
+    BuildContext context,
+    List<SourceHealthRecord> records,
+    SourceHealthMeta? meta,
+  ) {
     final shown = _query.apply(records);
     String? nameOf(String id) {
       for (final r in records) {
@@ -70,29 +97,72 @@ class _SourcesTabState extends State<SourcesTab> {
       );
     }
 
+    void edit(HealthQuery q) => setState(() => _query = q);
     final header = <Widget>[
       FreshnessBanner(at: lastEvaluated(records), now: widget.clock()),
       QueryBar(
         query: _query,
         langs: langsOf(records),
         origins: originsOf(records),
-        onChanged: (q) => setState(() => _query = q),
+        onChanged: edit,
       ),
+      FilterBar(query: _query, onChanged: edit),
       if (shown.isEmpty) const Text('No sources match these filters.'),
     ];
-    return ListView.separated(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      itemCount: header.length + shown.length,
-      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-      itemBuilder: (_, i) => i < header.length
-          ? header[i]
-          : SourceCard(
-              record: shown[i - header.length],
-              onOpen: open,
-              nameOf: nameOf,
-            ),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.md,
+            AppSpacing.md,
+            0,
+          ),
+          child: Column(
+            spacing: AppSpacing.sm,
+            children: [
+              _searchField(),
+              CountsHeader(records: records, meta: meta, showing: shown.length),
+            ],
+          ),
+        ),
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            itemCount: header.length + shown.length,
+            separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+            itemBuilder: (_, i) => i < header.length
+                ? header[i]
+                : SourceCard(
+                    record: shown[i - header.length],
+                    onOpen: open,
+                    nameOf: nameOf,
+                  ),
+          ),
+        ),
+      ],
     );
   }
+
+  Widget _searchField() => TextField(
+    key: const Key('search'),
+    controller: _search,
+    onChanged: _setSearch,
+    decoration: InputDecoration(
+      prefixIcon: const Icon(Icons.search),
+      hintText: 'Search name, language, reason, metric…',
+      suffixIcon: _search.text.isEmpty
+          ? null
+          : IconButton(
+              tooltip: 'Clear search',
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                _search.clear();
+                _setSearch('');
+              },
+            ),
+    ),
+  );
 }
 
 class _ReadError extends StatelessWidget {

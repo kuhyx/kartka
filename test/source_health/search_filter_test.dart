@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
+import 'package:kartka/source_health/labels.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ranking.dart';
 import 'package:kartka/source_health/reason_filter.dart';
@@ -89,6 +90,9 @@ void main() {
       final text = searchTextOf(_webview).secondary;
       expect(text, containsAll(['92 % of 25 sampled', 'en+ja']));
       expect(text, containsAll(['needs-browser-engine', 'Browser engine']));
+      expect(text, contains('tested EN + JA only'));
+      expect(langScopeLabel('unrestricted'), 'tested all languages');
+      expect(langScopeLabel('ko'), 'tested ko');
     });
   });
 

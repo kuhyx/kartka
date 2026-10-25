@@ -41,6 +41,7 @@ class SourceDetailPage extends StatelessWidget {
       color: Theme.of(context).colorScheme.onSurfaceVariant,
     );
     final subset = r.subsetOf == null ? null : _find(r.subsetOf!.sourceId);
+    final warn = keptDespiteReasons(r);
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.escape): () =>
@@ -65,14 +66,7 @@ class SourceDetailPage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),
-              Text(
-                [
-                  originLabel(r.origin),
-                  r.lang,
-                  r.id,
-                ].where((s) => s.isNotEmpty).join(' · '),
-                style: muted,
-              ),
+              Text(sourceLine(r, withId: true), style: muted),
               const SizedBox(height: AppSpacing.sm),
               FreshnessBanner(at: r.probedAt, now: now),
               if (r.needsBrowserEngine) ...[
@@ -87,12 +81,12 @@ class SourceDetailPage extends StatelessWidget {
                 ),
               ],
               if (r.cutReasons.isNotEmpty) ...[
-                const SectionHeader('Why it was cut'),
+                SectionHeader(warn ? keptDespiteHeading : 'Why it was cut'),
                 for (final why in explainCutReasons(
                   r,
                   nameOf: (id) => _find(id)?.name,
                 ))
-                  Text(why),
+                  if (warn) WarningLine(why) else Text(why),
               ],
               if (subset != null)
                 Align(

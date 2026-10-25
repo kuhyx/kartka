@@ -1,6 +1,7 @@
 /// §5 cut-reason codes in plain words, using the record's own numbers.
 library;
 
+import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/thresholds.dart';
@@ -16,6 +17,16 @@ List<String> explainCutReasons(
   SourceHealthRecord record, {
   SourceNameOf? nameOf,
 }) => [for (final code in record.cutReasons) _explain(code, record, nameOf)];
+
+/// True when [record] was kept on score despite cut reasons, so its
+/// reasons are warnings rather than why it was cut.
+bool keptDespiteReasons(SourceHealthRecord record) =>
+    record.verdict == HealthVerdict.keep && record.cutReasons.isNotEmpty;
+
+/// Heading over the reasons of a [keptDespiteReasons] record.
+final String keptDespiteHeading =
+    'Kept on score ≥ '
+    '${HealthThresholds.keepOverrideScore.toStringAsFixed(2)} despite';
 
 /// A §5 blocking kind in words.
 String describeBlockingKind(String kind) => switch (kind) {
