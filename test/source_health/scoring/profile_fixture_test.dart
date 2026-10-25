@@ -1,6 +1,7 @@
 // Cross-check with the Python evaluator: both suites read
 // tools/source_eval/tests/fixtures/scoring_profile.json, so the DEFAULT
-// profile and the judgements cannot drift apart.
+// profile and the judgements cannot drift apart. Python derives cutReasons
+// and subsetOf from the records + found; Dart re-ranks the published ones.
 import 'dart:convert';
 import 'dart:io';
 
@@ -39,6 +40,11 @@ void main() {
     expect(t['minUptime'], HealthThresholds.minUptimeRatio);
     expect(t['minCoverage'], HealthThresholds.minCoverageRatio);
     expect(t['subsetOverlap'], HealthThresholds.subsetOverlap);
+    expect(t['subsetPenalty'], HealthThresholds.subsetPenalty);
+    expect(t['hardChallengeRate'], HealthThresholds.hardChallengeRate);
+    expect(t['completeChapterRatio'], HealthThresholds.completeChapterRatio);
+    expect(t['legacyCoverageShare'], HealthThresholds.legacyCoverageShare);
+    expect(_shared['hardCutCodes'], unorderedEquals(kHardCutCodes));
   });
 
   test('the setting key and its RTDB node are the shared ones', () {
@@ -70,7 +76,9 @@ void main() {
         final want = _map(expected[name]);
         final ranked = rescore(records, _named(name));
         expect(ranked.map((r) => r.id), want['order']);
-        expect(ranked.map((r) => r.rank), [for (var i = 1; i <= 6; i++) i]);
+        expect(ranked.map((r) => r.rank), [
+          for (var i = 1; i <= records.length; i++) i,
+        ]);
         final judged = _map(want['judged']);
         final defaults = _map(_map(_map(expected['default'])['judged']));
         for (final r in ranked) {

@@ -14,6 +14,7 @@ from source_eval.score import (
     COMPLETE_CHAPTERS,
     COVERAGE_MIN,
     HARD_CHALLENGE_RATE,
+    HARD_CODES,
     LEGACY_COVERAGE_SHARE,
     P95_ZERO,
     SUBSET_MIN,
@@ -53,6 +54,7 @@ def test_scale_and_thresholds_are_shared() -> None:
         "completeChapterRatio": COMPLETE_CHAPTERS,
         "legacyCoverageShare": LEGACY_COVERAGE_SHARE,
     }
+    assert SHARED["hardCutCodes"] == sorted(HARD_CODES)
 
 
 def test_setting_key_and_node_are_shared() -> None:

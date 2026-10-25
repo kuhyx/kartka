@@ -27,7 +27,7 @@ SourceHealthRecord rec({
 
 void main() {
   group('scoreOf', () {
-    test('the default profile gives the historic score', () {
+    test('the default profile scores a pre-merge run as the evaluator', () {
       final r = rec(coverage: 0.788);
       final example = SourceHealthRecord.fromJson({
         ...r.toJson(),
@@ -36,25 +36,26 @@ void main() {
         'imageQuality': {'medianWidthPx': 1100},
         'latencyMs': {'p95': 1300},
       })!;
-      expect(scoreOf(example, defaultScoringProfile), 0.852);
+      // score.py on the same record: .5 × (.6 × .788 + .4 × .97) + .2 × .964
+      // + .15 × 1 (1100 px ≥ 1067) + .15 × (1 − 1300 / 5000).
+      expect(scoreOf(example, defaultScoringProfile), 0.884);
     });
 
     test('weights are normalised, so only their ratios matter', () {
       final r = rec(coverage: 0.5);
       const a = ScoringProfile(
         weights: ScoreWeights(
-          coverage: 1,
-          chapterCompleteness: 0.5,
-          uptime: 0.5,
+          completeCoverage: 1,
+          uptime: 1,
           imageQuality: 0,
           speed: 0,
         ),
       );
       const b = ScoringProfile(
-        weights: ScoreWeights(coverage: 0.4, imageQuality: 0, speed: 0),
+        weights: ScoreWeights(uptime: 0.5, imageQuality: 0, speed: 0),
       );
-      expect(scoreOf(r, a), 0.75);
-      expect(scoreOf(r, b), 0.75);
+      expect(scoreOf(r, a), 0.85);
+      expect(scoreOf(r, b), 0.85);
     });
 
     test('the pages-load multiplier can be switched off', () {
@@ -103,7 +104,6 @@ void main() {
         );
         expect(verdictOf(r, 0.99, p), HealthVerdict.keep);
         for (final reason in [
-          HealthReason.subset,
           HealthReason.uptime,
           HealthReason.browserEngine,
         ]) {
@@ -113,10 +113,14 @@ void main() {
             reason: '$reason',
           );
         }
-        expect(
-          verdictOf(r, 0.99, p.copyWith(cuts: {HealthReason.blocking})),
-          HealthVerdict.keep,
-        );
+        // A subset is a graded penalty, never a switch; no blocking code.
+        for (final reason in [HealthReason.subset, HealthReason.blocking]) {
+          expect(
+            verdictOf(r, 0.99, p.copyWith(cuts: {reason})),
+            HealthVerdict.keep,
+            reason: '$reason',
+          );
+        }
       },
     );
 
@@ -158,8 +162,7 @@ void main() {
     test('defaultScore stays the DEFAULT score under a custom profile', () {
       final only = defaultScoringProfile.copyWith(
         weights: const ScoreWeights(
-          coverage: 0,
-          chapterCompleteness: 0,
+          completeCoverage: 0,
           uptime: 0,
           imageQuality: 0,
         ),
@@ -182,15 +185,14 @@ void main() {
   test('the breakdown shows the normalised weights and the profile', () {
     final p = defaultScoringProfile.copyWith(
       weights: const ScoreWeights(
-        coverage: 1,
-        chapterCompleteness: 1,
-        uptime: 0,
+        completeCoverage: 1,
+        uptime: 1,
         imageQuality: 0,
         speed: 0,
       ),
     );
     final parts = scoreBreakdown(rec(), p);
-    expect(parts.map((q) => q.weight), [0.5, 0.5, 0, 0, 0]);
+    expect(parts.map((q) => q.weight), [0.5, 0.5, 0, 0]);
     expect(recomputedScore(rec(pages: 0.5), p), closeTo(0.5, 1e-9));
     expect(
       recomputedScore(rec(pages: 0.5), p.copyWith(pagesLoadMultiplier: false)),

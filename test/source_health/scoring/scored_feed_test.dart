@@ -51,8 +51,7 @@ SourceHealthRecord rec(
 
 const _onlyCoverage = ScoringProfile(
   weights: ScoreWeights(
-    coverage: 1,
-    chapterCompleteness: 0,
+    completeCoverage: 1,
     uptime: 0,
     imageQuality: 0,
     speed: 0,
@@ -105,7 +104,8 @@ void main() {
     await pumpEventQueue();
     expect(out.last.map((r) => (r.id, r.score, r.rank, r.verdict)), [
       ('b', 1.0, 1, HealthVerdict.keep),
-      ('a', 0.5, 2, HealthVerdict.cut),
+      // A pre-merge run: .6 × coverage .5 + .4 × completeness 1.
+      ('a', 0.7, 2, HealthVerdict.cut),
     ]);
     expect(metas.last!.verdicts, const VerdictCounts(keep: 1, cut: 1));
     expect(metas.last!.runId, 'r');

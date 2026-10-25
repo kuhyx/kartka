@@ -33,9 +33,24 @@ HealthVerdict verdictOf(
   ScoringProfile profile,
 ) {
   if (r.cutReasons.any(kHardCutCodes.contains)) return HealthVerdict.cut;
-  if (reasonsOf(r).any(profile.cuts.contains)) return HealthVerdict.cut;
+  if (applicableCuts(r).any(profile.cuts.contains)) return HealthVerdict.cut;
   if (score >= profile.keepScore) return HealthVerdict.keep;
   return r.coverage?.ratio == null ? HealthVerdict.pending : HealthVerdict.cut;
+}
+
+/// The cut switches that apply to [r], exactly as the evaluator's
+/// `applicable_cuts`: from its published cut-reason codes, the
+/// needs-browser-engine flag and a pages-load ratio of 0. Narrower than
+/// [reasonsOf] (the filter chips), which also reads the blocking kinds.
+Set<HealthReason> applicableCuts(SourceHealthRecord r) {
+  bool code(String prefix) => r.cutReasons.any((c) => c.startsWith(prefix));
+  return {
+    if (code('blocking')) HealthReason.blocking,
+    if (code('coverage')) HealthReason.coverage,
+    if (code('uptime')) HealthReason.uptime,
+    if (r.needsBrowserEngine) HealthReason.browserEngine,
+    if (r.pagesLoad?.ratio == 0) HealthReason.pagesNeverLoad,
+  };
 }
 
 const _originOrder = {'native': 0, 'suwayomi': 1, 'plugin': 2};

@@ -8,6 +8,7 @@
     "subsetPenalty": 0.5, "hardChallengeRate": 0.5,
     "completeChapterRatio": 0.8, "legacyCoverageShare": 0.6
   },
+  "hardCutCodes": ["blocking>=0.50", "unreachable"],
   "default": {
     "weights": {
       "completeCoverage": 0.50, "uptime": 0.20, "imageQuality": 0.15,
@@ -172,37 +173,46 @@
      "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
      "blocking": {"challengeRate": 0.7, "kinds": ["webview"], "hardRate": 0},
      "pagesLoad": {"ratio": 1, "sampled": 10},
-     "flags": ["needs-browser-engine"], "subsetOf": null, "cutReasons": []}
+     "flags": ["needs-browser-engine"], "subsetOf": null, "cutReasons": []},
+    {"id": "oldwebview", "origin": "native", "coverage": {"ratio": 1},
+     "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
+     "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
+     "blocking": {"challengeRate": 0.2, "kinds": ["webview"]},
+     "pagesLoad": {"ratio": 1, "sampled": 10},
+     "subsetOf": null, "cutReasons": []}
   ],
   "expect": {
     "default": {
-      "order": ["dead", "webview", "star", "walled", "browser", "legacy", "slow",
+      "order": ["dead", "oldwebview", "webview", "star", "walled", "browser", "legacy", "slow",
                 "lowcover", "copy", "unmeasured", "nopages"],
       "judged": {
         "star": [1.0, "keep"], "slow": [0.85, "cut"], "nopages": [0.0, "cut"],
         "webview": [1.0, "keep"], "unmeasured": [0.0, "pending"],
         "lowcover": [0.75, "cut"], "legacy": [0.9, "keep"], "copy": [0.7, "cut"],
-        "dead": [1.0, "cut"], "walled": [1.0, "cut"], "browser": [1.0, "keep"]
+        "dead": [1.0, "cut"], "walled": [1.0, "cut"],
+        "oldwebview": [1.0, "keep"], "browser": [1.0, "keep"]
       }
     },
     "speedOnly": {
-      "order": ["dead", "webview", "legacy", "lowcover", "nopages", "star", "walled",
+      "order": ["dead", "oldwebview", "webview", "legacy", "lowcover", "nopages", "star", "walled",
                 "browser", "copy", "unmeasured", "slow"],
       "judged": {
         "star": [1.0, "keep"], "slow": [0.0, "cut"], "nopages": [1.0, "keep"],
         "webview": [1.0, "cut"], "unmeasured": [0.0, "pending"],
         "lowcover": [1.0, "keep"], "legacy": [1.0, "keep"], "copy": [0.7, "cut"],
-        "dead": [1.0, "cut"], "walled": [1.0, "cut"], "browser": [1.0, "cut"]
+        "dead": [1.0, "cut"], "walled": [1.0, "cut"],
+        "oldwebview": [1.0, "keep"], "browser": [1.0, "cut"]
       }
     },
     "uneven": {
-      "order": ["dead", "webview", "star", "walled", "browser", "slow", "legacy",
+      "order": ["dead", "oldwebview", "webview", "star", "walled", "browser", "slow", "legacy",
                 "copy", "lowcover", "unmeasured", "nopages"],
       "judged": {
         "star": [1.0, "keep"], "slow": [1.0, "keep"], "nopages": [0.0, "cut"],
         "webview": [1.0, "keep"], "unmeasured": [0.0, "pending"],
         "lowcover": [0.667, "cut"], "legacy": [0.867, "cut"], "copy": [0.7, "cut"],
-        "dead": [1.0, "cut"], "walled": [1.0, "cut"], "browser": [1.0, "keep"]
+        "dead": [1.0, "cut"], "walled": [1.0, "cut"],
+        "oldwebview": [1.0, "keep"], "browser": [1.0, "keep"]
       }
     }
   }

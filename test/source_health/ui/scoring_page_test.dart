@@ -41,26 +41,26 @@ void main() {
     await pump(tester);
     expect(find.text('Using the evaluator defaults.'), findsOne);
     for (final label in [
-      'Coverage',
-      'Chapter completeness',
+      'Coverage (with complete chapters)',
       'Uptime',
       'Image quality',
       'Speed (latency)',
     ]) {
       expect(find.text(label), findsOne, reason: label);
     }
-    expect(find.text('30 % of the score'), findsOne);
+    expect(find.text('50 % of the score'), findsOne);
     expect(find.text('Keep at score ≥ 0.90'), findsOne);
-    expect(find.byKey(const Key('only-4')), findsOne);
+    expect(find.byKey(const Key('only-3')), findsOne);
+    expect(find.byKey(const Key('only-4')), findsNothing);
     for (final wire in [
       'blocking',
-      'subset',
       'coverage',
       'uptime',
       'needsBrowserEngine',
       'pagesNeverLoad',
     ]) {
       expect(find.byKey(Key('cut-$wire')), findsOne, reason: wire);
+      expect(find.byKey(const Key('cut-subset')), findsNothing);
     }
     final reset = tester.widget<FilledButton>(
       find.byKey(const Key('reset-scoring')),
@@ -77,11 +77,11 @@ void main() {
       const Offset(-2000, 0),
     );
     await tester.pump();
-    expect(store.profile.value.weights.coverage, 0);
+    expect(store.profile.value.weights.completeCoverage, 0);
     expect(store.profile.value.isDefault, isFalse);
     expect(find.textContaining('custom profile'), findsOne);
     final json = await stored(tester);
-    expect((json!['weights']! as Map)['coverage'], 0);
+    expect((json!['weights']! as Map)['completeCoverage'], 0);
     expect(find.text('0 % of the score'), findsOne);
   });
 
@@ -90,11 +90,14 @@ void main() {
   ) async {
     await pump(tester);
     await tapKey(tester, 'only-2');
-    expect(store.profile.value.weights.values, [0, 0, 0.20, 0, 0]);
+    expect(store.profile.value.weights.values, [0, 0, 0.15, 0]);
     expect(find.text('100 % of the score'), findsOne);
-    expect((await stored(tester))!['weights'], containsPair('uptime', 0.2));
+    expect(
+      (await stored(tester))!['weights'],
+      containsPair('imageQuality', 0.15),
+    );
     await tapKey(tester, 'only-0');
-    expect(store.profile.value.weights.values, [1, 0, 0, 0, 0]);
+    expect(store.profile.value.weights.values, [1, 0, 0, 0]);
   });
 
   testWidgets('the last non-zero weight cannot be dragged to 0', (
@@ -107,7 +110,7 @@ void main() {
       const Offset(-2000, 0),
     );
     await tester.pump();
-    expect(store.profile.value.weights.chapterCompleteness, greaterThan(0));
+    expect(store.profile.value.weights.uptime, greaterThan(0));
     expect(store.profile.value.weights.total, greaterThan(0));
   });
 
@@ -117,10 +120,10 @@ void main() {
     await pump(tester);
     await tapKey(tester, 'pages-multiplier');
     expect(store.profile.value.pagesLoadMultiplier, isFalse);
-    await tapKey(tester, 'cut-subset');
+    await tapKey(tester, 'cut-blocking');
     await tapKey(tester, 'cut-pagesNeverLoad');
     expect(store.profile.value.cuts, hasLength(2));
-    await tapKey(tester, 'cut-subset');
+    await tapKey(tester, 'cut-blocking');
     expect(store.profile.value.cuts, hasLength(1));
     await tester.drag(
       find.byKey(const Key('keep-score')),

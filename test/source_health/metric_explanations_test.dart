@@ -26,9 +26,15 @@ void main() {
     expect(e['Uptime']!.threshold, contains('28 probes'));
     expect(e['Latency']!.threshold, contains('5.0 s'));
     expect(e['Blocking']!.threshold, contains('0 %'));
+    expect(e['Blocking']!.threshold, contains('50 % or more rules'));
     expect(e['Coverage']!.threshold, contains('60 %'));
-    expect(e['Image quality']!.threshold, contains('1400 px'));
-    expect(e['Subset of another source']!.threshold, contains('90 %'));
+    expect(e['Coverage']!.meaning, contains('80 % of its chapters'));
+    expect(e['Image quality']!.threshold, contains('1067 px'));
+    expect(e['Subset of another source']!.threshold, contains('50 %'));
+    expect(
+      e['Subset of another source']!.threshold,
+      contains('multiplied by 1 − 0.5 × that share'),
+    );
     for (final x in e.values) {
       expect(x.meaning, isNotEmpty);
       expect(x.value, isNotEmpty);

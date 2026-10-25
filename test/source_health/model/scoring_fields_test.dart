@@ -64,7 +64,7 @@ void main() {
   group('meta profile', () {
     final custom = defaultScoringProfile.copyWith(
       keepScore: 0.5,
-      cuts: {HealthReason.subset},
+      cuts: {HealthReason.uptime},
     );
 
     test('parses, names and round-trips the run profile', () {
@@ -114,7 +114,7 @@ void main() {
       expect(a.name, 'custom');
       expect(
         defaultScoringProfile.weights,
-        isNot(const ScoreWeights(coverage: 0.5)),
+        isNot(const ScoreWeights(completeCoverage: 0.4)),
       );
       expect(const ScoreWeights().hashCode, const ScoreWeights().hashCode);
     });

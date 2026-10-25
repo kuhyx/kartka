@@ -25,7 +25,7 @@ class _Sync implements SettingsSync {
 
 final ScoringProfile _custom = defaultScoringProfile.copyWith(
   keepScore: 0.5,
-  cuts: {HealthReason.subset},
+  cuts: {HealthReason.uptime},
 );
 
 void main() {
@@ -82,8 +82,7 @@ void main() {
     await store.save(
       defaultScoringProfile.copyWith(
         weights: const ScoreWeights(
-          coverage: 0,
-          chapterCompleteness: 0,
+          completeCoverage: 0,
           uptime: 0,
           imageQuality: 0,
           speed: 0,

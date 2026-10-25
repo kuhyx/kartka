@@ -75,7 +75,7 @@ void main() {
     await tester.tap(find.byKey(const Key('open-scoring')));
     await tester.pumpAndSettle();
     expect(find.byType(ScoringPage), findsOne);
-    await tester.tap(find.byKey(const Key('only-3')));
+    await tester.tap(find.byKey(const Key('only-2')));
     await tester.pump();
     await tester.pump();
     Navigator.of(tester.element(find.byType(ScoringPage))).pop();
@@ -83,9 +83,10 @@ void main() {
 
     expect(find.text('Scoring · custom'), findsOne);
     expect(cardOrder(tester, ['a', 'b']), ['b', 'a']);
-    // The default scores (0.957 and 0.3 * 0.4 + 0.7) show next to the new.
+    // The default scores (score.py: 0.991, and .5 × (.6 × .4 + .4) + .5)
+    // show next to the new.
     expect(find.byKey(const Key('default-score')), findsNWidgets(2));
-    expect(find.text('default 0.96'), findsOne);
+    expect(find.text('default 0.99'), findsOne);
     expect(find.text('default 0.82'), findsOne);
   });
 
@@ -112,8 +113,7 @@ void main() {
     store.preview(
       const ScoringProfile(
         weights: ScoreWeights(
-          coverage: 1,
-          chapterCompleteness: 0,
+          completeCoverage: 1,
           uptime: 0,
           imageQuality: 0,
           speed: 0,
@@ -138,15 +138,14 @@ void main() {
     tallSurface(tester);
     const profile = ScoringProfile(
       weights: ScoreWeights(
-        coverage: 1,
-        chapterCompleteness: 0,
+        completeCoverage: 1,
         uptime: 0,
         imageQuality: 0,
         speed: 0,
       ),
       pagesLoadMultiplier: false,
       keepScore: 0.5,
-      cuts: {HealthReason.subset},
+      cuts: {HealthReason.uptime},
     );
     final r = SourceHealthRecord.fromJson({
       ...rec('x', defaultScore: 0.7).toJson(),

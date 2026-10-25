@@ -124,8 +124,8 @@ List<MetricExplanation> _explainMetrics(
     threshold:
         'Low-score reason above ${pct(HealthThresholds.maxChallengeRate)}: '
         'Kartka never bypasses challenges; '
-        '${pct(HealthThresholds.hardChallengeRate)} or more cuts the source '
-        'whatever its score. Needing a browser engine only raises the '
+        '${pct(HealthThresholds.hardChallengeRate)} or more rules the source '
+        'out whatever its score. Needing a browser engine only raises the '
         '"Needs browser engine" flag.',
     status: (r.blocking?.onlyBrowserEngine ?? false)
         ? MetricStatus.info

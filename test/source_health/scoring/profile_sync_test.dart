@@ -24,7 +24,7 @@ void main() {
       await Future.wait([storeA.ready, storeB.ready]);
       final custom = defaultScoringProfile.copyWith(
         keepScore: 0.5,
-        cuts: {HealthReason.subset},
+        cuts: {HealthReason.uptime},
       );
 
       await storeA.save(custom);
