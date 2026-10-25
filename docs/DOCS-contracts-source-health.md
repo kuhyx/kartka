@@ -23,7 +23,7 @@ under the line cap; same rules. Implementation notes:
   "subsetOf": {"sourceId": "mangadex", "overlap": 0.93},
   "score": 0.852, "rank": 3,
   "verdict": "keep|cut|pending",
-  "cutReasons": ["uptime<0.95", "blocking", "coverage<0.60", "pages", "subset"],
+  "cutReasons": ["uptime<0.95", "blocking", "coverage<0.60", "subset"],
   "flags": ["needs-browser-engine"]
 }
 ```
@@ -43,19 +43,22 @@ under the line cap; same rules. Implementation notes:
   whose page list failed, came back empty, or had an image fail counts as not
   loaded. `ratio` is `null` when no chapter was attempted.
 - **Subset**: ≥ 90 % of a source's found titles also found by a higher-ranked,
-  not-cut source with ≥ its image quality → `subsetOf` set, verdict `cut`.
-- **Cut rules**: uptime ratio < 0.95 (only once `final`), challengeRate > 0
-  from any kind other than `webview`, coverage < 0.60, `pages` (pagesLoad
-  ratio exactly 0, i.e. no sampled chapter's pages loaded; a `null` ratio is
-  no reason), subset.
-- **Verdict** (2026-10-25): score ≥ 0.90 (`KEEP_SCORE`) → `keep`, overriding
-  every cut reason and `pending`; `cutReasons` is still published and the UI
-  shows it as warnings. Below 0.90: `cut` if any cut reason; else `pending`
-  while uptime accrues or coverage is unmeasured; else `keep`.
+  not-cut source with ≥ its image quality → `subsetOf` set and `subset` added
+  to `cutReasons` (explanatory only, see Verdict).
+- **Cut reasons (explanatory only)**: `uptime<0.95` (ratio < 0.95, only once
+  `final`), `blocking` (challengeRate > 0 from any kind other than `webview`),
+  `coverage<0.60`, `subset`. They are computed and published in `cutReasons`
+  to explain a low score and the UI shows them, but they **never decide the
+  verdict**. Page loading has no reason of its own: it only lowers the score.
+- **Verdict** (score only, 2026-10-25): score ≥ 0.90 (`KEEP_SCORE`) → `keep`;
+  `pending` only while the source is not yet measured (`coverage.ratio` is
+  `null`); otherwise `cut`. Uptime still accruing does not force `pending`
+  (uptime is already a score component). A `keep` may carry `cutReasons`
+  (warnings); a `cut` may carry none.
 - **Score**: (0.30 coverage + 0.20 completeness + 0.20 uptime + 0.15 image
   quality (width/1400 capped) + 0.15 latency (1 − p95/5000 capped at 0)) ×
   `pagesLoad.ratio` when that is not `null`, so a source whose pages never
-  load scores 0 and is cut (`pages`).
+  load scores 0 and is cut by its score alone.
 - **As built** (evaluator, 2026-10-24): every record also carries
   `availability: {native, mangayomiJs, keiyoushi}` (bools: where else the
   source can be read). `blocking.kinds` may also list `webview` (the extension
@@ -71,7 +74,7 @@ under the line cap; same rules. Implementation notes:
   `coverage.found/ratio`, `chapterCompleteness.medianRatio`,
   `imageQuality.medianJpegQuality`, `pagesLoad.ratio`); it adds 0 to the
   score (an unknown `pagesLoad` leaves it unscaled), and an unmeasured
-  coverage keeps the verdict `pending` (below 0.90). `subsetOf` is `null`
+  coverage makes the verdict `pending`. `subsetOf` is `null`
   unless the source is a subset. The UI shows "not measured". The run file
   wraps records as `{generatedAt, runId, referenceSize, sources: [§5...],
   summary: {hostsBlockedHere: [id], keepOnlyViaKeiyoushi: [id],

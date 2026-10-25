@@ -1,5 +1,5 @@
 # Copyright (c) 2026 Krzysztof Rudnicki
-"""Score, rank, subset detection and verdicts (contract §5 rules)."""
+"""Score, rank and verdicts (contract §5); cut reasons only explain a low score."""
 
 from __future__ import annotations
 
@@ -10,8 +10,8 @@ from source_eval.challenge import WEBVIEW
 UPTIME_MIN = 0.95
 COVERAGE_MIN = 0.60
 SUBSET_MIN = 0.90
-#: A score at or above this keeps the source whatever its cut reasons say
-#: (they are still published, as warnings).
+#: The verdict is the score alone: at or above this a source is kept, below
+#: it cut (``pending`` while nothing is measured). Cut reasons never decide.
 KEEP_SCORE = 0.90
 _WIDTH_FULL, _P95_ZERO = 1400.0, 5000.0
 _ORIGIN_ORDER = {"native": 0, "suwayomi": 1, "plugin": 2}
@@ -60,7 +60,11 @@ def _blocked(record: Record) -> bool:
 
 
 def cut_reasons(record: Record) -> list[str]:
-    """Contract cut rules, except ``subset`` (needs the ranking)."""
+    """Explanations of a low score, except ``subset`` (needs the ranking).
+
+    Explanatory only: they never decide the verdict. Page loading has no
+    reason of its own; it lowers the score (``pagesLoad.ratio`` multiplies it).
+    """
     reasons = []
     up = cast("dict[str, object]", record["uptime"])
     ratio = _get(record, "uptime", "ratio")
@@ -71,19 +75,14 @@ def cut_reasons(record: Record) -> list[str]:
     coverage = _get(record, "coverage", "ratio")
     if coverage is not None and coverage < COVERAGE_MIN:
         reasons.append("coverage<0.60")
-    if _pages_ratio(record) == 0:  # pages never load; null (unmeasured) is no reason
-        reasons.append("pages")
     return reasons
 
 
-def _verdict(record: Record, reasons: list[str]) -> str:
+def _verdict(record: Record) -> str:
+    """Score alone: ``keep`` at KEEP_SCORE+, ``pending`` if unmeasured, else ``cut``."""
     if cast("float", record["score"]) >= KEEP_SCORE:
         return "keep"
-    if reasons:
-        return "cut"
-    accruing = cast("dict[str, object]", record["uptime"])["status"] != "final"
-    unmeasured = _get(record, "coverage", "ratio") is None
-    return "pending" if accruing or unmeasured else "keep"
+    return "pending" if _get(record, "coverage", "ratio") is None else "cut"
 
 
 def _wider_or_equal(better: Record, worse: Record) -> bool:
@@ -99,7 +98,8 @@ def rank(records: list[Record], found: dict[str, set[str]]) -> list[Record]:
 
     ``found`` maps source id to the reference keys it found. A source whose
     found titles are >= 90 % found by a higher-ranked, not-cut source with
-    at least its image width is a ``subset`` and is cut.
+    at least its image width gets ``subsetOf`` and a ``subset`` cut reason
+    (explanatory: the verdict still comes from the score).
     """
     for record in records:
         record["score"] = score(record)
@@ -131,5 +131,5 @@ def rank(records: list[Record], found: dict[str, set[str]]) -> list[Record]:
             record["subsetOf"] = {"sourceId": best[1], "overlap": round(best[0], 3)}
             reasons.append("subset")
         record["cutReasons"] = reasons
-        record["verdict"] = _verdict(record, reasons)
+        record["verdict"] = _verdict(record)
     return ordered

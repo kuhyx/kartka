@@ -1,5 +1,5 @@
 # Copyright (c) 2026 Krzysztof Rudnicki
-"""pagesLoad factor, the KEEP_SCORE override and langScope."""
+"""pagesLoad factor, the score-only verdict and langScope."""
 
 from __future__ import annotations
 
@@ -51,15 +51,15 @@ def test_pages_never_loading_scores_zero() -> None:
     assert score(perfect("x")) == 1.0  # no block at all
 
 
-def test_pages_never_loading_is_cut() -> None:
+def test_pages_never_loading_is_cut_by_score_alone() -> None:
     ranked = rank([with_pages(perfect("x"), 0.0)], {})
     assert ranked[0]["score"] == 0.0
-    assert ranked[0]["cutReasons"] == ["pages"]
+    assert ranked[0]["cutReasons"] == []  # no separate "pages" reason
     assert ranked[0]["verdict"] == "cut"
     accruing = with_pages(perfect("y", status="accruing"), 0.0)
     assert rank([accruing], {})[0]["verdict"] == "cut"
-    assert cut_reasons(with_pages(perfect("z"), None, 0)) == []  # unknown: no reason
-    assert cut_reasons(with_pages(perfect("w"), 0.1)) == []
+    assert cut_reasons(with_pages(perfect("z"), None, 0)) == []
+    assert cut_reasons(with_pages(perfect("w"), 0.0)) == []
 
 
 def test_high_score_keeps_despite_cut_reasons() -> None:
@@ -78,6 +78,15 @@ def test_high_score_keeps_while_uptime_accrues() -> None:
     assert rank([new], {})[0]["verdict"] == "keep"
     unmeasured = record("u", coverage=None, complete=1, up=1, width=1400, p95=0)
     assert rank([unmeasured], {})[0]["verdict"] == "pending"  # scores 0.7
+
+
+def test_measured_low_score_is_cut_not_pending() -> None:
+    accruing = record("a", status="accruing")  # no cut reason, score 0.869
+    out = rank([accruing], {})[0]
+    assert out["cutReasons"] == []
+    assert out["verdict"] == "cut"
+    plain = record("p")
+    assert rank([plain], {})[0]["verdict"] == "cut"
 
 
 def test_just_below_keep_score_is_still_cut() -> None:

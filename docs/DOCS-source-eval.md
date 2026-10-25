@@ -111,12 +111,12 @@ and FlareSolverr off (the local dev server and the live deploy both do).
   hypothesis test round-trips Pillow `quality=q`). Median over JPEGs only, so
   `null` for WebP/PNG-only sources.
 - **Unmeasured metrics are `null`, never 0**: a source no backend can read
-  is never cut for coverage; it stays `pending`. It scores 0 for that term.
+  is never judged on coverage; its verdict stays `pending`. It scores 0 for that term.
 - **pagesLoad**: loaded / attempted chapters of the image step, read from the
   stored per-chapter outcomes (`state.images`: an `error` or an empty page
   list is a failure), so any existing run state re-reports without
-  re-measuring. `null` when no chapter was attempted. A ratio of exactly 0
-  adds the `pages` cut reason (`null` adds none).
+  re-measuring. `null` when no chapter was attempted. It only scales the
+  score (no cut reason): a ratio of 0 scores 0, `null` leaves it unscaled.
 - **langScope**: `en+ja` unless the source is `all` (then `unrestricted`).
   Restricting an `all` Suwayomi extension would need per-extension language
   preferences (keys differ per extension and are unverified here); MangaDex
@@ -129,10 +129,11 @@ and FlareSolverr off (the local dev server and the live deploy both do).
   ≤; unknown width of the higher one never qualifies). Same-host pairs are
   compared too (native vs Suwayomi MangaDex): the lower one is redundant.
   Ties rank native > suwayomi > plugin.
-- **verdict**: score ≥ `KEEP_SCORE` (0.90) → `keep` whatever the cut
-  reasons (still published as warnings) or uptime status. Below it: `cut` if
-  any cut reason; else `pending` while uptime accrues or nothing was
-  measured; else `keep`.
+- **verdict**: the score alone. ≥ `KEEP_SCORE` (0.90) → `keep`; `pending`
+  only while nothing was measured (coverage ratio `null`); else `cut`. Uptime
+  still accruing no longer forces `pending`. The cut reasons (`uptime<0.95`,
+  `blocking`, `coverage<0.60`, `subset`) are still computed and published in
+  `cutReasons`, as explanations of a low score only; they never decide.
 - **meta**: `{runId, generatedAt, candidates, tested, verdicts, skipped}`
   (contract §5 "Run meta"); `--publish` PATCHes it to
   `/kartka/source_health_meta` after the records.

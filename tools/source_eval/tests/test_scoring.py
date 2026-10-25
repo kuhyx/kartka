@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+from typing import Any
 
 from hypothesis import given
 from hypothesis import strategies as st
@@ -82,14 +83,17 @@ def test_cut_reasons() -> None:
 
 
 def test_rank_verdicts_and_subset() -> None:
-    # complete=0.5 keeps every score below KEEP_SCORE, so the rules decide.
+    # The score alone decides the verdict; cutReasons only explain it.
+    def strong(rid: str, **kw: Any) -> Record:  # noqa: ANN401
+        return record(rid, complete=1, p95=0, **kw)
+
     records = [
-        record("big", coverage=0.9, complete=0.5),
-        record("dup", coverage=0.85, complete=0.5),
-        record("narrow", coverage=0.85, width=2000, complete=0.5),
-        record("new", coverage=0.7, status="accruing", complete=0.5),
-        record("plugin", coverage=None, origin="plugin", complete=0.5),
-        record("blocked", coverage=0.95, challenge=0.5, complete=0.5),
+        strong("big", coverage=0.9),
+        strong("dup", coverage=0.85),
+        strong("narrow", coverage=0.85, width=2000),
+        strong("new", coverage=0.7, status="accruing"),
+        strong("plugin", coverage=None, origin="plugin"),
+        record("blocked", coverage=0.95, challenge=0.5, complete=0.5, p95=0),
     ]
     found = {
         "big": {"a", "b", "c", "d"},
@@ -99,26 +103,31 @@ def test_rank_verdicts_and_subset() -> None:
         "blocked": {"a", "b", "c", "d", "e"},
     }
     ranked = {r["id"]: r for r in rank(copy.deepcopy(records), found)}
+    assert [ranked[k]["rank"] for k in ("narrow", "big", "dup")] == [1, 2, 3]
     assert ranked["big"]["verdict"] == "keep"
-    assert ranked["big"]["rank"] == 1 or ranked["blocked"]["rank"] == 1
     assert ranked["blocked"]["verdict"] == "cut"
+    assert ranked["blocked"]["cutReasons"] == ["blocking"]
     # "narrow" outranks "big" (wider images) and is the best superset of "dup".
     assert ranked["dup"]["subsetOf"] == {"sourceId": "narrow", "overlap": 1.0}
     assert ranked["dup"]["cutReasons"] == ["subset"]
+    assert ranked["dup"]["verdict"] == "keep"  # explanatory only: score 0.934
     assert ranked["narrow"]["subsetOf"] is None  # outranks "big"
     assert ranked["big"]["subsetOf"] is None  # "narrow" lacks "d"
-    assert ranked["new"]["verdict"] == "pending"
-    assert ranked["plugin"]["verdict"] == "pending"
+    assert ranked["new"]["verdict"] == "cut"  # measured, score 0.889, uptime accruing
+    assert ranked["new"]["cutReasons"] == []
+    assert ranked["plugin"]["verdict"] == "pending"  # nothing measured
 
 
 def test_subset_needs_comparable_images() -> None:
-    no_width = record("a", coverage=0.9, width=None)
-    measured = record("b", coverage=0.8)
-    unknown_b = record("c", coverage=0.7, width=None)
-    wide = record("d", coverage=0.3, width=1400)
+    # Only "b" scores >= KEEP_SCORE; a cut source is never a covering one.
+    no_width = record("a", coverage=0.9, width=None, complete=1, p95=0)
+    measured = record("b", coverage=0.8, complete=1, p95=0)
+    unknown_b = record("c", coverage=0.7, width=None, complete=1, p95=0)
+    wide = record("d", coverage=0.3, width=1400, complete=1, p95=0)
     found = {"a": {"x"}, "b": {"x"}, "c": {"x"}, "d": {"x"}}
     ranked = {r["id"]: r for r in rank([no_width, measured, unknown_b, wide], found)}
-    assert ranked["b"]["rank"] == 1  # "a" scores 0 for its unknown width
+    assert ranked["b"]["rank"] == 1  # "a" scores low for its unknown width
+    assert ranked["a"]["verdict"] == "cut"
     assert ranked["a"]["subsetOf"] == {"sourceId": "b", "overlap": 1.0}
     assert ranked["d"]["subsetOf"] is None  # nobody above is known to be as wide
     assert ranked["c"]["subsetOf"] == {"sourceId": "b", "overlap": 1.0}
@@ -132,11 +141,13 @@ def test_rank_tie_break_prefers_native() -> None:
 
 
 def test_webview_only_challenges_are_not_a_cut_reason() -> None:
-    allmanga = record("a", challenge=0.06, kinds=["webview"])
+    allmanga = record("a", challenge=0.06, kinds=["webview"], complete=1, p95=0)
     assert cut_reasons(allmanga) == []
     assert rank([allmanga], {})[0]["verdict"] == "keep"
-    pending = record("p", challenge=0.06, kinds=["webview"], status="accruing")
-    assert rank([pending], {})[0]["verdict"] == "pending"
+    weak = record("w", challenge=0.06, kinds=["webview"])  # score 0.869
+    out = rank([weak], {})[0]
+    assert out["cutReasons"] == []
+    assert out["verdict"] == "cut"  # no reason listed, yet the score is too low
 
 
 def test_webview_mixed_with_a_real_challenge_still_cuts() -> None:
