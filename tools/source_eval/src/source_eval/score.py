@@ -1,19 +1,26 @@
 # Copyright (c) 2026 Krzysztof Rudnicki
-"""Score, rank and verdicts (contract §5); cut reasons only explain a low score."""
+"""Score, rank and verdicts (contract §5) under a scoring profile.
+
+Under the DEFAULT profile no cut switch is on, so the verdict is the score
+alone and cut reasons only explain a low score; a custom profile can turn
+reasons into cuts.
+"""
 
 from __future__ import annotations
 
 from typing import cast
 
 from source_eval.challenge import WEBVIEW
+from source_eval.profile import DEFAULT, Profile
 
 UPTIME_MIN = 0.95
 COVERAGE_MIN = 0.60
 SUBSET_MIN = 0.90
-#: The verdict is the score alone: at or above this a source is kept, below
-#: it cut (``pending`` while nothing is measured). Cut reasons never decide.
-KEEP_SCORE = 0.90
-_WIDTH_FULL, _P95_ZERO = 1400.0, 5000.0
+#: The DEFAULT profile's keep bar (kept for readers of the old constant).
+KEEP_SCORE = DEFAULT.keep_score
+#: Image width that earns the full image-quality score, and the p95 latency
+#: at which the speed score reaches 0.
+WIDTH_FULL, P95_ZERO = 1400.0, 5000.0
 _ORIGIN_ORDER = {"native": 0, "suwayomi": 1, "plugin": 2}
 
 Record = dict[str, object]
@@ -30,23 +37,24 @@ def _pages_ratio(record: Record) -> float | None:
     return float(cast("float", value)) if value is not None else None
 
 
-def score(record: Record) -> float:
-    """Weighted score in [0, 1]; an unmeasured metric contributes 0.
+def score(record: Record, profile: Profile = DEFAULT) -> float:
+    """Normalised weighted score in [0, 1]; an unmeasured metric contributes 0.
 
-    The weighted sum is multiplied by ``pagesLoad.ratio`` when that is known,
-    so a source whose page images never download scores 0.
+    With the profile's pages-load multiplier on, the sum is multiplied by
+    ``pagesLoad.ratio`` when that is known, so a source whose page images
+    never download scores 0.
     """
     coverage = _get(record, "coverage", "ratio") or 0.0
     complete = _get(record, "chapterCompleteness", "medianRatio") or 0.0
     up = _get(record, "uptime", "ratio") or 0.0
     width = _get(record, "imageQuality", "medianWidthPx")
     p95 = _get(record, "latencyMs", "p95")
-    quality = min(1.0, width / _WIDTH_FULL) if width is not None else 0.0
-    speed = max(0.0, 1.0 - p95 / _P95_ZERO) if p95 is not None else 0.0
-    total = (
-        0.30 * coverage + 0.20 * complete + 0.20 * up + 0.15 * quality + 0.15 * speed
-    )
-    pages = _pages_ratio(record)
+    quality = min(1.0, width / WIDTH_FULL) if width is not None else 0.0
+    speed = max(0.0, 1.0 - p95 / P95_ZERO) if p95 is not None else 0.0
+    weights = profile.weights.normalised()
+    parts = (coverage, complete, up, quality, speed)
+    total = sum(w * part for w, part in zip(weights, parts, strict=True))
+    pages = _pages_ratio(record) if profile.pages_load_multiplier else None
     return round(total * pages if pages is not None else total, 3)
 
 
@@ -78,9 +86,34 @@ def cut_reasons(record: Record) -> list[str]:
     return reasons
 
 
-def _verdict(record: Record) -> str:
-    """Score alone: ``keep`` at KEEP_SCORE+, ``pending`` if unmeasured, else ``cut``."""
-    if cast("float", record["score"]) >= KEEP_SCORE:
+def applicable_cuts(record: Record) -> set[str]:
+    """Wire names of the cut reasons that apply to a ranked ``record``.
+
+    From its published ``cutReasons`` (which include ``subset``), the
+    ``needs-browser-engine`` flag and a ``pagesLoad.ratio`` of exactly 0.
+    """
+    codes = cast("list[str]", record.get("cutReasons") or [])
+    applies = {
+        name
+        for name in ("blocking", "subset", "coverage", "uptime")
+        if any(code.startswith(name) for code in codes)
+    }
+    if "needs-browser-engine" in cast("list[str]", record.get("flags") or []):
+        applies.add("needsBrowserEngine")
+    if _pages_ratio(record) == 0:
+        applies.add("pagesNeverLoad")
+    return applies
+
+
+def verdict(record: Record, profile: Profile = DEFAULT) -> str:
+    """An enabled cut switch whose reason applies cuts; else the score decides.
+
+    Else ``keep`` at ``keepScore`` or more, ``pending`` while unmeasured
+    (``coverage.ratio`` is null), otherwise ``cut``.
+    """
+    if applicable_cuts(record) & profile.cuts.enabled():
+        return "cut"
+    if cast("float", record["score"]) >= profile.keep_score:
         return "keep"
     return "pending" if _get(record, "coverage", "ratio") is None else "cut"
 
@@ -93,16 +126,22 @@ def _wider_or_equal(better: Record, worse: Record) -> bool:
     return w_better is not None and w_better >= w_worse
 
 
-def rank(records: list[Record], found: dict[str, set[str]]) -> list[Record]:
+def rank(
+    records: list[Record],
+    found: dict[str, set[str]],
+    profile: Profile = DEFAULT,
+) -> list[Record]:
     """Score, rank (1 = best) and judge every record; returns them in rank order.
 
     ``found`` maps source id to the reference keys it found. A source whose
     found titles are >= 90 % found by a higher-ranked, not-cut source with
     at least its image width gets ``subsetOf`` and a ``subset`` cut reason
-    (explanatory: the verdict still comes from the score).
+    (explanatory unless the profile's ``subset`` switch is on). Every record
+    carries ``score`` under ``profile`` and ``defaultScore`` under DEFAULT.
     """
     for record in records:
-        record["score"] = score(record)
+        record["score"] = score(record, profile)
+        record["defaultScore"] = score(record, DEFAULT)
     ordered = sorted(
         records,
         key=lambda r: (
@@ -131,5 +170,5 @@ def rank(records: list[Record], found: dict[str, set[str]]) -> list[Record]:
             record["subsetOf"] = {"sourceId": best[1], "overlap": round(best[0], 3)}
             reasons.append("subset")
         record["cutReasons"] = reasons
-        record["verdict"] = _verdict(record)
+        record["verdict"] = verdict(record, profile)
     return ordered

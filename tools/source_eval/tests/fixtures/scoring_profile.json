@@ -1,0 +1,131 @@
+{
+  "_comment": "Read by tools/source_eval/tests/test_profile_fixture.py AND test/source_health/scoring/profile_fixture_test.dart: the DEFAULT scoring profile and golden judgements, so the two languages cannot drift.",
+  "settingKey": "sourceHealth.scoring",
+  "settingNode": "kartka/settings/sourceHealth~2Escoring",
+  "scale": {"fullWidthPx": 1400, "worstP95Ms": 5000},
+  "thresholds": {"minUptime": 0.95, "minCoverage": 0.6, "subsetOverlap": 0.9},
+  "default": {
+    "weights": {
+      "coverage": 0.30, "chapterCompleteness": 0.20, "uptime": 0.20,
+      "imageQuality": 0.15, "speed": 0.15
+    },
+    "pagesLoadMultiplier": true,
+    "keepScore": 0.90,
+    "cuts": {
+      "blocking": false, "subset": false, "coverage": false, "uptime": false,
+      "needsBrowserEngine": false, "pagesNeverLoad": false
+    }
+  },
+  "profiles": {
+    "speedOnly": {
+      "weights": {
+        "coverage": 0, "chapterCompleteness": 0, "uptime": 0,
+        "imageQuality": 0, "speed": 1
+      },
+      "pagesLoadMultiplier": false,
+      "keepScore": 0.80,
+      "cuts": {"needsBrowserEngine": true}
+    },
+    "uneven": {
+      "weights": {
+        "coverage": 1, "chapterCompleteness": 0.5, "uptime": 0.5,
+        "imageQuality": 0, "speed": 0
+      },
+      "pagesLoadMultiplier": true,
+      "keepScore": 0.90,
+      "cuts": {"coverage": true, "pagesNeverLoad": true}
+    },
+    "keepHalf": {
+      "weights": {
+        "coverage": 0.30, "chapterCompleteness": 0.20, "uptime": 0.20,
+        "imageQuality": 0.15, "speed": 0.15
+      },
+      "pagesLoadMultiplier": true,
+      "keepScore": 0.5,
+      "cuts": {
+        "blocking": false, "subset": false, "coverage": false, "uptime": false,
+        "needsBrowserEngine": false, "pagesNeverLoad": false
+      }
+    }
+  },
+  "parse": [
+    {"name": "empty object is the default", "input": {}, "profile": "default"},
+    {"name": "a missing field takes its default",
+     "input": {"keepScore": 0.5}, "profile": "keepHalf"},
+    {"name": "unknown keys are ignored",
+     "input": {"future": 1}, "profile": "default"},
+    {"name": "not an object", "input": [1], "profile": null},
+    {"name": "weight above 1", "input": {"weights": {"coverage": 1.5}}, "profile": null},
+    {"name": "negative weight", "input": {"weights": {"uptime": -0.1}}, "profile": null},
+    {"name": "weight not a number", "input": {"weights": {"speed": "high"}}, "profile": null},
+    {"name": "all-zero weights",
+     "input": {"weights": {"coverage": 0, "chapterCompleteness": 0, "uptime": 0,
+                           "imageQuality": 0, "speed": 0}}, "profile": null},
+    {"name": "keepScore above 1", "input": {"keepScore": 1.2}, "profile": null},
+    {"name": "keepScore not a number", "input": {"keepScore": "x"}, "profile": null},
+    {"name": "multiplier not a bool", "input": {"pagesLoadMultiplier": 1}, "profile": null},
+    {"name": "cut switch not a bool", "input": {"cuts": {"subset": "yes"}}, "profile": null},
+    {"name": "cuts not an object", "input": {"cuts": true}, "profile": null},
+    {"name": "weights not an object", "input": {"weights": 3}, "profile": null}
+  ],
+  "records": [
+    {"id": "star", "origin": "suwayomi", "coverage": {"ratio": 1},
+     "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
+     "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
+     "blocking": {"challengeRate": 0}, "pagesLoad": {"ratio": 1, "sampled": 10},
+     "cutReasons": []},
+    {"id": "slow", "origin": "plugin", "coverage": {"ratio": 1},
+     "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
+     "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 5000},
+     "blocking": {"challengeRate": 0}, "pagesLoad": {"ratio": 1, "sampled": 10},
+     "cutReasons": []},
+    {"id": "nopages", "origin": "suwayomi", "coverage": {"ratio": 1},
+     "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
+     "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
+     "blocking": {"challengeRate": 0}, "pagesLoad": {"ratio": 0, "sampled": 10},
+     "cutReasons": []},
+    {"id": "webview", "origin": "native", "coverage": {"ratio": 1},
+     "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
+     "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
+     "blocking": {"challengeRate": 0.1, "kinds": ["webview"]},
+     "pagesLoad": {"ratio": 1, "sampled": 10},
+     "flags": ["needs-browser-engine"], "cutReasons": []},
+    {"id": "unmeasured", "origin": "native", "coverage": {"ratio": null},
+     "chapterCompleteness": {"medianRatio": null},
+     "uptime": {"ratio": null, "status": "accruing"},
+     "imageQuality": {"medianWidthPx": null}, "latencyMs": {"p95": null},
+     "blocking": {"challengeRate": 0}, "pagesLoad": {"ratio": null, "sampled": 0},
+     "cutReasons": []},
+    {"id": "lowcover", "origin": "suwayomi", "coverage": {"ratio": 0.5},
+     "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
+     "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
+     "blocking": {"challengeRate": 0}, "pagesLoad": {"ratio": 1, "sampled": 10},
+     "cutReasons": ["coverage<0.60"]}
+  ],
+  "expect": {
+    "default": {
+      "order": ["webview", "star", "lowcover", "slow", "unmeasured", "nopages"],
+      "judged": {
+        "star": [1.0, "keep"], "slow": [0.85, "cut"], "nopages": [0.0, "cut"],
+        "webview": [1.0, "keep"], "unmeasured": [0.0, "pending"],
+        "lowcover": [0.85, "cut"]
+      }
+    },
+    "speedOnly": {
+      "order": ["webview", "lowcover", "nopages", "star", "unmeasured", "slow"],
+      "judged": {
+        "star": [1.0, "keep"], "slow": [0.0, "cut"], "nopages": [1.0, "keep"],
+        "webview": [1.0, "cut"], "unmeasured": [0.0, "pending"],
+        "lowcover": [1.0, "keep"]
+      }
+    },
+    "uneven": {
+      "order": ["webview", "star", "slow", "lowcover", "unmeasured", "nopages"],
+      "judged": {
+        "star": [1.0, "keep"], "slow": [1.0, "keep"], "nopages": [0.0, "cut"],
+        "webview": [1.0, "keep"], "unmeasured": [0.0, "pending"],
+        "lowcover": [0.75, "cut"]
+      }
+    }
+  }
+}

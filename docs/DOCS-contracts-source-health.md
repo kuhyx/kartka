@@ -21,7 +21,7 @@ under the line cap; same rules. Implementation notes:
   "pagesLoad": {"ratio": 1.0, "sampled": 10},
   "langScope": "en+ja|unrestricted",
   "subsetOf": {"sourceId": "mangadex", "overlap": 0.93},
-  "score": 0.852, "rank": 3,
+  "score": 0.852, "defaultScore": 0.852, "rank": 3,
   "verdict": "keep|cut|pending",
   "cutReasons": ["uptime<0.95", "blocking", "coverage<0.60", "subset"],
   "flags": ["needs-browser-engine"]
@@ -45,20 +45,57 @@ under the line cap; same rules. Implementation notes:
 - **Subset**: ≥ 90 % of a source's found titles also found by a higher-ranked,
   not-cut source with ≥ its image quality → `subsetOf` set and `subset` added
   to `cutReasons` (explanatory only, see Verdict).
-- **Cut reasons (explanatory only)**: `uptime<0.95` (ratio < 0.95, only once
-  `final`), `blocking` (challengeRate > 0 from any kind other than `webview`),
+- **Cut reasons**: `uptime<0.95` (ratio < 0.95, only once `final`),
+  `blocking` (challengeRate > 0 from any kind other than `webview`),
   `coverage<0.60`, `subset`. They are computed and published in `cutReasons`
-  to explain a low score and the UI shows them, but they **never decide the
-  verdict**. Page loading has no reason of its own: it only lowers the score.
-- **Verdict** (score only, 2026-10-25): score ≥ 0.90 (`KEEP_SCORE`) → `keep`;
-  `pending` only while the source is not yet measured (`coverage.ratio` is
-  `null`); otherwise `cut`. Uptime still accruing does not force `pending`
-  (uptime is already a score component). A `keep` may carry `cutReasons`
-  (warnings); a `cut` may carry none.
-- **Score**: (0.30 coverage + 0.20 completeness + 0.20 uptime + 0.15 image
-  quality (width/1400 capped) + 0.15 latency (1 − p95/5000 capped at 0)) ×
-  `pagesLoad.ratio` when that is not `null`, so a source whose pages never
-  load scores 0 and is cut by its score alone.
+  to explain a low score and the UI shows them. Whether one also **cuts** is
+  the active profile's call (below); under the DEFAULT profile none does.
+  Page loading has no reason code: it lowers the score, and the profile's
+  `pagesNeverLoad` switch reads `pagesLoad.ratio == 0`.
+- **Scoring profile** (2026-10-25, kuhy's decision): user-tunable, one active
+  profile for the app and the evaluator.
+
+  ```json
+  {"weights": {"coverage": 0.30, "chapterCompleteness": 0.20, "uptime": 0.20,
+               "imageQuality": 0.15, "speed": 0.15},
+   "pagesLoadMultiplier": true, "keepScore": 0.90,
+   "cuts": {"blocking": false, "subset": false, "coverage": false,
+            "uptime": false, "needsBrowserEngine": false,
+            "pagesNeverLoad": false}}
+  ```
+
+  Weights are 0..1 each (0 turns a part off) and are **normalised to sum 1**
+  when scoring; all-zero weights are invalid. `keepScore` is 0..1. A missing
+  field takes its DEFAULT and unknown keys are ignored; a field of the wrong
+  type, a weight or `keepScore` outside 0..1, or all-zero weights make the
+  **whole profile invalid** (readers fall back to DEFAULT, the evaluator with
+  a warning). The values above are the **DEFAULT profile**: the evaluator's
+  historic constants, immutable, always available in both the app ("Reset to
+  evaluator defaults") and the evaluator (`--weights default`).
+  `speed` is the former latency part. Two definitions exist, one per
+  language (`tools/source_eval/src/source_eval/profile.py`,
+  `lib/source_health/scoring/profile.dart`), pinned together by
+  `tools/source_eval/tests/fixtures/scoring_profile.json`, which both test
+  suites read (defaults, parse cases, golden scores, verdicts and ranks).
+- **Score**: Σ normalisedWeightᵢ × partᵢ, then × `pagesLoad.ratio` when the
+  profile's `pagesLoadMultiplier` is on and the ratio is not `null` (so with
+  it on, a source whose pages never load scores 0). Parts: coverage ratio,
+  chapter-completeness median, uptime ratio, image quality (width/1400 capped
+  at 1), speed (1 − p95/5000, floored at 0); an unmeasured part is 0. Rounded
+  to 3 places. `score` is under the **active** profile; `defaultScore` is the
+  same record under DEFAULT (equal under DEFAULT, and the app shows it next
+  to a custom score when they differ).
+- **Verdict**: any cut switch the profile enables whose reason applies → `cut`
+  (reasons: `blocking`, `subset`, `coverage`, `uptime` from `cutReasons`;
+  `needsBrowserEngine` = the `needs-browser-engine` flag; `pagesNeverLoad` =
+  `pagesLoad.ratio == 0`); else score ≥ `keepScore` → `keep`; else `pending`
+  while unmeasured (`coverage.ratio` is `null`); else `cut`. DEFAULT has every
+  switch off, so there the score alone decides (2026-10-25) and a `keep` may
+  carry `cutReasons` (warnings). Uptime still accruing does not force
+  `pending`. `subsetOf` is computed by the evaluator (it needs every source's
+  found titles) under the profile it ran with; the app never recomputes it,
+  it re-scores, re-ranks (score, then origin native < suwayomi < plugin, then
+  id) and re-judges from the published metrics and `cutReasons`.
 - **As built** (evaluator, 2026-10-24): every record also carries
   `availability: {native, mangayomiJs, keiyoushi}` (bools: where else the
   source can be read). `blocking.kinds` may also list `webview` (the extension
@@ -88,6 +125,8 @@ under the line cap; same rules. Implementation notes:
   {"runId": "2026-W44", "generatedAt": "2026-10-25T12:00:00Z",
    "candidates": 1100, "tested": 585,
    "verdicts": {"keep": 5, "cut": 568, "pending": 12},
+   "profile": {"name": "default", "weights": {"...": 0.3}, "keepScore": 0.9,
+               "pagesLoadMultiplier": true, "cuts": {"...": false}},
    "skipped": [{"index": "keiyoushi", "reason": "language",
                 "count": 900, "names": ["..."]}]}
   ```
@@ -97,7 +136,17 @@ under the line cap; same rules. Implementation notes:
   grouped by `index` (`keiyoushi`, `mangayomi`, `sy-backup`) and `reason`
   (`language`, `dart`, `domain-overlap`, `duplicate`; exactly one per entry,
   in that precedence), names sorted. RTDB drops empty lists, so readers must
-  tolerate a missing `skipped` or `names`. Written by the evaluator only
-  (the shared account's root rule allows it).
+  tolerate a missing `skipped` or `names`. `profile` is the scoring profile
+  the run was judged with (the same shape as above plus `name`: `default`
+  exactly when it equals DEFAULT by value, else `custom`); a run without it
+  was scored with DEFAULT. Written by the evaluator only (the shared
+  account's root rule allows it).
+- **Active profile in RTDB** (kuhy's decision, 2026-10-25): the synced setting
+  `sourceHealth.scoring` (runtime §16), node
+  `/kartka/settings/sourceHealth~2Escoring` = `{key, value, hlc}`, where
+  `value` is the profile as a JSON **string**. The evaluator reads it
+  (read-only, via its own `kartka-source-eval` session) at `report`; absent or
+  removed means DEFAULT, an unreadable or invalid one falls back to DEFAULT
+  with a warning.
 - Cadence: uptime probe 4×/day; full metrics weekly; both systemd timers on
   the server host. JSON also written to `tools/source_eval/out/latest.json`.
