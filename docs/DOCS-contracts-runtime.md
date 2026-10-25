@@ -177,8 +177,10 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
 
 - **Synced**: `suwayomi.serverUrl`, `suwayomi.username`, `suwayomi.password`,
   `mangadex.settings`, `reader.settings` (global default mode, tap zones,
-  prefetch), `plugins.repos` (native and Mangayomi repos) and
-  `downloads/auto_new_chapters`. The catalogue is
+  prefetch), `plugins.repos` (native and Mangayomi repos),
+  `downloads/auto_new_chapters` and `sourceHealth.scoring` (the source-health
+  scoring profile as a JSON string, node `settings/sourceHealth~2Escoring`,
+  plain vault; the evaluator reads it too, contracts §5). The catalogue is
   `lib/sync/settings/settings_catalog.dart`, and a peer's node for any
   other key is ignored. **Device-local**: the download queue, index and
   baselines, per-manga reader modes, installed plugins and their prefs,

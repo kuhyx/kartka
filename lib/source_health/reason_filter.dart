@@ -1,5 +1,6 @@
 /// The Sources screen's reason filter: why a source was cut (or, on a kept
-/// source, what it was warned about).
+/// source, what it was warned about). The scoring profile's cut switches
+/// are keyed by these too.
 library;
 
 import 'package:kartka/source_health/model/source_health_record.dart';
@@ -18,8 +19,12 @@ enum HealthReason {
   /// Answered too few uptime probes.
   uptime('Low uptime'),
 
-  /// Its extension needs a browser engine (flagged, never cut).
-  browserEngine('Browser engine');
+  /// Its extension needs a browser engine (flagged; cut only if the active
+  /// scoring profile says so).
+  browserEngine('Browser engine'),
+
+  /// No sampled chapter had all its pages load (`pagesLoad.ratio` is 0).
+  pagesNeverLoad('Pages never load');
 
   new(this.label);
 
@@ -40,5 +45,6 @@ Set<HealthReason> reasonsOf(SourceHealthRecord r) {
     if (code('uptime')) HealthReason.uptime,
     if (r.needsBrowserEngine || kinds.contains('webview'))
       HealthReason.browserEngine,
+    if (r.pagesLoad?.ratio == 0) HealthReason.pagesNeverLoad,
   };
 }

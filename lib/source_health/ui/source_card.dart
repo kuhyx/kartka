@@ -14,8 +14,15 @@ typedef OpenSource = void Function(String sourceId);
 /// cut reasons in plain words. Activating it opens the detail page.
 class SourceCard extends StatelessWidget {
   /// Creates a card for [record].
-  new({required this.record, required this.onOpen, required this.nameOf})
-    : super(key: ValueKey('source-${record.id}'));
+  new({
+    required this.record,
+    required this.onOpen,
+    required this.nameOf,
+    this.keepScore = 0.90,
+  }) : super(key: ValueKey('source-${record.id}'));
+
+  /// The active profile's keep bar, for the "kept despite" heading.
+  final double keepScore;
 
   /// The source.
   final SourceHealthRecord record;
@@ -61,6 +68,15 @@ class SourceCard extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (defaultScoreNote(r) case final note?)
+                    Text(
+                      note,
+                      key: const Key('default-score'),
+                      style: TextStyle(
+                        color: muted,
+                        fontSize: AppTextSize.label,
+                      ),
+                    ),
                   Text(scoreText(r.score), style: theme.textTheme.titleMedium),
                   HealthBadge(verdict: r.verdict, rank: r.rank),
                 ],
@@ -96,7 +112,7 @@ class SourceCard extends StatelessWidget {
                 ),
               if (r.cutReasons.isNotEmpty)
                 Text(
-                  '${warn ? keptDespiteHeading : lowScoreHeading}:',
+                  '${warn ? keptDespiteHeading(keepScore) : lowScoreHeading}:',
                   style: TextStyle(color: muted),
                 ),
               for (final why in explainCutReasons(r, nameOf: nameOf))

@@ -30,6 +30,11 @@ const Map<String, SyncedSetting> kSyncedSettings = {
   'reader.settings': (vault: SettingsVault.plain, label: 'Reader settings'),
   'plugins.repos': (vault: SettingsVault.plain, label: 'Plugin repos'),
   kAutoDownloadSetting: (vault: SettingsVault.plain, label: 'Auto-download'),
+  // The source-health scoring profile; the evaluator reads it too.
+  'sourceHealth.scoring': (
+    vault: SettingsVault.plain,
+    label: 'Source scoring profile',
+  ),
 };
 
 /// `settings/<key>`, the key escaped into one RTDB segment.

@@ -4,6 +4,7 @@ library;
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
+import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/thresholds.dart';
 
 /// Resolves a source id to a display name; null when unknown.
@@ -23,14 +24,14 @@ List<String> explainCutReasons(
 bool keptDespiteReasons(SourceHealthRecord record) =>
     record.verdict == HealthVerdict.keep && record.cutReasons.isNotEmpty;
 
-/// Heading over the reasons of any other record: the score is the only
-/// judgement, so reasons explain a low score, never a cut on their own.
+/// Heading over the reasons of any other record: reasons explain a low
+/// score (and cut only through the profile's cut switches).
 const String lowScoreHeading = 'Why the score is low';
 
-/// Heading over the reasons of a [keptDespiteReasons] record.
-final String keptDespiteHeading =
-    'Kept on score ≥ '
-    '${HealthThresholds.keepScore.toStringAsFixed(2)} despite';
+/// Heading over the reasons of a [keptDespiteReasons] record, under a profile
+/// that keeps at [keepScore] (the DEFAULT bar unless given).
+String keptDespiteHeading([double keepScore = kDefaultKeepScore]) =>
+    'Kept on score ≥ ${keepScore.toStringAsFixed(2)} despite';
 
 /// A §5 blocking kind in words.
 String describeBlockingKind(String kind) => switch (kind) {

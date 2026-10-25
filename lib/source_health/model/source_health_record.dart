@@ -31,6 +31,7 @@ class SourceHealthRecord {
     this.pagesLoad,
     this.langScope,
     this.score,
+    this.defaultScore,
     this.rank,
     this.verdict = HealthVerdict.pending,
     this.cutReasons = const [],
@@ -60,6 +61,7 @@ class SourceHealthRecord {
       pagesLoad: PagesLoadMetric.fromJson(j['pagesLoad']),
       langScope: readString(j, 'langScope'),
       score: readDouble(j, 'score'),
+      defaultScore: readDouble(j, 'defaultScore'),
       rank: readInt(j, 'rank'),
       verdict: HealthVerdict.parse(readString(j, 'verdict')),
       cutReasons: readStrings(j, 'cutReasons'),
@@ -113,8 +115,11 @@ class SourceHealthRecord {
   /// the run predates the field.
   final String? langScope;
 
-  /// Weighted score in 0..1.
+  /// Weighted score in 0..1 under the active scoring profile.
   final double? score;
+
+  /// The same score under the DEFAULT profile; null on runs before profiles.
+  final double? defaultScore;
 
   /// 1-based rank; null when unranked.
   final int? rank;
@@ -129,6 +134,37 @@ class SourceHealthRecord {
   /// Visible warnings that do not cut the source (§5 `flags`, additive: a
   /// record from an older evaluator has none). Unknown entries are kept.
   final List<String> flags;
+
+  /// A copy with the judgement fields replaced (the scoring profile's
+  /// re-score); every metric is kept.
+  SourceHealthRecord withJudgement({
+    required double score,
+    required double defaultScore,
+    required int rank,
+    required HealthVerdict verdict,
+  }) => SourceHealthRecord(
+    id: id,
+    name: name,
+    lang: lang,
+    origin: origin,
+    probedAt: probedAt,
+    uptime: uptime,
+    latency: latency,
+    blocking: blocking,
+    coverage: coverage,
+    completeness: completeness,
+    imageQuality: imageQuality,
+    subsetOf: subsetOf,
+    availability: availability,
+    pagesLoad: pagesLoad,
+    langScope: langScope,
+    score: score,
+    defaultScore: defaultScore,
+    rank: rank,
+    verdict: verdict,
+    cutReasons: cutReasons,
+    flags: flags,
+  );
 
   /// True when the source needs a browser engine Kartka does not ship.
   bool get needsBrowserEngine => flags.contains(needsBrowserEngineFlag);
@@ -151,6 +187,7 @@ class SourceHealthRecord {
     'pagesLoad': pagesLoad?.toJson(),
     'langScope': langScope,
     'score': score,
+    'defaultScore': defaultScore,
     'rank': rank,
     'verdict': verdict.name,
     'cutReasons': cutReasons.isEmpty ? null : cutReasons,
@@ -176,13 +213,14 @@ class SourceHealthRecord {
       other.pagesLoad == pagesLoad &&
       other.langScope == langScope &&
       other.score == score &&
+      other.defaultScore == defaultScore &&
       other.rank == rank &&
       other.verdict == verdict &&
       listEquals(other.cutReasons, cutReasons) &&
       listEquals(other.flags, flags);
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     name,
     lang,
@@ -199,11 +237,12 @@ class SourceHealthRecord {
     pagesLoad,
     langScope,
     score,
+    defaultScore,
     rank,
     verdict,
     Object.hashAll(cutReasons),
     Object.hashAll(flags),
-  );
+  ]);
 
   @override
   String toString() => 'SourceHealthRecord($id, rank: $rank, $verdict)';

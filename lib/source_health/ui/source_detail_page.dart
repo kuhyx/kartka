@@ -7,6 +7,7 @@ import 'package:kartka/source_health/metric_explanations.dart';
 import 'package:kartka/source_health/metric_text.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/score_breakdown.dart';
+import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/ui/freshness_banner.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/metric_tile.dart';
@@ -19,8 +20,12 @@ class SourceDetailPage extends StatelessWidget {
     required this.record,
     required this.all,
     required this.now,
+    this.profile = defaultScoringProfile,
     super.key,
   });
+
+  /// The active scoring profile (weights, keep bar) the page explains.
+  final ScoringProfile profile;
 
   /// The source shown.
   final SourceHealthRecord record;
@@ -30,6 +35,16 @@ class SourceDetailPage extends StatelessWidget {
 
   /// Current time, for the stale check.
   final DateTime now;
+
+  String _scoreLine() {
+    final label = profile.isDefault
+        ? 'Evaluator score'
+        : 'Score (custom profile)';
+    final rank = record.rank == null ? 'unranked' : 'rank #${record.rank}';
+    final note = defaultScoreNote(record);
+    return '$label ${scoreText(record.score)} · $rank'
+        '${note == null ? '' : ' · $note'}';
+  }
 
   SourceHealthRecord? _find(String id) =>
       all.where((r) => r.id == id).firstOrNull;
@@ -59,10 +74,7 @@ class SourceDetailPage extends StatelessWidget {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   HealthBadge(verdict: r.verdict, rank: r.rank),
-                  Text(
-                    'Evaluator score ${scoreText(r.score)} · '
-                    '${r.rank == null ? 'unranked' : 'rank #${r.rank}'}',
-                  ),
+                  Text(_scoreLine()),
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -81,7 +93,11 @@ class SourceDetailPage extends StatelessWidget {
                 ),
               ],
               if (r.cutReasons.isNotEmpty) ...[
-                SectionHeader(warn ? keptDespiteHeading : lowScoreHeading),
+                SectionHeader(
+                  warn
+                      ? keptDespiteHeading(profile.keepScore)
+                      : lowScoreHeading,
+                ),
                 for (final why in explainCutReasons(
                   r,
                   nameOf: (id) => _find(id)?.name,
@@ -100,15 +116,21 @@ class SourceDetailPage extends StatelessWidget {
                           record: subset,
                           all: all,
                           now: now,
+                          profile: profile,
                         ),
                       ),
                     ),
                   ),
                 ),
               const SectionHeader('Metrics'),
-              for (final e in explainMetrics(r)) MetricTile(e),
+              for (final e in explainMetrics(r, profile: profile))
+                MetricTile(e),
               const SectionHeader('Score breakdown'),
-              ScoreTable(scoreBreakdown(r), pagesLoad: r.pagesLoad),
+              ScoreTable(
+                scoreBreakdown(r, profile),
+                pagesLoad: r.pagesLoad,
+                profile: profile,
+              ),
             ],
           ),
         ),

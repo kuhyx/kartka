@@ -3,6 +3,7 @@
 library;
 
 import 'package:kartka/browse/source_health_lookup.dart';
+import 'package:kartka/source_health/metric_text.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 
 /// Display name of a §5 origin.
@@ -36,3 +37,11 @@ String sourceLine(SourceHealthRecord r, {bool withId = false}) => [
   if (r.langScope case final scope?) langScopeLabel(scope),
   if (withId) r.id,
 ].where((s) => s.isNotEmpty).join(' · ');
+
+/// `default 0.85`: the DEFAULT-profile score, shown next to a custom one
+/// only when it reads differently; null otherwise (and on older runs).
+String? defaultScoreNote(SourceHealthRecord r) {
+  final d = r.defaultScore;
+  if (d == null || scoreText(d) == scoreText(r.score)) return null;
+  return 'default ${scoreText(d)}';
+}

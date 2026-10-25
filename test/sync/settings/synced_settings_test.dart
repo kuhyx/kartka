@@ -192,6 +192,7 @@ void main() {
       'reader.settings',
       'plugins.repos',
       kAutoDownloadSetting,
+      'sourceHealth.scoring',
     });
     for (final key in [_user, _pass]) {
       expect(kSyncedSettings[key]!.vault, SettingsVault.secret);

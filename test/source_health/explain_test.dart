@@ -3,6 +3,7 @@ import 'package:kartka/source_health/cut_reasons.dart';
 import 'package:kartka/source_health/model/metrics.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/score_breakdown.dart';
+import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/thresholds.dart';
 
 import 'fixtures.dart';
@@ -14,16 +15,10 @@ void main() {
       expect(HealthThresholds.maxChallengeRate, 0);
       expect(HealthThresholds.minCoverageRatio, 0.60);
       expect(HealthThresholds.subsetOverlap, 0.90);
-      expect(HealthThresholds.keepScore, 0.90);
+      expect(defaultScoringProfile.keepScore, 0.90);
       expect(HealthThresholds.uptimeProbesTarget, 28);
       expect(HealthThresholds.staleAfter, const Duration(days: 8));
-      const weights =
-          HealthThresholds.weightCoverage +
-          HealthThresholds.weightCompleteness +
-          HealthThresholds.weightUptime +
-          HealthThresholds.weightImageQuality +
-          HealthThresholds.weightLatency;
-      expect(weights, closeTo(1, 1e-9));
+      expect(defaultScoringProfile.weights.total, closeTo(1, 1e-9));
     });
   });
 

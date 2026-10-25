@@ -4,7 +4,7 @@ import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/metric_explanations.dart';
 import 'package:kartka/source_health/model/metrics.dart';
 import 'package:kartka/source_health/score_breakdown.dart';
-import 'package:kartka/source_health/thresholds.dart';
+import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
 
 /// The status word and fill of a [MetricStatus]; neutral states are unfilled.
@@ -61,8 +61,17 @@ class MetricTile extends StatelessWidget {
 /// The §5 score split into weighted parts and the pages-load multiplier,
 /// recomputed from the metrics.
 class ScoreTable extends StatelessWidget {
-  /// Creates a table of [parts], times [pagesLoad] when the run has it.
-  const new(this.parts, {this.pagesLoad, super.key});
+  /// Creates a table of [parts], times [pagesLoad] when the run has it and
+  /// [profile] applies it; [profile] also gives the keep bar.
+  const new(
+    this.parts, {
+    this.pagesLoad,
+    this.profile = defaultScoringProfile,
+    super.key,
+  });
+
+  /// The scoring profile the parts were weighted under.
+  final ScoringProfile profile;
 
   /// The weighted parts.
   final List<ScorePart> parts;
@@ -73,8 +82,11 @@ class ScoreTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sum = parts.fold<double>(0, (s, p) => s + (p.points ?? 0));
-    final ratio = pagesLoad?.ratio;
-    final recomputed = switch ((pagesLoad, ratio)) {
+    final ratio = profile.pagesLoadMultiplier ? pagesLoad?.ratio : null;
+    final recomputed = switch ((
+      profile.pagesLoadMultiplier ? pagesLoad : null,
+      ratio,
+    )) {
       (null, _) => sum.toStringAsFixed(2),
       (_, null) =>
         '${sum.toStringAsFixed(2)} (pages load not measured, not applied)',
@@ -114,7 +126,7 @@ class ScoreTable extends StatelessWidget {
                 pctOrDash(p.normalized),
                 p.points?.toStringAsFixed(3) ?? notMeasured,
               ]),
-            if (pagesLoad != null)
+            if (pagesLoad != null && profile.pagesLoadMultiplier)
               row([
                 'Pages load (multiplier)',
                 '×',
@@ -127,10 +139,10 @@ class ScoreTable extends StatelessWidget {
           ],
         ),
         Text(
-          "Recomputed from the metrics: $recomputed. The evaluator's own "
-          'score is the one used for ranking, and the only judgement: '
-          '${HealthThresholds.keepScore.toStringAsFixed(2)} or more keeps a '
-          'source.',
+          'Recomputed from the metrics under the ${profile.name} scoring '
+          'profile: $recomputed. The score is what ranks sources; '
+          '${profile.keepScore.toStringAsFixed(2)} or more keeps a source'
+          '${profile.cuts.isEmpty ? '' : ', unless a cut switch applies'}.',
         ),
       ],
     );

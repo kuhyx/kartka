@@ -108,10 +108,11 @@ extension HealthGenerators on Any {
       _langScope,
       (s, r, a, p, l) => (s, r, a, p, l),
     ),
-    combine2(
+    combine3(
       choose(HealthVerdict.values),
       list(choose(['uptime<0.95', 'blocking', 'coverage<0.60', 'subset'])),
-      (v, c) => (v, c),
+      _ratio,
+      (v, c, d) => (v, c, d),
     ),
     (
       base,
@@ -123,7 +124,7 @@ extension HealthGenerators on Any {
       iq,
       so,
       (double?, int?, AvailabilityMetric?, PagesLoadMetric?, String?) ranking,
-      (HealthVerdict, List<String>) verdict,
+      (HealthVerdict, List<String>, double?) verdict,
     ) => SourceHealthRecord(
       id: base.id,
       name: base.name,
@@ -144,6 +145,7 @@ extension HealthGenerators on Any {
       rank: ranking.$2,
       verdict: verdict.$1,
       cutReasons: verdict.$2,
+      defaultScore: verdict.$3,
     ),
   );
 }

@@ -5,6 +5,7 @@ library;
 
 import 'package:flutter/foundation.dart';
 import 'package:kartka/source_health/model/json_read.dart';
+import 'package:kartka/source_health/scoring/profile.dart';
 
 /// The run summary. Every field is optional: the evaluator is another
 /// program, and a field of the wrong type reads as missing.
@@ -17,6 +18,7 @@ class SourceHealthMeta {
     this.candidates,
     this.tested,
     this.verdicts,
+    this.profile,
     this.skipped = const [],
   });
 
@@ -31,6 +33,7 @@ class SourceHealthMeta {
       candidates: readInt(m, 'candidates'),
       tested: readInt(m, 'tested'),
       verdicts: VerdictCounts.fromJson(m['verdicts']),
+      profile: ScoringProfile.fromJson(m['profile']),
       skipped: skipped is List
           ? List.unmodifiable(skipped.map(SkippedGroup.fromJson).nonNulls)
           : const [],
@@ -52,8 +55,23 @@ class SourceHealthMeta {
   /// Verdict totals over the tested sources.
   final VerdictCounts? verdicts;
 
+  /// The scoring profile the run was judged with; null on runs before
+  /// profiles (judged with DEFAULT) or when the node is invalid.
+  final ScoringProfile? profile;
+
   /// Candidates left untested, grouped by index and reason.
   final List<SkippedGroup> skipped;
+
+  /// This summary with [verdicts] replaced (recounted after a re-score).
+  SourceHealthMeta withVerdicts(VerdictCounts verdicts) => SourceHealthMeta(
+    runId: runId,
+    generatedAt: generatedAt,
+    candidates: candidates,
+    tested: tested,
+    verdicts: verdicts,
+    profile: profile,
+    skipped: skipped,
+  );
 
   /// The JSON node, omitting missing fields.
   Map<String, Object?> toJson() => compact({
@@ -62,6 +80,9 @@ class SourceHealthMeta {
     'candidates': candidates,
     'tested': tested,
     'verdicts': verdicts?.toJson(),
+    'profile': profile == null
+        ? null
+        : {'name': profile!.name, ...profile!.toJson()},
     'skipped': [for (final g in skipped) g.toJson()],
   });
 
@@ -73,6 +94,7 @@ class SourceHealthMeta {
       other.candidates == candidates &&
       other.tested == tested &&
       other.verdicts == verdicts &&
+      other.profile == profile &&
       listEquals(other.skipped, skipped);
 
   @override
@@ -82,6 +104,7 @@ class SourceHealthMeta {
     candidates,
     tested,
     verdicts,
+    profile,
     Object.hashAll(skipped),
   );
 }

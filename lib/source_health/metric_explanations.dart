@@ -7,6 +7,7 @@ import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/metric_text.dart';
 import 'package:kartka/source_health/model/metrics.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
+import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/thresholds.dart';
 
 /// How a source fares on one metric.
@@ -70,15 +71,24 @@ String _weight(double w) => '${pct(w)} of the score';
 
 /// Every metric of [r], in display order. On a source kept on score, a
 /// metric below its bar only warns.
-List<MetricExplanation> explainMetrics(SourceHealthRecord r) {
+///
+/// Weights are the shares of [profile] after normalisation (the DEFAULT
+/// profile unless given).
+List<MetricExplanation> explainMetrics(
+  SourceHealthRecord r, {
+  ScoringProfile profile = defaultScoringProfile,
+}) {
   final kept = r.verdict == HealthVerdict.keep;
   return [
-    for (final e in _explainMetrics(r))
+    for (final e in _explainMetrics(r, profile.weights.normalised))
       if (kept && e.status == MetricStatus.fail) e.warning() else e,
   ];
 }
 
-List<MetricExplanation> _explainMetrics(SourceHealthRecord r) => [
+List<MetricExplanation> _explainMetrics(
+  SourceHealthRecord r,
+  ScoreWeights w,
+) => [
   MetricExplanation(
     title: 'Uptime',
     value: uptimeText(r.uptime),
@@ -89,7 +99,7 @@ List<MetricExplanation> _explainMetrics(SourceHealthRecord r) => [
     threshold:
         'Low-score reason below ${pct(HealthThresholds.minUptimeRatio)}, but '
         'only once all ${HealthThresholds.uptimeProbesTarget} probes are in. '
-        '${_weight(HealthThresholds.weightUptime)}.',
+        '${_weight(w.uptime)}.',
     status: _uptime(r.uptime),
   ),
   MetricExplanation(
@@ -99,7 +109,7 @@ List<MetricExplanation> _explainMetrics(SourceHealthRecord r) => [
         'How long the source takes to answer: the median (p50) and the '
         'slowest 5 % (p95).',
     threshold:
-        'Never a reason. ${_weight(HealthThresholds.weightLatency)}: full '
+        'Never a reason. ${_weight(w.speed)}: full '
         'marks at p95 0 ms, none at p95 '
         '${millis(HealthThresholds.worstP95Ms.round())} or slower.',
     status: _info(r.latency),
@@ -127,7 +137,7 @@ List<MetricExplanation> _explainMetrics(SourceHealthRecord r) => [
         'top 500) the source has.',
     threshold:
         'Low-score reason below ${pct(HealthThresholds.minCoverageRatio)}. '
-        '${_weight(HealthThresholds.weightCoverage)}.',
+        '${_weight(w.coverage)}.',
     status: _atLeast(r.coverage?.ratio, HealthThresholds.minCoverageRatio),
   ),
   MetricExplanation(
@@ -136,8 +146,7 @@ List<MetricExplanation> _explainMetrics(SourceHealthRecord r) => [
     meaning:
         "Chapters on the source compared with AniList's chapter count, "
         'median over sampled titles, capped at 100 %.',
-    threshold:
-        'Never a reason. ${_weight(HealthThresholds.weightCompleteness)}.',
+    threshold: 'Never a reason. ${_weight(w.chapterCompleteness)}.',
     status: _info(r.completeness),
   ),
   MetricExplanation(
@@ -150,7 +159,7 @@ List<MetricExplanation> _explainMetrics(SourceHealthRecord r) => [
         'Median page width and estimated JPEG quality over sampled '
         'pages. Wider and higher-quality pages read better.',
     threshold:
-        'Never a reason. ${_weight(HealthThresholds.weightImageQuality)}: full '
+        'Never a reason. ${_weight(w.imageQuality)}: full '
         'marks at ${HealthThresholds.fullWidthPx.round()} px wide or more.',
     status: _info(r.imageQuality),
   ),
