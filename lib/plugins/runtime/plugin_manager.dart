@@ -7,6 +7,7 @@ import 'package:kartka/plugins/runtime/plugin_index.dart';
 import 'package:kartka/plugins/runtime/plugin_registrar.dart';
 import 'package:kartka/plugins/runtime/plugin_repo_adapter.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
+import 'package:kartka/source_health/install/install_ports.dart';
 
 /// Largest plugin file accepted.
 const int kMaxPluginBytes = 1024 * 1024;
@@ -48,7 +49,7 @@ class AvailableResult {
 }
 
 /// Repo management and install/update/uninstall.
-class PluginManager implements PluginRegistrar {
+class PluginManager implements PluginRegistrar, PluginRepoInstaller {
   /// Creates a manager.
   new({required this.http, required this.store, this.adapters = _noAdapters});
 
@@ -163,6 +164,26 @@ class PluginManager implements PluginRegistrar {
         sha256: entry.sha256,
       ),
     );
+  }
+
+  /// The Sources tab's Install: adds [repo] (a no-op when configured; the
+  /// repo list syncs), then installs its plugin [id]. Throws
+  /// [PluginException] when the repo does not offer it (with the repo's
+  /// read error, if any).
+  @override
+  Future<void> installPlugin({required String repo, required String id}) async {
+    await addRepo(repo);
+    final offers = await available();
+    final offer = offers.plugins
+        .where((p) => p.entry.manifest.id == id)
+        .firstOrNull;
+    if (offer == null) {
+      // addRepo stored the URL in this normal form (and validated it).
+      final key = Uri.parse(repo.trim()).toString();
+      final why = offers.errors[key] ?? 'not offered by its repo';
+      throw PluginException(id, why);
+    }
+    await install(offer.entry);
   }
 
   Future<void> _save(InstalledPlugin p) async {

@@ -49,7 +49,8 @@ KartkaFeature buildSuwayomiFeature(KartkaEnv env, {TitleLookup? titleOf}) {
   );
   return KartkaFeature(
     id: 'source-suwayomi',
-    services: [provider],
+    // The extensions API is the Sources tab's Install port.
+    services: [provider, extensions],
     settingsTiles: [
       (context) => ListTile(
         leading: const Icon(Icons.dns_outlined),

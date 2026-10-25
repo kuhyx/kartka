@@ -1,3 +1,4 @@
+import 'package:kartka/source_health/install/install_ports.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_queries.dart';
 
@@ -66,8 +67,9 @@ List<SuwayomiExtension> sortExtensions(Iterable<SuwayomiExtension> all) {
   });
 }
 
-/// Lists, installs, updates and uninstalls the server's extensions.
-class SuwayomiExtensionsApi {
+/// Lists, installs, updates and uninstalls the server's extensions; also
+/// the Sources tab's [SuwayomiExtensionInstaller].
+class SuwayomiExtensionsApi implements SuwayomiExtensionInstaller {
   /// Creates the API; [onChanged] runs after every successful change (the
   /// feature re-lists the sources there).
   new({required this.client, required this.settings, this.onChanged});
@@ -95,6 +97,9 @@ class SuwayomiExtensionsApi {
   /// Installs [pkgName].
   Future<SuwayomiExtension> install(String pkgName) =>
       _patch(pkgName, 'install');
+
+  @override
+  Future<void> installExtension(String pkg) => install(pkg);
 
   /// Updates [pkgName] to the store's version.
   Future<SuwayomiExtension> update(String pkgName) => _patch(pkgName, 'update');

@@ -2,6 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
+import 'package:kartka/source_health/install/source_installs.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ranking.dart';
@@ -23,8 +24,12 @@ class SourcesTab extends StatefulWidget {
     required this.feed,
     this.scoring,
     this.clock = DateTime.now,
+    this.installs,
     super.key,
   });
+
+  /// Install / Open state of every source; null shows no action buttons.
+  final SourceInstalls? installs;
 
   /// Source of the ranking (already scored with the active profile).
   final SourceHealthFeed feed;
@@ -108,6 +113,7 @@ class _SourcesTabState extends State<SourcesTab> {
             all: records,
             now: widget.clock(),
             profile: _profile,
+            installs: widget.installs,
           ),
         ),
       );
@@ -155,6 +161,7 @@ class _SourcesTabState extends State<SourcesTab> {
                     onOpen: open,
                     nameOf: nameOf,
                     keepScore: _profile.keepScore,
+                    installs: widget.installs,
                   ),
           ),
         ),

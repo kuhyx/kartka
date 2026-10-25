@@ -8,6 +8,8 @@ import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/platform/image_headers.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
+import 'package:kartka/source_health/install/install_ports.dart';
+import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_feature_builder.dart';
 import 'package:kartka/sources/suwayomi/ui/extensions_screen.dart';
 
@@ -76,6 +78,7 @@ void main() {
     final headers = r.all<ImageHeaders>().single;
     expect(headers.forUrl('${_url}api/v1/manga/1/thumbnail'), isNotEmpty);
     expect(headers.forUrl('https://elsewhere/x'), isEmpty);
+    expect(r.maybe<SuwayomiExtensionInstaller>(), isA<SuwayomiExtensionsApi>());
   });
 
   test('unseen manga are searched by the injected title lookup', () async {

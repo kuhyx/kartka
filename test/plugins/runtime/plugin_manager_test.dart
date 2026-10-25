@@ -176,6 +176,37 @@ void main() {
     },
   );
 
+  test('installPlugin adds the repo and installs the offered id', () async {
+    await m.installPlugin(repo: ' $repo ', id: 'demo');
+    expect(await m.repos(), [repo]);
+    expect([for (final p in await store.installed()) p.manifest.id], ['demo']);
+  });
+
+  test('installPlugin names the repo error, else "not offered"', () async {
+    await expectLater(
+      m.installPlugin(repo: repo, id: 'nope'),
+      throwsA(
+        isA<PluginException>().having(
+          (e) => e.message,
+          'message',
+          'not offered by its repo',
+        ),
+      ),
+    );
+    http.failWith = Exception('repo down');
+    await expectLater(
+      m.installPlugin(repo: repo, id: 'demo'),
+      throwsA(
+        isA<PluginException>().having(
+          (e) => e.message,
+          'message',
+          contains('repo down'),
+        ),
+      ),
+    );
+    expect(await store.installed(), isEmpty);
+  });
+
   test('watchInstalled surfaces store errors on the stream', () async {
     await kv.set('plugins.installed.x', 'not json');
     await expectLater(m.watchInstalled(), emitsError(isA<FormatException>()));

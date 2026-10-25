@@ -2,6 +2,8 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kartka/source_health/cut_reasons.dart';
+import 'package:kartka/source_health/install/source_action_button.dart';
+import 'package:kartka/source_health/install/source_installs.dart';
 import 'package:kartka/source_health/labels.dart';
 import 'package:kartka/source_health/metric_explanations.dart';
 import 'package:kartka/source_health/metric_text.dart';
@@ -21,8 +23,12 @@ class SourceDetailPage extends StatelessWidget {
     required this.all,
     required this.now,
     this.profile = defaultScoringProfile,
+    this.installs,
     super.key,
   });
+
+  /// Install / Open state; null shows no action button.
+  final SourceInstalls? installs;
 
   /// The active scoring profile (weights, keep bar) the page explains.
   final ScoringProfile profile;
@@ -80,6 +86,13 @@ class SourceDetailPage extends StatelessWidget {
               const SizedBox(height: AppSpacing.sm),
               Text(sourceLine(r, withId: true), style: muted),
               const SizedBox(height: AppSpacing.sm),
+              if (installs case final i?) ...[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: SourceActionButton(record: r, installs: i),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+              ],
               FreshnessBanner(at: r.probedAt, now: now),
               if (r.needsBrowserEngine) ...[
                 const Align(
@@ -117,6 +130,7 @@ class SourceDetailPage extends StatelessWidget {
                           all: all,
                           now: now,
                           profile: profile,
+                          installs: installs,
                         ),
                       ),
                     ),
