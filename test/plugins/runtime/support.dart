@@ -55,6 +55,16 @@ class FakeServices implements PluginHostServices {
 
   @override
   Future<void> prefsSet(String key, String value) async => prefs[key] = value;
+
+  @override
+  Future<Map<String, Object?>> browserLoad(
+    String url, {
+    Map<String, String> headers = const {},
+    List<String> scripts = const [],
+    String? waitFor,
+    bool awaitResponse = false,
+    int? timeoutMs,
+  }) async => throw UnsupportedError('no browser in these tests');
 }
 
 /// Serves fixtures (the demo repo and the demo site) over the shared fake.

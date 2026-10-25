@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head><title>JS chapter</title></head>
+<body>
+<div id="pages"></div>
+<script>
+  // The reader only gets its pages once this script has run.
+  setTimeout(function () {
+    var list = document.getElementById('pages');
+    ['https://img.example.invalid/p1.jpg', 'https://img.example.invalid/p2.jpg']
+      .forEach(function (src) {
+        var img = document.createElement('img');
+        img.src = src;
+        list.appendChild(img);
+      });
+  }, 300);
+</script>
+</body>
+</html>

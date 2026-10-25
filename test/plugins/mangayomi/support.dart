@@ -96,6 +96,35 @@ class ReplayServices implements PluginHostServices {
 
   @override
   Future<void> prefsSet(String key, String value) async => prefs[key] = value;
+
+  /// Answers `kartka.browser.load` (url, options as the plugin sent them).
+  Future<Map<String, Object?>> Function(String url, Map<String, Object?> o)?
+  onBrowser;
+
+  /// Every browser load: (url, options).
+  final List<(String, Map<String, Object?>)> browserCalls = [];
+
+  @override
+  Future<Map<String, Object?>> browserLoad(
+    String url, {
+    Map<String, String> headers = const {},
+    List<String> scripts = const [],
+    String? waitFor,
+    bool awaitResponse = false,
+    int? timeoutMs,
+  }) async {
+    final o = <String, Object?>{
+      'headers': headers,
+      'scripts': scripts,
+      'waitFor': waitFor,
+      'awaitResponse': awaitResponse,
+      'timeoutMs': timeoutMs,
+    };
+    browserCalls.add((url, o));
+    final answer = onBrowser;
+    if (answer == null) throw StateError('unexpected browser load: $url');
+    return await answer(url, o);
+  }
 }
 
 /// Index entry for inline test extensions.

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:kartka/core/source/challenge.dart';
 import 'package:kartka/plugins/runtime/engine.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
 import 'package:kartka/plugins/runtime/host_dispatch.dart';
+import 'package:kartka/plugins/runtime/plugin_challenge.dart';
 
 /// Lets a caller abandon an in-flight plugin call.
 class PluginCancelToken {
@@ -54,12 +56,32 @@ class PluginSession {
 
   final HostDispatcher _host;
   final Map<int, Completer<Object?>> _calls = {};
+  final Map<int, PluginMethod> _methods = {};
   JsEngine? _engine;
   Future<void>? _starting;
   int _seq = 0;
 
+  /// The last challenge a host call hit; a failing call reports it.
+  ChallengeRequired? _challenge;
+
   PluginException _err(String msg, [PluginMethod? m]) =>
       PluginException(manifest.id, msg, method: m);
+
+  /// A failed call's error: typed when a host call hit a challenge, even if
+  /// the plugin re-wrapped the message (docs/DOCS-contracts-webview.md §4).
+  PluginException _failure(String msg, PluginMethod m) {
+    final seen = _challenge;
+    _challenge = null;
+    if (seen != null) {
+      return PluginChallengeException(
+        manifest.id,
+        msg,
+        challenge: seen,
+        method: m,
+      );
+    }
+    return challengeFromMessage(manifest.id, msg, m) ?? _err(msg);
+  }
 
   /// Calls plugin function [method] with JSON-able [args].
   Future<Object?> call(
@@ -80,6 +102,7 @@ class PluginSession {
     final id = ++_seq;
     final done = Completer<Object?>();
     _calls[id] = done;
+    _methods[id] = m;
     final limit = timeout ?? callTimeout;
     final timer = Timer(limit, () {
       if (done.isCompleted) return;
@@ -107,6 +130,7 @@ class PluginSession {
     } finally {
       timer.cancel();
       _calls.remove(id);
+      _methods.remove(id);
     }
   }
 
@@ -144,7 +168,7 @@ class PluginSession {
         if (m['ok'] == true) {
           c.complete(m['value']);
         } else {
-          c.completeError(_err('${m['error']}'));
+          c.completeError(_failure('${m['error']}', _methods[m['id']]!));
         }
       case 'host':
         unawaited(_onHost(from, m));
@@ -168,6 +192,7 @@ class PluginSession {
       final v = await _host.dispatch('${m['op']}', args).timeout(hostTimeout);
       reply = {'t': 'reply', 'id': id, 'ok': true, 'value': v};
     } on Object catch (e) {
+      if (e is ChallengeRequired) _challenge = e;
       reply = {'t': 'reply', 'id': id, 'ok': false, 'error': '$e'};
     }
     // A reply for an engine that was killed meanwhile must not reach its

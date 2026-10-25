@@ -1,3 +1,6 @@
+import 'package:kartka/platform/browser_engine.dart';
+import 'package:kartka/platform/challenge_detect.dart';
+import 'package:kartka/platform/engine_core.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
 import 'package:kartka/plugins/runtime/plugin_index.dart';
@@ -12,6 +15,7 @@ class KartkaHostServices implements PluginHostServices {
     required this.http,
     required this.store,
     this.onLog,
+    this.browser = const UnavailableBrowser(),
   });
 
   /// Owner of the prefs namespace.
@@ -22,6 +26,9 @@ class KartkaHostServices implements PluginHostServices {
 
   /// Prefs live here.
   final PluginStore store;
+
+  /// The engine behind `kartka.browser.load`.
+  final KartkaBrowser browser;
 
   /// Receives `kartka.log` lines (default: dropped).
   final void Function(String pluginId, String message)? onLog;
@@ -34,22 +41,64 @@ class KartkaHostServices implements PluginHostServices {
     return u;
   }
 
-  HostHttpResponse _wrap(KartkaResponse r) =>
-      HostHttpResponse(status: r.statusCode, headers: r.headers, body: r.body);
+  /// Throws [ChallengeRequired] on an interstitial (contract §2): the
+  /// plugin must not parse a challenge page as content.
+  HostHttpResponse _wrap(Uri url, KartkaResponse r) {
+    final kind = challengeKindOf(r);
+    if (kind != null) throw ChallengeRequired(url, kind);
+    return HostHttpResponse(
+      status: r.statusCode,
+      headers: r.headers,
+      body: r.body,
+    );
+  }
 
   @override
   Future<HostHttpResponse> httpGet(
     String url, {
     Map<String, String> headers = const {},
-  }) async => _wrap(await http.get(_checked(url), headers: headers));
+  }) async {
+    final u = _checked(url);
+    return _wrap(u, await http.get(u, headers: headers));
+  }
 
   @override
   Future<HostHttpResponse> httpPost(
     String url, {
     Map<String, String> headers = const {},
     String? body,
-  }) async =>
-      _wrap(await http.post(_checked(url), headers: headers, body: body));
+  }) async {
+    final u = _checked(url);
+    return _wrap(u, await http.post(u, headers: headers, body: body));
+  }
+
+  @override
+  Future<Map<String, Object?>> browserLoad(
+    String url, {
+    Map<String, String> headers = const {},
+    List<String> scripts = const [],
+    String? waitFor,
+    bool awaitResponse = false,
+    int? timeoutMs,
+  }) async {
+    final u = Uri.tryParse(url);
+    if (u == null || !isEngineUrlAllowed(u)) {
+      throw ArgumentError('URL not allowed in the browser engine: $url');
+    }
+    final result = await browser.load(
+      EngineRequest(
+        url: u,
+        headers: headers,
+        scripts: scripts,
+        waitFor: waitFor,
+        awaitResponse: awaitResponse,
+        timeout: timeoutMs == null
+            ? EngineRequest.defaultTimeout
+            : Duration(milliseconds: timeoutMs),
+      ),
+    );
+    return result.toJson();
+  }
 
   @override
   void log(String message) => onLog?.call(pluginId, message);

@@ -20,6 +20,7 @@ import 'package:kartka/plugins/runtime/host_api.dart';
 import 'package:kartka/plugins/runtime/host_dispatch.dart';
 import 'package:kartka/plugins/runtime/html_parser_bundle.g.dart';
 import 'package:kartka/plugins/runtime/kartka_host_services.dart';
+import 'package:kartka/plugins/runtime/plugin_challenge.dart';
 import 'package:kartka/plugins/runtime/plugin_index.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
 import 'package:kartka/plugins/runtime/plugin_mapping.dart';

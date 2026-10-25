@@ -16,8 +16,8 @@ import 'package:kartka/plugins/runtime/polyfills.dart';
 
 /// Everything evaluated before the plugin source: polyfills, the bundled HTML
 /// parser, then the `kartka` object. `kartka.html` runs inside the sandbox
-/// (synchronous, identical on Android and web); only http, prefs and log are
-/// host calls.
+/// (synchronous, identical on Android and web); only http, prefs, log and
+/// browser are host calls.
 final String kPreludeJs = [
   kPolyfillsJs,
   kHtmlParserBundle,
@@ -60,9 +60,13 @@ const String _kCoreJs = '''
     prefs: {
       get: function (k) { return host('prefs.get', [String(k)]); },
       set: function (k, v) { return host('prefs.set', [String(k), String(v)]); }
+    },
+    browser: {
+      load: function (u, o) { return host('browser.load', [String(u), opts(o)]); }
     }
   };
   Object.freeze(api.http); Object.freeze(api.html); Object.freeze(api.prefs);
+  Object.freeze(api.browser);
   g.kartka = Object.freeze(api);
   function fail(id, e) {
     var msg = e && e.message ? e.message : String(e);

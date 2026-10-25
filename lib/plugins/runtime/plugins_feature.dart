@@ -44,8 +44,12 @@ KartkaFeature pluginsFeature(
   );
   final provider = PluginSourceProvider(
     registrar: manager,
-    services: (id) =>
-        KartkaHostServices(pluginId: id, http: env.platform.http, store: store),
+    services: (id) => KartkaHostServices(
+      pluginId: id,
+      http: env.platform.http,
+      store: store,
+      browser: env.platform.browser,
+    ),
     engineFactory: engineFactory,
   );
   return KartkaFeature(

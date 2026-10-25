@@ -15,6 +15,8 @@
 /// kartka.log(...args)                    -> void
 /// kartka.prefs.get(key)                  -> Promise<string | null>
 /// kartka.prefs.set(key, value)           -> Promise<void>
+/// kartka.browser.load(url, {headers, scripts, waitFor, awaitResponse,
+///                     timeoutMs})        -> Promise<EngineResult JSON>
 /// HttpResponse = {status: int, headers: {string: string}, body: string}
 /// ```
 ///
@@ -191,6 +193,17 @@ abstract interface class PluginHostServices {
 
   /// `kartka.prefs.set`.
   Future<void> prefsSet(String key, String value);
+
+  /// `kartka.browser.load` (docs/DOCS-contracts-webview.md §4): the
+  /// rendered page as `{url, status, html, resources, response, timedOut}`.
+  Future<Map<String, Object?>> browserLoad(
+    String url, {
+    Map<String, String> headers = const {},
+    List<String> scripts = const [],
+    String? waitFor,
+    bool awaitResponse = false,
+    int? timeoutMs,
+  });
 }
 
 /// Error surfaced to the UI. Always names the plugin.

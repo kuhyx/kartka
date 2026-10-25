@@ -28,6 +28,19 @@ class HostDispatcher {
           headers: _headers(o['headers']),
           body: body?.toString(),
         )).toJson();
+      case 'browser.load':
+        final o = _opts(args);
+        final scripts = o['scripts'];
+        final waitFor = o['waitFor'];
+        final timeout = o['timeoutMs'];
+        return await services.browserLoad(
+          _str(args, 0),
+          headers: _headers(o['headers']),
+          scripts: scripts is List ? [for (final s in scripts) '$s'] : const [],
+          waitFor: waitFor is String ? waitFor : null,
+          awaitResponse: o['awaitResponse'] == true,
+          timeoutMs: timeout is num ? timeout.toInt() : null,
+        );
       case 'log':
         services.log(_str(args, 0));
         return null;

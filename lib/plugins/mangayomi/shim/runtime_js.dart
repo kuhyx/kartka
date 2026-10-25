@@ -142,6 +142,26 @@ __kmStrHelper("substringBetween", function (a, b) {
   return this.substringAfter(a).substringBefore(b);
 });
 
+// Mangayomi's headless-webview helper (kodjodevf/mangayomi db2f18e5,
+// lib/eval/javascript/utils.dart): load url, run scripts, resolve to what the
+// page passes to setResponse, or "" on timeout. `time` (s) is clamped to 25,
+// under the 30 s host-call timeout. A challenge rejects (never solved).
+async function evaluateJavascriptViaWebview(url, headers, scripts, time) {
+  const h = {};
+  if (headers && typeof headers === "object") {
+    for (const k of Object.keys(headers)) h[k] = String(headers[k]);
+  }
+  let t = time === undefined || time === null ? 30 : Number(time);
+  if (!(t >= 0) || t > 25) t = 25;
+  const r = await kartka.browser.load(String(url), {
+    headers: h,
+    scripts: Array.isArray(scripts) ? scripts.map(String) : [],
+    awaitResponse: true,
+    timeoutMs: Math.round(t * 1000),
+  });
+  return r.response == null ? "" : String(r.response);
+}
+
 function __kmNotImplemented(name) {
   return new Error(name + " not implemented");
 }
