@@ -91,6 +91,16 @@ class _MigrationScreenState extends State<MigrationScreen> {
     _ => null,
   };
 
+  /// Titles of the other rows matched to [row]'s candidate (applying both
+  /// merges them into one entry).
+  static List<String> _sharing(MigrationController c, MigrationRow row) => [
+    for (final other in c.rows)
+      if (other != row &&
+          row.candidate != null &&
+          other.candidate?.url == row.candidate!.url)
+        other.entry.title,
+  ];
+
   Widget _row(MigrationController c, MigrationRow row) {
     final candidate = row.candidate;
     final match = switch (candidate) {
@@ -104,7 +114,12 @@ class _MigrationScreenState extends State<MigrationScreen> {
       title: Text(row.entry.title),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Text(match), if (row.error case final e?) Text(e)],
+        children: [
+          Text(match),
+          if (_sharing(c, row) case final others when others.isNotEmpty)
+            Text('Same Atsumaru entry as ${others.join(', ')}: they merge'),
+          if (row.error case final e?) Text(e),
+        ],
       ),
       onChanged: candidate == null || c.phase != MigrationPhase.ready
           ? null

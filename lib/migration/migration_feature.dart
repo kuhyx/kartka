@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/migration/migration_controller.dart';
@@ -75,16 +76,40 @@ class _MigrateSlot implements MangaDetailSlot {
   @override
   Widget build(BuildContext context, MangaKey key, MangaDetails details) {
     if (details.sourceId == atsumaruSourceId) return const SizedBox.shrink();
-    final library = _env.registry.maybe<LibraryRepositories>()!.library;
-    return StreamBuilder<bool>(
-      stream: library.watch().map((all) => all.any((e) => e.key == key)),
-      builder: (context, saved) => saved.data ?? false
-          ? OutlinedButton.icon(
-              icon: const Icon(Icons.swap_horiz),
-              label: const Text('Migrate'),
-              onPressed: () => unawaited(context.push(migrateRouteFor([key]))),
-            )
-          : const SizedBox.shrink(),
+    return _MigrateButton(
+      library: _env.registry.maybe<LibraryRepositories>()!.library,
+      mangaKey: key,
     );
   }
+}
+
+/// Shown while [mangaKey] is in the library. Holds its stream, so a
+/// rebuild of the detail screen does not resubscribe the repository.
+class _MigrateButton extends StatefulWidget {
+  const new({required this.library, required this.mangaKey});
+
+  final LibraryRepository library;
+  final MangaKey mangaKey;
+
+  @override
+  State<_MigrateButton> createState() => _MigrateButtonState();
+}
+
+class _MigrateButtonState extends State<_MigrateButton> {
+  late final Stream<bool> _saved = widget.library.watch().map(
+    (all) => all.any((e) => e.key == widget.mangaKey),
+  );
+
+  @override
+  Widget build(BuildContext context) => StreamBuilder<bool>(
+    stream: _saved,
+    builder: (context, saved) => saved.data ?? false
+        ? OutlinedButton.icon(
+            icon: const Icon(Icons.swap_horiz),
+            label: const Text('Migrate'),
+            onPressed: () =>
+                unawaited(context.push(migrateRouteFor([widget.mangaKey]))),
+          )
+        : const SizedBox.shrink(),
+  );
 }

@@ -55,6 +55,20 @@ void main() {
     expect(find.text('Apply (1)'), findsOneWidget);
   });
 
+  testWidgets('two entries matched to one Atsumaru entry say so', (t) async {
+    final w = await _world();
+    w.target.offer('Vagabond', 'One Piece', '/atsu/op');
+    await _pump(t, w);
+    expect(
+      find.text('Same Atsumaru entry as Vagabond: they merge'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Same Atsumaru entry as One Piece: they merge'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('nothing is written until Apply is tapped', (t) async {
     final w = await _world();
     final before = await t.runAsync(w.entries);

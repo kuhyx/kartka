@@ -83,16 +83,18 @@ class MangaDetailController extends ChangeNotifier {
   }
 
   /// [load] again, reporting what changed against the chapters shown
-  /// before it. A failure is logged to the diagnostics log as
+  /// before it (none are new when no list was shown, e.g. after a failed
+  /// first load). A failure is logged to the diagnostics log as
   /// `details.refresh` with the source id only: no URL, no query string.
   Future<RefreshOutcome> refresh() async {
+    final shown = details != null;
     final before = {for (final c in chapters) c.url};
     await load();
     final failure = error;
     if (failure == null) {
       return RefreshSucceeded([
         for (final c in chapters)
-          if (!before.contains(c.url)) c,
+          if (shown && !before.contains(c.url)) c,
       ]);
     }
     await _deps.diagnostics?.append(

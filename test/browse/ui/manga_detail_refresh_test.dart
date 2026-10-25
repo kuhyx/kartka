@@ -103,4 +103,17 @@ void main() {
     expect(entries.single.kind, 'details.refresh');
     expect(entries.single.error, isNot(contains('token=X')));
   });
+
+  testWidgets('after a failed first load nothing counts as new', (t) async {
+    t.view.physicalSize = const Size(1200, 2400);
+    addTearDown(t.view.resetPhysicalSize);
+    final src = FakeSource('mangadex', chapters: _upTo(100))
+      ..failWith = StateError('down');
+    final h = Harness(sources: [src], withCovers: false);
+    await h.pump(t, const SizedBox(), at: mangaRoute('mangadex', _url));
+    src.failWith = null;
+    await _tapRefresh(t);
+    expect(find.text('100 chapters'), findsOneWidget);
+    expect(find.text('No new chapters'), findsOneWidget);
+  });
 }
