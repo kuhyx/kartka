@@ -61,9 +61,10 @@ sign_in() {
 
   step "the Sync screen reads signed in (seed adopted)"
   open_sync_screen
-  signed_in 15 || fail "seed at $AGENT_SEED not adopted. Revoked or \
-expired: reseed with $SEED_CMD. A profile that once signed out keeps an \
-opt-out and never adopts: sign in on the Sync screen instead."
+  signed_in 15 || fail "seed at $AGENT_SEED not adopted. A build/web older \
+than the seeded-session change never asks: rebuild it. Revoked or expired: \
+reseed with $SEED_CMD. A profile that once signed out keeps an opt-out and \
+never adopts: sign in on the Sync screen instead."
 }
 
 # Library root: tab, then pop any detail/reader pages left from earlier runs.
