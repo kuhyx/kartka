@@ -63,5 +63,26 @@ void main() {
         expect(redactUrlQueries(s), s);
       }
     });
+    test('URL userinfo is redacted, scheme, host and path stay', () {
+      expect(
+        redactUrlQueries('GET https://user:pa55@h.test/p failed'),
+        'GET https://<redacted>@h.test/p failed',
+      );
+      expect(redactUrlQueries('HTTP://tok@h.test'), 'HTTP://<redacted>@h.test');
+    });
+
+    test('userinfo and a query in one URL are both redacted', () {
+      expect(
+        redactUrlQueries('uri=https://u:p@h.test/p?auth=T#f'),
+        'uri=https://<redacted>@h.test/p?<redacted>',
+      );
+    });
+
+    test('an @ outside the authority is not userinfo', () {
+      const plain = ['https://h.test/p/@me', 'mail a@b.c', 'https://h.test'];
+      for (final s in plain) {
+        expect(redactUrlQueries(s), s);
+      }
+    });
   });
 }
