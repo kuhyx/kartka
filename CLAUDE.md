@@ -78,9 +78,14 @@ to `flutter_web_drive` (kuhyx/utils; README there): `tree`, `tap "<label>"`,
 existing `build/web`, so rebuild that first when lib/ changed. Flows in
 `tools/agent/flows/` log numbered steps and exit non-zero with the failing
 step and a screenshot: `f0_smoke.sh` (shell + tab switch + non-blank shot),
-`f3_sync.sh [title chapter [trigger_epoch]]` (password sign-in to the real
-/kartka RTDB, then the chapter reads as read within 10 s). Never point the
-agent at 47391 or `~/.local/share/kartka-desktop/`.
+`f3_sync.sh [title chapter [trigger_epoch]]` (signs in to the real /kartka
+RTDB, then the chapter reads as read within 10 s). Sign-in uses no password:
+the account is Google-only. When `~/.config/kartka-agent/firebase_auth.json`
+exists, `start` passes it as `--sync-credentials`, and the app adopts it
+once (contracts-runtime §17). With no seed, f3 exits 1 and prints kuhy's
+one-tap command (`SEED_CMD` in `tools/agent/lib.sh`, crdt-sync
+`tool.seed_session --app kartka-agent --app kartka-source-eval`). Never point
+the agent at 47391 or `~/.local/share/kartka-desktop/`.
 
 ## Conventions
 

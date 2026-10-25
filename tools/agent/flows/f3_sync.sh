@@ -1,16 +1,21 @@
 #!/bin/bash
-# f3 sync: sign the agent instance into the shared sync account (password
-# sign-in, idempotent), then optionally assert a chapter shows as read.
+# f3 sync: get the agent instance signed into the shared sync account from
+# the seeded session (no password: the account is Google-only), then
+# optionally assert a chapter shows as read.
 #
 #   tools/agent/flows/f3_sync.sh                                  # sign in only
 #   tools/agent/flows/f3_sync.sh "<manga title>" "<chapter label>" [trigger_epoch]
 #
+# Signed out with no ~/.config/kartka-agent/firebase_auth.json: exits 1 with
+# the one command kuhy runs (a Google consent tap) to write it. With the
+# seed: restarts the agent so a fresh wrapper serves it to a fresh page,
+# which adopts it (DOCS-contracts-runtime §17). Never types a credential.
+#
 # The assert polls until trigger_epoch + 10 s (default: now + 10 s) for the
 # chapter row's "Mark unread" button, i.e. the chapter is read. If that
 # deadline has already passed it still polls 1 s ("is it read now?").
-# The chapter label is one line of the row as `tree` shows it, e.g. "Ch. 450". Writes the
-# real /kartka RTDB as one persistent device (approved). Credentials come from
-# ~/.config/crdt-sync/ and are piped, never printed or put in argv.
+# The chapter label is one line of the row as `tree` shows it, e.g. "Ch. 450".
+# Writes the real /kartka RTDB as one persistent device (approved).
 set -euo pipefail
 
 # shellcheck disable=SC2034 # read by lib.sh
@@ -18,7 +23,6 @@ FLOW=f3
 # shellcheck source-path=SCRIPTDIR source=../lib.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
 readonly AGENT="$AGENT_DIR/kartka_agent.sh"
-readonly CRED_DIR="$HOME/.config/crdt-sync"
 readonly POLL_SEC=10
 
 open_sync_screen() {
@@ -30,47 +34,36 @@ open_sync_screen() {
   check drive wait "Sync now" --timeout 5 >/dev/null
 }
 
+signed_in() {
+  drive wait "Account (sign out)" --timeout "$1" >/dev/null 2>&1
+}
+
 sign_in() {
   step "start the agent instance"
   check "$AGENT" start >/dev/null
 
   step "open More -> Sync"
   open_sync_screen
-  if drive wait "Account (sign out)" --timeout 2 >/dev/null 2>&1; then
+  if signed_in 2; then
     echo "[f3] already signed in; skipping sign-in"
     return 0
   fi
 
-  step "open the password sign-in form"
-  [[ -r "$CRED_DIR/password" && -r "$CRED_DIR/firebase.json" ]] ||
-    fail "credentials missing in $CRED_DIR"
-  check drive tap "Sign in" >/dev/null
-  check drive wait "Use the account password instead" --timeout 5 >/dev/null
-  check drive tap "Use the account password instead" >/dev/null
-  check drive wait "Sync account email" --timeout 5 >/dev/null
+  step "a seeded session exists"
+  [[ -r "$AGENT_SEED" ]] ||
+    fail "no seeded session at $AGENT_SEED. kuhy: run $SEED_CMD"
 
-  step "enter the email (from firebase.json) and password (piped from file)"
-  check drive tap "Sync account email" >/dev/null
-  jq -er '.email' "$CRED_DIR/firebase.json" | check drive text --stdin
-  check drive tap "Sync account password" >/dev/null
-  check drive text --file "$CRED_DIR/password"
+  # The wrapper reads the seed at start and serves it once per launch, so
+  # restart both units: a fresh wrapper serves it, a fresh page adopts it.
+  step "restart the agent so the wrapper serves the seed"
+  check "$AGENT" stop >/dev/null
+  check "$AGENT" start >/dev/null
 
-  step "connect and wait for the session"
-  check drive tap "Connect Firebase" >/dev/null
-  local i msg
-  for ((i = 0; i < 20; i++)); do
-    drive wait "Disconnect" --timeout 1 >/dev/null 2>&1 && break
-    msg="$(drive tree --filter "rejected" 2>/dev/null || true)"
-    if [[ -n "$msg" && "$msg" != "(no matching"* ]]; then
-      drive tap Back >/dev/null 2>&1 || true # drop the typed form
-      fail "Firebase refused the sign-in: $(cut -d'"' -f2 <<<"$msg")"
-    fi
-  done
-  check drive wait "Disconnect" --timeout 1
-
-  step "back on the Sync screen it reads signed in"
-  check drive tap "Back" >/dev/null
-  check drive wait "Account (sign out)" --timeout 10
+  step "the Sync screen reads signed in (seed adopted)"
+  open_sync_screen
+  signed_in 15 || fail "seed at $AGENT_SEED not adopted. Revoked or \
+expired: reseed with $SEED_CMD. A profile that once signed out keeps an \
+opt-out and never adopts: sign in on the Sync screen instead."
 }
 
 # Library root: tab, then pop any detail/reader pages left from earlier runs.

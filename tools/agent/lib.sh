@@ -15,6 +15,14 @@ readonly AGENT_URL="http://127.0.0.1:${AGENT_PORT}/"
 readonly WRAPPER_UNIT="kartka-agent-wrapper"
 readonly CHROME_UNIT="kartka-agent-chrome"
 readonly FWD_APP_NAME="kartka-agent"
+# Seeded Firebase session the agent wrapper serves once per launch as
+# /sync-credentials (DOCS-contracts-runtime §17). The shared account is
+# Google-only, so this is how the agent signs in: no password, no consent.
+readonly AGENT_SEED="$HOME/.config/kartka-agent/firebase_auth.json"
+# What kuhy runs (one Google consent tap) to write it; also seeds the
+# source evaluator. Printed verbatim: $(cat ...) expands in his shell only.
+# shellcheck disable=SC2016 # literal on purpose: expands in kuhy's shell
+readonly SEED_CMD='cd ~/src/utils/crdt-sync && python3 -m tool.seed_session --client-id 845446124781-prdoherj0v64vc6egvvcp3l0693khaur.apps.googleusercontent.com --client-secret "$(cat ~/.config/crdt-sync/oauth_client_secret)" --app kartka-agent --app kartka-source-eval'
 
 # Refuse the real app's port outright: its IndexedDB and OAuth redirect are
 # keyed to it, and a second wrapper there would steal kuhy's session.

@@ -11,6 +11,8 @@
 # Both run as `systemd-run --user` units so they outlive the calling shell.
 # Agent data lives in ~/.local/share/kartka-agent/{files,secrets.json,profile};
 # the real app's port 47391 and ~/.local/share/kartka-desktop/ are never used.
+# With ~/.config/kartka-agent/firebase_auth.json present the wrapper serves
+# it once as /sync-credentials, which signs the app in (lib.sh: AGENT_SEED).
 # Serves the existing build/web; rebuild it separately with:
 #   ~/.claude/scripts/capped.sh fvm flutter build web --release \
 #     --dart-define-from-file="$HOME/.config/kartka/oauth.json"
@@ -33,13 +35,18 @@ start_wrapper() {
     [[ -f "$REPO_DIR/build/web/index.html" ]] ||
       { echo "kartka-agent: no build/web; build it first (see header)" >&2; exit 1; }
     mkdir -p "$AGENT_HOME/files"
+    # Only the agent wrapper ever gets the seed; read at wrapper start, so a
+    # seed written later needs `stop` + `start`.
+    local seed=()
+    [[ -r "$AGENT_SEED" ]] && seed=(--sync-credentials "$AGENT_SEED")
     systemctl --user reset-failed "$WRAPPER_UNIT" 2>/dev/null || true
     systemd-run --user --unit="$WRAPPER_UNIT" --collect --quiet \
       -p WorkingDirectory="$REPO_DIR/desktop" \
       -p "UnsetEnvironment=DISPLAY WAYLAND_DISPLAY" \
       "$(command -v fvm)" dart run bin/kartka_desktop.dart \
       --web-root "$REPO_DIR/build/web" --no-browser --port "$AGENT_PORT" \
-      --files-dir "$AGENT_HOME/files" --secrets-path "$AGENT_HOME/secrets.json"
+      --files-dir "$AGENT_HOME/files" --secrets-path "$AGENT_HOME/secrets.json" \
+      "${seed[@]}"
   fi
   # A first `dart run` compiles the wrapper; poll, and if it is still going
   # tell the caller to rerun rather than blocking past the 60 s action cap.
@@ -80,7 +87,7 @@ main() {
     start) cmd_start ;;
     stop) cmd_stop ;;
     status) cmd_status ;;
-    "" | -h | --help) sed -n '2,16p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' ;;
+    "" | -h | --help) sed -n '2,18p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' ;;
     *) drive "$@" ;;
   esac
 }
