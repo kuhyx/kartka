@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
+import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/downloads/download_service.dart';
@@ -21,6 +22,7 @@ class BrowseDeps {
   /// [coverLoader] → placeholder covers.
   new({
     required this.sources,
+    required this.languages,
     required this.chapters,
     required this.library,
     required this.progress,
@@ -35,6 +37,9 @@ class BrowseDeps {
 
   /// Live source list.
   final SourceRegistry sources;
+
+  /// Which source languages the Browse tab lists.
+  final BrowseLanguageStore languages;
 
   /// Chapter cache shared with the unread-count and resolver ports.
   final ChapterStore chapters;

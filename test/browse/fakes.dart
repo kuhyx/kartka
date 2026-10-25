@@ -16,10 +16,11 @@ class FakeSource implements MangaSource {
     String id, {
     String? name,
     SourceOrigin origin = SourceOrigin.native,
+    String lang = 'en',
     this.pageCount = 2,
     this.perPage = 3,
     List<ChapterInfo>? chapters,
-  }) : ref = SourceRef(id: id, name: name ?? id, lang: 'en', origin: origin),
+  }) : ref = SourceRef(id: id, name: name ?? id, lang: lang, origin: origin),
        chapterList =
            chapters ??
            [

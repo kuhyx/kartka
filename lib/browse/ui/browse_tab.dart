@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/browse_scope.dart';
+import 'package:kartka/browse/language_filter.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
-import 'package:kartka/browse/source_ordering.dart';
+import 'package:kartka/browse/ui/language_picker.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
 
@@ -18,7 +19,8 @@ const Map<SourceOrigin, String> originLabels = {
   SourceOrigin.local: 'Local',
 };
 
-/// The Browse tab: a global search field, then every source grouped by
+/// The Browse tab: a global search field, then the sources of the selected
+/// languages, one section per language in selection order, each grouped by
 /// origin and ordered by source-health rank (name order without it).
 class BrowseTab extends StatelessWidget {
   /// Creates the tab.
@@ -28,29 +30,57 @@ class BrowseTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final deps = BrowseScope.of(context);
     final health = deps.health;
-    return StreamBuilder<List<MangaSource>>(
-      stream: deps.sources.watch(),
-      initialData: deps.sources.current,
-      builder: (context, sources) =>
-          StreamBuilder<Map<String, SourceHealthSummary>>(
-            stream: health?.watch(),
-            initialData: const {},
-            builder: (context, ranks) => _SourceList(
-              groups: groupSources([
-                for (final s in sources.data!) s.ref,
-              ], ranks.data ?? const {}),
-              ranks: ranks.data ?? const {},
-              health: health,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Browse'),
+        actions: [
+          IconButton(
+            tooltip: 'Languages',
+            icon: const Icon(Icons.filter_list),
+            onPressed: () => unawaited(
+              showLanguagePicker(context, deps.languages, [
+                for (final s in deps.sources.current) s.ref,
+              ]),
             ),
           ),
+        ],
+      ),
+      body: StreamBuilder<List<MangaSource>>(
+        stream: deps.sources.watch(),
+        initialData: deps.sources.current,
+        builder: (context, sources) =>
+            StreamBuilder<Map<String, SourceHealthSummary>>(
+              stream: health?.watch(),
+              initialData: const {},
+              builder: (context, ranks) => ValueListenableBuilder(
+                valueListenable: deps.languages,
+                builder: (context, selected, _) => _SourceList(
+                  sections: sectionSources(
+                    [for (final s in sources.data!) s.ref],
+                    ranks.data ?? const {},
+                    selected,
+                  ),
+                  anyInstalled: sources.data!.isNotEmpty,
+                  ranks: ranks.data ?? const {},
+                  health: health,
+                ),
+              ),
+            ),
+      ),
     );
   }
 }
 
 class _SourceList extends StatelessWidget {
-  const new({required this.groups, required this.ranks, required this.health});
+  const new({
+    required this.sections,
+    required this.anyInstalled,
+    required this.ranks,
+    required this.health,
+  });
 
-  final List<SourceGroup> groups;
+  final List<LanguageSection> sections;
+  final bool anyInstalled;
   final Map<String, SourceHealthSummary> ranks;
   final SourceHealthLookup? health;
 
@@ -75,28 +105,40 @@ class _SourceList extends StatelessWidget {
             },
           ),
         ),
-        if (groups.isEmpty)
+        if (sections.isEmpty && !anyInstalled)
           const EmptyState(
             icon: Icons.extension_off_outlined,
             title: 'No sources',
             message: 'Install a plugin or connect Suwayomi to browse.',
+          )
+        else if (sections.isEmpty)
+          const EmptyState(
+            icon: Icons.filter_list_off,
+            title: 'No sources in your languages',
+            message: 'Pick more languages with the filter button.',
           ),
-        for (final g in groups) ...[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md,
-              AppSpacing.md,
-              AppSpacing.md,
-              AppSpacing.xs,
-            ),
-            child: Text(
-              originLabels[g.origin]!,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+        for (final section in sections) ...[
+          SectionHeader(
+            languageLabel(section.language),
+            padding: SectionHeader.defaultPadding,
+          ),
+          for (final g in section.groups) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.xs,
+              ),
+              child: Text(
+                originLabels[g.origin]!,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
-          ),
-          for (final s in g.sources) _SourceTile(s, ranks[s.id], health),
+            for (final s in g.sources) _SourceTile(s, ranks[s.id], health),
+          ],
         ],
       ],
     );

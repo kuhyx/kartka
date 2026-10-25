@@ -191,9 +191,11 @@ void main() {
       'mangadex.settings',
       'reader.settings',
       'plugins.repos',
+      'browse.languages',
       kAutoDownloadSetting,
       'sourceHealth.scoring',
     });
+    expect(kSyncedSettings['browse.languages']!.vault, SettingsVault.plain);
     for (final key in [_user, _pass]) {
       expect(kSyncedSettings[key]!.vault, SettingsVault.secret);
     }

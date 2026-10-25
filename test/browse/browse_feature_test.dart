@@ -20,8 +20,9 @@ import 'ui/harness.dart';
 KartkaRegistry _registry({
   bool withLibrary = true,
   FakeDownloadService? downloads,
+  MemoryKeyValueStore? store,
 }) {
-  final kv = MemoryKeyValueStore();
+  final kv = store ?? MemoryKeyValueStore();
   final http = FakeKartkaHttp(
     (_) => KartkaResponse(statusCode: 200, bodyBytes: onePixelPng),
   );
@@ -62,6 +63,13 @@ void main() {
   testWidgets('tab lists registered sources', (t) async {
     await _pumpApp(t, _registry(), '/');
     expect(find.text('MangaDex'), findsOneWidget);
+  });
+
+  testWidgets('the tab reads browse.languages from the platform kv', (t) async {
+    final kv = MemoryKeyValueStore({'browse.languages': '["ko"]'});
+    await _pumpApp(t, _registry(store: kv), '/');
+    expect(find.text('MangaDex'), findsNothing);
+    expect(find.text('No sources in your languages'), findsOneWidget);
   });
 
   testWidgets('detail route decodes its params and loads covers', (t) async {

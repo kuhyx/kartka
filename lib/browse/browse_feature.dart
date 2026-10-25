@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/routes.dart';
+import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/manga_detail_slot.dart';
@@ -9,6 +10,7 @@ import 'package:kartka/browse/ports/browse_chapter_url_resolver.dart';
 import 'package:kartka/browse/ports/browse_unread_counts.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
+import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/ui/browse_tab.dart';
 import 'package:kartka/browse/ui/global_search_screen.dart';
@@ -73,6 +75,12 @@ class BrowseRuntime {
     _env.registry,
   );
 
+  /// The Browse language selection, synced across devices.
+  late final BrowseLanguageStore languages = () {
+    final kv = syncedKv(_env);
+    return BrowseLanguageStore(kv, reloadOn: kv.remoteChanges);
+  }();
+
   /// Persistent chapter cache.
   late final ChapterStore chapters = ChapterStore(
     sources.byId,
@@ -92,6 +100,7 @@ class BrowseRuntime {
   /// Dependencies of every browse screen.
   late final BrowseDeps deps = BrowseDeps(
     sources: sources,
+    languages: languages,
     chapters: chapters,
     library: _repos.library,
     progress: _repos.progress,

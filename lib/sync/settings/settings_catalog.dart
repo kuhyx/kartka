@@ -29,6 +29,7 @@ const Map<String, SyncedSetting> kSyncedSettings = {
   'mangadex.settings': (vault: SettingsVault.plain, label: 'MangaDex settings'),
   'reader.settings': (vault: SettingsVault.plain, label: 'Reader settings'),
   'plugins.repos': (vault: SettingsVault.plain, label: 'Plugin repos'),
+  'browse.languages': (vault: SettingsVault.plain, label: 'Browse languages'),
   kAutoDownloadSetting: (vault: SettingsVault.plain, label: 'Auto-download'),
   // The source-health scoring profile; the evaluator reads it too.
   'sourceHealth.scoring': (

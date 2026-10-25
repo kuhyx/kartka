@@ -1,11 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/source_registry.dart';
+import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 
 import '../fakes.dart';
 
@@ -30,6 +32,7 @@ void main() {
     ]);
     deps = BrowseDeps(
       sources: sources,
+      languages: BrowseLanguageStore(MemoryKeyValueStore()),
       chapters: ChapterStore(sources.byId),
       library: library,
       progress: progress,
@@ -150,6 +153,7 @@ void main() {
     final bare = MangaDetailController(
       BrowseDeps(
         sources: deps.sources,
+        languages: deps.languages,
         chapters: deps.chapters,
         library: library,
         progress: progress,

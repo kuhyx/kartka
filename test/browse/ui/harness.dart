@@ -10,6 +10,7 @@ import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
+import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/ui/global_search_screen.dart';
 import 'package:kartka/browse/ui/manga_detail_screen.dart';
@@ -19,6 +20,7 @@ import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/platform/browser_engine.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 
 import '../fakes.dart';
 
@@ -65,13 +67,16 @@ class Harness {
     bool withCovers = true,
     this.downloadService,
     KartkaBrowser? browser,
-  }) : provider = FakeSourceProvider() {
+    BrowseLanguageStore? languages,
+  }) : provider = FakeSourceProvider(),
+       languages = languages ?? BrowseLanguageStore(MemoryKeyValueStore()) {
     final registry = SourceRegistry([
       StaticSourceProvider(sources ?? [FakeSource('mangadex')]),
       provider,
     ]);
     deps = BrowseDeps(
       sources: registry,
+      languages: this.languages,
       chapters: ChapterStore(registry.byId),
       library: library,
       progress: progress,
@@ -86,6 +91,7 @@ class Harness {
   }
 
   final FakeSourceProvider provider;
+  final BrowseLanguageStore languages;
   final SourceHealthLookup? health;
   final DownloadService? downloadService;
   final library = FakeLibrary();
