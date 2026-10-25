@@ -7,6 +7,7 @@ import 'package:app_links/app_links.dart';
 import 'package:file_picker/file_picker.dart' as fp;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:kartka/platform/caching_key_value_store.dart';
 import 'package:kartka/platform/coalescing_saver.dart';
 import 'package:kartka/platform/cookie_http.dart';
 import 'package:kartka/platform/http_kartka.dart';
@@ -40,7 +41,10 @@ Future<KartkaPlatform> createPlatform() async {
     blobs: FileBlobStore(Directory(p.join(docs.path, 'blobs'))),
     diagnostics: FileBlobStore(external ?? support),
     kv: kv,
-    secrets: SecureKeyValueStore(const FlutterSecureStorage()),
+    // One Keystore read per key per launch; the app's writes keep it current.
+    secrets: CachingKeyValueStore(
+      SecureKeyValueStore(const FlutterSecureStorage()),
+    ),
     filePicker: PluginFilePicker(
       pickDirectory: () async =>
           await listDirectoryFiles(await fp.FilePicker.getDirectoryPath()),

@@ -4,6 +4,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/platform/blob_store.dart';
 import 'package:kartka/platform/browser_engine.dart';
+import 'package:kartka/platform/caching_key_value_store.dart';
 import 'package:kartka/platform/challenge_detect.dart';
 import 'package:kartka/platform/coalescing_saver.dart';
 import 'package:kartka/platform/cookie_http.dart';

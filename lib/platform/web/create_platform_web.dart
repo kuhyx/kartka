@@ -4,6 +4,7 @@
 // WrapperOAuthRedirect) are unit-tested on the VM.
 import 'package:http/http.dart' as http;
 import 'package:idb_shim/idb_browser.dart';
+import 'package:kartka/platform/caching_key_value_store.dart';
 import 'package:kartka/platform/http_kartka.dart';
 import 'package:kartka/platform/oauth_impls.dart';
 import 'package:kartka/platform/platform.dart';
@@ -25,7 +26,9 @@ Future<KartkaPlatform> createPlatform() async {
     // Same /files root: the log lands as a file on the PC, no export step.
     diagnostics: WrapperBlobStore(client, base),
     kv: await IdbKeyValueStore.open(idbFactoryBrowser),
-    secrets: WrapperKeyValueStore(client, base),
+    // One backend read per key per launch (the AniList token was re-fetched
+    // on every progress push); the app's own writes keep it current.
+    secrets: CachingKeyValueStore(WrapperKeyValueStore(client, base)),
     filePicker: PluginFilePicker(pickDirectory: pickWebDirectory),
     oauth: WrapperOAuthRedirect(
       client: client,

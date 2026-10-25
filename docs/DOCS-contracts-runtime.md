@@ -79,6 +79,9 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   restores the .tachibk into Suwayomi.
 - Credentials (Suwayomi basic auth, OAuth tokens) go in `KartkaPlatform.secrets`:
   the Android Keystore, or on web a wrapper-held 0600 file in ~/.config/kartka/.
+  Both are read through `CachingKeyValueStore`: one backend read per key per
+  launch, kept current by the app's own set/remove; out-of-app edits show
+  after a restart.
 - Sync decorates repositories through the `RepositoryDecorator` port
   (lib/library/). Library's accessor applies every decorator lazily, and other
   parts get repos only from that accessor.
