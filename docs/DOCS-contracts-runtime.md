@@ -178,6 +178,8 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
 - **Synced**: `suwayomi.serverUrl`, `suwayomi.username`, `suwayomi.password`,
   `mangadex.settings`, `reader.settings` (global default mode, tap zones,
   prefetch), `plugins.repos` (native and Mangayomi repos),
+  `browse.languages` (the Browse language filter, a JSON list of language
+  codes in display order; unset means `en`, `all`/`multi`, `ja`),
   `downloads/auto_new_chapters` and `sourceHealth.scoring` (the source-health
   scoring profile as a JSON string, node `settings/sourceHealth~2Escoring`,
   plain vault; the evaluator reads it too, contracts §5). The catalogue is
