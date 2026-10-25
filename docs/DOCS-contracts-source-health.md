@@ -23,7 +23,7 @@ under the line cap; same rules. Implementation notes:
   "subsetOf": {"sourceId": "mangadex", "overlap": 0.93},
   "score": 0.852, "rank": 3,
   "verdict": "keep|cut|pending",
-  "cutReasons": ["uptime<0.95", "blocking", "coverage<0.60", "subset"],
+  "cutReasons": ["uptime<0.95", "blocking", "coverage<0.60", "pages", "subset"],
   "flags": ["needs-browser-engine"]
 }
 ```
@@ -45,7 +45,9 @@ under the line cap; same rules. Implementation notes:
 - **Subset**: ≥ 90 % of a source's found titles also found by a higher-ranked,
   not-cut source with ≥ its image quality → `subsetOf` set, verdict `cut`.
 - **Cut rules**: uptime ratio < 0.95 (only once `final`), challengeRate > 0
-  from any kind other than `webview`, coverage < 0.60, subset.
+  from any kind other than `webview`, coverage < 0.60, `pages` (pagesLoad
+  ratio exactly 0, i.e. no sampled chapter's pages loaded; a `null` ratio is
+  no reason), subset.
 - **Verdict** (2026-10-25): score ≥ 0.90 (`KEEP_SCORE`) → `keep`, overriding
   every cut reason and `pending`; `cutReasons` is still published and the UI
   shows it as warnings. Below 0.90: `cut` if any cut reason; else `pending`
@@ -53,7 +55,7 @@ under the line cap; same rules. Implementation notes:
 - **Score**: (0.30 coverage + 0.20 completeness + 0.20 uptime + 0.15 image
   quality (width/1400 capped) + 0.15 latency (1 − p95/5000 capped at 0)) ×
   `pagesLoad.ratio` when that is not `null`, so a source whose pages never
-  load scores 0.
+  load scores 0 and is cut (`pages`).
 - **As built** (evaluator, 2026-10-24): every record also carries
   `availability: {native, mangayomiJs, keiyoushi}` (bools: where else the
   source can be read). `blocking.kinds` may also list `webview` (the extension

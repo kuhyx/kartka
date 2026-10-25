@@ -7,7 +7,7 @@ lazy from pathlib import Path
 
 from source_eval.metrics import lang_scope, metrics, pages_load
 from source_eval.models import Candidate
-from source_eval.score import KEEP_SCORE, Record, rank, score
+from source_eval.score import KEEP_SCORE, Record, cut_reasons, rank, score
 from source_eval.state import Manifest, RunDir
 from tests.test_scoring import record
 
@@ -51,12 +51,15 @@ def test_pages_never_loading_scores_zero() -> None:
     assert score(perfect("x")) == 1.0  # no block at all
 
 
-def test_zero_pages_falls_back_to_the_old_rules() -> None:
+def test_pages_never_loading_is_cut() -> None:
     ranked = rank([with_pages(perfect("x"), 0.0)], {})
     assert ranked[0]["score"] == 0.0
-    assert ranked[0]["verdict"] == "keep"  # no cut reason, uptime final
+    assert ranked[0]["cutReasons"] == ["pages"]
+    assert ranked[0]["verdict"] == "cut"
     accruing = with_pages(perfect("y", status="accruing"), 0.0)
-    assert rank([accruing], {})[0]["verdict"] == "pending"
+    assert rank([accruing], {})[0]["verdict"] == "cut"
+    assert cut_reasons(with_pages(perfect("z"), None, 0)) == []  # unknown: no reason
+    assert cut_reasons(with_pages(perfect("w"), 0.1)) == []
 
 
 def test_high_score_keeps_despite_cut_reasons() -> None:

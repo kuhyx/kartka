@@ -71,6 +71,8 @@ def cut_reasons(record: Record) -> list[str]:
     coverage = _get(record, "coverage", "ratio")
     if coverage is not None and coverage < COVERAGE_MIN:
         reasons.append("coverage<0.60")
+    if _pages_ratio(record) == 0:  # pages never load; null (unmeasured) is no reason
+        reasons.append("pages")
     return reasons
 
 

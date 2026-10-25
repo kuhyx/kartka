@@ -115,7 +115,8 @@ and FlareSolverr off (the local dev server and the live deploy both do).
 - **pagesLoad**: loaded / attempted chapters of the image step, read from the
   stored per-chapter outcomes (`state.images`: an `error` or an empty page
   list is a failure), so any existing run state re-reports without
-  re-measuring. `null` when no chapter was attempted.
+  re-measuring. `null` when no chapter was attempted. A ratio of exactly 0
+  adds the `pages` cut reason (`null` adds none).
 - **langScope**: `en+ja` unless the source is `all` (then `unrestricted`).
   Restricting an `all` Suwayomi extension would need per-extension language
   preferences (keys differ per extension and are unverified here); MangaDex
