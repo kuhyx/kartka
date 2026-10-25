@@ -38,6 +38,7 @@ test directory at a time for that reason. Wrapper package:
 - `desktop/` the wrapper: static build, `/proxy`, `/files`, `/secrets`,
   `/oauth`, on `127.0.0.1:47391` (plus a one-shot `/sync-credentials` only
   with `--sync-credentials`, the agent instance; contracts-runtime §17).
+- Browser engine + "Open in WebView": `docs/DOCS-contracts-webview.md`.
 - Feature dirs (`lib/sources`, `lib/library`, `lib/reader`, ...) belong to
   their parts; foundation never imports them.
 
