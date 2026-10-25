@@ -18,6 +18,7 @@ KartkaPlatform memoryPlatform({
   FakeFilePicker? filePicker,
   FakeOAuthRedirect? oauth,
   KartkaBrowser? browser,
+  MemoryBlobStore? diagnostics,
 }) => KartkaPlatform(
   http: http ?? FakeKartkaHttp(),
   blobs: blobs ?? MemoryBlobStore(),
@@ -26,4 +27,5 @@ KartkaPlatform memoryPlatform({
   filePicker: filePicker ?? FakeFilePicker(),
   oauth: oauth ?? FakeOAuthRedirect(),
   browser: browser ?? const UnavailableBrowser(),
+  diagnostics: diagnostics ?? MemoryBlobStore(),
 );

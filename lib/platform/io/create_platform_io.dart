@@ -25,6 +25,8 @@ import 'package:url_launcher/url_launcher.dart';
 Future<KartkaPlatform> createPlatform() async {
   final docs = await getApplicationDocumentsDirectory();
   final support = await getApplicationSupportDirectory();
+  // getExternalFilesDir(null): adb can pull it from a release build.
+  final external = await getExternalStorageDirectory();
   final kv = FileKeyValueStore(File(p.join(support.path, 'kv.json')));
   // Held by the binding for the app's lifetime: pause/detach writes kv.json.
   flushOnBackground(kv.flush);
@@ -36,6 +38,7 @@ Future<KartkaPlatform> createPlatform() async {
       cookieFor: webViewCookieFor,
     ),
     blobs: FileBlobStore(Directory(p.join(docs.path, 'blobs'))),
+    diagnostics: FileBlobStore(external ?? support),
     kv: kv,
     secrets: SecureKeyValueStore(const FlutterSecureStorage()),
     filePicker: PluginFilePicker(

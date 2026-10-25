@@ -22,6 +22,8 @@ Future<KartkaPlatform> createPlatform() async {
   return KartkaPlatform(
     http: ProxyKartkaHttp(client, base),
     blobs: WrapperBlobStore(client, base),
+    // Same /files root: the log lands as a file on the PC, no export step.
+    diagnostics: WrapperBlobStore(client, base),
     kv: await IdbKeyValueStore.open(idbFactoryBrowser),
     secrets: WrapperKeyValueStore(client, base),
     filePicker: PluginFilePicker(pickDirectory: pickWebDirectory),

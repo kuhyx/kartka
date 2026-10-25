@@ -104,6 +104,8 @@ void main() {
       expect(p.secrets, isNot(same(p.kv)));
       expect(p.filePicker, isA<FakeFilePicker>());
       expect(p.oauth, isA<FakeOAuthRedirect>());
+      expect(p.diagnostics, isA<MemoryBlobStore>());
+      expect(p.diagnostics, isNot(same(p.blobs)));
     });
   });
 }

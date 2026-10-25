@@ -28,6 +28,7 @@ class KartkaPlatform {
     required this.secrets,
     required this.filePicker,
     required this.oauth,
+    required this.diagnostics,
     this.browser = const UnavailableBrowser(),
   });
 
@@ -51,6 +52,13 @@ class KartkaPlatform {
 
   /// OAuth sign-in round trip.
   final OAuthRedirect oauth;
+
+  /// Files a PC pulls to debug the app (the rolling diagnostics log,
+  /// `DiagnosticsLog.of(diagnostics)`). Android: the app-specific external
+  /// files dir, `/sdcard/Android/data/com.kuhy.kartka/files/`, which
+  /// `adb pull` reaches on a release build without root. Web: the wrapper's
+  /// `/files/` root, i.e. `~/.local/share/kartka-desktop/files/`.
+  final BlobStore diagnostics;
 
   /// Headless engine and "Open in WebView"
   /// (docs/DOCS-contracts-webview.md); optional, so constructions that

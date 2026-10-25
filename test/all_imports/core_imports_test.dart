@@ -2,6 +2,9 @@
 // file on the VM so `flutter test --coverage` reports it.
 // ignore_for_file: unused_import
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/core/diagnostics/diagnostic_entry.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
+import 'package:kartka/core/diagnostics/diagnostics_log.dart';
 import 'package:kartka/core/models/category.dart';
 import 'package:kartka/core/models/chapter_info.dart';
 import 'package:kartka/core/models/download_state.dart';
