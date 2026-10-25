@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/browse/state/paged_controller.dart';
+import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/browse/ui/cover_image.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/challenge.dart';
 
 /// One manga cover + title; opens the detail route. A focus stop, so arrow
 /// keys walk the grid and the grid scrolls to the focused tile.
@@ -134,7 +136,10 @@ class _Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Widget child;
-    if (c.error != null) {
+    final error = c.error;
+    if (error is ChallengeRequired) {
+      child = ChallengePrompt(error, onRetry: c.loadMore);
+    } else if (error != null) {
       child = Column(
         children: [
           Text('Could not load: ${c.error}', textAlign: TextAlign.center),

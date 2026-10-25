@@ -4,8 +4,10 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/paged_controller.dart';
+import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/browse/ui/manga_grid.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/challenge.dart';
 import 'package:kartka/core/source/manga_source.dart';
 
 /// One source: Popular / Latest / Search tabs, each an infinite grid.
@@ -103,6 +105,20 @@ class _SourceTabsState extends State<_SourceTabs> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.source.ref.name),
+          actions: [
+            if (widget.source case final WebViewTarget site)
+              IconButton(
+                tooltip: 'Open in WebView',
+                icon: const Icon(Icons.open_in_browser),
+                onPressed: () => unawaited(
+                  openInWebView(
+                    context,
+                    BrowseScope.of(context).browser,
+                    site.webViewUrl,
+                  ),
+                ),
+              ),
+          ],
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Popular'),

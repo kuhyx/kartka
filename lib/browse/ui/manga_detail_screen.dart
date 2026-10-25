@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/state/read_state.dart';
+import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/browse/ui/chapter_tile.dart';
 import 'package:kartka/browse/ui/detail_header.dart';
+import 'package:kartka/core/source/challenge.dart';
 
 /// `/manga/:sourceId/:mangaUrl`: header, actions and the chapter list
 /// (newest first, as sources and readers expect).
@@ -76,6 +78,14 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
           onPressed: () => unawaited(c.load()),
           child: const Text('Retry'),
         );
+        if (c.error case final ChallengeRequired challenge) {
+          return Center(
+            child: ChallengePrompt(
+              challenge,
+              onRetry: () => unawaited(c.load()),
+            ),
+          );
+        }
         if (c.error is SourceUnavailable) {
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,

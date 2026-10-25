@@ -18,6 +18,7 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/downloads/download_service.dart';
+import 'package:kartka/platform/browser_engine.dart';
 
 import '../fakes.dart';
 
@@ -63,6 +64,7 @@ class Harness {
     bool withDownloads = true,
     bool withCovers = true,
     this.downloadService,
+    KartkaBrowser? browser,
   }) : provider = FakeSourceProvider() {
     final registry = SourceRegistry([
       StaticSourceProvider(sources ?? [FakeSource('mangadex')]),
@@ -79,6 +81,7 @@ class Harness {
       detailSlots: [FakeSlot()],
       coverLoader: withCovers ? (_) async => onePixelPng : null,
       clock: () => DateTime.utc(2026, 10, 24),
+      browser: browser ?? const UnavailableBrowser(),
     );
   }
 

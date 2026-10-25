@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
+import 'package:kartka/core/source/challenge.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
 
@@ -32,12 +33,16 @@ class FakeSource implements MangaSource {
   final int perPage;
   List<ChapterInfo> chapterList;
   Error? failWith;
+
+  /// When set, listing and details throw it (a browser challenge).
+  ChallengeRequired? challenge;
   Completer<void>? searchGate;
   final List<String> calls = [];
 
   SearchPage _page(String kind, int page) {
     calls.add('$kind:$page');
     if (failWith != null) throw failWith!;
+    if (challenge != null) throw challenge!;
     return SearchPage(
       items: [
         for (var i = 0; i < perPage; i++)
@@ -63,6 +68,7 @@ class FakeSource implements MangaSource {
   Future<MangaDetails> details(String mangaUrl) async {
     calls.add('details:$mangaUrl');
     if (failWith != null) throw failWith!;
+    if (challenge != null) throw challenge!;
     return MangaDetails(
       sourceId: ref.id,
       url: mangaUrl,
@@ -84,6 +90,14 @@ class FakeSource implements MangaSource {
 
   @override
   Future<List<PageRef>> pages(String chapterUrl) async => const [];
+}
+
+/// A source with a site to open in the WebView.
+class FakeWebSource extends FakeSource implements WebViewTarget {
+  new(super.id, {super.pageCount = 1});
+
+  @override
+  Uri get webViewUrl => Uri.parse('https://${ref.id}.test/');
 }
 
 /// Provider whose list the test pushes.

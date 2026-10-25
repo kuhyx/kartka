@@ -7,6 +7,7 @@ import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/downloads/download_service.dart';
+import 'package:kartka/platform/browser_engine.dart';
 
 /// Loads cover image bytes for a cover url (web needs the wrapper proxy, so
 /// covers never go through `Image.network`).
@@ -28,6 +29,7 @@ class BrowseDeps {
     this.health,
     this.detailSlots = const [],
     this.coverLoader,
+    this.browser = const UnavailableBrowser(),
     DateTime Function()? clock,
   }) : clock = clock ?? DateTime.now;
 
@@ -58,6 +60,9 @@ class BrowseDeps {
 
   /// Cover bytes loader.
   final CoverLoader? coverLoader;
+
+  /// "Open in WebView" (docs/DOCS-contracts-webview.md §7).
+  final KartkaBrowser browser;
 
   /// Clock for `addedAt` / `updatedAt` (injected in tests).
   final DateTime Function() clock;

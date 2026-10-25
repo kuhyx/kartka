@@ -56,6 +56,7 @@ void main() {
       'https://img.example.invalid/p2.jpg',
     ]);
     expect(pages.first.headers, {'Referer': '$chapter'});
+    expect(src.webViewUrl, Uri.parse('https://site.test'));
     final req = browser.loads.single;
     expect(req.url, chapter);
     expect(req.waitFor, '#pages img');

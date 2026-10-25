@@ -1,11 +1,12 @@
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/challenge.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
 import 'package:kartka/plugins/runtime/plugin_mapping.dart';
 import 'package:kartka/plugins/runtime/plugin_session.dart';
 
 /// An installed plugin as a [MangaSource] with id `plugin:<id>`.
-class PluginSource implements MangaSource {
+class PluginSource implements MangaSource, WebViewTarget {
   /// Wraps [session].
   new(this.session) : _map = PluginMapper(session.manifest.id);
 
@@ -20,6 +21,10 @@ class PluginSource implements MangaSource {
     lang: session.manifest.lang,
     origin: SourceOrigin.plugin,
   );
+
+  /// The plugin's site (manifest `baseUrl`) for "Open in WebView".
+  @override
+  Uri get webViewUrl => Uri.parse(session.manifest.baseUrl);
 
   @override
   Future<SearchPage> popular(int page) async => _map.page(

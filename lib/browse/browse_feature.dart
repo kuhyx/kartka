@@ -100,6 +100,7 @@ class BrowseRuntime {
     health: _env.registry.maybe<SourceHealthLookup>(),
     detailSlots: _env.registry.all<MangaDetailSlot>(),
     coverLoader: (url) => _covers.load(PageRef(index: 0, imageUrl: url)),
+    browser: _env.platform.browser,
   );
 
   /// The unread-count port implementation.
