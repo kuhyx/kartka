@@ -58,6 +58,7 @@ class WrapperServer {
                  p.join(p.dirname(filesDir), 'engine-hosts.json'),
                ),
                headlessOnly: headlessOnly,
+               allowLoopback: allowLoopbackEngine,
              ),
          allowLoopbackEngine,
        );
@@ -103,6 +104,9 @@ class WrapperServer {
       requestedPort,
     );
     _server = server;
+    if (_engineHost case final ChromiumEngineHost chromium) {
+      chromium.protectedPorts.add(server.port);
+    }
     _oauth = OAuthRoutes(server.port);
     unawaited(server.forEach((r) => unawaited(_respond(r))));
   }

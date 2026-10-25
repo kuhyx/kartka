@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:kartka_desktop/src/cdp.dart';
 import 'package:kartka_desktop/src/chromium.dart';
 import 'package:kartka_desktop/src/engine_host.dart';
+import 'package:kartka_desktop/src/protocol.dart';
 
 export 'package:kartka_desktop/src/engine_host.dart';
 
@@ -17,8 +18,8 @@ class ChromiumEngineHost implements EngineHost {
     required this.hosts,
     required this.headlessOnly,
     this.maxPages = 8,
-    DateTime Function()? clock,
-  }) : _clock = clock ?? DateTime.now;
+    this.allowLoopback = false,
+  });
 
   /// Browser executable.
   final String exe;
@@ -35,15 +36,24 @@ class ChromiumEngineHost implements EngineHost {
   /// Open pages kept at most; the oldest closes first.
   final int maxPages;
 
-  final DateTime Function() _clock;
+  /// Tests only: lets pages reach loopback hosts, except [protectedPorts].
+  final bool allowLoopback;
+
+  /// Loopback ports no page may ever load (the real app's wrapper; the
+  /// server adds its own port on start): a page there could call the API.
+  final Set<int> protectedPorts = {kartkaPort};
+
   Future<HeadlessChromium>? _engine;
   Process? _window;
+  bool _opening = false;
+
+  bool get _windowBusy => _window != null || _opening;
   final Map<String, ({String target, String session})> _pages = {};
   int _seq = 0;
 
   Future<CdpClient> _cdp() async {
     if (exe.isEmpty) throw const EngineError(503, 'no-browser');
-    if (_window != null) throw const EngineError(409, 'window-open');
+    if (_windowBusy) throw const EngineError(409, 'window-open');
     final running = _engine ??= HeadlessChromium.launch(exe, profile);
     try {
       final engine = await running;
@@ -68,16 +78,10 @@ class ChromiumEngineHost implements EngineHost {
       params: {'url': 'about:blank'},
     );
     final targetId = '${target['targetId']}';
-    final attach = await cdp.call(
-      'Target.attachToTarget',
-      params: {'targetId': targetId, 'flatten': true},
-    );
-    final session = '${attach['sessionId']}';
-    await cdp.call('Page.enable', sessionId: session);
-    await cdp.call(
-      'Page.addScriptToEvaluateOnNewDocument',
-      params: {'source': 'performance.setResourceTimingBufferSize(10000)'},
-      sessionId: session,
+    final session = await preparePage(
+      cdp,
+      targetId,
+      blockedLoopbackPatterns(protectedPorts, allowLoopback: allowLoopback),
     );
     final id = 'p${++_seq}';
     _pages[id] = (target: targetId, session: session);
@@ -94,11 +98,10 @@ class ChromiumEngineHost implements EngineHost {
             h.key.toLowerCase() != 'user-agent')
           h.key: h.value,
     };
-    final referrer = headers.entries
-        .where((h) => h.key.toLowerCase() == 'referer')
-        .map((h) => h.value)
-        .firstOrNull;
-    await cdp.call('Network.enable', sessionId: page.session);
+    final referrer = [
+      for (final h in headers.entries)
+        if (h.key.toLowerCase() == 'referer') h.value,
+    ].firstOrNull;
     await cdp.call(
       'Network.setExtraHTTPHeaders',
       params: {'headers': extra},
@@ -153,9 +156,16 @@ class ChromiumEngineHost implements EngineHost {
   Future<void> open(Uri url) async {
     if (headlessOnly) throw const EngineError(409, 'headless-only');
     if (exe.isEmpty) throw const EngineError(503, 'no-browser');
-    await _closeWindow();
-    await _stopEngine();
-    final w = await Process.start(exe, windowArgs(profile, url));
+    // Until the window owns the profile, no headless relaunch may take it.
+    _opening = true;
+    final Process w;
+    try {
+      await _closeWindow();
+      await _stopEngine();
+      w = await Process.start(exe, windowArgs(profile, url));
+    } finally {
+      _opening = false;
+    }
     _window = w;
     // kuhy may close the window himself before pressing Done.
     unawaited(
@@ -173,13 +183,13 @@ class ChromiumEngineHost implements EngineHost {
 
   @override
   Future<String?> cookieHeader(Uri url) async {
-    if (!hosts.covers(url) || _window != null || exe.isEmpty) return null;
+    if (!hosts.covers(url) || _windowBusy || exe.isEmpty) return null;
     final r = await (await _cdp()).call('Storage.getCookies');
     final cookies = r['cookies'];
     final header = cookieHeaderFor(
       url,
       cookies is List ? cookies : [],
-      _clock(),
+      DateTime.now(),
     );
     return header.isEmpty ? null : header;
   }

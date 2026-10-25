@@ -30,9 +30,12 @@ headless chromium naturally sends (`HeadlessChrome` included), and kartka's
 own HTTP keeps the honest `kartkaUserAgent`.
 
 Known limitation (by design, not a bug): Cloudflare binds `cf_clearance` to
-the User-Agent that solved the challenge. kartka's HTTP keeps its honest UA,
-so a copied clearance cookie is not expected to pass. Login / session cookies
-do carry over. Nothing here may be "fixed" by spoofing the UA.
+the User-Agent that solved the challenge, and no two of these UAs match:
+kartka's HTTP (`kartkaUserAgent`, also every plugin `kartka.http.*` call),
+the desktop window (`Chrome/...`), the desktop engine (`HeadlessChrome/...`)
+and the Android WebView. So a solved Cloudflare wall is not expected to
+carry over, and a CF-walled HTTP plugin will prompt again. Login / session
+cookies do carry over. Nothing here may be "fixed" by spoofing the UA.
 
 Detection (`kind` values: `cloudflare`, `captcha`, `ddos-guard`):
 - in the engine, on the rendered DOM (`engineProbeJs`): titles "Just a
@@ -69,7 +72,12 @@ class (`EngineCore`, `lib/platform/engine_core.dart`) over a dumb per-page
 driver (`EnginePage`: `navigate(url, headers)`, `evaluate(js)`, `close()`):
 
 1. Only `http(s)` URLs to a non-loopback host, or `data:` URLs (a page on
-   the wrapper's own origin could call its API with `x-kartka`).
+   the wrapper's own origin could call its API with `x-kartka`). This holds
+   for every document, not just the request: a probe reporting a forbidden
+   `href` (an HTTP or JS redirect) fails the load before any script runs,
+   and `about:` / `chrome-error:` documents (the pre-navigation page, an
+   error page) are never ready. The wrapper also blocks loopback at the
+   network level (§6).
 2. Navigate with `headers` (no `User-Agent`: it is dropped).
 3. Every 250 ms evaluate the probe. A challenge throws `ChallengeRequired`.
    Once `document.readyState == 'complete'` on a document the scripts have
@@ -146,6 +154,13 @@ headless chromium over CDP. The app side is `WrapperBrowser`
   are removed from its environment. The wrapper attaches only when
   `/json/version` reports `HeadlessChrome`. Stopped with the wrapper
   (SIGINT/SIGTERM too). At most 8 pages; the oldest is closed first.
+- Loopback block: every page intercepts (CDP `Fetch`, which unlike
+  `Network.setBlockedURLs` also stops top-level navigations and redirects)
+  and fails requests to the wrapper ports (47391 and its own) and, outside
+  tests, to every loopback host.
+- `open` holds an "opening" state from the moment it stops the engine:
+  `/engine/page` answers 409 `window-open` and `/proxy` adds no cookies
+  until `finish`, so nothing relaunches headless on the locked profile.
 - Profile: `--engine-profile`, else `<parent of --files-dir>/engine-profile`:
   `~/.local/share/kartka-desktop/engine-profile` for the real app,
   `~/.local/share/kartka-agent/engine-profile` for the agent instance.

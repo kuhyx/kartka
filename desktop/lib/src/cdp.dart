@@ -40,6 +40,10 @@ class CdpClient {
   int _seq = 0;
   bool _closed = false;
 
+  /// Receives every event: (method, params, sessionId).
+  void Function(String method, Map<String, Object?> params, String? session)?
+  onEvent;
+
   /// Whether the socket is gone.
   bool get isClosed => _closed;
 
@@ -82,7 +86,19 @@ class CdpClient {
     }
     if (msg is! Map) return;
     final waiting = _pending.remove(msg['id']);
-    if (waiting == null) return; // An event: nothing here subscribes.
+    if (waiting == null) {
+      final method = msg['method'];
+      final params = msg['params'];
+      final session = msg['sessionId'];
+      if (method is String) {
+        onEvent?.call(
+          method,
+          params is Map ? params.cast<String, Object?>() : const {},
+          session is String ? session : null,
+        );
+      }
+      return;
+    }
     final (method, done) = waiting;
     final error = msg['error'];
     if (error is Map) {

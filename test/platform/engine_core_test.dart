@@ -175,6 +175,36 @@ void main() {
     expect(isEngineUrlAllowed(Uri.parse('data:text/html,<p>x</p>')), isTrue);
   });
 
+  test('the pre-navigation document and error pages are not ready', () async {
+    final page = ScriptedPage([
+      state(ran: false, href: 'about:blank'),
+      state(ran: false, href: 'chrome-error://chromewebdata/'),
+      state(ran: false, href: '::'),
+      state(ran: false),
+      state(response: 'r'),
+    ], snapshot: snap);
+    final r = await core(page).load(
+      EngineRequest(url: url, scripts: const ['go()'], awaitResponse: true),
+    );
+    expect(r.response, 'r');
+    // The hook ran once, on the real document only.
+    expect(page.evaluated.where((js) => js == kEngineHookJs), hasLength(1));
+    expect(page.evaluated.indexOf(kEngineHookJs), 4);
+  });
+
+  test('a redirect onto a forbidden origin stops before any script', () async {
+    final page = ScriptedPage([
+      state(ran: false, href: 'http://127.0.0.1:47391/'),
+    ]);
+    await expectLater(
+      core(page).load(EngineRequest(url: url, scripts: const ['steal()'])),
+      throwsA(isA<StateError>()),
+    );
+    expect(page.evaluated, isNot(contains(kEngineHookJs)));
+    expect(page.evaluated, isNot(contains('steal()')));
+    expect(page.closed, isTrue);
+  });
+
   test('timeouts are clamped to the maximum', () {
     final r = EngineRequest(url: url, timeout: const Duration(minutes: 5));
     expect(r.timeout, EngineRequest.maxTimeout);

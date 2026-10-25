@@ -21,6 +21,13 @@ Future<HttpServer> fakeDevTools(List<Map<String, Object?>> seen) async {
             ..add(jsonEncode({'method': 'Some.event'}))
             ..add(
               jsonEncode({
+                'method': 'With.params',
+                'params': {'x': 1},
+                'sessionId': 's9',
+              }),
+            )
+            ..add(
+              jsonEncode({
                 'id': m['id'],
                 'result': {'a': 1},
               }),
@@ -52,7 +59,11 @@ void main() {
     final cdp = await CdpClient.connect(
       Uri.parse('ws://127.0.0.1:${server.port}/devtools/browser/x'),
     );
+    final events = <String>[];
+    cdp.onEvent = (method, params, session) =>
+        events.add('$method ${params.length} $session');
     expect(await cdp.call('Ok', params: {'p': 1}, sessionId: 's1'), {'a': 1});
+    expect(events, ['Some.event 0 null', 'With.params 1 s9']);
     expect(seen.single['sessionId'], 's1');
     expect(await cdp.call('NoResult'), isEmpty);
     expect(seen.last.containsKey('sessionId'), isFalse);

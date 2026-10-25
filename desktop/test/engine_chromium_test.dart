@@ -53,6 +53,7 @@ void main() {
       hosts: EngineHosts('${dir.path}/engine-hosts.json'),
       headlessOnly: true,
       maxPages: 2,
+      allowLoopback: true,
     );
   });
   tearDownAll(() async {
@@ -144,6 +145,46 @@ void main() {
     expect(await crashy.evaluate(fresh, '6 * 7'), 42);
     await crash();
     await crashy.stop();
+  });
+
+  test('pages never land on loopback, not even by a redirect', () async {
+    var hits = 0;
+    final site = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    addTearDown(() => site.close(force: true));
+    site.listen((r) async {
+      hits++;
+      r.response.write('<p>wrapper</p>');
+      await r.response.close();
+    });
+    final target = 'http://127.0.0.1:${site.port}/secrets/x';
+    final jump = Uri.dataFromString(
+      '<script>location.href = "$target";</script>',
+      mimeType: 'text/html',
+    );
+    Future<void> tryJump(ChromiumEngineHost on) async {
+      final id = await on.createPage();
+      await on.navigate(id, jump, {});
+      await Future<void>.delayed(const Duration(milliseconds: 800));
+      expect(
+        await on.evaluate(id, 'document.body.innerText'),
+        isNot('wrapper'),
+      );
+      await on.closePage(id);
+    }
+
+    // A protected port (a wrapper's own) is blocked even where tests allow
+    // loopback; without that allowance every loopback host is.
+    host.protectedPorts.add(site.port);
+    await tryJump(host);
+    final strict = ChromiumEngineHost(
+      exe: _exe,
+      profile: '${dir.path}/strict-profile',
+      hosts: EngineHosts('${dir.path}/strict-hosts.json'),
+      headlessOnly: true,
+    );
+    addTearDown(strict.stop);
+    await tryJump(strict);
+    expect(hits, 0);
   });
 
   test('through the wrapper routes', () async {

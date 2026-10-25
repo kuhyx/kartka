@@ -78,13 +78,15 @@ class EngineCore {
     String? latest;
     while (true) {
       final s = await _probe(page, probe);
-      if (s != null) {
-        final challenge = s['challenge'];
-        if (challenge is String) {
-          final href = s['href'];
-          final at = href is String ? Uri.tryParse(href) : null;
-          throw ChallengeRequired(at ?? request.url, challenge);
+      final at = _documentUrl(s);
+      if (s != null && at != null) {
+        if (!isEngineUrlAllowed(at)) {
+          // A redirect (HTTP or JS) onto a forbidden origin: never run the
+          // request's scripts there (contract §3 rule 1).
+          throw StateError('engine page left for a forbidden URL');
         }
+        final challenge = s['challenge'];
+        if (challenge is String) throw ChallengeRequired(at, challenge);
         final complete = s['ready'] == 'complete';
         final response = s['response'];
         latest = response is String ? response : null;
@@ -102,6 +104,17 @@ class EngineCore {
       if (!_clock().isBefore(deadline)) return (true, latest);
       await Future<void>.delayed(pollInterval);
     }
+  }
+
+  /// The probed document's URL, or null while it is not the page yet: the
+  /// pre-navigation `about:blank`, an engine error page, or no answer.
+  static Uri? _documentUrl(Map<String, Object?>? s) {
+    final href = s?['href'];
+    final at = href is String ? Uri.tryParse(href) : null;
+    if (at == null || at.scheme == 'about' || at.scheme == 'chrome-error') {
+      return null;
+    }
+    return at;
   }
 
   static Future<Map<String, Object?>?> _probe(

@@ -79,7 +79,9 @@ class HeadlessChromium {
         throw StateError('engine browser is not headless; refusing it');
       }
       final ws = Uri.parse('${version['webSocketDebuggerUrl']}');
-      return HeadlessChromium._(process, await CdpClient.connect(ws));
+      final cdp = await CdpClient.connect(ws);
+      failPausedRequests(cdp);
+      return HeadlessChromium._(process, cdp);
     } on Object {
       process.kill(ProcessSignal.sigkill);
       rethrow;
@@ -168,4 +170,79 @@ String cookieHeaderFor(Uri url, List<Object?> cookies, DateTime now) {
     }
   }
   return out.join('; ');
+}
+
+/// `Network.setBlockedURLs` patterns that keep engine pages off loopback:
+/// always the [ports] (the wrappers' own origins), and every loopback host
+/// unless [allowLoopback] (tests).
+List<String> blockedLoopbackPatterns(
+  Set<int> ports, {
+  required bool allowLoopback,
+}) => [
+  for (final port in ports) ...[
+    '*://127.0.0.1:$port*',
+    '*://localhost:$port*',
+    '*://[::1]:$port*',
+    '*://0.0.0.0:$port*',
+  ],
+  if (!allowLoopback) ...[
+    '*://127.*',
+    '*://localhost*',
+    '*://*.localhost*',
+    '*://[::1]*',
+    '*://0.0.0.0*',
+  ],
+];
+
+/// Attaches to page [targetId] and prepares it; returns the session id.
+/// [blocked] URL patterns are intercepted with `Fetch` (unlike
+/// `Network.setBlockedURLs`, that also stops top-level navigations and
+/// redirects) and failed by [failPausedRequests].
+Future<String> preparePage(
+  CdpClient cdp,
+  String targetId,
+  List<String> blocked,
+) async {
+  final attach = await cdp.call(
+    'Target.attachToTarget',
+    params: {'targetId': targetId, 'flatten': true},
+  );
+  final session = '${attach['sessionId']}';
+  await cdp.call('Page.enable', sessionId: session);
+  // For Network.setExtraHTTPHeaders and Storage cookies on this page.
+  await cdp.call('Network.enable', sessionId: session);
+  await cdp.call(
+    'Fetch.enable',
+    params: {
+      'patterns': [
+        for (final p in blocked) {'urlPattern': p},
+      ],
+    },
+    sessionId: session,
+  );
+  await cdp.call(
+    'Page.addScriptToEvaluateOnNewDocument',
+    params: {'source': 'performance.setResourceTimingBufferSize(10000)'},
+    sessionId: session,
+  );
+  return session;
+}
+
+/// Fails every request `Fetch` paused: only blocked patterns are paused.
+void failPausedRequests(CdpClient cdp) {
+  cdp.onEvent = (method, params, sessionId) {
+    if (method != 'Fetch.requestPaused') return;
+    unawaited(
+      cdp
+          .call(
+            'Fetch.failRequest',
+            params: {
+              'requestId': params['requestId'],
+              'errorReason': 'BlockedByClient',
+            },
+            sessionId: sessionId,
+          )
+          .then<void>((_) {}, onError: (Object _) {}),
+    );
+  };
 }
