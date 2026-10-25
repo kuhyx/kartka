@@ -6,7 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
-from source_eval.budget import stratified
+from source_eval.budget import BudgetExhausted, stratified
 from source_eval.challenge import WEBVIEW
 from source_eval.imagequality import measure
 from source_eval.match import best_hit
@@ -22,6 +22,8 @@ if TYPE_CHECKING:
 BLOCKED_AFTER = 3
 #: ...or when this many first searches all failed outright.
 DEAD_AFTER = 5
+#: ``aborted`` of a hard-cut source whose one re-probe failed.
+REPROBE_FAILED = "reprobe"
 
 
 def queries(ref: RefTitle, lang: str) -> list[str]:
@@ -122,6 +124,34 @@ def _prepare(cand: Candidate, backend: Backend, state: SourceState) -> None:
     state.save()
 
 
+def _reprobe(job: _Job) -> None:
+    """One reachability request for a source the previous run hard-cut.
+
+    It passes when the popular listing answers, or fails only for a
+    browser-engine need (flagged, never cut). A failure ends the source for
+    this run: its record keeps the hard cut and says it was only re-probed.
+    """
+    state, manifest = job.state, job.plan.manifest
+    if state.reprobe is not None or job.cand.id not in manifest.reprobe:
+        return
+    kind: str | None = None
+    try:
+        job.backend.popular(job.cand)
+    except SourceError as exc:
+        kind = exc.kind
+        passed = kind == WEBVIEW
+    else:
+        passed = True
+    state.reprobe = {
+        "passed": passed,
+        "kind": kind,
+        "previousRun": manifest.reprobe_from,
+    }
+    if not passed:
+        state.aborted, state.done = REPROBE_FAILED, True
+    state.save()
+
+
 def _searches(job: _Job) -> bool:
     for key in job.plan.manifest.sample:
         if job.state.aborted:
@@ -188,13 +218,19 @@ def evaluate(
     """Advance ``cand``'s measurement; True when it is finished.
 
     Steps run in order and each checkpoints to disk, so an expired
-    ``deadline`` just means the next call carries on.
+    ``deadline`` (or a request the budget cannot fit) just means the next
+    call carries on; the step that was cut short is redone, never recorded.
     """
-    _prepare(cand, backend, state)
-    if state.done:
-        return True
     job = _Job(cand, backend, state, plan, deadline)
-    if not (_searches(job) and _chapter_lists(job) and _image_samples(job)):
+    try:
+        _prepare(cand, backend, state)
+        if not state.done:
+            _reprobe(job)
+        if state.done:
+            return True
+        if not (_searches(job) and _chapter_lists(job) and _image_samples(job)):
+            return False
+    except BudgetExhausted:
         return False
     state.done = True
     state.save()

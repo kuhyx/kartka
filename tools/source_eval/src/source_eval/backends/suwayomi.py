@@ -37,6 +37,11 @@ _CHAPTERS = (
     "{chapters{id chapterNumber}}}"
 )
 _PAGES = "mutation($c:Int!){fetchChapterPages(input:{chapterId:$c}){pages}}"
+#: A request that reaches the source (search, chapters, pages, an image):
+#: the W43 run saw 111 of 153k responses slower than this (0.07 %).
+SOURCE_TIMEOUT = 20.0
+#: Installing an extension downloads it (and the store index) first.
+ADMIN_TIMEOUT = 45.0
 
 
 @dataclass(frozen=True, slots=True)
@@ -84,21 +89,23 @@ class SuwayomiBackend:
         self._client = client
         self._config = config
 
-    def _gql(
+    def _gql(  # noqa: PLR0913 -- keyword knobs of one call
         self,
         query: str,
         variables: dict[str, object],
         *,
         host: str,
         record: bool = True,
+        paced: bool = True,
+        timeout: float = SOURCE_TIMEOUT,
     ) -> dict[str, object]:
         body = json.dumps({"query": query, "variables": variables}).encode()
         headers = {"Content-Type": "application/json", **self._config.headers()}
         request = Request(
-            "POST", f"{self._config.url}/api/graphql", headers, body, timeout=60.0
+            "POST", f"{self._config.url}/api/graphql", headers, body, timeout=timeout
         )
         response = self._client.fetch(
-            request, host=host, judge=judge_graphql, record=record
+            request, host=host, judge=judge_graphql, record=record, paced=paced
         )
         error = _errors(response)
         if error is not None:
@@ -112,15 +119,31 @@ class SuwayomiBackend:
         return cand.id.removeprefix("suwayomi:")
 
     def prepare(self, cand: Candidate) -> None:
-        """Install the candidate's extension unless the server has it."""
-        local = "suwayomi-admin"
+        """Install the candidate's extension unless the server has it.
+
+        The lookup is local to the eval server (its own database), so it is
+        not paced; the store refresh and the install download from the
+        extension store and are paced as ``suwayomi-admin``.
+        """
         variables: dict[str, object] = {"id": self._source_id(cand)}
         try:
-            self._gql(_SOURCE, variables, host=local, record=False)
+            self._admin(_SOURCE, variables, paced=False)
         except SourceError:
-            self._gql(_REFRESH, {}, host=local, record=False)
-            self._gql(_INSTALL, {"pkg": cand.pkg}, host=local, record=False)
-            self._gql(_SOURCE, variables, host=local, record=False)
+            self._admin(_REFRESH, {})
+            self._admin(_INSTALL, {"pkg": cand.pkg})
+            self._admin(_SOURCE, variables, paced=False)
+
+    def _admin(
+        self, query: str, variables: dict[str, object], *, paced: bool = True
+    ) -> None:
+        self._gql(
+            query,
+            variables,
+            host="suwayomi-admin",
+            record=False,
+            paced=paced,
+            timeout=ADMIN_TIMEOUT,
+        )
 
     def _list(self, cand: Candidate, kind: str, query: str | None) -> list[Hit]:
         variables: dict[str, object] = {
@@ -164,7 +187,7 @@ class SuwayomiBackend:
 
     def image(self, cand: Candidate, page: PageImage) -> bytes:
         """One page through the server, which fetches it from the source."""
-        request = Request("GET", page.url, page.headers, timeout=60.0)
+        request = Request("GET", page.url, page.headers, timeout=SOURCE_TIMEOUT)
         response = self._client.fetch(request, host=cand.host, judge=_judge_image)
         if response.status != _OK:
             error = f"HTTP {response.status}: {response.text()[:300]}"

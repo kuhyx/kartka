@@ -10,9 +10,10 @@ from hypothesis import strategies as st
 import pytest
 
 from source_eval.budget import Deadline, stratified
+from source_eval.gate import HostGate
 from source_eval.match import best_hit, normalize, similarity
 from source_eval.models import Hit, RefTitle
-from source_eval.polite import HostGate, PoliteClient
+from source_eval.polite import PoliteClient
 from source_eval.reference import anilist, mangaupdates
 from source_eval.reference.build import (
     Reference,

@@ -13,20 +13,17 @@ from typing import cast
 from source_eval.challenge import WEBVIEW
 from source_eval.profile import DEFAULT, Profile
 
-UPTIME_MIN = 0.95
-COVERAGE_MIN = 0.60
-#: Overlap with a better source from which the subset penalty applies...
-SUBSET_MIN = 0.50
-#: ...multiplying the score by ``1 - SUBSET_PENALTY * overlap``.
-SUBSET_PENALTY = 0.5
+UPTIME_MIN, COVERAGE_MIN = 0.95, 0.60
+#: Overlap with a better source from which the subset penalty applies,
+#: multiplying the score by ``1 - SUBSET_PENALTY * overlap``.
+SUBSET_MIN, SUBSET_PENALTY = 0.50, 0.5
 #: A non-webview challenge rate at or above this cuts (hard filter).
 HARD_CHALLENGE_RATE = 0.5
 #: Share of the reference chapter count a found title needs to count.
 COMPLETE_CHAPTERS = 0.8
 #: Old runs: this share of coverage + the rest of completeness (.30/.20).
 LEGACY_COVERAGE_SHARE = 0.6
-#: The cut-reason codes of the hard filter.
-UNREACHABLE, HARD_BLOCKING = "unreachable", "blocking>=0.50"
+UNREACHABLE, HARD_BLOCKING = "unreachable", "blocking>=0.50"  # hard filter
 HARD_CODES = frozenset({UNREACHABLE, HARD_BLOCKING})
 #: The DEFAULT profile's keep bar (kept for readers of the old constant).
 KEEP_SCORE = DEFAULT.keep_score
@@ -121,15 +118,19 @@ def cut_reasons(record: Record) -> list[str]:
     """Hard-filter codes and explanations of a low score, except ``subset``.
 
     ``unreachable`` and ``blocking>=0.50`` (non-webview challenge rate at
-    least ``HARD_CHALLENGE_RATE``) cut; the others only explain. Page loading
-    has no reason of its own; it lowers the score.
+    least ``HARD_CHALLENGE_RATE``, or a challenged re-probe) cut; the others
+    only explain. Page loading has no reason; it lowers the score.
     """
     reasons = [UNREACHABLE] if record.get("unreachable") is True else []
     ratio = _get(record, "uptime", "ratio")
     final = _block(record, "uptime").get("status") == "final"
     if final and ratio is not None and ratio < UPTIME_MIN:
         reasons.append("uptime<0.95")
-    if (_get(record, "blocking", "hardRate") or 0.0) >= HARD_CHALLENGE_RATE:
+    probe = _block(record, "reprobe")  # a failed re-probe keeps its hard cut
+    hard_rate = _get(record, "blocking", "hardRate") or 0.0
+    if (probe.get("passed") is False and probe.get("kind")) or (
+        hard_rate >= HARD_CHALLENGE_RATE
+    ):
         reasons.append(HARD_BLOCKING)
     elif _blocked(record):
         reasons.append("blocking")

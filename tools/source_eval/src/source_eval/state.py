@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 import hashlib
 from typing import TYPE_CHECKING, cast
 
@@ -27,7 +27,9 @@ class Manifest:
     ``completeness`` is legacy (chapter lists are fetched for every found
     title now). ``all_chapters`` marks a run made that way: only such a run
     publishes the merged coverage (``coverage.completeRatio``); older runs
-    keep the old coverage.
+    keep the old coverage. ``reprobe`` lists the sources the previous
+    published run (``reprobe_from``) hard-cut: each gets one reachability
+    request first (:mod:`source_eval.evaluate`).
     """
 
     sample: list[str]
@@ -35,6 +37,8 @@ class Manifest:
     images: int
     pages: int
     all_chapters: bool = False
+    reprobe: list[str] = field(default_factory=list)
+    reprobe_from: str | None = None
 
     @classmethod
     def load(cls, path: Path) -> Manifest | None:
@@ -48,6 +52,8 @@ class Manifest:
             images=int(data["images"]),
             pages=int(data["pages"]),
             all_chapters=bool(data.get("all_chapters", False)),
+            reprobe=[str(k) for k in cast("list[object]", data.get("reprobe", []))],
+            reprobe_from=cast("str | None", data.get("reprobe_from")),
         )
 
     def save(self, path: Path) -> None:
@@ -71,6 +77,7 @@ class SourceState:
         self.chapters = cast("dict[str, dict[str, object]]", data.get("chapters", {}))
         self.images = cast("dict[str, dict[str, object]]", data.get("images", {}))
         self.observations = cast("list[list[object]]", data.get("observations", []))
+        self.reprobe = cast("dict[str, object] | None", data.get("reprobe"))
 
     def observe(self, obs: Observation) -> None:
         """Remember one live request (saved with the next checkpoint)."""
@@ -92,6 +99,7 @@ class SourceState:
                 "chapters": self.chapters,
                 "images": self.images,
                 "observations": self.observations,
+                **({"reprobe": self.reprobe} if self.reprobe is not None else {}),
             },
         )
 
@@ -108,6 +116,16 @@ class RunDir:
         self.run_id = run_id
         self.root = state_dir / "runs" / run_id
         self.manifest_path = self.root / "manifest.json"
+
+    @classmethod
+    def open(cls, state_dir: Path, run_id: str) -> tuple[RunDir, Manifest]:
+        """An existing run and its manifest; exits when there is none."""
+        run = cls(state_dir, run_id)
+        manifest = Manifest.load(run.manifest_path)
+        if manifest is None:
+            msg = f"run {run_id} has no manifest; run init-run first"
+            raise SystemExit(msg)
+        return run, manifest
 
     def source(self, source_id: str) -> SourceState:
         """State of ``source_id`` in this run."""

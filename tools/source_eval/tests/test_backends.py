@@ -9,8 +9,9 @@ import pytest
 from source_eval.backends.mangadex import API, MangaDexBackend
 from source_eval.backends.plugin import PluginBackend
 from source_eval.backends.suwayomi import SuwayomiBackend, SuwayomiConfig, judge_graphql
+from source_eval.gate import HostGate
 from source_eval.models import Candidate, Chapter, Hit, PageImage, SourceError
-from source_eval.polite import HostGate, Observation, PoliteClient
+from source_eval.polite import Observation, PoliteClient
 from tests.fakes import FakeClock, FakeTransport, fixture_bytes, fixture_json, resp
 
 if TYPE_CHECKING:

@@ -11,15 +11,26 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, replace
-import threading
 from urllib.parse import urlsplit
-lazy from pathlib import Path
+lazy import threading
 
+from source_eval.budget import BudgetExhausted, RequestBudget
 from source_eval.challenge import classify_http
-from source_eval.fsio import read_json, write_json_atomic
-from source_eval.http import Clock, Request, Response, Transport, TransportError
+from source_eval.gate import take
+from source_eval.http import (
+    Clock,
+    Request,
+    Response,
+    Transport,
+    TransportError,
+    TransportTimeoutError,
+)
 lazy from source_eval.cache import DiskCache
+lazy from source_eval.gate import HostGate
 
+USER_AGENT = (
+    "kartka-source-eval/0.1 (+https://github.com/kuhyx/kartka; polite: 1 req/2s/host)"
+)
 _TOO_MANY = 429
 _ERROR_FLOOR = 400
 
@@ -41,35 +52,6 @@ class Observation:
         return cls(at, host, ok=False, ms=0.0, kind=kind, status=None)
 
 
-class HostGate:
-    """Spaces requests to the same host at least ``interval`` seconds apart."""
-
-    def __init__(self, path: Path | None, interval: float, clock: Clock) -> None:
-        """Load the last-request times persisted at ``path`` (if any)."""
-        self._path = path
-        self._interval = interval
-        self._clock = clock
-        loaded = read_json(path, {}) if path is not None else {}
-        self._last: dict[str, float] = dict(loaded) if isinstance(loaded, dict) else {}
-        self._lock = threading.Lock()
-        self._host_locks: dict[str, threading.Lock] = {}
-
-    def wait(self, host: str) -> None:
-        """Block until ``host`` may be contacted, then claim the slot."""
-        with self._lock:
-            host_lock = self._host_locks.setdefault(host, threading.Lock())
-        with host_lock:
-            delay = (
-                self._last.get(host, float("-inf")) + self._interval - self._clock.now()
-            )
-            if delay > 0:
-                self._clock.sleep(delay)
-            with self._lock:
-                self._last[host] = self._clock.now()
-                if self._path is not None:
-                    write_json_atomic(self._path, self._last)
-
-
 Judge = Callable[[Response], tuple[bool, str | None]]
 
 
@@ -87,7 +69,13 @@ def _retry_after(response: Response, attempt: int) -> float:
 
 
 class PoliteClient:
-    """Fetches through the gate, observing every live response."""
+    """Fetches through the gate, observing every live response.
+
+    With a ``budget`` every wait (gate slot, in-flight slot, 429 backoff) and
+    every request fits in what is left of the invocation. ``inflight`` caps
+    concurrent requests (the eval server queues the rest internally, which
+    would inflate the latency it reports for the source).
+    """
 
     def __init__(  # noqa: PLR0913 -- all collaborators are injected for tests
         self,
@@ -100,6 +88,8 @@ class PoliteClient:
         observe: Callable[[Observation], None] | None = None,
         max_retries: int = 2,
         max_backoff: float = 20.0,
+        budget: RequestBudget | None = None,
+        inflight: threading.Semaphore | None = None,
     ) -> None:
         """Wire the collaborators."""
         self._transport = transport
@@ -110,12 +100,48 @@ class PoliteClient:
         self.observe = observe
         self._max_retries = max_retries
         self._max_backoff = max_backoff
+        self._budget = budget or RequestBudget(None)
+        self._inflight = inflight
 
     def _emit(self, obs: Observation) -> None:
         if self.observe is not None:
             self.observe(obs)
 
-    def fetch(
+    def _start(self, key: str, *, paced: bool) -> None:
+        """Wait for the host's slot (when paced) and an in-flight slot."""
+        latest = self._budget.latest_start()
+        if paced:
+            self._gate.wait(key, latest, self._inflight)
+        elif self._inflight is not None:
+            take(self._inflight, latest, self._clock)
+
+    def _send(self, request: Request) -> Response:
+        """Send within the budget, then free the in-flight slot.
+
+        A timeout the budget shortened is the budget's (BudgetExhausted); the
+        request's own full timeout is the source's failure.
+        """
+        slot = self._inflight
+        try:
+            timeout = self._budget.timeout(request.timeout)
+            try:
+                return self._transport.send(replace(request, timeout=timeout))
+            except TransportTimeoutError:
+                if timeout < request.timeout:
+                    raise BudgetExhausted from None
+                raise
+        finally:
+            if slot is not None:
+                slot.release()
+
+    def _backoff(self, response: Response, attempt: int) -> None:
+        pause = min(self._max_backoff, _retry_after(response, attempt))
+        latest = self._budget.latest_start()
+        if latest is not None and self._clock.now() + pause > latest:
+            raise BudgetExhausted
+        self._clock.sleep(pause)
+
+    def fetch(  # noqa: PLR0913 -- keyword knobs of one call
         self,
         request: Request,
         *,
@@ -123,6 +149,7 @@ class PoliteClient:
         cacheable: bool = False,
         judge: Judge | None = None,
         record: bool = True,
+        paced: bool = True,
     ) -> Response:
         """Send ``request`` politely.
 
@@ -134,6 +161,12 @@ class PoliteClient:
                 reads HTTP status and challenge markers.
             record: Emit an observation (off for housekeeping calls such as
                 installing an extension, which say nothing about the source).
+            paced: Wait for the host's slot. Only a purely local lookup on
+                the eval server (no third-party host behind it) skips it.
+
+        Raises:
+            BudgetExhausted: The budget cannot fit this request (or its
+                timeout, shortened to fit, ran out): nothing is observed.
         """
         key = host or urlsplit(request.url).hostname or request.url
         cache = self._cache if cacheable else None
@@ -142,9 +175,9 @@ class PoliteClient:
         request = replace(request, headers={**request.headers, "User-Agent": self._ua})
         attempt = 0
         while True:
-            self._gate.wait(key)
+            self._start(key, paced=paced)
             try:
-                response = self._transport.send(request)
+                response = self._send(request)
             except TransportError:
                 if record:
                     self._emit(Observation.failure(self._clock.now(), key))
@@ -161,9 +194,7 @@ class PoliteClient:
                 )
                 self._emit(obs)
             if response.status == _TOO_MANY and attempt < self._max_retries:
-                self._clock.sleep(
-                    min(self._max_backoff, _retry_after(response, attempt))
-                )
+                self._backoff(response, attempt)
                 attempt += 1
                 continue
             if cache is not None and ok:

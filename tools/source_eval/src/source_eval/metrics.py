@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, cast
 from source_eval import imagequality, uptime
 from source_eval.candidates.catalog import MANGAYOMI_INDEX
 from source_eval.challenge import FLAG_BROWSER_ENGINE, WEBVIEW
-from source_eval.evaluate import DEAD_AFTER
+from source_eval.evaluate import DEAD_AFTER, REPROBE_FAILED
 from source_eval.score import COMPLETE_CHAPTERS
 
 if TYPE_CHECKING:
@@ -51,8 +51,31 @@ def _samples(
 
 
 def measured(cand: Candidate, state: SourceState) -> bool:
-    """False when no backend could read the source at all (plugin stub...)."""
-    return cand.origin != "plugin" and state.aborted != "unavailable"
+    """False when no backend read the source (plugin stub, failed re-probe)."""
+    return cand.origin != "plugin" and state.aborted not in (
+        "unavailable",
+        REPROBE_FAILED,
+    )
+
+
+#: ``flags`` entry of a hard-cut source whose one re-probe failed.
+FLAG_REPROBE_ONLY = "reprobe-only"
+
+
+def reprobe_fields(state: SourceState) -> dict[str, object]:
+    """``reprobe`` block (only for re-probed sources) and its extra flag.
+
+    ``{passed, kind, previousRun}``: ``kind`` is the challenge that failed
+    it (``None`` = no answer at all, which reads as ``unreachable``).
+    """
+    if state.reprobe is None:
+        return {}
+    failed = state.aborted == REPROBE_FAILED
+    return {
+        "reprobe": dict(state.reprobe),
+        "flags": [FLAG_REPROBE_ONLY] if failed else [],
+        "unreachable": failed and state.reprobe.get("kind") is None,
+    }
 
 
 def pages_load(state: SourceState) -> dict[str, object]:
@@ -152,7 +175,9 @@ def metrics(
         for p in cast("list[dict[str, object]]", img["pages"])
     ]
     last = max((s[0] for s in samples), default=now)
-    return {
+    extra = reprobe_fields(state)
+    flags = [FLAG_BROWSER_ENGINE] if WEBVIEW in challenged else []
+    record: dict[str, object] = {
         "id": cand.id,
         "name": cand.name,
         "lang": cand.lang,
@@ -170,8 +195,8 @@ def metrics(
             "kinds": sorted(set(challenged)),
             "hardRate": round(len(hard) / len(samples), 3) if samples else 0.0,
         },
-        "unreachable": unreachable(state),
-        "flags": [FLAG_BROWSER_ENGINE] if WEBVIEW in challenged else [],
+        "unreachable": unreachable(state) or bool(extra.pop("unreachable", False)),
+        "flags": [*flags, *cast("list[str]", extra.pop("flags", []))],
         "coverage": {
             "referenceSize": len(manifest.sample),
             "found": found if is_measured else None,
@@ -189,7 +214,9 @@ def metrics(
         "langScope": lang_scope(cand),
         "availability": cand.availability.to_json(),
         **install_info(cand),
+        **extra,
     }
+    return record
 
 
 def _complete(

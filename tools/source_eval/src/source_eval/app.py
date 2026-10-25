@@ -1,49 +1,57 @@
 # Copyright (c) 2026 Krzysztof Rudnicki
-"""Wiring: settings, shared politeness state, and one function per command."""
+"""Wiring: settings, shared politeness state, and one function per command.
+
+A network command's ``budget`` (s since process start) is a hard wall-clock
+limit; ``MORE_WORK`` (exit 10) means "call me again": state is on disk.
+"""
 
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
+from source_eval import runner
 from source_eval.backends.mangadex import MangaDexBackend
 from source_eval.backends.plugin import PluginBackend
 from source_eval.backends.suwayomi import SuwayomiBackend
-from source_eval.budget import Deadline, stratified
+from source_eval.budget import (
+    MORE_WORK,
+    BudgetExhausted,
+    Deadline,
+    RequestBudget,
+    stratified,
+    within,
+)
 from source_eval.cache import DiskCache
 from source_eval.candidates import catalog
-from source_eval.evaluate import Plan, evaluate
-from source_eval.fsio import write_json_atomic
-from source_eval.http import TransportError
-from source_eval.models import SourceError
-from source_eval.polite import HostGate, Observation, PoliteClient
+from source_eval.gate import HostGate
+from source_eval.polite import USER_AGENT, PoliteClient
 from source_eval.profile import DEFAULT, Profile
+from source_eval.publishing import previous_hard_cuts, report_cmd
+from source_eval.ramp import Ramp, ramp_finish, ramp_start
 from source_eval.reference.build import (
     Reference,
     build,
     enrich_chapters,
     load_sy_titles,
 )
-from source_eval.report import build_report, publish
 from source_eval.state import Manifest, RunDir
-from source_eval.uptime import UptimeLog, failed, probe_front_page
+from source_eval.uptime import UptimeLog
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from pathlib import Path
+    import threading
 
     from source_eval.backends.base import Backend
     from source_eval.http import Clock, Transport
     from source_eval.models import Candidate
+    from source_eval.polite import Observation
     from source_eval.report import RtdbWriter
     from source_eval.settings import Settings
 
-USER_AGENT = (
-    "kartka-source-eval/0.1 (+https://github.com/kuhyx/kartka; polite: 1 req/2s/host)"
-)
-#: Exit code when the budget ran out and another call should continue.
-MORE_WORK = 10
+__all__ = ["MORE_WORK", "App"]
+USAGE = 2  # exit code of a usage error (``init-run --ramp`` before ``ramp start``)
 
 
 class App:
@@ -55,20 +63,30 @@ class App:
         clock: Clock,
         transport: Transport,
         out: Callable[[str], None],
+        started: float | None = None,
     ) -> None:
-        """Create the shared politeness state."""
+        """Create the shared politeness state; budgets count from ``started``."""
         self.s = settings
         self.clock = clock
         self.transport = transport
         self.out = out
+        self.started = started
         self.gate = HostGate(
             settings.state_dir / "hosts.json", settings.interval, clock
         )
         self.cache = DiskCache(settings.cache_dir, settings.cache_ttl, clock)
         self.uptime = UptimeLog(settings.state_dir / "uptime")
 
+    def limits(self, budget: float | None) -> tuple[Deadline, RequestBudget]:
+        """``budget`` s from process start (from now in tests), per request too."""
+        deadline = Deadline(self.clock, budget, start=self.started)
+        return deadline, RequestBudget(deadline, self.s.min_start, self.s.grace)
+
     def client(
-        self, observe: Callable[[Observation], None] | None = None
+        self,
+        observe: Callable[[Observation], None] | None = None,
+        budget: RequestBudget | None = None,
+        inflight: threading.Semaphore | None = None,
     ) -> PoliteClient:
         """A client sharing the gate and cache, reporting to ``observe``."""
         return PoliteClient(
@@ -78,6 +96,8 @@ class App:
             self.cache,
             USER_AGENT,
             observe=observe,
+            budget=budget,
+            inflight=inflight,
         )
 
     def backend(self, cand: Candidate, client: PoliteClient) -> Backend:
@@ -109,11 +129,16 @@ class App:
             return cands
         return [c for c in cands if c.id in ids or (installed and c.installed)]
 
-    def cmd_candidates(self) -> int:
+    def cmd_candidates(self, budget: float | None = None) -> int:
         """Refresh ``data/candidates.json`` from both indexes."""
-        cands, skipped = catalog.fetch_candidates(
-            self.client(), self.s.data_dir / "legacy_sources.json"
-        )
+        client = self.client(budget=self.limits(budget)[1])
+        try:
+            cands, skipped = catalog.fetch_candidates(
+                client, self.s.data_dir / "legacy_sources.json"
+            )
+        except BudgetExhausted:
+            self.out("candidates: budget spent, continuing next call")
+            return MORE_WORK
         catalog.save(self.candidates_path, cands)
         catalog.save_skipped(self.skipped_path, skipped)
         for row in skipped:
@@ -125,90 +150,80 @@ class App:
         """Advance the reference build."""
         ref = self.reference()
         sy = load_sy_titles(self.s.data_dir / "sy_titles.json")
-        done = build(self.client(), ref, sy, Deadline(self.clock, budget), top=top)
+        deadline, per_request = self.limits(budget)
+        client = self.client(budget=per_request)
+        done = within(lambda: build(client, ref, sy, deadline, top=top))
         self.out(f"reference: {len(ref.titles)} titles, complete={done}")
         return 0 if done else MORE_WORK
 
-    def cmd_init_run(self, run_id: str, sample: int | None, steps: Manifest) -> int:
+    def cmd_init_run(
+        self,
+        run_id: str,
+        sample: int | None,
+        steps: Manifest,
+        *,
+        ramp: bool = False,
+        reprobe: bool = False,
+    ) -> int:
         """Fix the run's reference sample (``sample`` titles, None = all).
 
         ``steps`` carries the per-step sizes; its own ``sample`` is ignored.
-        Idempotent: an existing run keeps its manifest.
+        ``ramp`` takes the size from ``ramp start``; ``reprobe`` lists the
+        previous published run's hard cuts for a re-probe. Idempotent: an
+        existing run keeps its manifest.
         """
+        if ramp:
+            sample = self._ramp().current_sample(run_id)
+            if sample is None:
+                self.out(f"run {run_id}: no ramp; call 'ramp start --run {run_id}'")
+                return USAGE
         run = RunDir(self.s.state_dir, run_id)
         if Manifest.load(run.manifest_path) is None:
             keys = stratified([t.key for t in self.reference().titles], sample)
-            replace(steps, sample=keys).save(run.manifest_path)
+            ids, prev = previous_hard_cuts(self.s.state_dir, run_id, wanted=reprobe)
+            replace(steps, sample=keys, reprobe=ids, reprobe_from=prev).save(
+                run.manifest_path
+            )
         self.out(f"run {run_id}: ready")
         return 0
 
     def _manifest(self, run_id: str) -> tuple[RunDir, Manifest]:
-        run = RunDir(self.s.state_dir, run_id)
-        manifest = Manifest.load(run.manifest_path)
-        if manifest is None:
-            msg = f"run {run_id} has no manifest; run init-run first"
-            raise SystemExit(msg)
-        return run, manifest
+        return RunDir.open(self.s.state_dir, run_id)
 
     def cmd_enrich(self, run_id: str, budget: float | None) -> int:
         """MangaUpdates chapter counts for the run's sample."""
         _, manifest = self._manifest(run_id)
-        ref = self.reference()
-        done = enrich_chapters(
-            self.client(), ref, manifest.sample, Deadline(self.clock, budget)
-        )
+        deadline, per_request = self.limits(budget)
+        client, ref = self.client(budget=per_request), self.reference()
+        done = within(lambda: enrich_chapters(client, ref, manifest.sample, deadline))
         self.out(f"enrich: complete={done}")
         return 0 if done else MORE_WORK
 
     def probe_one(self, cand: Candidate) -> Observation:
         """One uptime probe of ``cand`` (see :mod:`source_eval.uptime`)."""
-        if cand.origin == "plugin":
-            obs = probe_front_page(self.client(), self.clock, cand.host, cand.base_url)
-        else:
-            seen: list[Observation] = []
-            backend = self.backend(cand, self.client(observe=seen.append))
-            try:
-                backend.prepare(cand)
-                backend.popular(cand)
-            except TransportError:
-                seen.append(failed(self.clock, cand.host))
-            except SourceError:
-                pass
-            obs = seen[-1] if seen else Observation.failure(self.clock.now(), cand.host)
-        self.uptime.append(cand.id, obs)
-        return obs
+        return runner.probe_one(self, cand, None)
 
-    def cmd_probe(self, cands: list[Candidate], workers: int) -> int:
-        """One uptime probe per candidate, in parallel (pacing is per host)."""
-        with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
-            results = list(pool.map(self.probe_one, cands))
-        for cand, obs in zip(cands, results, strict=True):
-            verdict = f"ok={obs.ok} kind={obs.kind} status={obs.status}"
-            self.out(f"probe {cand.id} ({cand.name}): {verdict}")
-        self.out(f"probe: {sum(1 for r in results if r.ok)}/{len(results)} ok")
-        return 0
+    def cmd_probe(
+        self,
+        cands: list[Candidate],
+        workers: int,
+        budget: float | None = None,
+        fresh: float | None = None,
+    ) -> int:
+        """One uptime probe per candidate not probed within ``fresh`` seconds."""
+        return runner.probe_all(self, cands, workers, budget, fresh)
 
     def cmd_run(
-        self, run_id: str, cands: list[Candidate], budget: float | None, workers: int
+        self,
+        run_id: str,
+        cands: list[Candidate],
+        budget: float | None,
+        workers: int,
+        inflight: int = 64,
     ) -> int:
         """Advance every selected source; exit MORE_WORK if any is unfinished."""
         run, manifest = self._manifest(run_id)
-        plan = Plan({t.key: t for t in self.reference().titles}, manifest)
-        deadline = Deadline(self.clock, budget)
-
-        def one(cand: Candidate) -> bool:
-            state = run.source(cand.id)
-            client = self.client(observe=state.observe)
-            done = evaluate(cand, self.backend(cand, client), state, plan, deadline)
-            progress = f"titles={len(state.titles)}/{len(manifest.sample)}"
-            self.out(
-                f"{cand.id} ({cand.name}): {'done' if done else 'partial'} {progress}"
-            )
-            return done
-
-        with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
-            finished = list(pool.map(one, cands))
-        return 0 if all(finished) else MORE_WORK
+        return runner.run_all(self, run, manifest, cands, (budget, workers, inflight))
 
     def cmd_report(
         self,
@@ -216,24 +231,19 @@ class App:
         out: Path,
         writer: RtdbWriter | None,
         profile: Profile = DEFAULT,
+        budget: float | None = None,
     ) -> int:
-        """Write the ranked report under ``profile``; publish it with a writer."""
+        """Write the ranked report; publish it (resumably) with a writer."""
         run, manifest = self._manifest(run_id)
-        cands = {c.id: c for c in catalog.load(self.candidates_path)}
-        skipped = catalog.load_skipped(self.skipped_path)
-        report = build_report(
-            cands,
-            run,
-            manifest,
-            self.uptime,
-            self.clock.now(),
-            skipped=skipped,
-            profile=profile,
-        )
-        write_json_atomic(out, report)
-        self.out(f"profile: {profile.name}")
-        count = len(cast("list[object]", report["sources"]))
-        self.out(f"report: {count} sources -> {out}")
-        if writer is not None:
-            self.out(f"published: {publish(report, writer)} records")
-        return 0
+        return report_cmd(self, run, manifest, out, writer, profile, budget)
+
+    def cmd_ramp_start(self, run_id: str, sample: int | None) -> int:
+        """Start (or resume) ``run_id`` on the ramp and log its sample."""
+        return ramp_start(self._ramp(), run_id, sample, self.out)
+
+    def cmd_ramp_finish(self, run_id: str) -> int:
+        """Record ``run_id``'s wall time for the next run's ramp."""
+        return ramp_finish(self._ramp(), run_id, self.out)
+
+    def _ramp(self) -> Ramp:
+        return Ramp(self.s.state_dir / "ramp.json", self.clock)

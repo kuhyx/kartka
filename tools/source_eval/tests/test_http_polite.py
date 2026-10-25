@@ -7,8 +7,9 @@ import pytest
 import requests
 
 from source_eval.cache import DiskCache
+from source_eval.gate import HostGate
 from source_eval.http import Request, RequestsTransport, SystemClock, TransportError
-from source_eval.polite import HostGate, Observation, PoliteClient
+from source_eval.polite import Observation, PoliteClient
 from tests.fakes import FakeClock, FakeTransport, resp
 
 UA = "kartka-source-eval/test"

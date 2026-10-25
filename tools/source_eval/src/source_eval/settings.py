@@ -27,5 +27,9 @@ class Settings:
     )
     cache_dir: Path = field(default_factory=lambda: _xdg("XDG_CACHE_HOME", ".cache"))
     interval: float = 2.0
+    #: A request starts only with this much budget left (or its whole
+    #: timeout, when shorter) after ``grace`` (final checkpoint + exit).
+    min_start: float = 5.0
+    grace: float = 1.0
     cache_ttl: float = 6 * 86400.0
     suwayomi: SuwayomiConfig = field(default_factory=SuwayomiConfig)

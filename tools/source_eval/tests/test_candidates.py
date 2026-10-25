@@ -10,9 +10,10 @@ import pytest
 from source_eval import protowire as pw
 from source_eval.candidates import catalog
 from source_eval.candidates.indexes import parse_keiyoushi, parse_mangayomi
+from source_eval.gate import HostGate
 from source_eval.http import Request
 from source_eval.models import Availability, Candidate, base_domain
-from source_eval.polite import HostGate, PoliteClient
+from source_eval.polite import PoliteClient
 from tests.fakes import FakeClock, FakeTransport, fixture_bytes, fixture_json, resp
 
 

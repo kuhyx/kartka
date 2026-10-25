@@ -10,7 +10,13 @@ lazy from collections.abc import Callable
 
 import crdt_sync
 
-from source_eval.http import Request, RequestsTransport, Transport
+from source_eval.http import (
+    BoundedTransport,
+    Request,
+    RequestsTransport,
+    Transport,
+    bounded,
+)
 from source_eval.metrics import metrics
 from source_eval.profile import DEFAULT, SETTING_NODE, Profile, parse_profile
 from source_eval.score import Record, rank
@@ -33,6 +39,9 @@ SEED_HINT = (
     " (full command: SEED_CMD in tools/agent/lib.sh)"
 )
 _ONLY_KEIYOUSHI = {"native": False, "mangayomiJs": False, "keiyoushi": True}
+#: Hard caps of an RTDB call: token refresh, then the request itself
+#: (``publishing.RTDB_STEP`` is their sum).
+TOKEN_TIMEOUT, RTDB_TIMEOUT = 8.0, 12.0
 
 
 def build_meta(  # noqa: PLR0913, PLR0917 -- one argument per meta input
@@ -148,7 +157,9 @@ class FirebaseRtdb:
     def get(self, path: str) -> object:
         """GET the JSON at ``path``; raises on any non-2xx."""
         url = f"{self._url}/{path}.json?auth={self._id_token()}"
-        response = self._transport.send(Request("GET", url, {}, None))
+        response = self._transport.send(
+            Request("GET", url, {}, None, timeout=RTDB_TIMEOUT)
+        )
         if not 200 <= response.status < 300:  # noqa: PLR2004
             msg = f"RTDB GET {path}: HTTP {response.status} {response.text()[:200]}"
             raise RuntimeError(msg)
@@ -159,7 +170,13 @@ class FirebaseRtdb:
         url = f"{self._url}/{path}.json?auth={self._id_token()}"
         body = json.dumps(data).encode()
         response = self._transport.send(
-            Request("PATCH", url, {"Content-Type": "application/json"}, body)
+            Request(
+                "PATCH",
+                url,
+                {"Content-Type": "application/json"},
+                body,
+                timeout=RTDB_TIMEOUT,
+            )
         )
         if not 200 <= response.status < 300:  # noqa: PLR2004
             msg = f"RTDB PATCH {path}: HTTP {response.status} {response.text()[:200]}"
@@ -181,10 +198,16 @@ def firebase_writer() -> FirebaseRtdb:
     """
     config = crdt_sync.FirebaseConfig.load()
     store = crdt_sync.credential_store_for(APP_NAME)
-    auth = crdt_sync.FirebaseTokenProvider(config.api_key, store)
+    auth = crdt_sync.FirebaseTokenProvider(
+        config.api_key, store, timeout_seconds=TOKEN_TIMEOUT
+    )
     if not auth.has_session():
         raise NoSessionError(SEED_HINT)
-    return FirebaseRtdb(config.database_url, auth.id_token, RequestsTransport())
+    return FirebaseRtdb(
+        config.database_url,
+        lambda: bounded(auth.id_token, TOKEN_TIMEOUT),
+        BoundedTransport(RequestsTransport()),
+    )
 
 
 def load_profile(open_reader: Callable[[], RtdbReader]) -> tuple[Profile, str | None]:
