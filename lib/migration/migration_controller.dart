@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' hide Category;
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/migration/first_value.dart';
 import 'package:kartka/migration/migration_backup.dart';
 import 'package:kartka/migration/migration_deps.dart';
 import 'package:kartka/migration/migration_target.dart';
@@ -102,7 +103,7 @@ class MigrationController extends ChangeNotifier {
     }
     final keys = onlyKeys;
     rows = [
-      for (final e in await _deps.library.watch().first)
+      for (final e in await firstValue(_deps.library.watch()))
         if (e.sourceId != target.ref.id &&
             (keys == null || keys.contains(e.key)))
           MigrationRow(e),

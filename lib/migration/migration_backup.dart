@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:kartka/core/models/json_fields.dart';
+import 'package:kartka/migration/first_value.dart';
 import 'package:kartka/migration/migration_deps.dart';
 import 'package:kartka/tracking/common/track_binding.dart';
 
@@ -13,14 +14,14 @@ import 'package:kartka/tracking/common/track_binding.dart';
 /// a .tachibk. Throws when the write fails: the caller must not migrate.
 Future<String> exportBackup(MigrationDeps deps) async {
   final now = deps.clock().toUtc();
-  final entries = await deps.library.watch().first;
-  final membership = await deps.categories.watchMembership().first;
+  final entries = await firstValue(deps.library.watch());
+  final membership = await firstValue(deps.categories.watchMembership());
   final progress = <String, Object?>{};
   final marks = <String, Object?>{};
   for (final e in entries) {
-    final p = await deps.progress.watch(e.key).first;
+    final p = await firstValue(deps.progress.watch(e.key));
     if (p != null) progress[e.key] = p.toJson();
-    final m = await deps.progress.readMarks(e.key).first;
+    final m = await firstValue(deps.progress.readMarks(e.key));
     if (m.isNotEmpty) marks[e.key] = m;
   }
   final snapshot = {
@@ -29,7 +30,7 @@ Future<String> exportBackup(MigrationDeps deps) async {
     'createdAt': writeDate(now),
     'library': [for (final e in entries) e.toJson()],
     'categories': [
-      for (final c in await deps.categories.watch().first) c.toJson(),
+      for (final c in await firstValue(deps.categories.watch())) c.toJson(),
     ],
     'membership': {
       for (final m in membership.entries) m.key: m.value.toList()..sort(),

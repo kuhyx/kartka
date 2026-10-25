@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/migration/first_value.dart';
 import 'package:kartka/migration/migration_deps.dart';
 import 'package:kartka/tracking/common/track_binding.dart';
 
@@ -47,7 +48,7 @@ Future<void> _moveProgress(
   MangaKey to,
   List<ChapterInfo> chapters,
 ) async {
-  final old = await deps.progress.watch(from).first;
+  final old = await firstValue(deps.progress.watch(from));
   if (old == null) return;
   final number = old.chapterNumber;
   final exact = chapters.firstWhereOrNull((c) => c.number == number);
@@ -83,7 +84,9 @@ Future<void> _moveMarks(
   if (numbers == null) return;
   final read = <String>[];
   final unread = <String>[];
-  for (final mark in (await deps.progress.readMarks(from).first).entries) {
+  for (final mark in (await firstValue(
+    deps.progress.readMarks(from),
+  )).entries) {
     final n = await numbers.numberOf(from, mark.key);
     for (final c in chapters.where((c) => n != null && c.number == n)) {
       (mark.value ? read : unread).add(c.url);
@@ -103,7 +106,7 @@ Future<void> _moveCategories(
   MangaKey from,
   MangaKey to,
 ) async {
-  final cats = (await deps.categories.watchMembership().first)[from];
+  final cats = (await firstValue(deps.categories.watchMembership()))[from];
   for (final id in cats ?? const <String>{}) {
     await deps.categories.setMembership(to, id, true);
     await deps.categories.setMembership(from, id, false);

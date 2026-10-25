@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:kartka/core/models/models.dart';
@@ -42,6 +43,9 @@ class ScriptedSource implements MangaSource {
   /// Thrown by [search] when set.
   Error? searchError;
 
+  /// When set, [search] waits for it.
+  Completer<void>? gate;
+
   /// Thrown by [chapters] when set.
   Error? chaptersError;
 
@@ -52,6 +56,7 @@ class ScriptedSource implements MangaSource {
   @override
   Future<SearchPage> search(String query, int page) async {
     searched.add(query);
+    await gate?.future;
     if (searchError case final e?) throw e;
     return SearchPage(items: results[query] ?? const [], hasNext: false);
   }
