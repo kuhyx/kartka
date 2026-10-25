@@ -74,7 +74,8 @@ basic auth from `KARTKA_SUWAYOMI_USER/PASS` or the deploy env file's
 `$XDG_CACHE_HOME/kartka-source-eval`.
 
 Timers (`systemd/`): probe 4x/day (`probe.sh`), full run weekly via
-`systemd/weekly.sh` (ISO-week run id, ramped sample, publish).
+`systemd/weekly.sh` (ISO-week run id, publish), Sundays 19:00; the unit pins
+`KARTKA_EVAL_SAMPLE=500` (kuhy, 2026-10-25: ~4 h, within his 24 h bound).
 
 ## Pipeline
 
@@ -144,7 +145,7 @@ and FlareSolverr off (the local dev server and the live deploy both do).
   `flags: ["needs-browser-engine"]`, and `webview` challenges neither cut the
   source nor abort its measurement. The evaluator still never runs a browser.
 - **coverage**: found / sample size; `referenceSize` is the run's sample size
-  (30 in the sample run, 200 weekly), not the full 500, to stay honest.
+  (30 in the sample run, 500 weekly).
 - **chapterCompleteness**: distinct chapter numbers / AniList (else
   MangaUpdates `latest_chapter`) count, capped at 1, median over sampled
   titles with a known count.

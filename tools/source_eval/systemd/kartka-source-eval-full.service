@@ -10,6 +10,9 @@ Type=oneshot
 WorkingDirectory=%h/src/kartka/tools/source_eval
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin
 Environment=KARTKA_SUWAYOMI_URL=http://127.0.0.1:4590
+# kuhy 2026-10-25: always 500 titles (~4 h at 25-28 req/s, under his 24 h
+# bound), so the ramp, which targets 2 h, does not walk it back.
+Environment=KARTKA_EVAL_SAMPLE=500
 ExecStartPre=%h/src/kartka/tools/source_eval/systemd/eval_server_ready.sh
 ExecStart=%h/src/kartka/tools/source_eval/systemd/weekly.sh
 Nice=19

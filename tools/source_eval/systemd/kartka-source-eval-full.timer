@@ -2,8 +2,7 @@
 Description=Kartka source evaluator: full run weekly
 
 [Timer]
-OnCalendar=Sun *-*-* 03:30:00
-RandomizedDelaySec=30min
+OnCalendar=Sun *-*-* 19:00:00
 Persistent=true
 
 [Install]
