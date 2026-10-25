@@ -9,22 +9,25 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import replace
+from functools import cache
 import os
 from pathlib import Path
 import sys
 from typing import TYPE_CHECKING
 from urllib.parse import urlsplit
 
-from source_eval.app import App, Settings
+from source_eval.app import App
 from source_eval.backends.suwayomi import SuwayomiConfig
 from source_eval.http import RequestsTransport, SystemClock
-from source_eval.report import firebase_writer
+from source_eval.profile import DEFAULT, Profile
+from source_eval.report import firebase_writer, load_profile
+from source_eval.settings import Settings
 from source_eval.state import Manifest
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
 
-    from source_eval.report import RtdbWriter
+    from source_eval.report import Rtdb
 
 
 def _env(*names: str, default: str = "") -> str:
@@ -78,6 +81,13 @@ def _parser() -> argparse.ArgumentParser:
     rep.add_argument(
         "--publish", action="store_true", help="also write RTDB /kartka/source_health"
     )
+    rep.add_argument(
+        "--weights",
+        choices=("active", "default"),
+        default="active",
+        help="active: the app's synced scoring profile (read from RTDB, falling"
+        " back to DEFAULT); default: force the DEFAULT profile",
+    )
     for cmd in (init, run, rep, sub.choices["enrich"]):
         cmd.add_argument("--run", dest="run_id", default="weekly")
     for cmd in (ref, run, sub.choices["enrich"]):
@@ -109,10 +119,19 @@ def _settings(args: argparse.Namespace) -> Settings:
     return s
 
 
-def dispatch(
-    app: App, args: argparse.Namespace, writer: Callable[[], RtdbWriter]
-) -> int:
-    """Run the parsed command against ``app``."""
+def _profile(args: argparse.Namespace, app: App, rtdb: Callable[[], Rtdb]) -> Profile:
+    """The profile ``report`` scores with: DEFAULT, or the synced active one."""
+    if args.weights == "default":
+        return DEFAULT
+    profile, warning = load_profile(rtdb)
+    if warning:
+        app.out(f"warning: {warning}")
+    return profile
+
+
+def dispatch(app: App, args: argparse.Namespace, rtdb: Callable[[], Rtdb]) -> int:
+    """Run the parsed command against ``app``; ``rtdb`` is opened on demand."""
+    shared = cache(rtdb)
     commands: dict[str, Callable[[], int]] = {
         "candidates": app.cmd_candidates,
         "reference": lambda: app.cmd_reference(args.budget, args.top),
@@ -134,7 +153,8 @@ def dispatch(
         "report": lambda: app.cmd_report(
             args.run_id,
             args.out or app.s.out_dir / "latest.json",
-            writer() if args.publish else None,
+            shared() if args.publish else None,
+            _profile(args, app, shared),
         ),
     }
     return commands[args.cmd]()

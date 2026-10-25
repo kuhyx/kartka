@@ -4,14 +4,12 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field, replace
-import os
-from pathlib import Path
+from dataclasses import replace
 from typing import TYPE_CHECKING, cast
 
 from source_eval.backends.mangadex import MangaDexBackend
 from source_eval.backends.plugin import PluginBackend
-from source_eval.backends.suwayomi import SuwayomiBackend, SuwayomiConfig
+from source_eval.backends.suwayomi import SuwayomiBackend
 from source_eval.budget import Deadline, stratified
 from source_eval.cache import DiskCache
 from source_eval.candidates import catalog
@@ -20,6 +18,7 @@ from source_eval.fsio import write_json_atomic
 from source_eval.http import TransportError
 from source_eval.models import SourceError
 from source_eval.polite import HostGate, Observation, PoliteClient
+from source_eval.profile import DEFAULT, Profile
 from source_eval.reference.build import (
     Reference,
     build,
@@ -32,37 +31,19 @@ from source_eval.uptime import UptimeLog, failed, probe_front_page
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from pathlib import Path
 
     from source_eval.backends.base import Backend
     from source_eval.http import Clock, Transport
     from source_eval.models import Candidate
     from source_eval.report import RtdbWriter
+    from source_eval.settings import Settings
 
-PACKAGE_ROOT = Path(__file__).resolve().parents[2]
 USER_AGENT = (
     "kartka-source-eval/0.1 (+https://github.com/kuhyx/kartka; polite: 1 req/2s/host)"
 )
 #: Exit code when the budget ran out and another call should continue.
 MORE_WORK = 10
-
-
-def _xdg(var: str, fallback: str) -> Path:
-    return Path(os.environ.get(var) or Path.home() / fallback) / "kartka-source-eval"
-
-
-@dataclass(frozen=True, slots=True)
-class Settings:
-    """Paths and knobs; every default can be overridden on the command line."""
-
-    data_dir: Path = PACKAGE_ROOT / "data"
-    out_dir: Path = PACKAGE_ROOT / "out"
-    state_dir: Path = field(
-        default_factory=lambda: _xdg("XDG_STATE_HOME", ".local/state")
-    )
-    cache_dir: Path = field(default_factory=lambda: _xdg("XDG_CACHE_HOME", ".cache"))
-    interval: float = 2.0
-    cache_ttl: float = 6 * 86400.0
-    suwayomi: SuwayomiConfig = field(default_factory=SuwayomiConfig)
 
 
 class App:
@@ -229,15 +210,28 @@ class App:
             finished = list(pool.map(one, cands))
         return 0 if all(finished) else MORE_WORK
 
-    def cmd_report(self, run_id: str, out: Path, writer: RtdbWriter | None) -> int:
-        """Write the ranked report; publish it when a writer is given."""
+    def cmd_report(
+        self,
+        run_id: str,
+        out: Path,
+        writer: RtdbWriter | None,
+        profile: Profile = DEFAULT,
+    ) -> int:
+        """Write the ranked report under ``profile``; publish it with a writer."""
         run, manifest = self._manifest(run_id)
         cands = {c.id: c for c in catalog.load(self.candidates_path)}
         skipped = catalog.load_skipped(self.skipped_path)
         report = build_report(
-            cands, run, manifest, self.uptime, self.clock.now(), skipped=skipped
+            cands,
+            run,
+            manifest,
+            self.uptime,
+            self.clock.now(),
+            skipped=skipped,
+            profile=profile,
         )
         write_json_atomic(out, report)
+        self.out(f"profile: {profile.name}")
         count = len(cast("list[object]", report["sources"]))
         self.out(f"report: {count} sources -> {out}")
         if writer is not None:

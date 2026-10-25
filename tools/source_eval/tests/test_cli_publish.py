@@ -85,7 +85,8 @@ def test_cli_dispatch(
     assert run("enrich", "--run", "c") == 0
     assert run("probe", "--ids", "mangadex") == 0
     assert run("run", "--run", "c", "--ids", "mangadex", "--workers", "1") == 0
-    assert run("report", "--run", "c", "--out", str(tmp_path / "o.json")) == 0
+    out = str(tmp_path / "o.json")
+    assert run("report", "--run", "c", "--out", out, "--weights", "default") == 0
     assert app.select([], installed=True)
     assert len(app.select([], installed=False)) == len(
         catalog.load(app.candidates_path)
@@ -100,6 +101,9 @@ def test_cli_dispatch(
     published: list[str] = []
 
     class W:
+        def get(self, path: str) -> object:
+            return None  # no custom profile has been set
+
         def patch(self, path: str, data: dict[str, object]) -> None:
             published.append(path)
 

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from source_eval import report
+from source_eval.profile import DEFAULT
 from source_eval.state import sha1
 
 SKIPPED: list[dict[str, object]] = [
@@ -26,6 +27,7 @@ def test_build_meta_counts_verdicts() -> None:
         "tested": 4,
         "verdicts": {"keep": 1, "cut": 2, "pending": 1},
         "skipped": SKIPPED,
+        "profile": {"name": "default", **DEFAULT.to_json()},
     }
     empty = report.build_meta("r", "t", 0, [], [])
     assert empty["verdicts"] == {"keep": 0, "cut": 0, "pending": 0}

@@ -12,6 +12,7 @@ import crdt_sync
 
 from source_eval.http import Request, RequestsTransport, Transport
 from source_eval.metrics import metrics
+from source_eval.profile import DEFAULT, SETTING_NODE, Profile, parse_profile
 from source_eval.score import Record, rank
 from source_eval.state import sha1
 from source_eval.uptime import HOSTS_BLOCKED
@@ -28,16 +29,18 @@ APP_NAME = "kartka-source-eval"
 _ONLY_KEIYOUSHI = {"native": False, "mangayomiJs": False, "keiyoushi": True}
 
 
-def build_meta(
+def build_meta(  # noqa: PLR0913, PLR0917 -- one argument per meta input
     run_id: str,
     generated_at: str,
     candidates: int,
     ranked: list[Record],
     skipped: list[dict[str, object]],
+    profile: Profile = DEFAULT,
 ) -> dict[str, object]:
-    """Run meta: sizes, verdict counts and what the candidate merge dropped.
+    """Run meta: sizes, verdict counts, what the merge dropped, the profile.
 
-    ``tested`` is the number of ranked records (sources the run touched).
+    ``tested`` is the number of ranked records (sources the run touched);
+    ``profile`` is the scoring profile the run was judged with.
     """
     verdicts = {"keep": 0, "cut": 0, "pending": 0}
     for record in ranked:
@@ -49,6 +52,7 @@ def build_meta(
         "tested": len(ranked),
         "verdicts": verdicts,
         "skipped": skipped,
+        "profile": {"name": profile.name, **profile.to_json()},
     }
 
 
@@ -60,8 +64,13 @@ def build_report(  # noqa: PLR0913 -- one argument per input the report joins
     now: float,
     *,
     skipped: list[dict[str, object]] | None = None,
+    profile: Profile = DEFAULT,
 ) -> dict[str, object]:
-    """Ranked §5 records for every source the run touched, summary and meta."""
+    """Ranked §5 records for every source the run touched, summary and meta.
+
+    Scores, ranks and verdicts follow ``profile``; every record also carries
+    its ``defaultScore`` (DEFAULT profile).
+    """
     records: list[Record] = []
     found: dict[str, set[str]] = {}
     for source_id in run.evaluated_ids():
@@ -71,7 +80,7 @@ def build_report(  # noqa: PLR0913 -- one argument per input the report joins
         state = run.source(source_id)
         records.append(metrics(cand, state, manifest, log.window(cand.id, now), now))
         found[source_id] = set(state.found())
-    ranked = rank(records, found)
+    ranked = rank(records, found, profile)
     blocked_here = []
     for record in ranked:
         last = log.last(str(record["id"]))
@@ -93,7 +102,9 @@ def build_report(  # noqa: PLR0913 -- one argument per input the report joins
                 if r["verdict"] != "cut"
             ],
         },
-        "meta": build_meta(run.run_id, generated, len(cands), ranked, skipped or []),
+        "meta": build_meta(
+            run.run_id, generated, len(cands), ranked, skipped or [], profile
+        ),
     }
 
 
@@ -105,8 +116,20 @@ class RtdbWriter(Protocol):
         ...
 
 
+class RtdbReader(Protocol):
+    """Anything that can GET a JSON node from RTDB."""
+
+    def get(self, path: str) -> object:
+        """The decoded JSON at ``path`` (``None`` when the node is absent)."""
+        ...
+
+
+class Rtdb(RtdbReader, RtdbWriter, Protocol):
+    """Read and write access to RTDB."""
+
+
 class FirebaseRtdb:
-    """RTDB REST writer: stores real JSON objects (not string leaves)."""
+    """RTDB REST client: stores real JSON objects (not string leaves)."""
 
     def __init__(
         self, database_url: str, id_token: Callable[[], str], transport: Transport
@@ -115,6 +138,15 @@ class FirebaseRtdb:
         self._url = database_url.rstrip("/")
         self._id_token = id_token
         self._transport = transport
+
+    def get(self, path: str) -> object:
+        """GET the JSON at ``path``; raises on any non-2xx."""
+        url = f"{self._url}/{path}.json?auth={self._id_token()}"
+        response = self._transport.send(Request("GET", url, {}, None))
+        if not 200 <= response.status < 300:  # noqa: PLR2004
+            msg = f"RTDB GET {path}: HTTP {response.status} {response.text()[:200]}"
+            raise RuntimeError(msg)
+        return response.json()
 
     def patch(self, path: str, data: dict[str, object]) -> None:
         """PATCH ``data`` under ``path``; raises on any non-2xx."""
@@ -136,6 +168,31 @@ def firebase_writer() -> FirebaseRtdb:
     if not auth.has_session():
         auth.sign_in(config.email, config.read_password())
     return FirebaseRtdb(config.database_url, auth.id_token, RequestsTransport())
+
+
+def load_profile(open_reader: Callable[[], RtdbReader]) -> tuple[Profile, str | None]:
+    """The active scoring profile (the app's synced setting) and a warning.
+
+    Read-only; ``open_reader`` is called here so a failed sign-in is covered.
+    No custom profile (node absent or removed) is DEFAULT with no warning; an
+    unreadable or invalid one is DEFAULT plus a warning saying why.
+    """
+    try:
+        node = open_reader().get(SETTING_NODE)
+    except Exception as error:  # noqa: BLE001 -- any failure falls back
+        return DEFAULT, f"profile unreadable ({error}); scoring with DEFAULT"
+    if node is None:
+        return DEFAULT, None
+    value = node.get("value") if isinstance(node, dict) else None
+    if value is None and isinstance(node, dict):
+        return DEFAULT, None  # a removal node: only {key, hlc}
+    try:
+        parsed = parse_profile(json.loads(value)) if isinstance(value, str) else None
+    except ValueError:
+        parsed = None
+    if parsed is None:
+        return DEFAULT, "profile invalid; scoring with DEFAULT"
+    return parsed, None
 
 
 def publish(report: dict[str, object], writer: RtdbWriter) -> int:

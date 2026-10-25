@@ -22,7 +22,7 @@ uv run source-eval init-run --run R --sample 30 --completeness 10 --images 3 --p
 uv run source-eval enrich --run R --budget 40  # MangaUpdates chapter counts
 uv run source-eval probe [--ids ...|--installed]       # one uptime probe each
 uv run source-eval run --run R --ids <id> --budget 40  # resumable, exit 10 = more
-uv run source-eval report --run R [--out F] [--publish]
+uv run source-eval report --run R [--out F] [--publish] [--weights active|default]
 ```
 
 `--suwayomi-url` (or `KARTKA_SUWAYOMI_URL`, default the eval instance
@@ -121,22 +121,33 @@ and FlareSolverr off (the local dev server and the live deploy both do).
   Restricting an `all` Suwayomi extension would need per-extension language
   preferences (keys differ per extension and are unverified here); MangaDex
   native is restricted by `translatedLanguage=en`.
-- **score**: exactly the §5 formula, times `pagesLoad.ratio` when known (the
-  §5 example's printed 0.81 is wrong; its own inputs give 0.852, pinned by a
-  test). Rounded to 3 places.
+- **score**: the §5 formula under the active scoring profile
+  (`source_eval/profile.py`; weights normalised, pages-load multiplier
+  optional). Under DEFAULT it is the historic one (the §5 example's printed
+  0.81 is wrong; its own inputs give 0.852, pinned by a test). Rounded to 3
+  places. Every record also carries `defaultScore` (DEFAULT profile).
 - **subset**: ≥ 90 % of found titles also found by a higher-ranked, not-cut
   source whose median width is ≥ (unknown width of the lower source counts as
   ≤; unknown width of the higher one never qualifies). Same-host pairs are
   compared too (native vs Suwayomi MangaDex): the lower one is redundant.
   Ties rank native > suwayomi > plugin.
-- **verdict**: the score alone. ≥ `KEEP_SCORE` (0.90) → `keep`; `pending`
-  only while nothing was measured (coverage ratio `null`); else `cut`. Uptime
-  still accruing no longer forces `pending`. The cut reasons (`uptime<0.95`,
-  `blocking`, `coverage<0.60`, `subset`) are still computed and published in
-  `cutReasons`, as explanations of a low score only; they never decide.
-- **meta**: `{runId, generatedAt, candidates, tested, verdicts, skipped}`
-  (contract §5 "Run meta"); `--publish` PATCHes it to
-  `/kartka/source_health_meta` after the records.
+- **verdict**: an enabled cut switch whose reason applies → `cut`; else
+  ≥ `keepScore` → `keep`; `pending` only while nothing was measured
+  (coverage ratio `null`); else `cut`. DEFAULT enables no switch, so there the
+  score alone decides (`KEEP_SCORE` 0.90). The cut reasons (`uptime<0.95`,
+  `blocking`, `coverage<0.60`, `subset`) are always computed and published in
+  `cutReasons`.
+- **scoring profile**: `report` reads the app's active profile from RTDB
+  `/kartka/settings/sourceHealth~2Escoring` (read-only GET with the
+  `kartka-source-eval` session, even without `--publish`) and scores,
+  ranks and publishes with it. `--weights default` skips the read and forces
+  DEFAULT. Node absent or removed = DEFAULT; an unreadable or invalid profile
+  (or no sign-in) falls back to DEFAULT and prints a `warning:` line.
+  `report` prints `profile: default|custom`.
+- **meta**: `{runId, generatedAt, candidates, tested, verdicts, skipped,
+  profile}` (contract §5 "Run meta"); `--publish` PATCHes it to
+  `/kartka/source_health_meta` after the records. `profile` is
+  `{name: default|custom, weights, pagesLoadMultiplier, keepScore, cuts}`.
 - **availability** (additive): `native` (Kartka Dart source; today
   mangadex.org), `mangayomiJs` (a Mangayomi JS source on the same base
   domain), `keiyoushi`. `summary.keepOnlyViaKeiyoushi` lists `keep` sources

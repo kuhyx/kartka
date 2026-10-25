@@ -5,11 +5,12 @@ import json
 from typing import TYPE_CHECKING
 lazy from pathlib import Path
 
-from source_eval.app import App, Settings
+from source_eval.app import App
 from source_eval.backends.mangadex import API
 from source_eval.backends.suwayomi import SuwayomiConfig
 from source_eval.candidates import catalog
 from source_eval.reference import anilist, mangaupdates
+from source_eval.settings import Settings
 from tests.fakes import FakeClock, FakeTransport, fixture_bytes, fixture_json, resp
 from tests.test_reference import anilist_handler
 
