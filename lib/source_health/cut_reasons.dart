@@ -4,6 +4,7 @@ library;
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
+import 'package:kartka/source_health/score_breakdown.dart';
 import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/thresholds.dart';
 
@@ -44,6 +45,11 @@ String describeBlockingKind(String kind) => switch (kind) {
 };
 
 String _explain(String code, SourceHealthRecord r, SourceNameOf? nameOf) {
+  if (code == 'unreachable') {
+    return 'Unreachable: its first searches all failed, so it is cut '
+        'whatever it scores.';
+  }
+  if (code == 'blocking>=0.50') return '${_blocking(r)} ${_hardBlocking()}';
   if (code.startsWith('uptime')) return _uptime(r);
   if (code.startsWith('blocking')) return _blocking(r);
   if (code.startsWith('coverage')) return _coverage(r);
@@ -74,6 +80,10 @@ String _blocking(SourceHealthRecord r) {
       'browser-engine need lowers the score.';
 }
 
+String _hardBlocking() =>
+    'At ${pct(HealthThresholds.hardChallengeRate)} of requests or more '
+    '(not counting a browser-engine need) it is cut whatever it scores.';
+
 String _coverage(SourceHealthRecord r) {
   final need = pct(HealthThresholds.minCoverageRatio);
   final c = r.coverage;
@@ -88,13 +98,17 @@ String _coverage(SourceHealthRecord r) {
 String _subset(SourceHealthRecord r, SourceNameOf? nameOf) {
   final s = r.subsetOf;
   if (s == null) {
-    return 'Redundant: a higher-ranked source has nearly all of these titles '
+    return 'Redundant: a higher-ranked source has most of these titles '
         'with images at least as good — use another source instead.';
   }
   final other = nameOf?.call(s.sourceId) ?? s.sourceId;
   final overlap = s.overlap == null
       ? 'at least ${pct(HealthThresholds.subsetOverlap)}'
       : pct(s.overlap!);
+  final factor = subsetFactor(r);
+  final penalty = factor == null
+      ? ''
+      : ' Its score is multiplied by ${factor.toStringAsFixed(2)}.';
   return 'Redundant: $overlap of its titles are also on $other, which ranks '
-      'higher with images at least as good.';
+      'higher with images at least as good.$penalty';
 }

@@ -37,7 +37,8 @@ String blockingText(BlockingMetric? b) {
 /// `512/650 (79 %)`: reference titles found / reference size.
 String coverageText(CoverageMetric? c) => c == null
     ? notMeasured
-    : '${c.found ?? '?'}/${c.referenceSize ?? '?'} (${pctOrDash(c.ratio)})';
+    : '${c.found ?? '?'}/${c.referenceSize ?? '?'} (${pctOrDash(c.ratio)})'
+          '${c.complete == null ? '' : ', ${c.complete} with their chapters'}';
 
 /// `97 % over 40 titles`.
 String completenessText(CompletenessMetric? c) {

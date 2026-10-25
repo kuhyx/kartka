@@ -119,7 +119,7 @@ class LatencyMetric {
 @immutable
 class BlockingMetric {
   /// Creates a blocking block.
-  const new({this.challengeRate, this.kinds = const []});
+  const new({this.challengeRate, this.kinds = const [], this.hardRate});
 
   /// Parses `blocking`; null unless [json] is a map.
   static BlockingMetric? fromJson(Object? json) {
@@ -128,6 +128,7 @@ class BlockingMetric {
     return BlockingMetric(
       challengeRate: readDouble(m, 'challengeRate'),
       kinds: readStrings(m, 'kinds'),
+      hardRate: readDouble(m, 'hardRate'),
     );
   }
 
@@ -137,30 +138,45 @@ class BlockingMetric {
   /// Challenge kinds seen: `cloudflare`, `captcha`, `403`, `429`, `webview`.
   final List<String> kinds;
 
+  /// Share of requests challenged other than for a browser engine; 0.5 or
+  /// more is a hard cut (`blocking>=0.50`). Null on runs before 2026-10-25.
+  final double? hardRate;
+
   /// True when the only kind seen is `webview` (needs a browser engine): that
   /// is flagged, not cut.
   bool get onlyBrowserEngine =>
       kinds.isNotEmpty && kinds.every((k) => k == 'webview');
 
   /// The JSON block.
-  Map<String, Object?> toJson() =>
-      compact({'challengeRate': challengeRate, 'kinds': kinds});
+  Map<String, Object?> toJson() => compact({
+    'challengeRate': challengeRate,
+    'kinds': kinds,
+    'hardRate': hardRate,
+  });
 
   @override
   bool operator ==(Object other) =>
       other is BlockingMetric &&
       other.challengeRate == challengeRate &&
+      other.hardRate == hardRate &&
       listEquals(other.kinds, kinds);
 
   @override
-  int get hashCode => Object.hash(challengeRate, Object.hashAll(kinds));
+  int get hashCode =>
+      Object.hash(challengeRate, hardRate, Object.hashAll(kinds));
 }
 
 /// §5 `coverage`: reference titles the source has.
 @immutable
 class CoverageMetric {
   /// Creates a coverage block.
-  const new({this.referenceSize, this.found, this.ratio});
+  const new({
+    this.referenceSize,
+    this.found,
+    this.ratio,
+    this.complete,
+    this.completeRatio,
+  });
 
   /// Parses `coverage`; null unless [json] is a map.
   static CoverageMetric? fromJson(Object? json) {
@@ -170,6 +186,8 @@ class CoverageMetric {
       referenceSize: readInt(m, 'referenceSize'),
       found: readInt(m, 'found'),
       ratio: readDouble(m, 'ratio'),
+      complete: readInt(m, 'complete'),
+      completeRatio: readDouble(m, 'completeRatio'),
     );
   }
 
@@ -182,17 +200,32 @@ class CoverageMetric {
   /// found / referenceSize.
   final double? ratio;
 
+  /// Found titles with at least 80 % of the reference chapter count (or one
+  /// chapter when it is unknown); null on runs before the merged metric.
+  final int? complete;
+
+  /// complete / referenceSize: the merged coverage the score uses.
+  final double? completeRatio;
+
   /// The JSON block.
-  Map<String, Object?> toJson() =>
-      compact({'referenceSize': referenceSize, 'found': found, 'ratio': ratio});
+  Map<String, Object?> toJson() => compact({
+    'referenceSize': referenceSize,
+    'found': found,
+    'ratio': ratio,
+    'complete': complete,
+    'completeRatio': completeRatio,
+  });
 
   @override
   bool operator ==(Object other) =>
       other is CoverageMetric &&
       other.referenceSize == referenceSize &&
       other.found == found &&
-      other.ratio == ratio;
+      other.ratio == ratio &&
+      other.complete == complete &&
+      other.completeRatio == completeRatio;
 
   @override
-  int get hashCode => Object.hash(referenceSize, found, ratio);
+  int get hashCode =>
+      Object.hash(referenceSize, found, ratio, complete, completeRatio);
 }

@@ -16,8 +16,23 @@ abstract final class HealthThresholds {
   /// Coverage ratio below this is a low-score reason.
   static const double minCoverageRatio = 0.60;
 
-  /// Overlap with a better source at or above this makes a source a subset.
-  static const double subsetOverlap = 0.90;
+  /// Overlap with a better source at or above this makes a source a subset,
+  /// which multiplies its score by 1 − [subsetPenalty] × overlap.
+  static const double subsetOverlap = 0.50;
+
+  /// See [subsetOverlap].
+  static const double subsetPenalty = 0.5;
+
+  /// A non-webview challenge rate at or above this cuts (`blocking>=0.50`).
+  static const double hardChallengeRate = 0.5;
+
+  /// Share of the reference chapter count a found title needs to count for
+  /// the merged coverage.
+  static const double completeChapterRatio = 0.8;
+
+  /// Runs before the merged coverage: its part is this share of the old
+  /// coverage ratio plus the rest of the chapter completeness.
+  static const double legacyCoverageShare = 0.6;
 
   /// Uptime window length.
   static const int uptimeWindowDays = 7;
@@ -32,7 +47,7 @@ abstract final class HealthThresholds {
   static const Duration staleAfter = Duration(days: 8);
 
   /// Image width that earns the full image-quality score.
-  static const double fullWidthPx = 1400;
+  static const double fullWidthPx = 1067;
 
   /// p95 latency at which the latency score reaches 0.
   static const double worstP95Ms = 5000;

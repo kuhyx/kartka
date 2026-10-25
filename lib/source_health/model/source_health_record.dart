@@ -1,7 +1,8 @@
 /// The §5 source-health record (evaluator → RTDB → app UI).
 library;
 
-import 'package:flutter/foundation.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart' show immutable;
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/source_health/model/json_read.dart';
 import 'package:kartka/source_health/model/metrics.dart';
@@ -36,6 +37,9 @@ class SourceHealthRecord {
     this.verdict = HealthVerdict.pending,
     this.cutReasons = const [],
     this.flags = const [],
+    this.unreachable = false,
+    this.pkg,
+    this.plugin,
   });
 
   /// Parses a §5 record; null unless [json] is a map with a string `id`.
@@ -66,6 +70,9 @@ class SourceHealthRecord {
       verdict: HealthVerdict.parse(readString(j, 'verdict')),
       cutReasons: readStrings(j, 'cutReasons'),
       flags: readStrings(j, 'flags'),
+      unreachable: j['unreachable'] == true,
+      pkg: readString(j, 'pkg'),
+      plugin: PluginInstallRef.fromJson(j['plugin']),
     );
   }
 
@@ -135,6 +142,17 @@ class SourceHealthRecord {
   /// record from an older evaluator has none). Unknown entries are kept.
   final List<String> flags;
 
+  /// The evaluator could not reach the source at all (hard cut; a source
+  /// that only needed a browser engine is never marked). False when absent.
+  final bool unreachable;
+
+  /// Tachiyomi extension package of a `suwayomi` source; null otherwise.
+  final String? pkg;
+
+  /// The plugin (and its repo) reading a `plugin` source; null when none is
+  /// installable (legacy sources).
+  final PluginInstallRef? plugin;
+
   /// A copy with the judgement fields replaced (the scoring profile's
   /// re-score); every metric is kept.
   SourceHealthRecord withJudgement({
@@ -164,6 +182,9 @@ class SourceHealthRecord {
     verdict: verdict,
     cutReasons: cutReasons,
     flags: flags,
+    unreachable: unreachable,
+    pkg: pkg,
+    plugin: plugin,
   );
 
   /// True when the source needs a browser engine Kartka does not ship.
@@ -192,58 +213,22 @@ class SourceHealthRecord {
     'verdict': verdict.name,
     'cutReasons': cutReasons.isEmpty ? null : cutReasons,
     'flags': flags.isEmpty ? null : flags,
+    'unreachable': unreachable ? true : null,
+    'pkg': pkg,
+    'plugin': plugin?.toJson(),
   });
 
+  // Equal exactly when the §5 JSON is: toJson is lossless (fromJson ∘
+  // toJson is the identity), and it keeps == in step with every new field.
   @override
   bool operator ==(Object other) =>
-      other is SourceHealthRecord &&
-      other.id == id &&
-      other.name == name &&
-      other.lang == lang &&
-      other.origin == origin &&
-      other.probedAt == probedAt &&
-      other.uptime == uptime &&
-      other.latency == latency &&
-      other.blocking == blocking &&
-      other.coverage == coverage &&
-      other.completeness == completeness &&
-      other.imageQuality == imageQuality &&
-      other.subsetOf == subsetOf &&
-      other.availability == availability &&
-      other.pagesLoad == pagesLoad &&
-      other.langScope == langScope &&
-      other.score == score &&
-      other.defaultScore == defaultScore &&
-      other.rank == rank &&
-      other.verdict == verdict &&
-      listEquals(other.cutReasons, cutReasons) &&
-      listEquals(other.flags, flags);
+      other is SourceHealthRecord && _equality.equals(other.toJson(), toJson());
 
   @override
-  int get hashCode => Object.hashAll([
-    id,
-    name,
-    lang,
-    origin,
-    probedAt,
-    uptime,
-    latency,
-    blocking,
-    coverage,
-    completeness,
-    imageQuality,
-    subsetOf,
-    availability,
-    pagesLoad,
-    langScope,
-    score,
-    defaultScore,
-    rank,
-    verdict,
-    Object.hashAll(cutReasons),
-    Object.hashAll(flags),
-  ]);
+  int get hashCode => _equality.hash(toJson());
 
   @override
   String toString() => 'SourceHealthRecord($id, rank: $rank, $verdict)';
 }
+
+const _equality = DeepCollectionEquality();

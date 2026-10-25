@@ -14,14 +14,13 @@ import 'package:kartka/source_health/reason_filter.dart';
 /// The DEFAULT keep bar: a source scoring at least this is kept.
 const double kDefaultKeepScore = 0.90;
 
-/// Weights of the five score parts, each 0..1 (0 turns a part off). Only
+/// Weights of the four score parts, each 0..1 (0 turns a part off). Only
 /// their ratios matter: scoring uses [normalised].
 @immutable
 class ScoreWeights {
   /// The DEFAULT weights unless overridden.
   const new({
-    this.coverage = 0.30,
-    this.chapterCompleteness = 0.20,
+    this.completeCoverage = 0.50,
     this.uptime = 0.20,
     this.imageQuality = 0.15,
     this.speed = 0.15,
@@ -30,27 +29,23 @@ class ScoreWeights {
   /// Builds weights from [values] in [keys] order.
   new fromValues(List<double> values)
     : this(
-        coverage: values[0],
-        chapterCompleteness: values[1],
-        uptime: values[2],
-        imageQuality: values[3],
-        speed: values[4],
+        completeCoverage: values[0],
+        uptime: values[1],
+        imageQuality: values[2],
+        speed: values[3],
       );
 
   /// Wire names, in score order.
   static const List<String> keys = [
-    'coverage',
-    'chapterCompleteness',
+    'completeCoverage',
     'uptime',
     'imageQuality',
     'speed',
   ];
 
-  /// Share of the coverage ratio.
-  final double coverage;
-
-  /// Share of the chapter completeness.
-  final double chapterCompleteness;
+  /// Share of the merged coverage: found with a complete chapter list (the
+  /// former coverage .30 + chapter completeness .20).
+  final double completeCoverage;
 
   /// Share of the uptime ratio.
   final double uptime;
@@ -61,16 +56,10 @@ class ScoreWeights {
   /// Share of the speed (the former latency part).
   final double speed;
 
-  /// The five weights in [keys] order.
-  List<double> get values => [
-    coverage,
-    chapterCompleteness,
-    uptime,
-    imageQuality,
-    speed,
-  ];
+  /// The four weights in [keys] order.
+  List<double> get values => [completeCoverage, uptime, imageQuality, speed];
 
-  /// Sum of the raw weights.
+  /// Sum of the raw weights, added in order (as the evaluator does).
   double get total => values.fold(0, (a, b) => a + b);
 
   /// These weights scaled to sum 1. Needs a non-zero [total].
@@ -91,10 +80,16 @@ class ScoreWeights {
   int get hashCode => Object.hashAll(values);
 }
 
-/// Wire names of the cut switches, by reason.
+/// Pre-2026-10-25 weights and their old defaults; they sum to the merged one.
+const Map<String, double> _legacyWeights = {
+  'coverage': 0.30,
+  'chapterCompleteness': 0.20,
+};
+
+/// Wire names of the cut switches, by reason. A subset is a graded score
+/// penalty, not a switch (the old `cuts.subset` is ignored).
 const Map<HealthReason, String> kCutWireNames = {
   HealthReason.blocking: 'blocking',
-  HealthReason.subset: 'subset',
   HealthReason.coverage: 'coverage',
   HealthReason.uptime: 'uptime',
   HealthReason.browserEngine: 'needsBrowserEngine',
@@ -207,6 +202,9 @@ const ScoringProfile defaultScoringProfile = ScoringProfile();
 double? _unit(Object? v) =>
     v is num && v.isFinite && v >= 0 && v <= 1 ? v.toDouble() : null;
 
+/// Without `completeCoverage`, the legacy `coverage` and
+/// `chapterCompleteness` (each defaulting to its old value) add up to it; a
+/// sum above 1 scales every weight down by it, keeping their ratios.
 ScoreWeights? _weights(Object? raw) {
   if (raw == null) return const ScoreWeights();
   final m = asMap(raw);
@@ -219,7 +217,18 @@ ScoreWeights? _weights(Object? raw) {
     if (v == null) return null;
     values.add(v);
   }
-  return ScoreWeights.fromValues(values);
+  if (m.containsKey(ScoreWeights.keys.first)) {
+    return ScoreWeights.fromValues(values);
+  }
+  var merged = 0.0;
+  for (final MapEntry(:key, value: old) in _legacyWeights.entries) {
+    final v = _unit(m.containsKey(key) ? m[key] : old);
+    if (v == null) return null;
+    merged += v;
+  }
+  values[0] = merged;
+  final scale = merged > 1 ? merged : 1.0;
+  return ScoreWeights.fromValues([for (final v in values) v / scale]);
 }
 
 Set<HealthReason>? _cuts(Object? raw) {
@@ -235,6 +244,7 @@ Set<HealthReason>? _cuts(Object? raw) {
   return on;
 }
 
-/// Rounds [x] to 3 places, as the evaluator does before comparing to the
-/// keep bar.
-double round3(double x) => (x * 1000).round() / 1000;
+/// Rounds [x] to 3 places from its exact binary value, halves up, exactly
+/// as the evaluator's `round3` (Decimal ROUND_HALF_UP) does before comparing
+/// to the keep bar, so near-ties land the same way on both sides.
+double round3(double x) => double.parse(x.toStringAsFixed(3));

@@ -7,14 +7,13 @@ import 'package:kartka/source_health/scoring/profile_store.dart';
 import 'package:kartka/source_health/thresholds.dart';
 
 const _weightLabels = [
-  'Coverage',
-  'Chapter completeness',
+  'Coverage (with complete chapters)',
   'Uptime',
   'Image quality',
   'Speed (latency)',
 ];
 
-/// The Scoring settings page: the weights of the five score parts, the
+/// The Scoring settings page: the weights of the four score parts, the
 /// pages-load multiplier, the keep bar and the cut switches of the active
 /// [ScoringProfile]. Edits re-score the ranking and Browse live and sync to
 /// every device and the evaluator.
@@ -71,11 +70,11 @@ class ScoringPage extends StatelessWidget {
             'A switch cuts every source its reason applies to, whatever its '
             'score. All off: the score alone decides.',
           ),
-          for (final reason in HealthReason.values)
+          for (final reason in kCutWireNames.keys)
             SwitchListTile(
               key: Key('cut-${kCutWireNames[reason]}'),
               title: Text('Cut: ${reason.label}'),
-              subtitle: Text(_cutExplanation(reason)),
+              subtitle: Text(_cutExplanations[reason]!),
               value: p.cuts.contains(reason),
               onChanged: (on) => store.save(
                 p.copyWith(
@@ -99,20 +98,19 @@ class ScoringPage extends StatelessWidget {
   );
 }
 
-String _cutExplanation(HealthReason reason) => switch (reason) {
-  HealthReason.blocking =>
-    'A Cloudflare challenge, captcha, 403 or 429 was seen.',
-  HealthReason.subset =>
-    'A better source has ${pct(HealthThresholds.subsetOverlap)} or more of '
-        'its titles.',
-  HealthReason.coverage =>
-    'Fewer than ${pct(HealthThresholds.minCoverageRatio)} of the reference '
-        'titles.',
-  HealthReason.uptime =>
-    'Fewer than ${pct(HealthThresholds.minUptimeRatio)} of the uptime '
-        'probes answered (once the window is complete).',
-  HealthReason.browserEngine => 'Its extension needs a browser engine.',
-  HealthReason.pagesNeverLoad => 'No sampled chapter loaded all its pages.',
+/// One line per cut switch ([kCutWireNames]; a subset is a graded score
+/// penalty instead, never a switch).
+final _cutExplanations = <HealthReason, String>{
+  HealthReason.blocking:
+      'A Cloudflare challenge, captcha, 403 or 429 was seen.',
+  HealthReason.coverage:
+      'Fewer than ${pct(HealthThresholds.minCoverageRatio)} of the reference '
+      'titles.',
+  HealthReason.uptime:
+      'Fewer than ${pct(HealthThresholds.minUptimeRatio)} of the uptime '
+      'probes answered (once the window is complete).',
+  HealthReason.browserEngine: 'Its extension needs a browser engine.',
+  HealthReason.pagesNeverLoad: 'No sampled chapter loaded all its pages.',
 };
 
 class _WeightRow extends StatelessWidget {

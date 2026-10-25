@@ -200,3 +200,37 @@ class PagesLoadMetric {
   @override
   int get hashCode => Object.hash(ratio, sampled);
 }
+
+/// `plugin`: the Kartka plugin that reads a plugin-origin source, and the
+/// repo index serving it (what an Install button needs).
+@immutable
+class PluginInstallRef {
+  /// Creates a reference.
+  const new({required this.repo, required this.id});
+
+  /// Parses `plugin`; null unless [json] has string `repo` and `id`.
+  static PluginInstallRef? fromJson(Object? json) {
+    final m = asMap(json);
+    final repo = m == null ? null : readString(m, 'repo');
+    final id = m == null ? null : readString(m, 'id');
+    return repo == null || id == null
+        ? null
+        : PluginInstallRef(repo: repo, id: id);
+  }
+
+  /// URL of the repo index (`index.json`) the plugin manager reads.
+  final String repo;
+
+  /// Kartka plugin id (`mangayomi-<id>`).
+  final String id;
+
+  /// The JSON block.
+  Map<String, Object?> toJson() => {'repo': repo, 'id': id};
+
+  @override
+  bool operator ==(Object other) =>
+      other is PluginInstallRef && other.repo == repo && other.id == id;
+
+  @override
+  int get hashCode => Object.hash(repo, id);
+}

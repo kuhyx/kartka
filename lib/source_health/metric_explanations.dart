@@ -123,8 +123,10 @@ List<MetricExplanation> _explainMetrics(
         'extension that needs a browser engine.',
     threshold:
         'Low-score reason above ${pct(HealthThresholds.maxChallengeRate)}: '
-        'Kartka never bypasses challenges. Needing a browser engine only '
-        'raises the "Needs browser engine" flag.',
+        'Kartka never bypasses challenges; '
+        '${pct(HealthThresholds.hardChallengeRate)} or more cuts the source '
+        'whatever its score. Needing a browser engine only raises the '
+        '"Needs browser engine" flag.',
     status: (r.blocking?.onlyBrowserEngine ?? false)
         ? MetricStatus.info
         : _below(r.blocking?.challengeRate, HealthThresholds.maxChallengeRate),
@@ -134,10 +136,12 @@ List<MetricExplanation> _explainMetrics(
     value: coverageText(r.coverage),
     meaning:
         'How many reference titles (your library backup plus the AniList '
-        'top 500) the source has.',
+        'top 500) the source has. The score counts a title only with at '
+        'least ${pct(HealthThresholds.completeChapterRatio)} of its '
+        'chapters.',
     threshold:
-        'Low-score reason below ${pct(HealthThresholds.minCoverageRatio)}. '
-        '${_weight(w.coverage)}.',
+        'Low-score reason below ${pct(HealthThresholds.minCoverageRatio)} '
+        'found. ${_weight(w.completeCoverage)}.',
     status: _atLeast(r.coverage?.ratio, HealthThresholds.minCoverageRatio),
   ),
   MetricExplanation(
@@ -146,7 +150,7 @@ List<MetricExplanation> _explainMetrics(
     meaning:
         "Chapters on the source compared with AniList's chapter count, "
         'median over sampled titles, capped at 100 %.',
-    threshold: 'Never a reason. ${_weight(w.chapterCompleteness)}.',
+    threshold: 'Never a reason. Scored as part of Coverage.',
     status: _info(r.completeness),
   ),
   MetricExplanation(
@@ -171,10 +175,11 @@ List<MetricExplanation> _explainMetrics(
               '${r.subsetOf!.sourceId}',
     meaning:
         'Whether a higher-ranked source with images at least as good '
-        'already has almost all of these titles.',
+        'already has most of these titles.',
     threshold:
-        'Low-score reason when ${pct(HealthThresholds.subsetOverlap)} or more '
-        'of its titles are on such a source.',
+        'From ${pct(HealthThresholds.subsetOverlap)} of its titles on such '
+        'a source, the score is multiplied by 1 − '
+        '${HealthThresholds.subsetPenalty} × that share.',
     status: r.subsetOf != null
         ? MetricStatus.fail
         : (r.coverage == null ? MetricStatus.unknown : MetricStatus.pass),
