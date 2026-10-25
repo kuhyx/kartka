@@ -160,3 +160,11 @@ under the line cap; same rules. Implementation notes:
   with a warning.
 - Cadence: uptime probe 4×/day; full metrics weekly; both systemd timers on
   the server host. JSON also written to `tools/source_eval/out/latest.json`.
+- **Install / Open** (2026-10-25): every Sources card and detail page has one
+  action. A source the app lists, or one with neither `pkg` nor `plugin`
+  (native, local, legacy plugins), shows Open (`/browse/source/<id>`). Else
+  Install: `pkg` through the `SuwayomiExtensionInstaller` port
+  (`updateExtension(input: {id: pkg, patch: {install: true}})` on the
+  configured server), `plugin` through `PluginRepoInstaller` (adds the repo,
+  then installs `id`). Ports: `lib/source_health/install/install_ports.dart`.
+  Failures: snackbar + diagnostics `sources.install`, URLs stripped.
