@@ -12,6 +12,7 @@ import 'dart:developer';
 
 import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show googleIdToken;
 import 'package:flutter/material.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/sync/google_client.dart';
 import 'package:kartka/sync/ui/gis_button.dart' as gis;
 
@@ -120,7 +121,7 @@ class _GisDialogState extends State<_GisDialog> {
         log(
           'Google sign-in did not complete',
           level: 900,
-          error: error,
+          error: redactUrlQueries('$error'),
           stackTrace: stackTrace,
         );
         _close(null);

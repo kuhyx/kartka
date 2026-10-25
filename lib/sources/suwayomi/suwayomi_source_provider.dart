@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/platform/image_headers.dart';
@@ -109,7 +110,7 @@ class SuwayomiSourceProvider
       log(
         'Suwayomi sources fetch failed',
         name: 'kartka.suwayomi',
-        error: e,
+        error: redactUrlQueries('$e'),
         stackTrace: st,
         level: 900,
       );

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/tracking/anilist/anilist_api.dart';
 import 'package:kartka/tracking/anilist/anilist_auth.dart';
@@ -38,7 +39,8 @@ KartkaFeature trackingFeature(KartkaEnv env) {
         env.registry.maybe<LibraryRepositories>()?.progress ??
         (throw StateError('tracking needs the library part')),
     resolver: () => env.registry.maybe<ChapterUrlResolver>(),
-    onError: (e) => developer.log('$e', name: 'kartka.tracking'),
+    onError: (e) =>
+        developer.log(redactUrlQueries('$e'), name: 'kartka.tracking'),
   );
   // The registry is complete once every factory ran; start right after.
   scheduleMicrotask(() => unawaited(service.start()));

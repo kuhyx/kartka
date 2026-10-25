@@ -12,6 +12,7 @@ library;
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/platform/key_value_store.dart';
 import 'package:kartka/sync/merge/merge_rules.dart';
@@ -210,7 +211,12 @@ class SyncedSettings implements SettingsSync {
     } on Object catch (e, st) {
       // Any failure (an Error too) must not wedge later changes: one
       // escaping here would leave `_queue` failed and skip every later job.
-      log('settings sync step failed', error: e, stackTrace: st, level: 900);
+      log(
+        'settings sync step failed',
+        error: redactUrlQueries('$e'),
+        stackTrace: st,
+        level: 900,
+      );
     }
   });
 }
