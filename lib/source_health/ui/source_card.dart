@@ -5,6 +5,7 @@ import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/labels.dart';
 import 'package:kartka/source_health/metric_text.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
+import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
 
 /// Opens the detail page of the source with this id.
@@ -18,7 +19,7 @@ class SourceCard extends StatelessWidget {
     required this.record,
     required this.onOpen,
     required this.nameOf,
-    this.keepScore = 0.90,
+    this.keepScore = kDefaultKeepScore,
   }) : super(key: ValueKey('source-${record.id}'));
 
   /// The active profile's keep bar, for the "kept despite" heading.

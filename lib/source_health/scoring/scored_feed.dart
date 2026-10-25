@@ -16,11 +16,12 @@ typedef _Snapshot = (List<SourceHealthRecord>, SourceHealthMeta?);
 
 /// A base feed under the profile of a store.
 ///
-/// Records the evaluator already judged with the active profile (its meta
-/// says so; a run without one used DEFAULT) pass through untouched, so
-/// under DEFAULT the published ranking is exactly what is shown. Otherwise
-/// they are re-scored, and the meta's verdict totals are recounted. Records
-/// and meta share one subscription to the base feed.
+/// Records the evaluator already judged with the active profile pass through
+/// untouched (its meta says so; a pre-profile run has neither meta.profile
+/// nor defaultScore and used DEFAULT), so under DEFAULT the published ranking
+/// is exactly what is shown. Otherwise they are re-scored, and the meta's
+/// verdict totals are recounted. Records and meta share one subscription to
+/// the base feed.
 class ScoredHealthFeed implements SourceHealthFeed {
   /// Re-scores the base feed with the store's profile.
   new(this._base, this._store);
@@ -95,8 +96,15 @@ class ScoredHealthFeed implements SourceHealthFeed {
     SourceHealthMeta? meta,
     ScoringProfile profile,
   ) {
-    final judged = meta?.profile ?? defaultScoringProfile;
-    if (judged == profile) return (records, meta);
+    final judged = meta?.profile;
+    // A run without meta.profile is a pre-profile run (DEFAULT) only when no
+    // record carries defaultScore; otherwise the meta is just not read yet.
+    final published =
+        judged == profile ||
+        (judged == null &&
+            profile.isDefault &&
+            records.every((r) => r.defaultScore == null));
+    if (published) return (records, meta);
     final rescored = rescore(records, profile);
     return (rescored, meta?.withVerdicts(countVerdicts(rescored)));
   }

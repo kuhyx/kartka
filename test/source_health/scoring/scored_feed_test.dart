@@ -30,19 +30,24 @@ class _Feed implements SourceHealthFeed {
   }
 }
 
-SourceHealthRecord rec(String id, {double coverage = 1, String? verdict}) =>
-    SourceHealthRecord.fromJson({
-      'id': id,
-      'coverage': {'ratio': coverage},
-      'chapterCompleteness': {'medianRatio': 1},
-      'uptime': {'ratio': 1, 'status': 'final'},
-      'imageQuality': {'medianWidthPx': 1400},
-      'latencyMs': {'p95': 0},
-      'blocking': {'challengeRate': 0},
-      'score': 0.123,
-      'rank': 7,
-      'verdict': verdict ?? 'cut',
-    })!;
+SourceHealthRecord rec(
+  String id, {
+  double coverage = 1,
+  String? verdict,
+  double? defaultScore,
+}) => SourceHealthRecord.fromJson({
+  'id': id,
+  'coverage': {'ratio': coverage},
+  'chapterCompleteness': {'medianRatio': 1},
+  'uptime': {'ratio': 1, 'status': 'final'},
+  'imageQuality': {'medianWidthPx': 1400},
+  'latencyMs': {'p95': 0},
+  'blocking': {'challengeRate': 0},
+  'score': 0.123,
+  'rank': 7,
+  'verdict': verdict ?? 'cut',
+  'defaultScore': ?defaultScore,
+})!;
 
 const _onlyCoverage = ScoringProfile(
   weights: ScoreWeights(
@@ -145,6 +150,17 @@ void main() {
       await sub.cancel();
     },
   );
+
+  test('defaultScore without a meta yet is re-scored, not trusted', () async {
+    // E.g. DEFAULT after a custom-profile run, with the meta not read yet.
+    final out = <List<SourceHealthRecord>>[];
+    final sub = feed.watch().listen(out.add);
+    base.records.add([rec('a', defaultScore: 0.2)]);
+    await pumpEventQueue();
+    expect(out.last.single.score, 1.0);
+    expect(out.last.single.defaultScore, 1.0);
+    await sub.cancel();
+  });
 
   test('read errors reach the listener; meta errors are dropped', () async {
     final errors = <Object>[];
