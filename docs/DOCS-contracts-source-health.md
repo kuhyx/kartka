@@ -96,6 +96,16 @@ under the line cap; same rules. Implementation notes:
   found titles) under the profile it ran with; the app never recomputes it,
   it re-scores, re-ranks (score, then origin native < suwayomi < plugin, then
   id) and re-judges from the published metrics and `cutReasons`.
+- **App** (2026-10-25): Sources has a "Scoring" button opening the Scoring
+  page: a slider per weight (0 = off) with its share after normalisation, an
+  "Only this" button per weight (zeroes the others; a zero weight becomes 1),
+  the pages-load switch, the keep-bar slider, one switch per cut reason, and
+  "Reset to evaluator defaults". Weights cannot all reach 0 (the slider
+  snaps back). The profile is the synced setting above, so every device
+  shares it. A `ScoredHealthFeed` re-scores the published records with it
+  (unchanged when the run's `meta.profile` already equals it), so the
+  Sources ranking, its counts and Browse's badges all follow it live. A
+  card shows `default 0.85` next to a custom score that reads differently.
 - **As built** (evaluator, 2026-10-24): every record also carries
   `availability: {native, mangayomiJs, keiyoushi}` (bools: where else the
   source can be read). `blocking.kinds` may also list `webview` (the extension

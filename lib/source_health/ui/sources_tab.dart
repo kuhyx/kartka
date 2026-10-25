@@ -4,10 +4,13 @@ import 'package:kartka/source_health/feed/source_health_feed.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ranking.dart';
+import 'package:kartka/source_health/scoring/profile.dart';
+import 'package:kartka/source_health/scoring/profile_store.dart';
 import 'package:kartka/source_health/ui/counts_header.dart';
 import 'package:kartka/source_health/ui/filter_bar.dart';
 import 'package:kartka/source_health/ui/freshness_banner.dart';
 import 'package:kartka/source_health/ui/query_bar.dart';
+import 'package:kartka/source_health/ui/scoring_page.dart';
 import 'package:kartka/source_health/ui/source_card.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
 
@@ -15,10 +18,18 @@ import 'package:kartka/source_health/ui/source_detail_page.dart';
 /// sortable and filterable, live from [feed].
 class SourcesTab extends StatefulWidget {
   /// Creates the tab; [clock] is injectable for the stale check.
-  const new({required this.feed, this.clock = DateTime.now, super.key});
+  const new({
+    required this.feed,
+    this.scoring,
+    this.clock = DateTime.now,
+    super.key,
+  });
 
-  /// Source of the ranking.
+  /// Source of the ranking (already scored with the active profile).
   final SourceHealthFeed feed;
+
+  /// The active scoring profile; when set, a Scoring button opens its page.
+  final ScoringProfileStore? scoring;
 
   /// Current time.
   final DateTime Function() clock;
@@ -40,6 +51,9 @@ class _SourcesTabState extends State<SourcesTab> {
     _search.dispose();
     super.dispose();
   }
+
+  ScoringProfile get _profile =>
+      widget.scoring?.profile.value ?? defaultScoringProfile;
 
   void _setSearch(String text) =>
       setState(() => _query = _query.copyWith(search: text));
@@ -92,6 +106,7 @@ class _SourcesTabState extends State<SourcesTab> {
             record: target,
             all: records,
             now: widget.clock(),
+            profile: _profile,
           ),
         ),
       );
@@ -122,6 +137,7 @@ class _SourcesTabState extends State<SourcesTab> {
             spacing: AppSpacing.sm,
             children: [
               _searchField(),
+              if (widget.scoring case final store?) _scoringButton(store),
               CountsHeader(records: records, meta: meta, showing: shown.length),
             ],
           ),
@@ -137,12 +153,28 @@ class _SourcesTabState extends State<SourcesTab> {
                     record: shown[i - header.length],
                     onOpen: open,
                     nameOf: nameOf,
+                    keepScore: _profile.keepScore,
                   ),
           ),
         ),
       ],
     );
   }
+
+  Widget _scoringButton(ScoringProfileStore store) => Align(
+    alignment: Alignment.centerLeft,
+    child: ValueListenableBuilder<ScoringProfile>(
+      valueListenable: store.profile,
+      builder: (context, p, _) => OutlinedButton.icon(
+        key: const Key('open-scoring'),
+        icon: const Icon(Icons.tune),
+        label: Text('Scoring · ${p.name}'),
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (_) => ScoringPage(store: store)),
+        ),
+      ),
+    ),
+  );
 
   Widget _searchField() => TextField(
     key: const Key('search'),

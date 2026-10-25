@@ -33,6 +33,7 @@ import 'package:kartka/source_health/ui/freshness_banner.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/metric_tile.dart';
 import 'package:kartka/source_health/ui/query_bar.dart';
+import 'package:kartka/source_health/ui/scoring_page.dart';
 import 'package:kartka/source_health/ui/skipped_page.dart';
 import 'package:kartka/source_health/ui/source_card.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
