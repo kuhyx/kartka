@@ -1,13 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
-
-/// The word shown for a verdict.
-String verdictLabel(HealthVerdict v) => switch (v) {
-  HealthVerdict.keep => 'Keep',
-  HealthVerdict.cut => 'Cut',
-  HealthVerdict.pending => 'Pending',
-};
+import 'package:kartka/source_health/labels.dart';
 
 /// The status fill for a verdict: keep = success, cut = danger,
 /// pending = warning.

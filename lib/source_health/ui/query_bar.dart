@@ -1,17 +1,8 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
+import 'package:kartka/source_health/labels.dart';
 import 'package:kartka/source_health/ranking.dart';
-import 'package:kartka/source_health/ui/health_badge.dart';
-
-/// Display name of a §5 origin.
-String originLabel(String origin) => switch (origin) {
-  'native' => 'Native',
-  'suwayomi' => 'Suwayomi',
-  'plugin' => 'JS plugin',
-  'local' => 'Local',
-  _ => origin,
-};
 
 /// Sort, direction and verdict/lang/origin filters for the ranking.
 class QueryBar extends StatelessWidget {

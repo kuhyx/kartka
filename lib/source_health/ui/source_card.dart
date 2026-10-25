@@ -2,10 +2,10 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/source_health/cut_reasons.dart';
 import 'package:kartka/source_health/format.dart';
+import 'package:kartka/source_health/labels.dart';
 import 'package:kartka/source_health/metric_text.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
-import 'package:kartka/source_health/ui/query_bar.dart';
 
 /// Opens the detail page of the source with this id.
 typedef OpenSource = void Function(String sourceId);

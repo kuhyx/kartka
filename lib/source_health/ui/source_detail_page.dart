@@ -2,6 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kartka/source_health/cut_reasons.dart';
+import 'package:kartka/source_health/labels.dart';
 import 'package:kartka/source_health/metric_explanations.dart';
 import 'package:kartka/source_health/metric_text.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
@@ -9,7 +10,6 @@ import 'package:kartka/source_health/score_breakdown.dart';
 import 'package:kartka/source_health/ui/freshness_banner.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/metric_tile.dart';
-import 'package:kartka/source_health/ui/query_bar.dart';
 
 /// One source's evaluation: verdict, cut reasons, every metric with what it
 /// means and its threshold, and the score breakdown. Escape goes back.

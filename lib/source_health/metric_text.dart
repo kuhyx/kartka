@@ -73,3 +73,10 @@ String availabilityText(AvailabilityMetric? a) {
   ];
   return names.isEmpty ? 'none' : names.join(' · ');
 }
+
+/// `92 % of 25 sampled`: pages that loaded / pages sampled; `— of 25
+/// sampled` when the ratio could not be measured.
+String pagesLoadText(PagesLoadMetric? p) {
+  if (p == null) return notMeasured;
+  return '${pctOrDash(p.ratio)} of ${p.sampled ?? '?'} sampled';
+}

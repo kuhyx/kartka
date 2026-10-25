@@ -3,7 +3,10 @@ library;
 
 import 'package:flutter/foundation.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
+import 'package:kartka/source_health/fuzzy_match.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
+import 'package:kartka/source_health/reason_filter.dart';
+import 'package:kartka/source_health/search_text.dart';
 import 'package:kartka/source_health/thresholds.dart';
 
 /// A column the ranking can be sorted by. Each sorts best-first by default.
@@ -65,16 +68,21 @@ enum HealthSort {
   };
 }
 
-/// What the ranking shows: one sort plus verdict/lang/origin filters.
+/// What the ranking shows: one sort, a fuzzy search and verdict / lang /
+/// origin / reason / minimum-score filters, all ANDed together.
 @immutable
 class HealthQuery {
-  /// Creates a query; empty [verdicts] and null [lang]/[origin] mean "all".
+  /// Creates a query; empty [verdicts]/[reasons]/[search], null
+  /// [lang]/[origin] and a zero [minScore] mean "all".
   const new({
     this.sort = HealthSort.rank,
     this.reversed = false,
     this.verdicts = const {},
     this.lang,
     this.origin,
+    this.search = '',
+    this.reasons = const {},
+    this.minScore = 0,
   });
 
   /// Sort column.
@@ -92,6 +100,15 @@ class HealthQuery {
   /// Origin to show; null shows all.
   final String? origin;
 
+  /// Fuzzy search text; blank shows all. Matches rank by quality first.
+  final String search;
+
+  /// Reasons to show (any of them); empty shows all.
+  final Set<HealthReason> reasons;
+
+  /// Lowest evaluator score shown; above 0 an unscored source is hidden.
+  final double minScore;
+
   /// A copy with the given fields replaced.
   HealthQuery copyWith({
     HealthSort? sort,
@@ -99,6 +116,9 @@ class HealthQuery {
     Set<HealthVerdict>? verdicts,
     String? lang,
     String? origin,
+    String? search,
+    Set<HealthReason>? reasons,
+    double? minScore,
     bool clearLang = false,
     bool clearOrigin = false,
   }) => HealthQuery(
@@ -107,18 +127,41 @@ class HealthQuery {
     verdicts: verdicts ?? this.verdicts,
     lang: clearLang ? null : lang ?? this.lang,
     origin: clearOrigin ? null : origin ?? this.origin,
+    search: search ?? this.search,
+    reasons: reasons ?? this.reasons,
+    minScore: minScore ?? this.minScore,
   );
 
-  /// [records] filtered and sorted; ties break by name, then id.
+  /// [records] filtered and sorted. With a search, better matches come
+  /// first and the sort only breaks ties; then name, then id. One
+  /// comparator, because Dart's sort is not stable.
   List<SourceHealthRecord> apply(List<SourceHealthRecord> records) {
-    final shown = records.where(_matches).toList()..sort(_compare);
-    return shown;
+    final query = FuzzyQuery(search);
+    final names = {for (final r in records) r.id: r.name};
+    final scored = <(SourceHealthRecord, double)>[];
+    for (final r in records.where(_matches)) {
+      final text = query.isEmpty
+          ? null
+          : searchTextOf(r, nameOf: (id) => names[id]);
+      final s = text == null ? 1.0 : query.score(text.primary, text.secondary);
+      if (s != null) scored.add((r, s));
+    }
+    scored.sort((a, b) {
+      final byMatch = b.$2.compareTo(a.$2);
+      return byMatch != 0 ? byMatch : _compare(a.$1, b.$1);
+    });
+    return [for (final (r, _) in scored) r];
   }
 
   bool _matches(SourceHealthRecord r) =>
       (verdicts.isEmpty || verdicts.contains(r.verdict)) &&
       (lang == null || r.lang == lang) &&
-      (origin == null || r.origin == origin);
+      (origin == null || r.origin == origin) &&
+      (reasons.isEmpty || reasonsOf(r).any(reasons.contains)) &&
+      (minScore <= 0 || (r.score ?? -1) >= minScore - _scoreSlack);
+
+  // Slider steps are sums of 0.05, so 0.85 can arrive as 0.8500000000000001.
+  static const double _scoreSlack = 1e-9;
 
   int _compare(SourceHealthRecord a, SourceHealthRecord b) {
     final ka = sort.keyOf(a);
