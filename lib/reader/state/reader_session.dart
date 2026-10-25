@@ -188,7 +188,13 @@ class ReaderSession extends ChangeNotifier {
       segment = 0;
       page = 0;
     } else {
+      final from = segment;
       segment = slot.isPage ? slot.segment : segments.length - 1;
+      // A fast scroll can skip a short last page: chapters left behind
+      // going forward were read through, so their recorders see the end.
+      for (var k = from; k < segment; k++) {
+        segments[k].recorder.onPage(segments[k].pages.length - 1);
+      }
       page = slot.index ?? segments.last.pages.length - 1;
       segments[segment].recorder.onPage(page);
     }

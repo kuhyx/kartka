@@ -33,7 +33,11 @@ echo "$*" >>"$STUB_DIR/calls"
 shift 2
 case "$1" in
     get-state) echo "$STUB_STATE" ;;
-    shell) [[ -f "$STUB_DIR/phone.jsonl" ]] ;;
+    shell)
+        [[ -f "$STUB_DIR/phone.jsonl" ]] && exit 0
+        echo "ls: $3: Permission denied"
+        exit 1
+        ;;
     pull) cp "$STUB_DIR/phone.jsonl" "$3$(basename "$2")" ;;
     *) exit 2 ;;
 esac
@@ -85,6 +89,7 @@ test_no_log_yet() {
     setup
     if run_script >/dev/null; then fail "missing log should fail"; fi
     grep -q "no log on the phone yet" "$SANDBOX/stderr" || fail "no-log message"
+    grep -q "Permission denied" "$SANDBOX/stderr" || fail "adb's reason dropped"
     grep -q " pull " "$SANDBOX/calls" && fail "pulled a missing file"
     return 0
 }

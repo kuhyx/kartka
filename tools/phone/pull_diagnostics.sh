@@ -31,8 +31,11 @@ main() {
     command -v adb >/dev/null || die "adb not found (pacman -S android-tools)"
     [[ "$(phone get-state 2>/dev/null || true)" == device ]] ||
         die "device $ADB_SERIAL not connected (adb devices)"
-    phone shell ls "$REMOTE" >/dev/null 2>&1 ||
-        die "no log on the phone yet ($REMOTE); kartka writes it on the first failure"
+    # adb shell prints ls errors on stdout; "Permission denied" here would
+    # mean this Android blocks adb from Android/data, not a missing log.
+    local why
+    why="$(phone shell ls "$REMOTE" 2>&1)" ||
+        die "no log on the phone yet ($REMOTE): ${why:-not found}; kartka writes it on the first failure"
     local dest
     dest="$DEST_ROOT/$(date -u +%Y%m%dT%H%M%SZ)"
     mkdir -p "$dest"

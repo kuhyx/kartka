@@ -102,6 +102,13 @@ wrapper files on web), `KeyValueStore`, `FilePicker` (CBZ import),
 `OAuthRedirect` (Android deep link `kartka://oauth`, web
 `http://127.0.0.1:<wrapperPort>/oauth`).
 
+`KartkaPlatform.diagnostics` is a `BlobStore` a PC can pull: the Android
+app-specific external files dir (`adb pull`, no root), the wrapper's
+`/files` root on web. Every part logs through the one shared
+`DiagnosticsLog.of(platform.diagnostics)` (`lib/core/diagnostics/`):
+redacted JSON lines, rolling at 1 MB / 2000 entries, at
+`diagnostics/kartka-diagnostics.jsonl`. Pull: `tools/phone/pull_diagnostics.sh`.
+
 ## 8. Repositories (`lib/core/repositories/`, interfaces written by foundation; local impls by library part)
 
 ```dart

@@ -146,6 +146,18 @@ void main() {
     expect(s.strip.pageCounts, [5, 3]);
   });
 
+  test('a fling past a chapter end still marks that chapter read', () async {
+    final s = await opened(_Source());
+    s.onItem(4);
+    await idle();
+    expect(s.strip.pageCounts, [5, 3]);
+    s.onItem(7);
+    await idle();
+    expect(s.segment, 1);
+    expect(f.progress.markedRead, ['/c/2']);
+    s.dispose();
+  });
+
   test('an empty next chapter is a failure', () async {
     final s = await opened(_Source(next: () async => const []));
     s.onItem(6);
