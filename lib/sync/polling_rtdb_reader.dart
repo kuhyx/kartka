@@ -44,6 +44,9 @@ class PollingRtdbReader implements RtdbReader {
         controller.add(value);
       } on Exception catch (e, s) {
         // Surface the failure, keep polling: the next tick may succeed.
+        // Forget the last value so that success re-emits even when the
+        // data is unchanged; otherwise the error would stick on screen.
+        last = null;
         if (!controller.isClosed) controller.addError(e, s);
       }
     }

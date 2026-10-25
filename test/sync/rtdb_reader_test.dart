@@ -79,5 +79,29 @@ void main() {
       expect(values, [1]);
       await sub.cancel().timeout(_cap);
     });
+
+    test('an error does not stick: the same value re-emits after it', () async {
+      final db = InMemoryRtdb({'a': 1});
+      final r = PollingRtdbReader(
+        () async => db,
+        interval: const Duration(milliseconds: 10),
+      );
+      final events = <String>[];
+      final sub = r
+          .watch('a')
+          .listen(
+            (v) => events.add('data $v'),
+            onError: (Object _) {
+              if (events.last != 'error') events.add('error');
+            },
+          );
+      await Future<void>.delayed(const Duration(milliseconds: 25));
+      db.failWith = FirebaseSyncError('x');
+      await Future<void>.delayed(const Duration(milliseconds: 25));
+      db.failWith = null;
+      await Future<void>.delayed(const Duration(milliseconds: 25));
+      expect(events, ['data 1', 'error', 'data 1']);
+      await sub.cancel().timeout(_cap);
+    });
   });
 }
