@@ -3,20 +3,21 @@
 /// Local writes merge into the `SyncShadow` and are pushed at once (or, for
 /// [SyncEngine.writeDeferred], within a few seconds), publishing a revision
 /// and change-feed entry in the same atomic update (`sync_feed.dart`).
-/// [SyncEngine.poll] reads only `revs/`, then the feed, then just the changed
-/// nodes. Every pulled node is merged with the shadow, changes are emitted on
-/// [SyncEngine.remoteChanges], and anything the remote is behind on is pushed
-/// back, which also heals a write lost to a concurrent PATCH of one node.
+/// [SyncEngine.poll] reads `revs/`, the feed, then only changed nodes; each
+/// is merged with the shadow and emitted on [SyncEngine.remoteChanges], and
+/// what the remote lacks is pushed back (healing a PATCH lost to a race).
 library;
 
 import 'dart:async';
 
 import 'package:crdt_sync/crdt_sync.dart' show Hlc, RemoteSyncError;
+import 'package:kartka/core/diagnostics/diagnostics_log.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/sync/merge/merge_rules.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/sync_feed.dart';
 import 'package:kartka/sync/sync_namespaces.dart';
+import 'package:kartka/sync/sync_queue.dart';
 import 'package:kartka/sync/sync_shadow.dart';
 import 'package:kartka/sync/sync_status.dart';
 
@@ -31,7 +32,9 @@ class SyncEngine {
     required this.open,
     DateTime Function()? now,
     this.deferFor = const Duration(seconds: 3),
-  }) : _now = now ?? DateTime.now;
+    DiagnosticsLog? diagnostics,
+  }) : _now = now ?? DateTime.now,
+       _queue = SyncQueue(now ?? DateTime.now, diagnostics: diagnostics);
 
   /// Persisted state.
   final SyncShadow shadow;
@@ -55,7 +58,7 @@ class SyncEngine {
   );
   RtdbTransport? _transport;
   Timer? _deferred;
-  Future<void> _queue = Future.value();
+  final SyncQueue _queue;
 
   /// Nodes changed by merging in a peer's writes.
   Stream<RemoteChange> get remoteChanges => _changes.stream;
@@ -82,29 +85,29 @@ class SyncEngine {
   Future<void> write(String path, Node node) => writeAll({path: node});
 
   /// Merges every node in [nodes] and pushes them in one atomic update.
-  Future<void> writeAll(Map<String, Node> nodes) => _serial(() async {
+  Future<void> writeAll(Map<String, Node> nodes) => _queue.run(() async {
     if (await _mergeLocal(nodes)) await _push(await _connect());
   });
 
   /// Like [write], but the push waits up to [deferFor], so a burst (page
   /// turns) costs one push. [flush] sends it early (chapter change, pause).
-  Future<void> writeDeferred(String path, Node node) => _serial(() async {
+  Future<void> writeDeferred(String path, Node node) => _queue.run(() async {
     if (!await _mergeLocal({path: node})) return;
     _deferred ??= Timer(deferFor, () => unawaited(flush()));
   });
 
   /// Pushes anything [writeDeferred] is holding back.
-  Future<void> flush() => _serial(() async {
+  Future<void> flush() => _queue.run(() async {
     _deferred?.cancel();
     _deferred = null;
     await _push(await _connect());
   });
 
   /// Cheap change check: revs, then the feed, then only changed nodes.
-  Future<void> poll() => _serial(() => _sync(force: false));
+  Future<void> poll() => _queue.run(() => _sync(force: false));
 
   /// Full pull + push regardless of revisions (the "Sync now" button).
-  Future<void> syncNow() => _serial(() => _sync(force: true));
+  Future<void> syncNow() => _queue.run(() => _sync(force: true));
 
   /// Records that a decorator replayed [path] into its local repository.
   void ack(String path) => shadow.ack(path);
@@ -237,9 +240,6 @@ class SyncEngine {
     _current = s;
     _status.add(s);
   }
-
-  Future<void> _serial(Future<void> Function() job) =>
-      _queue = _queue.then((_) => job());
 
   /// Cancels the deferred push timer and closes the streams.
   Future<void> dispose() async {

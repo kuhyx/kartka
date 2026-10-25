@@ -24,6 +24,7 @@ import 'package:kartka/sync/sync_engine.dart';
 import 'package:kartka/sync/sync_feature.dart';
 import 'package:kartka/sync/sync_feed.dart';
 import 'package:kartka/sync/sync_namespaces.dart';
+import 'package:kartka/sync/sync_queue.dart';
 import 'package:kartka/sync/sync_runtime.dart';
 import 'package:kartka/sync/sync_scheduler.dart';
 import 'package:kartka/sync/sync_shadow.dart';

@@ -6,6 +6,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/core/diagnostics/diagnostics_log.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/sync/decorators/sync_repository_decorator.dart';
 import 'package:kartka/sync/decorators/synced_bindings.dart';
@@ -26,6 +27,7 @@ KartkaFeature syncFeature(KartkaEnv env) {
   final runtime = SyncRuntime(
     kv: env.platform.kv,
     openTransport: () => openFirebaseTransport(env.platform.http),
+    diagnostics: DiagnosticsLog.of(env.platform.diagnostics),
   );
   return syncFeatureWith(
     runtime,

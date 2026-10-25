@@ -8,6 +8,7 @@ import 'package:crdt_sync/crdt_sync.dart'
     show FirebaseRestClient, FirebaseSyncError, RemoteSyncError;
 import 'package:crdt_sync_flutter/crdt_sync_flutter.dart'
     show loadDeviceIdentity;
+import 'package:kartka/core/diagnostics/diagnostics_log.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/key_value_store.dart';
 import 'package:kartka/sync/firebase_transport.dart';
@@ -50,6 +51,7 @@ class SyncRuntime {
     required this.openTransport,
     Future<String> Function()? deviceId,
     this.startScheduler = true,
+    this.diagnostics,
   }) : _deviceId = deviceId ?? _persistedDeviceId;
 
   /// Where the shadow lives.
@@ -57,6 +59,9 @@ class SyncRuntime {
 
   /// Opens a transport (signed in) or returns null (signed out).
   final Future<RtdbTransport?> Function() openTransport;
+
+  /// Where the engine logs failures that are not sync errors (§7).
+  final DiagnosticsLog? diagnostics;
 
   /// Whether starting the engine also starts foreground polling.
   final bool startScheduler;
@@ -92,6 +97,7 @@ class SyncRuntime {
       shadow: await SyncShadow.load(kv),
       deviceId: await _deviceId(),
       open: transport,
+      diagnostics: diagnostics,
     );
     if (startScheduler) {
       scheduler = SyncScheduler(e.poll, onPause: e.flush)..attach();
