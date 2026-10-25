@@ -10,6 +10,7 @@ import 'package:kartka/browse/browse_feature.dart';
 import 'package:kartka/downloads/downloads_feature.dart';
 import 'package:kartka/library/library_feature.dart';
 import 'package:kartka/migration/migration_feature.dart';
+import 'package:kartka/perf/perf_feature.dart';
 import 'package:kartka/plugins/mangayomi/mangayomi_feature.dart';
 import 'package:kartka/plugins/runtime/plugins_feature.dart';
 import 'package:kartka/reader/reader_feature.dart';
@@ -43,4 +44,5 @@ final List<KartkaFeatureFactory> kartkaFeatureFactories = [
   malFeature,
   mangaUpdatesFeature,
   migrationFeature,
+  perfFeature,
 ];

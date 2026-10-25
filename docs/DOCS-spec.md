@@ -56,6 +56,7 @@ lib/tracking/       anilist/  mal/  common/
 lib/backup_import/  .tachibk decoder + mapper
 lib/source_health/  ranking screen, badges, RTDB reader
 lib/migration/      move library entries to Atsumaru (review, backup, apply)
+lib/perf/           per-screen jank tracker → diagnostics log, More → Performance
 desktop/            local wrapper server (static web build + /proxy + files)
 tools/source_eval/  Python evaluator (probe, metrics, publish)
 deploy/suwayomi/    server install
