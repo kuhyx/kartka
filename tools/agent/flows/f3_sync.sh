@@ -25,17 +25,34 @@ source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
 readonly AGENT="$AGENT_DIR/kartka_agent.sh"
 readonly POLL_SEC=10
 
+# Signed in with synced secrets it cannot open, the Sync screen asks for the
+# sync passphrase once per visit (§16); its modal hides the screen from
+# `tree`. Cancel it: the flow never types a credential.
+dismiss_passphrase_prompt() {
+  drive wait "Set sync passphrase" --timeout "$1" >/dev/null 2>&1 || return 0
+  check drive tap Cancel >/dev/null
+}
+
 open_sync_screen() {
+  dismiss_passphrase_prompt 1
   pop_to_tabs
   check drive tap More >/dev/null
-  drive wait "Sync now" --timeout 1 >/dev/null 2>&1 && return 0
-  check drive wait "Sync" --timeout 5 >/dev/null
-  check drive tap "Sync" >/dev/null
+  if ! drive wait "Sync now" --timeout 1 >/dev/null 2>&1; then
+    check drive wait "Sync" --timeout 5 >/dev/null
+    check drive tap "Sync" >/dev/null
+  fi
+  dismiss_passphrase_prompt 2
   check drive wait "Sync now" --timeout 5 >/dev/null
 }
 
+# Polls against a deadline of $1 s so a prompt raised mid-wait is dismissed.
 signed_in() {
-  drive wait "Account (sign out)" --timeout "$1" >/dev/null 2>&1
+  local end=$((SECONDS + $1))
+  while ((SECONDS < end)); do
+    drive wait "Account (sign out)" --timeout 1 >/dev/null 2>&1 && return 0
+    dismiss_passphrase_prompt 1
+  done
+  return 1
 }
 
 sign_in() {

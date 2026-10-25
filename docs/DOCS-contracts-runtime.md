@@ -223,6 +223,9 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   (`KartkaWrapper.syncCredentialsPath`). It is an API route (`x-kartka: 1`,
   the Host check, no CORS). The first valid GET of a launch gets
   `{id_token, refresh_token, expires_at[, email]}`, and later ones get 410.
+  Every reply is `no-store` and the app's wrapper requests send
+  `cache-control: no-cache`: Chromium keeps a 410 with no explicit freshness
+  fresh forever, which hid later launches' seeds.
   A refused, missing or malformed read gets 403/421/405/404, consumes
   nothing, and logs only the path. Without the flag the path is a plain
   404, so kuhy's window keeps Google sign-in. Only `tools/agent` passes the

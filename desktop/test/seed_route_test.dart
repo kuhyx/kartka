@@ -32,6 +32,24 @@ void main() {
     expect((await h.call('GET', syncCredentialsPath)).status, 410);
   });
 
+  // Chromium keeps a 410 without explicit freshness fresh forever, so a
+  // cacheable "gone" from one launch hid every later launch's seed.
+  test('every reply of the route is no-store, 410/404/405 too', () async {
+    h = await Harness.start(seed: jsonEncode(_seed));
+    final refused = await h.call('POST', syncCredentialsPath);
+    expect(refused.status, 405);
+    expect(refused.headers.value('cache-control'), 'no-store');
+    await h.call('GET', syncCredentialsPath);
+    final gone = await h.call('GET', syncCredentialsPath);
+    expect(gone.status, 410);
+    expect(gone.headers.value('cache-control'), 'no-store');
+    await h.close();
+    h = await Harness.start(seedFile: true, log: (_) {});
+    final missing = await h.call('GET', syncCredentialsPath);
+    expect(missing.status, 404);
+    expect(missing.headers.value('cache-control'), 'no-store');
+  });
+
   test('passes only the session fields (and a string email)', () async {
     h = await Harness.start(
       seed: jsonEncode({..._seed, 'email': 7, 'other': 'x'}),

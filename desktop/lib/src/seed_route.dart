@@ -24,6 +24,10 @@ class SeedRoute {
   /// cannot both pass the [_served] check.
   void handle(HttpRequest request) {
     final response = request.response;
+    // Every reply, not just the 200: Chromium keeps a 410 that carries no
+    // explicit freshness fresh forever, so one cached "gone" in a persistent
+    // profile hid every later launch's seed without asking the wrapper.
+    response.headers.set('cache-control', 'no-store');
     if (request.method != 'GET') {
       response.statusCode = HttpStatus.methodNotAllowed;
       return;
@@ -38,9 +42,7 @@ class SeedRoute {
       return;
     }
     _served = true;
-    response.headers
-      ..contentType = ContentType.json
-      ..set('cache-control', 'no-store');
+    response.headers.contentType = ContentType.json;
     response.write(body);
   }
 

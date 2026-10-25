@@ -63,10 +63,11 @@ class SyncAccess {
       crdt.openSync(app, httpClient: client);
 }
 
-/// Adds `x-kartka: 1` to requests for [origin] only.
+/// Adds `x-kartka: 1` and `cache-control: no-cache` to requests for
+/// [origin] only.
 ///
-/// The same client carries Firebase's token and RTDB calls; a custom header
-/// on those would force a CORS preflight Google does not grant.
+/// The same client carries Firebase's token and RTDB calls; a non-safelisted
+/// header on those would force a CORS preflight Google does not grant.
 class WrapperApiClient extends http.BaseClient {
   /// Wraps [_inner] for the wrapper at [origin].
   new(this._inner, this.origin);
@@ -83,6 +84,10 @@ class WrapperApiClient extends http.BaseClient {
         url.host == origin.host &&
         url.port == origin.port) {
       request.headers[KartkaWrapper.apiHeader] = '1';
+      // Chromium bypasses its HTTP cache for this request header. A 410
+      // cached by an older wrapper stays fresh forever in a persistent
+      // profile, so without it the page never asked a fresh wrapper.
+      request.headers['cache-control'] = 'no-cache';
     }
     return _inner.send(request);
   }

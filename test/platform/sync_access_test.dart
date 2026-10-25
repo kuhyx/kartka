@@ -117,6 +117,15 @@ void main() {
       null,
       null,
     ]);
+    // Bypasses a stale browser-cached reply (a 410 Chromium keeps forever);
+    // never on Firebase, where a non-safelisted header forces a preflight.
+    expect(seen.map((r) => r.headers['cache-control']), [
+      'no-cache',
+      null,
+      null,
+      null,
+      null,
+    ]);
     client.close();
   });
 }
