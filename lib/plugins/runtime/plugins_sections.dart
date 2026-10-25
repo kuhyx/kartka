@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/plugins/runtime/plugin_index.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
@@ -84,8 +85,11 @@ class AvailableList extends StatelessWidget {
         for (final e in result.errors.entries)
           ListTile(
             leading: Icon(Icons.error_outline, color: error),
-            title: Text(e.key, overflow: TextOverflow.ellipsis),
-            subtitle: Text(e.value),
+            title: Text(
+              redactUrlQueries(e.key),
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Text(redactUrlQueries(e.value)),
           ),
         if (result.plugins.isEmpty && result.errors.isEmpty)
           Padding(

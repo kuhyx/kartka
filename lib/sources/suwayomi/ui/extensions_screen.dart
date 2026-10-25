@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_exceptions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 import 'package:kartka/sources/suwayomi/ui/extension_tile.dart';
@@ -43,7 +44,7 @@ class _ExtensionsState extends State<ExtensionsScreen> {
   }
 
   static String _describe(Object e) =>
-      e is SuwayomiException ? e.message : '$e';
+      redactUrlQueries(e is SuwayomiException ? e.message : '$e');
 
   Future<void> _run(SuwayomiExtension e, ExtensionAction action) async {
     if (action == ExtensionAction.uninstall &&

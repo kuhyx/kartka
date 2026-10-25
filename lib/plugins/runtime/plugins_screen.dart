@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
 import 'package:kartka/plugins/runtime/plugins_sections.dart';
@@ -57,7 +58,7 @@ class _PluginsScreenState extends State<PluginsScreen> {
     try {
       await action();
     } on Object catch (e) {
-      if (mounted) showError(context, '$e');
+      if (mounted) showError(context, redactUrlQueries('$e'));
     }
     if (mounted) setState(_busy.clear);
     await _refresh();

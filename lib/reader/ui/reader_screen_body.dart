@@ -81,7 +81,9 @@ extension on _ReaderScreenState {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(_session.error ?? 'Could not open the chapter.'),
+          Text(
+            redactUrlQueries(_session.error ?? 'Could not open the chapter.'),
+          ),
           const SizedBox(height: AppSpacing.md),
           Row(
             mainAxisSize: MainAxisSize.min,

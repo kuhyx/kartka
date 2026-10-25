@@ -2,6 +2,7 @@
 library;
 
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/redact.dart';
 
 const _units = ['KB', 'MB', 'GB', 'TB'];
 
@@ -29,7 +30,7 @@ String statusLine(DownloadState s, {required bool paused}) =>
             : 'Downloading ${s.pagesDone} / ${s.pagesTotal}',
       DownloadStatus.done => 'Downloaded',
       DownloadStatus.failed =>
-        s.error == null ? 'Failed' : 'Failed: ${s.error}',
+        s.error == null ? 'Failed' : redactUrlQueries('Failed: ${s.error}'),
     };
 
 /// Display title of [key] from library [titles], else its manga url.

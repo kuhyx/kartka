@@ -7,6 +7,7 @@ import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/global_search_controller.dart';
 import 'package:kartka/browse/ui/manga_grid.dart';
+import 'package:kartka/core/redact.dart';
 
 /// Searches every source at once; one row of hits per source, each row
 /// filling in as its source answers.
@@ -92,7 +93,7 @@ class _SourceRow extends StatelessWidget {
       body = Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         child: Text(
-          'Failed: ${state.error}',
+          redactUrlQueries('Failed: ${state.error}'),
           style: TextStyle(color: theme.colorScheme.error),
         ),
       );

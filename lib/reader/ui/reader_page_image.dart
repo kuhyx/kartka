@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/redact.dart';
 
 /// One page image, with loading and retryable error states.
 class ReaderPageImage extends StatelessWidget {
@@ -31,7 +32,7 @@ class ReaderPageImage extends StatelessWidget {
     future: bytes,
     builder: (context, snap) {
       final error = snap.error;
-      if (error != null) return _failed(context, '$error');
+      if (error != null) return _failed(context, redactUrlQueries('$error'));
       final data = snap.data;
       if (data == null) return _loading(context);
       return Image.memory(
@@ -39,7 +40,8 @@ class ReaderPageImage extends StatelessWidget {
         fit: fitWidth ? BoxFit.fitWidth : BoxFit.contain,
         width: fitWidth ? double.infinity : null,
         gaplessPlayback: true,
-        errorBuilder: (context, e, _) => _failed(context, '$e'),
+        errorBuilder: (context, e, _) =>
+            _failed(context, redactUrlQueries('$e')),
       );
     },
   );

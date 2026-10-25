@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/platform/platform.dart';
 import 'package:kartka/sources/local/local_library.dart';
 
@@ -64,7 +65,7 @@ class _ImportLocalTileState extends State<ImportLocalTile> {
         showError(context, report.summary);
       }
     } on Object catch (e) {
-      if (mounted) showError(context, 'Import failed: $e');
+      if (mounted) showError(context, redactUrlQueries('Import failed: $e'));
     } finally {
       if (mounted) setState(() => _busy = false);
     }

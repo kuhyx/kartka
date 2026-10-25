@@ -8,6 +8,7 @@ import 'package:kartka/browse/state/paged_controller.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/browse/ui/cover_image.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/source/challenge.dart';
 
 /// One manga cover + title; opens the detail route. A focus stop, so arrow
@@ -142,7 +143,10 @@ class _Footer extends StatelessWidget {
     } else if (error != null) {
       child = Column(
         children: [
-          Text('Could not load: ${c.error}', textAlign: TextAlign.center),
+          Text(
+            redactUrlQueries('Could not load: ${c.error}'),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: AppSpacing.sm),
           FilledButton(onPressed: c.loadMore, child: const Text('Retry')),
         ],

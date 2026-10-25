@@ -4,6 +4,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/reader/logic/chapter_strip.dart';
 import 'package:kartka/reader/logic/reader_keys.dart';
 import 'package:kartka/reader/logic/tap_zones.dart';

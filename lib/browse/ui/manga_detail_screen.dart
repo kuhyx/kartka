@@ -8,6 +8,7 @@ import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/browse/ui/chapter_tile.dart';
 import 'package:kartka/browse/ui/detail_header.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/source/challenge.dart';
 
 /// `/manga/:sourceId/:mangaUrl`: header, actions and the chapter list
@@ -105,7 +106,10 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Could not load: ${c.error}', textAlign: TextAlign.center),
+              Text(
+                redactUrlQueries('Could not load: ${c.error}'),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: AppSpacing.sm),
               retry,
             ],

@@ -37,6 +37,20 @@ void main() {
     expect(find.textContaining('offline'), findsOne);
   });
 
+  testWidgets('a read error never shows the token in its URL', (tester) async {
+    final feed = ControlledFeed();
+    await tester.pumpWidget(host(SourcesTab(feed: feed)));
+    feed.controller.addError(
+      StateError('401 at https://x.firebaseio.com/kartka.json?auth=SECRET123'),
+    );
+    await tester.pump();
+    expect(find.textContaining('SECRET123'), findsNothing);
+    expect(
+      find.textContaining('https://x.firebaseio.com/kartka.json'),
+      findsOne,
+    );
+  });
+
   testWidgets('never evaluated counts as stale', (tester) async {
     final feed = ControlledFeed();
     await tester.pumpWidget(host(SourcesTab(feed: feed)));

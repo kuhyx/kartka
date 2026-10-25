@@ -2,6 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/backup_import/import_controller.dart';
 import 'package:kartka/backup_import/import_preview.dart';
+import 'package:kartka/core/redact.dart';
 
 /// More → "Import SY backup": choose a `.tachibk`, review, import.
 class ImportScreen extends StatelessWidget {
@@ -79,7 +80,7 @@ class ImportScreen extends StatelessWidget {
       case ImportPhase.failed:
         return [
           Text(
-            c.error ?? 'Import failed',
+            redactUrlQueries(c.error ?? 'Import failed'),
             style: text.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.error,
             ),

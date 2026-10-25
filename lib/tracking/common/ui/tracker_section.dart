@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/models/manga_key.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/tracking/common/credentials_login.dart';
 import 'package:kartka/tracking/common/track_binding.dart';
 import 'package:kartka/tracking/common/tracker.dart';
@@ -64,7 +65,7 @@ class _TrackerSectionState extends State<TrackerSection> {
     try {
       await action();
     } on Object catch (e) {
-      if (mounted) showError(context, '${_t.name}: $e');
+      if (mounted) showError(context, redactUrlQueries('${_t.name}: $e'));
     }
     if (!mounted) return;
     setState(() {

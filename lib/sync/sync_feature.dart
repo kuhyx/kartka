@@ -6,6 +6,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/sync/decorators/sync_repository_decorator.dart';
 import 'package:kartka/sync/decorators/synced_bindings.dart';
 import 'package:kartka/sync/polling_rtdb_reader.dart';
@@ -89,7 +90,7 @@ class SyncAccountRoute extends StatelessWidget {
           appBar: AppBar(title: const Text('Sync')),
           body: Center(
             child: snap.hasError
-                ? Text('Sync could not start: ${snap.error}')
+                ? Text(redactUrlQueries('Sync could not start: ${snap.error}'))
                 : const CircularProgressIndicator(),
           ),
         );

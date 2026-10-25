@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
@@ -214,7 +215,7 @@ class _ReadError extends StatelessWidget {
             "Couldn't read source health",
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          Text('$error', textAlign: TextAlign.center),
+          Text(redactUrlQueries('$error'), textAlign: TextAlign.center),
         ],
       ),
     ),

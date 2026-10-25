@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_exceptions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_settings.dart';
 
@@ -172,7 +173,7 @@ class _SettingsState extends State<SuwayomiSettingsScreen> {
                       padding: const EdgeInsets.only(top: AppSpacing.md),
                       child: _testing
                           ? const LinearProgressIndicator()
-                          : Text(_status!),
+                          : Text(redactUrlQueries(_status!)),
                     ),
                 ],
               ),

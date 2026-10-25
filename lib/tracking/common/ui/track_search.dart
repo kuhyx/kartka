@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/tracking/common/tracker.dart';
 
 /// Search field plus results; picking a hit binds it. `Enter` searches.
@@ -46,7 +47,8 @@ class _TrackSearchState extends State<TrackSearch> {
       final hits = await widget.tracker.search(_query.text.trim());
       if (mounted) setState(() => _hits = hits);
     } on Object catch (e) {
-      if (mounted) showError(context, '${widget.tracker.name}: $e');
+      final message = redactUrlQueries('${widget.tracker.name}: $e');
+      if (mounted) showError(context, message);
     }
     if (mounted) setState(() => _busy = false);
   }
