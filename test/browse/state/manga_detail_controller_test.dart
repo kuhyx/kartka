@@ -88,6 +88,7 @@ void main() {
     final c = MangaDetailController(
       BrowseDeps(
         sources: sources,
+        languages: BrowseLanguageStore(MemoryKeyValueStore()),
         chapters: ChapterStore(sources.byId),
         library: library,
         progress: progress,
