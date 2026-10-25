@@ -11,6 +11,7 @@ from source_eval.challenge import WEBVIEW
 from source_eval.imagequality import measure
 from source_eval.match import best_hit
 from source_eval.models import Chapter, Hit, SourceError
+from source_eval.queries import queries
 
 if TYPE_CHECKING:
     from source_eval.backends.base import Backend
@@ -24,17 +25,6 @@ BLOCKED_AFTER = 3
 DEAD_AFTER = 5
 #: ``aborted`` of a hard-cut source whose one re-probe failed.
 REPROBE_FAILED = "reprobe"
-
-
-def queries(ref: RefTitle, lang: str) -> list[str]:
-    """Two search queries: the main title and the first alt title.
-
-    A Japanese source is searched by the native title first, then the first
-    other title.
-    """
-    if lang == "ja" and ref.native:
-        return list(dict.fromkeys((ref.native, *ref.titles)))[:2]
-    return list(dict.fromkeys(ref.titles[:2]))
 
 
 def _search(backend: Backend, cand: Candidate, ref: RefTitle) -> dict[str, object]:
