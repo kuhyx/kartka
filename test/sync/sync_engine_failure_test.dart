@@ -64,6 +64,7 @@ void main() {
         final entries = await DiagnosticsLog(blobs).entries();
         expect(entries.single.kind, 'sync.error');
         expect(entries.single.error, startsWith(name));
+        expect(entries.single.error, isNot(contains('$name: $name')));
         final file = await logFile();
         for (final leak in ['SECRET', 'auth=', 'tok=', 'http', '?', 'u1']) {
           expect(file, isNot(contains(leak)), reason: leak);

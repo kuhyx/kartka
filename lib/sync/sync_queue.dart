@@ -40,12 +40,16 @@ class SyncQueue {
 
   void _log(Object error, StackTrace stack) {
     if (error is RemoteSyncError) return;
+    final type = '${error.runtimeType}';
+    final message = _scrub('$error');
     unawaited(
       diagnostics?.append(
         DiagnosticEntry.failure(
           at: _now(),
           kind: 'sync.error',
-          error: '${error.runtimeType}: ${_scrub('$error')}',
+          // `FormatException.toString` already names its type; a TypeError's
+          // does not, so the type leads unless the message starts with it.
+          error: message.startsWith(type) ? message : '$type: $message',
           stack: StackTrace.fromString(_scrub('$stack')),
         ),
       ),
