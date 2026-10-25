@@ -56,6 +56,16 @@ void main() {
     expect(access.app.expectedUid, kKartkaSync.expectedUid);
   });
 
+  test('close() keeps the shared client usable', () async {
+    // crdt_sync's FirebaseRestClient.close() closes the client it was given;
+    // one such call must not end sync for the whole tab.
+    final inner = _ClosableClient();
+    final client = WrapperApiClient(inner, Uri.parse('http://127.0.0.1:47392'))
+      ..close();
+    await client.get(Uri.parse('https://securetoken.googleapis.com/v1/t'));
+    expect(inner.closed, isFalse);
+  });
+
   test('web: the wrapper origin defaults to the page (Uri.base)', () {
     final access = SyncAccess.of(kKartkaSync, isWeb: true);
     final client = access.client! as WrapperApiClient;
@@ -109,4 +119,18 @@ void main() {
     ]);
     client.close();
   });
+}
+
+/// Fails every request once closed, like a real client.
+class _ClosableClient extends http.BaseClient {
+  bool closed = false;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    if (closed) throw http.ClientException('closed', request.url);
+    return http.StreamedResponse(const Stream.empty(), 200);
+  }
+
+  @override
+  void close() => closed = true;
 }

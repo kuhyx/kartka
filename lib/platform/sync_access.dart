@@ -87,6 +87,9 @@ class WrapperApiClient extends http.BaseClient {
     return _inner.send(request);
   }
 
+  /// A no-op: one client lives for the whole tab ([SyncAccess.client]), and
+  /// crdt_sync's `FirebaseRestClient.close()` closes whatever it was given,
+  /// so delegating would end sync for every later `openSync`.
   @override
-  void close() => _inner.close();
+  void close() {}
 }
