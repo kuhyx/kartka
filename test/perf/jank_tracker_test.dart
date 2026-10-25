@@ -117,7 +117,7 @@ void main() {
     expect(await _lines(r.log), isEmpty);
   });
 
-  test('reset clears stats, keeps tracking the current screen', () {
+  test('reset clears stats, keeps the screen and the log', () async {
     final r = _rig();
     r.tracker
       ..screenChanged('/library')
@@ -128,6 +128,7 @@ void main() {
       ..onTimings([frame(40)]);
     final s = r.tracker.summaries().single;
     expect((s.screen, s.frames, s.janky), ('/more', 1, 1));
+    expect(await _lines(r.log), [startsWith('screen=/library ')]);
   });
 
   testWidgets('attaches to the binding: real timings and pause flush', (
