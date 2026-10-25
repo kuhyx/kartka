@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/scope.dart';
+import 'package:kartka/app/screen_observer.dart';
 import 'package:kartka/app/shell.dart';
 import 'package:kartka/platform/platform.dart';
 
@@ -55,9 +56,20 @@ class KartkaApp extends StatefulWidget {
 
 class _KartkaAppState extends State<KartkaApp> {
   late final GoRouter _router = buildRouter(widget.registry);
+  late final VoidCallback _stopReporting;
+
+  @override
+  void initState() {
+    super.initState();
+    _stopReporting = reportScreens(
+      _router,
+      () => widget.registry.all<ScreenObserver>(),
+    );
+  }
 
   @override
   void dispose() {
+    _stopReporting();
     _router.dispose();
     super.dispose();
   }

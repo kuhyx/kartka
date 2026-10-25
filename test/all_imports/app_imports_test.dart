@@ -8,6 +8,7 @@ import 'package:kartka/app/redacted_logging.dart';
 import 'package:kartka/app/registry.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/app/scope.dart';
+import 'package:kartka/app/screen_observer.dart';
 import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/app/shell.dart';
 
