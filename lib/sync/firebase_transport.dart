@@ -10,6 +10,7 @@ library;
 import 'dart:convert';
 
 import 'package:crdt_sync/crdt_sync.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 
@@ -70,7 +71,17 @@ class FirebaseTransport implements RtdbTransport {
       pathSegments: [..._base.pathSegments, ...segments, last],
       queryParameters: {'auth': await writer.idToken()},
     );
-    final res = await http.get(url);
+    final KartkaResponse res;
+    try {
+      res = await http.get(url);
+    } on Exception catch (e) {
+      // A ClientException prints `uri=` with the `?auth=` ID token. As a
+      // sync error the engine shows it and keeps going; escaping, it would
+      // fail the engine's queue and land in logcat as an unhandled error.
+      throw FirebaseSyncError(
+        'network error reading $path: ${redactUrlQueries('$e')}',
+      );
+    }
     if (!res.ok) {
       // Never "no data" on failure: a rejected read must not look like an
       // empty database, or the engine would happily re-push everything.

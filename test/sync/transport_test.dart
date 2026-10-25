@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:crdt_sync/crdt_sync.dart' show FirebaseSyncError;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' show ClientException;
 import 'package:kartka/platform/memory/memory_fakes.dart';
 import 'package:kartka/sync/firebase_transport.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
@@ -82,6 +83,25 @@ void main() {
         databaseUrl: 'https://db.example',
       );
       expect(t.get('revs'), throwsA(isA<FirebaseSyncError>()));
+    });
+
+    test('a network failure is a sync error that never shows the token', () {
+      final t = FirebaseTransport(
+        writer: _Writer(),
+        http: FakeKartkaHttp(
+          (r) => throw ClientException('Failed host lookup', r.url),
+        ),
+        databaseUrl: 'https://db.example',
+      );
+      expect(
+        t.get('revs'),
+        throwsA(
+          isA<FirebaseSyncError>()
+              .having((e) => '$e', 'text', isNot(contains('tok')))
+              .having((e) => '$e', 'text', contains('Failed host lookup'))
+              .having((e) => '$e', 'text', contains('db.example/kartka')),
+        ),
+      );
     });
 
     test('patches go through the crdt_sync writer at /kartka', () async {

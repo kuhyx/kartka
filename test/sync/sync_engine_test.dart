@@ -111,6 +111,20 @@ void main() {
     expect(a.status.phase, SyncPhase.idle);
   });
 
+  test('an error status never carries a URL token', () async {
+    final a = await engineFor('dev-a', db);
+    db.failWith = FirebaseSyncError(
+      'network error patching kartka: ClientException: x, '
+      'uri=https://db.test/kartka.json?auth=SECRET',
+    );
+    await a.write('library/h1', _title('One', a.tick()));
+    expect(
+      a.status.message,
+      'network error patching kartka: ClientException: x, '
+      'uri=https://db.test/kartka.json?<redacted>',
+    );
+  });
+
   test('a failing sign-in is an error, not a crash', () async {
     final a = SyncEngine(
       shadow: await SyncShadow.load(MemoryKeyValueStore()),

@@ -12,6 +12,7 @@ library;
 import 'dart:async';
 
 import 'package:crdt_sync/crdt_sync.dart' show Hlc, RemoteSyncError;
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/sync/merge/merge_rules.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/sync_feed.dart';
@@ -227,7 +228,7 @@ class SyncEngine {
       SyncStatus(
         phase: SyncPhase.error,
         lastSync: shadow.lastSync,
-        message: e.message,
+        message: redactUrlQueries(e.message),
       ),
     );
   }
