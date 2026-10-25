@@ -51,6 +51,18 @@ void main() {
     expect(s['Subset of another source']!.value, contains('mangadex'));
   });
 
+  test('on a kept source, failing metrics only warn', () {
+    final e = byTitle(
+      SourceHealthRecord.fromJson(const {
+        'id': 'k',
+        'verdict': 'keep',
+        'coverage': {'ratio': 0.4},
+        'cutReasons': ['coverage<0.60'],
+      })!,
+    );
+    expect(e['Coverage']!.status, MetricStatus.warn);
+  });
+
   test('accruing uptime is pending, missing metrics are unknown', () {
     final e = byTitle(fixtureRecord('suwayomi:7034581279101437511'));
     expect(e['Uptime']!.status, MetricStatus.pending);

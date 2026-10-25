@@ -94,8 +94,11 @@ class SourceCard extends StatelessWidget {
                     '(${pctOrDash(subset.overlap)})',
                   ),
                 ),
-              if (warn)
-                Text('$keptDespiteHeading:', style: TextStyle(color: muted)),
+              if (r.cutReasons.isNotEmpty)
+                Text(
+                  '${warn ? keptDespiteHeading : lowScoreHeading}:',
+                  style: TextStyle(color: muted),
+                ),
               for (final why in explainCutReasons(r, nameOf: nameOf))
                 if (warn) WarningLine(why) else Text(why),
             ],

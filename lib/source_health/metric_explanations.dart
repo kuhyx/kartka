@@ -2,6 +2,7 @@
 /// the content of the per-source detail page.
 library;
 
+import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/metric_text.dart';
 import 'package:kartka/source_health/model/metrics.dart';
@@ -10,16 +11,19 @@ import 'package:kartka/source_health/thresholds.dart';
 
 /// How a source fares on one metric.
 enum MetricStatus {
-  /// Clears the cut rule.
+  /// Clears its low-score bar.
   pass,
 
-  /// Triggers a cut rule.
+  /// Below its bar: a reason the score is low.
   fail,
+
+  /// Below its bar on a source kept on score anyway: a warning.
+  warn,
 
   /// Still accruing data; no verdict yet.
   pending,
 
-  /// Scored but never cuts on its own.
+  /// Scored (or shown) but never a low-score reason.
   info,
 
   /// Not measured.
@@ -46,17 +50,35 @@ class MetricExplanation {
   /// What is measured, in plain words.
   final String meaning;
 
-  /// The rule applied to it (cut threshold and/or score weight).
+  /// The rule applied to it (low-score bar and/or score weight).
   final String threshold;
 
   /// How this source fares.
   final MetricStatus status;
+
+  /// This explanation with a [MetricStatus.warn] status.
+  MetricExplanation warning() => MetricExplanation(
+    title: title,
+    value: value,
+    meaning: meaning,
+    threshold: threshold,
+    status: MetricStatus.warn,
+  );
 }
 
 String _weight(double w) => '${pct(w)} of the score';
 
-/// Every metric of [r], in display order.
-List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
+/// Every metric of [r], in display order. On a source kept on score, a
+/// metric below its bar only warns.
+List<MetricExplanation> explainMetrics(SourceHealthRecord r) {
+  final kept = r.verdict == HealthVerdict.keep;
+  return [
+    for (final e in _explainMetrics(r))
+      if (kept && e.status == MetricStatus.fail) e.warning() else e,
+  ];
+}
+
+List<MetricExplanation> _explainMetrics(SourceHealthRecord r) => [
   MetricExplanation(
     title: 'Uptime',
     value: uptimeText(r.uptime),
@@ -65,9 +87,9 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
         'the last ${HealthThresholds.uptimeWindowDays} days) that got a '
         'healthy answer.',
     threshold:
-        'Cut below ${pct(HealthThresholds.minUptimeRatio)}, but only once all '
-        '${HealthThresholds.uptimeProbesTarget} probes are in; until then the '
-        'verdict is pending. ${_weight(HealthThresholds.weightUptime)}.',
+        'Low-score reason below ${pct(HealthThresholds.minUptimeRatio)}, but '
+        'only once all ${HealthThresholds.uptimeProbesTarget} probes are in. '
+        '${_weight(HealthThresholds.weightUptime)}.',
     status: _uptime(r.uptime),
   ),
   MetricExplanation(
@@ -77,8 +99,8 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
         'How long the source takes to answer: the median (p50) and the '
         'slowest 5 % (p95).',
     threshold:
-        'Never cuts. ${_weight(HealthThresholds.weightLatency)}: full marks '
-        'at p95 0 ms, none at p95 '
+        'Never a reason. ${_weight(HealthThresholds.weightLatency)}: full '
+        'marks at p95 0 ms, none at p95 '
         '${millis(HealthThresholds.worstP95Ms.round())} or slower.',
     status: _info(r.latency),
   ),
@@ -90,10 +112,9 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
         'captcha, 403 Forbidden or 429 Too Many Requests, or by an '
         'extension that needs a browser engine.',
     threshold:
-        'Cut above ${pct(HealthThresholds.maxChallengeRate)}: Kartka never '
-        'bypasses challenges, so any blocking cuts the source. Needing a '
-        'browser engine only raises the "Needs browser engine" flag; it '
-        'never cuts.',
+        'Low-score reason above ${pct(HealthThresholds.maxChallengeRate)}: '
+        'Kartka never bypasses challenges. Needing a browser engine only '
+        'raises the "Needs browser engine" flag.',
     status: (r.blocking?.onlyBrowserEngine ?? false)
         ? MetricStatus.info
         : _below(r.blocking?.challengeRate, HealthThresholds.maxChallengeRate),
@@ -105,7 +126,7 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
         'How many reference titles (your library backup plus the AniList '
         'top 500) the source has.',
     threshold:
-        'Cut below ${pct(HealthThresholds.minCoverageRatio)}. '
+        'Low-score reason below ${pct(HealthThresholds.minCoverageRatio)}. '
         '${_weight(HealthThresholds.weightCoverage)}.',
     status: _atLeast(r.coverage?.ratio, HealthThresholds.minCoverageRatio),
   ),
@@ -115,7 +136,8 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
     meaning:
         "Chapters on the source compared with AniList's chapter count, "
         'median over sampled titles, capped at 100 %.',
-    threshold: 'Never cuts. ${_weight(HealthThresholds.weightCompleteness)}.',
+    threshold:
+        'Never a reason. ${_weight(HealthThresholds.weightCompleteness)}.',
     status: _info(r.completeness),
   ),
   MetricExplanation(
@@ -128,7 +150,7 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
         'Median page width and estimated JPEG quality over sampled '
         'pages. Wider and higher-quality pages read better.',
     threshold:
-        'Never cuts. ${_weight(HealthThresholds.weightImageQuality)}: full '
+        'Never a reason. ${_weight(HealthThresholds.weightImageQuality)}: full '
         'marks at ${HealthThresholds.fullWidthPx.round()} px wide or more.',
     status: _info(r.imageQuality),
   ),
@@ -142,8 +164,8 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
         'Whether a higher-ranked source with images at least as good '
         'already has almost all of these titles.',
     threshold:
-        'Cut when ${pct(HealthThresholds.subsetOverlap)} or more of its titles '
-        'are on such a source.',
+        'Low-score reason when ${pct(HealthThresholds.subsetOverlap)} or more '
+        'of its titles are on such a source.',
     status: r.subsetOf != null
         ? MetricStatus.fail
         : (r.coverage == null ? MetricStatus.unknown : MetricStatus.pass),
@@ -155,7 +177,7 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
         'Which ways of reading this site exist: a native Kartka source, '
         'a converted Mangayomi JS plugin, or a Keiyoushi extension through '
         'Suwayomi.',
-    threshold: 'Informational; never cuts and is not scored.',
+    threshold: 'Informational; not scored.',
     status: _info(r.availability),
   ),
   if (r.pagesLoad != null)
@@ -164,7 +186,7 @@ List<MetricExplanation> explainMetrics(SourceHealthRecord r) => [
       value: pagesLoadText(r.pagesLoad),
       meaning:
           'Share of sampled chapter pages whose images actually downloaded.',
-      threshold: 'Shown for information; the app applies no threshold to it.',
+      threshold: 'Multiplies the weighted score (see the score breakdown).',
       status: MetricStatus.info,
     ),
 ];

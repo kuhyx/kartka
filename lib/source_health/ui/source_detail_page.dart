@@ -81,7 +81,7 @@ class SourceDetailPage extends StatelessWidget {
                 ),
               ],
               if (r.cutReasons.isNotEmpty) ...[
-                SectionHeader(warn ? keptDespiteHeading : 'Why it was cut'),
+                SectionHeader(warn ? keptDespiteHeading : lowScoreHeading),
                 for (final why in explainCutReasons(
                   r,
                   nameOf: (id) => _find(id)?.name,
@@ -108,7 +108,7 @@ class SourceDetailPage extends StatelessWidget {
               const SectionHeader('Metrics'),
               for (final e in explainMetrics(r)) MetricTile(e),
               const SectionHeader('Score breakdown'),
-              ScoreTable(scoreBreakdown(r)),
+              ScoreTable(scoreBreakdown(r), pagesLoad: r.pagesLoad),
             ],
           ),
         ),

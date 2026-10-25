@@ -70,6 +70,7 @@ void main() {
     expect(find.textContaining('Catalogue too small'), findsOne);
     await pumpCard(tester, _cut);
     expect(find.textContaining('despite'), findsNothing);
+    expect(find.text('Why the score is low:'), findsOne);
     expect(find.byIcon(Icons.warning_amber_rounded), findsNothing);
     expect(find.textContaining('Catalogue too small'), findsOne);
   });
@@ -78,8 +79,12 @@ void main() {
     tester,
   ) async {
     await pumpDetail(tester, _keptWithReasons);
-    expect(find.text('Why it was cut'), findsNothing);
+    expect(find.text('Why the score is low'), findsNothing);
     expect(find.text('Kept on score ≥ 0.90 despite'), findsOne);
+    expect(find.text('Lowers score'), findsNothing);
+    expect(find.text('Warns'), findsOne);
+    expect(find.text('× 0.92'), findsOne);
+    expect(find.textContaining('× 92 %'), findsOne);
     expect(find.byIcon(Icons.warning_amber_rounded), findsOne);
     expect(find.text('Pages load'), findsOne);
     expect(find.text('92 % of 25 sampled'), findsOne);
@@ -88,7 +93,10 @@ void main() {
 
   testWidgets('detail: a cut source still explains why', (tester) async {
     await pumpDetail(tester, _cut);
-    expect(find.text('Why it was cut'), findsOne);
+    expect(find.text('Why the score is low'), findsOne);
+    expect(find.text('Why it was cut'), findsNothing);
+    expect(find.text('Pages load (multiplier)'), findsOne);
+    expect(find.textContaining('not measured, not applied'), findsOne);
     expect(find.byIcon(Icons.warning_amber_rounded), findsNothing);
   });
 }

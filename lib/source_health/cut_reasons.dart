@@ -18,15 +18,19 @@ List<String> explainCutReasons(
   SourceNameOf? nameOf,
 }) => [for (final code in record.cutReasons) _explain(code, record, nameOf)];
 
-/// True when [record] was kept on score despite cut reasons, so its
-/// reasons are warnings rather than why it was cut.
+/// True when [record] was kept on score despite reasons, so they are
+/// warnings rather than why the score is low.
 bool keptDespiteReasons(SourceHealthRecord record) =>
     record.verdict == HealthVerdict.keep && record.cutReasons.isNotEmpty;
+
+/// Heading over the reasons of any other record: the score is the only
+/// judgement, so reasons explain a low score, never a cut on their own.
+const String lowScoreHeading = 'Why the score is low';
 
 /// Heading over the reasons of a [keptDespiteReasons] record.
 final String keptDespiteHeading =
     'Kept on score ≥ '
-    '${HealthThresholds.keepOverrideScore.toStringAsFixed(2)} despite';
+    '${HealthThresholds.keepScore.toStringAsFixed(2)} despite';
 
 /// A §5 blocking kind in words.
 String describeBlockingKind(String kind) => switch (kind) {
@@ -66,7 +70,7 @@ String _blocking(SourceHealthRecord r) {
   final share = rate == null ? '' : ' on ${pct(rate)} of requests';
   return 'Blocks automated reading: answered with $kinds$share. '
       'Kartka never bypasses challenges, so any blocking other than a '
-      'browser-engine need cuts a source.';
+      'browser-engine need lowers the score.';
 }
 
 String _coverage(SourceHealthRecord r) {

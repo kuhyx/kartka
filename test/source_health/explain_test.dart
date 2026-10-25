@@ -14,6 +14,7 @@ void main() {
       expect(HealthThresholds.maxChallengeRate, 0);
       expect(HealthThresholds.minCoverageRatio, 0.60);
       expect(HealthThresholds.subsetOverlap, 0.90);
+      expect(HealthThresholds.keepScore, 0.90);
       expect(HealthThresholds.uptimeProbesTarget, 28);
       expect(HealthThresholds.staleAfter, const Duration(days: 8));
       const weights =
@@ -84,6 +85,26 @@ void main() {
   });
 
   group('scoreBreakdown', () {
+    test('pagesLoad multiplies the weighted sum (§5 score)', () {
+      final r = fixtureRecord('suwayomi:2499283573021220255');
+      final sum = scoreBreakdown(r)
+          .fold<double>(0, (s, p) => s + (p.points ?? 0));
+      expect(pagesLoadFactor(r), isNull);
+      expect(recomputedScore(r), closeTo(sum, 1e-9));
+      final halved = SourceHealthRecord.fromJson({
+        ...r.toJson(),
+        'pagesLoad': {'ratio': 0.5, 'sampled': 10},
+      })!;
+      expect(pagesLoadFactor(halved), 0.5);
+      expect(recomputedScore(halved), closeTo(sum * 0.5, 1e-9));
+      final unmeasured = SourceHealthRecord.fromJson({
+        ...r.toJson(),
+        'pagesLoad': {'sampled': 0},
+      })!;
+      expect(pagesLoadFactor(unmeasured), isNull);
+      expect(recomputedScore(unmeasured), closeTo(sum, 1e-9));
+    });
+
     test('recomputes the §5 score from the metrics', () {
       final r = fixtureRecord('suwayomi:2499283573021220255');
       final parts = scoreBreakdown(r);

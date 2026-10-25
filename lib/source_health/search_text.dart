@@ -45,6 +45,7 @@ import 'package:kartka/source_health/reason_filter.dart';
       imageWidthText(r.imageQuality),
       jpegQualityText(r.imageQuality),
       scoreText(r.score),
+      if (r.rank case final rank?) '#$rank',
       if (pages != null) pagesLoadText(pages),
     ],
   );

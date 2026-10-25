@@ -65,6 +65,7 @@ void main() {
 
     test('matches metrics, reasons, kinds, origin and new fields', () {
       expect(search('cloudflare'), ['plugin:comick']);
+      expect(search('#5'), ['plugin:comick']);
       expect(search('p95'), hasLength(6));
       expect(search('1500 px'), ['web']);
       expect(search('redundant'), ['suwayomi:2499283573021220255']);

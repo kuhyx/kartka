@@ -1,4 +1,5 @@
-/// The §5 score split into its five weighted parts.
+/// The §5 score split into its five weighted parts and the pages-load
+/// multiplier: score = (sum of parts) × pagesLoad.ratio.
 library;
 
 import 'dart:math' as math;
@@ -23,6 +24,16 @@ class ScorePart {
   /// weight × normalized; null when not measured.
   double? get points => normalized == null ? null : weight * normalized!;
 }
+
+/// The pages-load multiplier of [r]'s score; null when the run predates
+/// `pagesLoad` or its ratio was not measured (then it is not applied).
+double? pagesLoadFactor(SourceHealthRecord r) => r.pagesLoad?.ratio;
+
+/// [r]'s score recomputed from its metrics: the weighted sum, times the
+/// pages-load multiplier when there is one.
+double recomputedScore(SourceHealthRecord r) =>
+    scoreBreakdown(r).fold<double>(0, (s, p) => s + (p.points ?? 0)) *
+    (pagesLoadFactor(r) ?? 1);
 
 /// The five parts of [r]'s score, in §5 order.
 List<ScorePart> scoreBreakdown(SourceHealthRecord r) {

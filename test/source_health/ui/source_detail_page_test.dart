@@ -54,10 +54,11 @@ void main() {
     ]) {
       expect(find.text(title), findsWidgets, reason: title);
     }
-    expect(find.textContaining('Cut below 95 %'), findsOne);
-    expect(find.textContaining('Cut below 60 %'), findsOne);
-    expect(find.text('Cuts'), findsNWidgets(3));
-    expect(find.text('Why it was cut'), findsOne);
+    expect(find.textContaining('Low-score reason below 95 %'), findsOne);
+    expect(find.textContaining('Low-score reason below 60 %'), findsOne);
+    expect(find.text('Lowers score'), findsNWidgets(3));
+    expect(find.text('Why the score is low'), findsOne);
+    expect(find.textContaining('cut', findRichText: true), findsNothing);
     expect(find.textContaining('Blocks automated reading'), findsOne);
     expect(find.text('Score breakdown'), findsOne);
     expect(find.text('Evaluator score 0.41 · rank #5'), findsOne);
@@ -76,7 +77,7 @@ void main() {
     expect(find.text('accruing 9/28 probes'), findsOne);
     expect(find.text('Accruing'), findsOne);
     expect(find.text('Not measured'), findsWidgets);
-    expect(find.text('Why it was cut'), findsNothing);
+    expect(find.text('Why the score is low'), findsNothing);
     expect(find.textContaining('older than 8 days'), findsOne);
     expect(find.text('Evaluator score — · unranked'), findsOne);
   });
