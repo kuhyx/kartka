@@ -150,3 +150,11 @@ def test_suwayomi_credentials_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("KARTKA_SUWAYOMI_USER", "other")
     assert cli._env("KARTKA_SUWAYOMI_USER", "SUWAYOMI_USER") == "other"
     assert cli._env("NOPE_A", "NOPE_B", default="d") == "d"
+
+
+def test_every_network_command_defaults_to_a_55_s_batch() -> None:
+    parser = cli._parser()
+    for argv in (["candidates"], ["reference"], ["enrich"], ["probe"], ["run"]):
+        assert parser.parse_args(argv).budget == cli.DEFAULT_BUDGET == 55.0
+    assert parser.parse_args(["report"]).budget == 55.0
+    assert parser.parse_args(["run", "--budget", "20"]).budget == 20.0

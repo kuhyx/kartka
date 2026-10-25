@@ -64,7 +64,8 @@ class RequestBudget:
     min_start: float = 5.0
     grace: float = 1.0
 
-    def _left(self) -> float:
+    def left(self) -> float:
+        """Seconds left after the grace (``inf`` without a deadline)."""
         if self.deadline is None:
             return float("inf")
         return self.deadline.remaining() - self.grace
@@ -77,7 +78,7 @@ class RequestBudget:
 
     def timeout(self, wanted: float) -> float:
         """``wanted``, shortened to fit; raises :class:`BudgetExhausted`."""
-        allowed = min(wanted, self._left())
+        allowed = min(wanted, self.left())
         if allowed < min(wanted, self.min_start):
             raise BudgetExhausted
         return allowed

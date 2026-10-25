@@ -6,10 +6,10 @@ from __future__ import annotations
 import json
 lazy from pathlib import Path
 
-from source_eval import report
+from source_eval import publishing, report
 from source_eval.app import MORE_WORK, App
 from source_eval.candidates import catalog
-from source_eval.state import Manifest
+from source_eval.state import Manifest, RunDir
 from tests.app_helpers import make_app
 from tests.fakes import FakeClock, resp
 
@@ -19,6 +19,9 @@ def _published_run(tmp_path: Path) -> tuple[App, FakeClock, list[str]]:
     app.cmd_candidates()
     app.cmd_reference(None, 3)
     app.cmd_init_run("t", 2, Manifest([], 1, 1, 1))
+    state = RunDir(app.s.state_dir, "t").source("mangadex")  # one record
+    state.done = True
+    state.save()
     return app, clock, lines
 
 
@@ -86,4 +89,20 @@ def test_report_progress_file_is_per_run(tmp_path: Path) -> None:
 
     app.cmd_report("t", tmp_path / "r.json", Writer(), budget=50.0)
     progress = app.s.state_dir / "runs" / "t" / "publish.json"
-    assert json.loads(progress.read_text()) == {"records": True}
+    assert json.loads(progress.read_text()) == {"records-0": True}
+
+
+def test_records_go_out_in_stable_chunks() -> None:
+    sources = [{"id": f"s{i}"} for i in range(450)]
+    meta = {"runId": "t"}
+    steps = publishing.publish_steps({"sources": sources, "meta": meta})
+    assert [name for name, _, _ in steps] == [
+        "records-0",
+        "records-1",
+        "records-2",
+        "meta",
+    ]
+    assert [len(data) for _, _, data in steps] == [200, 200, 50, 1]
+    shuffled = publishing.publish_steps({"sources": sources[::-1], "meta": meta})
+    assert shuffled == steps  # by RTDB key, not by rank
+    assert steps[-1] == ("meta", report.META_PATH, meta)

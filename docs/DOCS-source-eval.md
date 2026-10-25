@@ -29,7 +29,8 @@ uv run source-eval ramp finish --run R         # records the run's wall time
 ```
 
 **Batches** (kuhy, 2026-10-25): every invocation finishes in < 60 s.
-`--budget S` is a hard wall-clock limit counted from process start, in-flight
+`--budget S` (default 55, so manual calls too) is a hard wall-clock limit
+counted from process start, in-flight
 requests included: a request starts only when its timeout fits in what is
 left (minus 1 s grace), shortened to fit when needed (but at least 5 s, or
 its whole timeout); a shortened timeout that runs out is the budget's stop,
@@ -39,8 +40,11 @@ failure as before. Every request runs under a total wall-clock cap
 (`BoundedTransport`), not just `requests`' per-socket timeout. Exit 10 =
 call again. `systemd/batch.sh` loops a step until exit 0 (`--budget 50`,
 `timeout 58` as a backstop that only warns, 2000 batches max per step);
-`weekly.sh` and `probe.sh` are such loops. `report --publish` remembers
-each finished RTDB write in `runs/<run>/publish.json`.
+`weekly.sh`, `probe.sh` and `pilot.sh` are such loops. `report --publish`
+writes records in chunks of 200 (by RTDB key), then the meta, remembering
+each finished write in `runs/<run>/publish.json`. The hosts-file lookup
+after a failed probe is capped at 3 s (a dead domain's `getaddrinfo`
+stalled 40 s here) and at what is left of the budget.
 
 **Throughput**: `run` groups sources by host into lanes (`--workers`, one
 host per lane, worked serially) with at most `--inflight` requests in the

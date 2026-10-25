@@ -2,8 +2,8 @@
 """``report [--publish]`` as resumable < 60 s batches.
 
 Building the report is local and quick (about 1 s for 766 sources), so every
-call rebuilds it and rewrites the output file. Publishing is two RTDB
-writes, records then meta; each is a step that starts only when its worst
+call rebuilds it and rewrites the output file. Publishing is RTDB
+writes, records (in chunks) then meta; each is a step that starts only when its worst
 case (``RTDB_STEP``) fits in the budget, and each finished step is
 remembered in ``runs/<run>/publish.json`` until both are done. A finished
 publish also leaves the run's hard cuts (``hard_cut.json``) for the next
@@ -35,6 +35,8 @@ HARD_CUT_FILE = "hard_cut.json"
 #: Worst case of one RTDB write: token refresh + request, both bounded
 #: (``report.TOKEN_TIMEOUT`` + ``report.RTDB_TIMEOUT``).
 RTDB_STEP = 20.0
+#: Records per RTDB write.
+CHUNK = 200
 
 
 def hard_cut_ids(report: dict[str, object]) -> list[str]:
@@ -61,12 +63,23 @@ def previous_hard_cuts(
     return [str(i) for i in ids], str(prev)
 
 
-def _steps(report: dict[str, object]) -> list[tuple[str, str, dict[str, object]]]:
-    records = cast("list[Record]", report["sources"])
-    return [
-        ("records", RTDB_PATH, {sha1(str(r["id"])): r for r in records}),
-        ("meta", META_PATH, cast("dict[str, object]", report["meta"])),
+def publish_steps(
+    report: dict[str, object],
+) -> list[tuple[str, str, dict[str, object]]]:
+    """``(name, path, data)`` RTDB writes: records in chunks, then the meta.
+
+    Chunks of ``CHUNK`` records by RTDB key, so each write stays small (one
+    ~0.7 MB PATCH could outlast ``RTDB_TIMEOUT`` on a slow uplink) and a
+    chunk holds the same sources however often the report is rebuilt.
+    """
+    records = sorted(
+        (sha1(str(r["id"])), r) for r in cast("list[Record]", report["sources"])
+    )
+    steps: list[tuple[str, str, dict[str, object]]] = [
+        (f"records-{n // CHUNK}", RTDB_PATH, dict(records[n : n + CHUNK]))
+        for n in range(0, len(records), CHUNK)
     ]
+    return [*steps, ("meta", META_PATH, cast("dict[str, object]", report["meta"]))]
 
 
 def report_cmd(  # noqa: PLR0913, PLR0917 -- one argument per input it joins
@@ -98,7 +111,7 @@ def report_cmd(  # noqa: PLR0913, PLR0917 -- one argument per input it joins
         return 0
     progress_path = run.root / "publish.json"
     progress = cast("dict[str, bool]", read_json(progress_path, {}))
-    for name, path, data in _steps(report):
+    for name, path, data in publish_steps(report):
         if progress.get(name):
             continue
         if deadline.remaining() - app.s.grace < RTDB_STEP:

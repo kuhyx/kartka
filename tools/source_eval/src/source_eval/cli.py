@@ -36,6 +36,9 @@ def _env(*names: str, default: str = "") -> str:
     return next((v for n in names if (v := os.environ.get(n))), default)
 
 
+#: Every invocation, weekly or manual, is a < 60 s batch (kuhy, 2026-10-25).
+DEFAULT_BUDGET = 55.0
+
 #: The evaluator's own Suwayomi (tools/source_eval/systemd/install.sh).
 EVAL_SUWAYOMI_URL = "http://127.0.0.1:4590"
 
@@ -115,8 +118,9 @@ def _parser() -> argparse.ArgumentParser:
         cmd.add_argument(
             "--budget",
             type=float,
-            default=None,
-            help="hard wall-clock limit in seconds since start; exit 10 = call again",
+            default=DEFAULT_BUDGET,
+            help="hard wall-clock limit in seconds since start (default"
+            f" {DEFAULT_BUDGET:.0f}: every call ends in < 60 s); exit 10 = call again",
         )
     for cmd, workers in ((probe, 64), (run, 128)):
         cmd.add_argument("--ids", nargs="*", default=[])

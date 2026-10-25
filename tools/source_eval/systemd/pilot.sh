@@ -37,13 +37,14 @@ export XDG_STATE_HOME="${PILOT_DIR}/state" XDG_CACHE_HOME="${PILOT_DIR}/cache"
 mkdir -p "${XDG_STATE_HOME}" "${XDG_CACHE_HOME}"
 read -r -a ids <<<"${PILOT_IDS}"
 
-eval_cmd() { uv run --frozen --project "${HERE}" source-eval "$@"; }
+# shellcheck source=SCRIPTDIR/batch.sh
+source "${HERE}/systemd/batch.sh"
 
 "${HERE}/systemd/eval_server_ready.sh"
-eval_cmd init-run --run "${RUN}" --sample "${SAMPLE}"
-eval_cmd enrich --run "${RUN}"
+eval_once init-run --run "${RUN}" --sample "${SAMPLE}"
+eval_batches enrich --run "${RUN}"
 date -u +%s >"${PILOT_DIR}/run_started"
-eval_cmd run --run "${RUN}" --ids "${ids[@]}" --workers 16
+eval_batches run --run "${RUN}" --ids "${ids[@]}" --workers 128 --inflight 64
 date -u +%s >"${PILOT_DIR}/run_finished"
-eval_cmd report --run "${RUN}" --out "${PILOT_DIR}/report.json" --weights default
+eval_batches report --run "${RUN}" --out "${PILOT_DIR}/report.json" --weights default
 echo "pilot.sh: done; report at ${PILOT_DIR}/report.json"

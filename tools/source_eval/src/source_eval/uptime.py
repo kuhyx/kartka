@@ -16,13 +16,14 @@ import json
 import socket
 from typing import TYPE_CHECKING
 
-from source_eval.http import Request, TransportError
+from source_eval.http import Request, TransportError, TransportTimeoutError, bounded
 from source_eval.polite import Observation, judge_http
 from source_eval.state import sha1
 
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from source_eval.budget import RequestBudget
     from source_eval.http import Clock
     from source_eval.polite import PoliteClient
 
@@ -32,6 +33,10 @@ _DAY = 86400.0
 #: A window counts as ``final`` once probes span this much of it.
 _FINAL_SPAN = WINDOW_DAYS * _DAY - 6 * 3600.0
 _NULL_ADDRS = frozenset({"0.0.0.0", "::", "127.0.0.1", "::1"})  # noqa: S104 -- compared, not bound
+
+#: Cap of the hosts-file lookup after a failed probe: a sinkholed host
+#: answers from /etc/hosts at once, while a dead domain stalled 40 s here.
+RESOLVE_TIMEOUT = 3.0
 
 Resolver = Callable[[str], list[str]]
 
@@ -115,18 +120,39 @@ def summarize(probes: list[Observation], now: float) -> dict[str, object]:
     }
 
 
-def failed(clock: Clock, host: str, resolver: Resolver = resolve) -> Observation:
-    """The observation for a probe that never got a response."""
-    kind = HOSTS_BLOCKED if locally_blocked(host, resolver) else None
-    return Observation.failure(clock.now(), host, kind)
+def lookup_window(budget: RequestBudget | None) -> float:
+    """How long the lookup in :func:`failed` may take within ``budget``."""
+    return RESOLVE_TIMEOUT if budget is None else min(RESOLVE_TIMEOUT, budget.left())
 
 
-def probe_front_page(
+def failed(
+    clock: Clock,
+    host: str,
+    resolver: Resolver = resolve,
+    within: float = RESOLVE_TIMEOUT,
+) -> Observation:
+    """The observation for a probe that never got a response.
+
+    ``hosts-blocked`` when the local resolver sinks the host; a lookup that
+    takes longer than ``within`` seconds (or no time left) is no answer.
+    """
+    blocked = False
+    if within > 0:
+        try:
+            blocked = bounded(lambda: locally_blocked(host, resolver), within)
+        except TransportTimeoutError:
+            blocked = False
+    return Observation.failure(clock.now(), host, HOSTS_BLOCKED if blocked else None)
+
+
+def probe_front_page(  # noqa: PLR0913 -- two optional knobs, keyword-only
     client: PoliteClient,
     clock: Clock,
     host: str,
     url: str,
+    *,
     resolver: Resolver = resolve,
+    budget: RequestBudget | None = None,
 ) -> Observation:
     """GET ``url`` once (never cached) and judge it. Thread-safe."""
     try:
@@ -134,7 +160,7 @@ def probe_front_page(
             Request("GET", url, timeout=20.0), host=host, record=False
         )
     except TransportError:
-        return failed(clock, host, resolver)
+        return failed(clock, host, resolver, lookup_window(budget))
     ok, kind = judge_http(response)
     return Observation(
         clock.now(), host, ok, response.elapsed_ms, kind, response.status

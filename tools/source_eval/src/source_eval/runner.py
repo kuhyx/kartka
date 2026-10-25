@@ -21,7 +21,7 @@ from source_eval.evaluate import Plan, evaluate
 from source_eval.http import TransportError
 from source_eval.models import SourceError
 from source_eval.polite import Observation
-from source_eval.uptime import failed, probe_front_page
+from source_eval.uptime import failed, lookup_window, probe_front_page
 
 if TYPE_CHECKING:
     from source_eval.app import App
@@ -114,7 +114,9 @@ def probe_one(app: App, cand: Candidate, budget: RequestBudget | None) -> Observ
     """
     if cand.origin == "plugin":
         client = app.client(budget=budget)
-        obs = probe_front_page(client, app.clock, cand.host, cand.base_url)
+        obs = probe_front_page(
+            client, app.clock, cand.host, cand.base_url, budget=budget
+        )
     else:
         seen: list[Observation] = []
         backend = app.backend(cand, app.client(observe=seen.append, budget=budget))
@@ -122,7 +124,7 @@ def probe_one(app: App, cand: Candidate, budget: RequestBudget | None) -> Observ
             backend.prepare(cand)
             backend.popular(cand)
         except TransportError:
-            seen.append(failed(app.clock, cand.host))
+            seen.append(failed(app.clock, cand.host, within=lookup_window(budget)))
         except SourceError:
             pass
         obs = seen[-1] if seen else Observation.failure(app.clock.now(), cand.host)
