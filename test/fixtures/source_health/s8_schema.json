@@ -1,0 +1,50 @@
+{
+  "_comment": "Records and a scoring profile in the session-8 schema (merged coverage, graded subset, hard filter, install info). test/source_health/model/schema_compat_test.dart reads them; it passed unchanged against bf9b3bc, the old APK's code.",
+  "profile": "{\"weights\":{\"completeCoverage\":0.5,\"uptime\":0.2,\"imageQuality\":0.15,\"speed\":0.15},\"pagesLoadMultiplier\":true,\"keepScore\":0.9,\"cuts\":{\"blocking\":false,\"coverage\":false,\"uptime\":false,\"needsBrowserEngine\":false,\"pagesNeverLoad\":false}}",
+  "records": [
+    {
+      "id": "suwayomi:1", "name": "Full", "lang": "en", "origin": "suwayomi",
+      "probedAt": "2026-10-25T12:00:00Z",
+      "uptime": {"windowDays": 7, "probes": 28, "ok": 28, "ratio": 1.0, "status": "final"},
+      "latencyMs": {"p50": 400, "p95": 900},
+      "blocking": {"challengeRate": 0.0, "kinds": [], "hardRate": 0.0},
+      "coverage": {"referenceSize": 500, "found": 400, "ratio": 0.8,
+                   "complete": 350, "completeRatio": 0.7},
+      "chapterCompleteness": {"sampled": 400, "medianRatio": 0.95},
+      "imageQuality": {"sampledPages": 30, "medianWidthPx": 1067, "medianJpegQuality": 90},
+      "pagesLoad": {"ratio": 1.0, "sampled": 10},
+      "langScope": "en+ja",
+      "availability": {"native": false, "mangayomiJs": false, "keiyoushi": true},
+      "pkg": "eu.kanade.tachiyomi.extension.en.full",
+      "subsetOf": null,
+      "score": 0.85, "defaultScore": 0.85, "rank": 1, "verdict": "cut",
+      "cutReasons": []
+    },
+    {
+      "id": "suwayomi:2", "name": "Copy", "lang": "en", "origin": "suwayomi",
+      "uptime": {"ratio": 1.0, "status": "final"},
+      "latencyMs": {"p50": 400, "p95": 900},
+      "blocking": {"challengeRate": 0.6, "kinds": ["cloudflare", "webview"], "hardRate": 0.55},
+      "coverage": {"referenceSize": 500, "found": 300, "ratio": 0.6,
+                   "complete": 200, "completeRatio": 0.4},
+      "chapterCompleteness": {"sampled": 300, "medianRatio": 0.9},
+      "imageQuality": {"medianWidthPx": 800},
+      "pkg": "eu.kanade.tachiyomi.extension.en.copy",
+      "subsetOf": {"sourceId": "suwayomi:1", "overlap": 0.62},
+      "unreachable": true,
+      "score": 0.3, "defaultScore": 0.3, "rank": 2, "verdict": "cut",
+      "cutReasons": ["unreachable", "blocking>=0.50", "subset"],
+      "flags": ["needs-browser-engine"]
+    },
+    {
+      "id": "plugin:mangayomi-955190069", "name": "Comick", "lang": "en", "origin": "plugin",
+      "uptime": {"ratio": null, "status": "accruing"},
+      "blocking": {"challengeRate": 0.0, "kinds": [], "hardRate": 0.0},
+      "coverage": {"referenceSize": 500, "found": null, "ratio": null,
+                   "complete": null, "completeRatio": null},
+      "plugin": {"repo": "https://kodjodevf.github.io/mangayomi-extensions/index.json",
+                 "id": "mangayomi-955190069"},
+      "score": 0.0, "defaultScore": 0.0, "rank": 3, "verdict": "pending"
+    }
+  ]
+}
