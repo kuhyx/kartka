@@ -25,41 +25,48 @@ def test_firebase_rtdb_writer() -> None:
         writer.patch("bad", {})
 
 
-def test_firebase_writer_uses_shared_credential(
+def test_firebase_writer_uses_the_seeded_session(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """The evaluator signs in only with its seeded Google session.
+
+    The account is Google-only, so there is no password fallback: with no
+    session the writer fails and names the seed command.
+    """
     import crdt_sync
 
     class Cfg:
-        api_key, database_url, email = "key", "https://db.test", "me@example.test"
+        api_key, database_url = "key", "https://db.test"
 
-        def read_password(self) -> str:
-            return "pw"
-
-    signed: list[tuple[str, str]] = []
+    session = [False]
+    apps: list[str] = []
 
     class Auth:
         def __init__(self, key: str, store: object) -> None:
             assert key == "key"
+            assert store == "store"
 
         def has_session(self) -> bool:
-            return bool(signed)
-
-        def sign_in(self, email: str, password: str) -> None:
-            signed.append((email, password))
+            return session[0]
 
         def id_token(self) -> str:
             return "tok"
+
+    def store_for(app: str) -> str:
+        apps.append(app)
+        return "store"
 
     monkeypatch.setattr(
         crdt_sync.FirebaseConfig, "load", classmethod(lambda cls: Cfg())
     )
     monkeypatch.setattr(crdt_sync, "FirebaseTokenProvider", Auth)
-    writer = report.firebase_writer()
-    assert signed == [("me@example.test", "pw")]
-    report.firebase_writer()  # a stored session skips the password sign-in
-    assert len(signed) == 1
-    assert isinstance(writer, report.FirebaseRtdb)
+    monkeypatch.setattr(crdt_sync, "credential_store_for", store_for)
+    with pytest.raises(report.NoSessionError, match="seed_session") as err:
+        report.firebase_writer()
+    assert "--app kartka-source-eval" in str(err.value)
+    session[0] = True
+    assert isinstance(report.firebase_writer(), report.FirebaseRtdb)
+    assert apps == ["kartka-source-eval", "kartka-source-eval"]
 
 
 def test_cli_dispatch(

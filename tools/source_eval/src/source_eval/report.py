@@ -26,6 +26,12 @@ RTDB_PATH = "kartka/source_health"
 #: The run meta: a separate node, so ``source_health`` stays ``{sha1(id): record}``.
 META_PATH = "kartka/source_health_meta"
 APP_NAME = "kartka-source-eval"
+#: What to run (once, in a browser) when the evaluator has no session.
+SEED_HINT = (
+    "no kartka-source-eval sign-in session; seed one with: cd ~/src/utils/"
+    "crdt-sync && python3 -m tool.seed_session --app kartka-source-eval"
+    " (full command: SEED_CMD in tools/agent/lib.sh)"
+)
 _ONLY_KEIYOUSHI = {"native": False, "mangayomiJs": False, "keiyoushi": True}
 
 
@@ -160,13 +166,24 @@ class FirebaseRtdb:
             raise RuntimeError(msg)
 
 
+class NoSessionError(RuntimeError):
+    """The evaluator has no seeded sign-in session."""
+
+
 def firebase_writer() -> FirebaseRtdb:
-    """Writer signed in with the shared ``~/.config/crdt-sync/`` credential."""
+    """RTDB client on the evaluator's seeded Google session.
+
+    The sync account is Google-only, so there is no password sign-in: the
+    session is ``~/.config/kartka-source-eval/firebase_auth.json``, written once
+    by crdt-sync's ``tool.seed_session --app kartka-source-eval`` and refreshed
+    from then on. Raises :class:`NoSessionError` naming that command when
+    it is missing.
+    """
     config = crdt_sync.FirebaseConfig.load()
     store = crdt_sync.credential_store_for(APP_NAME)
     auth = crdt_sync.FirebaseTokenProvider(config.api_key, store)
     if not auth.has_session():
-        auth.sign_in(config.email, config.read_password())
+        raise NoSessionError(SEED_HINT)
     return FirebaseRtdb(config.database_url, auth.id_token, RequestsTransport())
 
 
