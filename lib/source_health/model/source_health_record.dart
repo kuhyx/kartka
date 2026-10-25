@@ -28,6 +28,8 @@ class SourceHealthRecord {
     this.imageQuality,
     this.subsetOf,
     this.availability,
+    this.pagesLoad,
+    this.langScope,
     this.score,
     this.rank,
     this.verdict = HealthVerdict.pending,
@@ -55,6 +57,8 @@ class SourceHealthRecord {
       imageQuality: ImageQualityMetric.fromJson(j['imageQuality']),
       subsetOf: SubsetOfMetric.fromJson(j['subsetOf']),
       availability: AvailabilityMetric.fromJson(j['availability']),
+      pagesLoad: PagesLoadMetric.fromJson(j['pagesLoad']),
+      langScope: readString(j, 'langScope'),
       score: readDouble(j, 'score'),
       rank: readInt(j, 'rank'),
       verdict: HealthVerdict.parse(readString(j, 'verdict')),
@@ -102,6 +106,13 @@ class SourceHealthRecord {
   /// Which implementations of the site exist (native, JS, Keiyoushi).
   final AvailabilityMetric? availability;
 
+  /// Share of sampled pages that actually loaded; absent from older runs.
+  final PagesLoadMetric? pagesLoad;
+
+  /// Languages the evaluator tested (`en+ja` | `unrestricted`); null when
+  /// the run predates the field.
+  final String? langScope;
+
   /// Weighted score in 0..1.
   final double? score;
 
@@ -137,6 +148,8 @@ class SourceHealthRecord {
     'imageQuality': imageQuality?.toJson(),
     'subsetOf': subsetOf?.toJson(),
     'availability': availability?.toJson(),
+    'pagesLoad': pagesLoad?.toJson(),
+    'langScope': langScope,
     'score': score,
     'rank': rank,
     'verdict': verdict.name,
@@ -160,6 +173,8 @@ class SourceHealthRecord {
       other.imageQuality == imageQuality &&
       other.subsetOf == subsetOf &&
       other.availability == availability &&
+      other.pagesLoad == pagesLoad &&
+      other.langScope == langScope &&
       other.score == score &&
       other.rank == rank &&
       other.verdict == verdict &&
@@ -181,6 +196,8 @@ class SourceHealthRecord {
     imageQuality,
     subsetOf,
     availability,
+    pagesLoad,
+    langScope,
     score,
     rank,
     verdict,

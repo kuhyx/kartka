@@ -12,6 +12,7 @@ import 'package:kartka/source_health/metric_text.dart';
 import 'package:kartka/source_health/model/json_read.dart';
 import 'package:kartka/source_health/model/metrics.dart';
 import 'package:kartka/source_health/model/quality_metrics.dart';
+import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ranking.dart';
 import 'package:kartka/source_health/score_breakdown.dart';

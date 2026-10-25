@@ -2,6 +2,7 @@
 library;
 
 import 'package:kartka/source_health/model/json_read.dart';
+import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 
 /// A live view of every source's latest evaluation.
@@ -9,6 +10,10 @@ abstract interface class SourceHealthFeed {
   /// Emits the full ranking now and again on every evaluator update. Read
   /// failures arrive as stream errors; the UI shows them, never hides them.
   Stream<List<SourceHealthRecord>> watch();
+
+  /// Emits the latest run summary, or null when the evaluator has not
+  /// published one (runs before the meta node existed).
+  Stream<SourceHealthMeta?> watchMeta();
 }
 
 /// Parses a collection of §5 records in any shape the evaluator emits:

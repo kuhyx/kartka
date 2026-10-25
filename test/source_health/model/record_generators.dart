@@ -65,6 +65,12 @@ extension HealthGenerators on Any {
     (n, j, k) => AvailabilityMetric(native: n, mangayomiJs: j, keiyoushi: k),
   );
 
+  Generator<PagesLoadMetric> get pagesLoad =>
+      combine2(_ratio, _count, (r, s) => PagesLoadMetric(ratio: r, sampled: s));
+
+  Generator<String?> get _langScope =>
+      choose(['', 'en+ja', 'unrestricted']).map((s) => s.isEmpty ? null : s);
+
   Generator<DateTime?> get _instant => intInRange(
     0,
     4102444800000,
@@ -94,11 +100,13 @@ extension HealthGenerators on Any {
     completeness.nullable,
     imageQuality.nullable,
     subsetOf.nullable,
-    combine3(
+    combine5(
       _ratio,
       intInRange(1, 400).nullable,
       availability.nullable,
-      (s, r, a) => (s, r, a),
+      pagesLoad.nullable,
+      _langScope,
+      (s, r, a, p, l) => (s, r, a, p, l),
     ),
     combine2(
       choose(HealthVerdict.values),
@@ -114,7 +122,7 @@ extension HealthGenerators on Any {
       cc,
       iq,
       so,
-      (double?, int?, AvailabilityMetric?) ranking,
+      (double?, int?, AvailabilityMetric?, PagesLoadMetric?, String?) ranking,
       (HealthVerdict, List<String>) verdict,
     ) => SourceHealthRecord(
       id: base.id,
@@ -130,6 +138,8 @@ extension HealthGenerators on Any {
       imageQuality: iq,
       subsetOf: so,
       availability: ranking.$3,
+      pagesLoad: ranking.$4,
+      langScope: ranking.$5,
       score: ranking.$1,
       rank: ranking.$2,
       verdict: verdict.$1,

@@ -1,6 +1,7 @@
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/source_health/feed/rtdb_feed.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
+import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/source_health_lookup_impl.dart';
 import 'package:kartka/source_health/ui/sources_tab.dart';
@@ -33,5 +34,15 @@ class _RegistryFeed implements SourceHealthFeed {
       );
     }
     return RtdbSourceHealthFeed(reader).watch();
+  }
+
+  /// Without sync the records stream already shows the error; the header
+  /// just falls back to counting records.
+  @override
+  Stream<SourceHealthMeta?> watchMeta() {
+    final reader = _reader();
+    return reader == null
+        ? Stream.value(null)
+        : RtdbSourceHealthFeed(reader).watchMeta();
   }
 }

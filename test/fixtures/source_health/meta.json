@@ -1,0 +1,13 @@
+{
+  "runId": "2026-10-24T12-00-00Z",
+  "generatedAt": "2026-10-24T12:00:00Z",
+  "candidates": 590,
+  "tested": 585,
+  "verdicts": {"keep": 120, "cut": 400, "pending": 65},
+  "skipped": [
+    {"index": "keiyoushi", "reason": "nsfw", "count": 3,
+     "names": ["Hentai A", "Hentai B", "Hentai C"]},
+    {"index": "mangayomi", "reason": "duplicate of a native source",
+     "count": 2, "names": ["MangaDex", "Comick"]}
+  ]
+}

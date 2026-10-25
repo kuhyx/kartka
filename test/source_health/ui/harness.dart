@@ -4,6 +4,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
+import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 
 /// [child] inside the app's dark theme.
@@ -26,6 +27,12 @@ class ControlledFeed implements SourceHealthFeed {
 
   @override
   Stream<List<SourceHealthRecord>> watch() => controller.stream;
+
+  /// Meta events pushed here reach every watcher.
+  final meta = StreamController<SourceHealthMeta?>.broadcast();
+
+  @override
+  Stream<SourceHealthMeta?> watchMeta() => meta.stream;
 }
 
 /// Top edge of the card for source [id].

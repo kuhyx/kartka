@@ -164,3 +164,39 @@ class AvailabilityMetric {
   @override
   int get hashCode => Object.hash(native, mangayomiJs, keiyoushi);
 }
+
+/// `pagesLoad`: share of sampled chapter pages whose images downloaded.
+@immutable
+class PagesLoadMetric {
+  /// Creates a pages-load block; a null [ratio] was not measured.
+  const new({this.ratio, this.sampled});
+
+  /// Parses `pagesLoad`; null unless [json] is a map.
+  static PagesLoadMetric? fromJson(Object? json) {
+    final m = asMap(json);
+    if (m == null) return null;
+    return PagesLoadMetric(
+      ratio: readDouble(m, 'ratio'),
+      sampled: readInt(m, 'sampled'),
+    );
+  }
+
+  /// Share of sampled pages that loaded (0..1).
+  final double? ratio;
+
+  /// Pages sampled.
+  final int? sampled;
+
+  /// The JSON block.
+  Map<String, Object?> toJson() =>
+      compact({'ratio': ratio, 'sampled': sampled});
+
+  @override
+  bool operator ==(Object other) =>
+      other is PagesLoadMetric &&
+      other.ratio == ratio &&
+      other.sampled == sampled;
+
+  @override
+  int get hashCode => Object.hash(ratio, sampled);
+}

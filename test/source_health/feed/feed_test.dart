@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/source_health/feed/fixture_feed.dart';
 import 'package:kartka/source_health/feed/rtdb_feed.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
+import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/sync/rtdb_reader.dart';
 
 import '../fixtures.dart';
@@ -43,6 +44,14 @@ void main() {
   test('fixture feed emits the parsed fixture once', () async {
     final feed = FixtureSourceHealthFeed(fixtureJson('records.json'));
     expect(await feed.watch().toList(), [fixtureRecords()]);
+    expect(await feed.watchMeta().toList(), [null]);
+    final withMeta = FixtureSourceHealthFeed(
+      const [],
+      meta: fixtureJson('meta.json'),
+    );
+    expect(await withMeta.watchMeta().toList(), [
+      SourceHealthMeta.fromJson(fixtureJson('meta.json')),
+    ]);
   });
 
   group('RtdbSourceHealthFeed', () {
@@ -70,6 +79,20 @@ void main() {
     test('passes read errors through to the UI', () async {
       final feed = RtdbSourceHealthFeed(_FailingReader());
       await expectLater(feed.watch(), emitsError(isA<StateError>()));
+      await expectLater(feed.watchMeta(), emitsError(isA<StateError>()));
+    });
+
+    test('reads /kartka/source_health_meta; absent is null', () async {
+      final reader = InMemoryRtdbReader(const {});
+      final feed = RtdbSourceHealthFeed(reader);
+      expect(RtdbSourceHealthFeed.metaPath, 'source_health_meta');
+      final seen = <int?>[];
+      final sub = feed.watchMeta().listen((m) => seen.add(m?.candidates));
+      await pumpEventQueue();
+      reader.replace({'source_health_meta': fixtureJson('meta.json')});
+      await pumpEventQueue();
+      await sub.cancel();
+      expect(seen, [null, 590]);
     });
   });
 }
