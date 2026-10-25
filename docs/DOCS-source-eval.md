@@ -23,7 +23,7 @@ uv run source-eval init-run --run R --sample 30 --completeness 10 --images 3 --p
 uv run source-eval init-run --run R --ramp --reprobe # weekly: ramp + re-probes
 uv run source-eval enrich --run R --budget 50  # MangaUpdates chapter counts
 uv run source-eval probe [--ids ...|--installed] --fresh 10800 --budget 50
-uv run source-eval run --run R [--ids <id>] --workers 128 --inflight 48 --budget 50
+uv run source-eval run --run R [--ids <id>] --workers 128 --inflight 32 --budget 50
 uv run source-eval report --run R [--out F] [--publish] [--weights active|default] --budget 50
 uv run source-eval ramp finish --run R         # records the run's wall time
 ```
@@ -223,8 +223,9 @@ pinned at 96-105 % CPU (about 120 ms of server CPU per request) and 2.89 of
 7.6 s, p90 12.3 s of the 20 s timeout), a 5.1-5.3 h weekly projection
 against the <= 2 h target of 21 req/s. `systemd/eval_server_cpu.sh [s]`
 splits the JVM CPU by thread group (GC / JIT / request workers / database)
-while a batch runs. The weekly default is `--inflight 48` (in flight is
-req/s x latency: ~25 req/s x ~2 s); the full job unit has `CPUQuota=100%`.
+while a batch runs. The weekly default is `--inflight 32`: measured 2026-10-25 at 3 cores,
+32/48/64 all give 25-28 req/s (server CPU-bound), 32 has the lowest
+latency (median 0.9 s, p90 2 s); the full job unit has `CPUQuota=100%`.
 `maxSourcesInParallel` stays 6:
 in the server jar only the library updater and the downloader read it
 (range 1..20); the GraphQL browse/search/chapter path has no such limit.
