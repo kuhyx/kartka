@@ -1,6 +1,6 @@
 {
  "complete": true,
- "generatedAt": 1792844823.3387177,
+ "generatedAt": 1792895968.2476192,
  "progress": {
   "anilistPage": 10
  },
@@ -264,8 +264,8 @@
   },
   {
    "anilistId": 74347,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 239,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:74347",
    "origins": [
     "anilist"
@@ -299,8 +299,8 @@
   },
   {
    "anilistId": 108556,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 141,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:108556",
    "origins": [
     "anilist"
@@ -362,8 +362,8 @@
   },
   {
    "anilistId": 119257,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 308,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:119257",
    "origins": [
     "anilist"
@@ -507,8 +507,8 @@
   },
   {
    "anilistId": 30026,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 420,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:30026",
    "origins": [
     "anilist"
@@ -1024,8 +1024,8 @@
   },
   {
    "anilistId": 98263,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 68,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:98263",
    "origins": [
     "anilist"
@@ -1147,8 +1147,8 @@
   },
   {
    "anilistId": 46765,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 832,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:46765",
    "origins": [
     "anilist"
@@ -1302,8 +1302,8 @@
   },
   {
    "anilistId": 98842,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 133,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:98842",
    "origins": [
     "anilist"
@@ -1409,8 +1409,8 @@
   },
   {
    "anilistId": 128067,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 157,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:128067",
    "origins": [
     "anilist"
@@ -1443,8 +1443,8 @@
   },
   {
    "anilistId": 87395,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 84,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:87395",
    "origins": [
     "anilist"
@@ -1512,8 +1512,8 @@
   },
   {
    "anilistId": 144946,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 86,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:144946",
    "origins": [
     "anilist"
@@ -1711,8 +1711,8 @@
   },
   {
    "anilistId": 30104,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 5,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:30104",
    "origins": [
     "anilist"
@@ -1806,8 +1806,8 @@
   },
   {
    "anilistId": 86399,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 106,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:86399",
    "origins": [
     "anilist"
@@ -1904,8 +1904,8 @@
   },
   {
    "anilistId": 86551,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 74,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:86551",
    "origins": [
     "anilist"
@@ -2230,8 +2230,8 @@
   },
   {
    "anilistId": 149544,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 183,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:149544",
    "origins": [
     "anilist"
@@ -2509,8 +2509,8 @@
   },
   {
    "anilistId": 120980,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 335,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:120980",
    "origins": [
     "anilist"
@@ -2598,8 +2598,8 @@
   },
   {
    "anilistId": 85564,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 123,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:85564",
    "origins": [
     "anilist"
@@ -2757,8 +2757,8 @@
   },
   {
    "anilistId": 86848,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 630,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:86848",
    "origins": [
     "anilist"
@@ -2788,8 +2788,8 @@
   },
   {
    "anilistId": 163824,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 185,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:163824",
    "origins": [
     "anilist"
@@ -2847,8 +2847,8 @@
   },
   {
    "anilistId": 123573,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 193,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:123573",
    "origins": [
     "anilist"
@@ -2946,8 +2946,8 @@
   },
   {
    "anilistId": 109957,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 235,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:109957",
    "origins": [
     "anilist"
@@ -2994,8 +2994,8 @@
   },
   {
    "anilistId": 149332,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 218,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:149332",
    "origins": [
     "anilist"
@@ -3366,8 +3366,8 @@
   },
   {
    "anilistId": 136220,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 101,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:136220",
    "origins": [
     "anilist"
@@ -3618,8 +3618,8 @@
   },
   {
    "anilistId": 109501,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 99,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:109501",
    "origins": [
     "anilist"
@@ -3658,8 +3658,8 @@
   },
   {
    "anilistId": 33866,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 190,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:33866",
    "origins": [
     "anilist"
@@ -3817,8 +3817,8 @@
   },
   {
    "anilistId": 105011,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 79,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:105011",
    "origins": [
     "anilist"
@@ -3927,8 +3927,8 @@
   },
   {
    "anilistId": 114605,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 255,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:114605",
    "origins": [
     "anilist"
@@ -3966,8 +3966,8 @@
   },
   {
    "anilistId": 111189,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 37,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:111189",
    "origins": [
     "anilist"
@@ -4158,8 +4158,8 @@
   },
   {
    "anilistId": 86508,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 104,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:86508",
    "origins": [
     "anilist"
@@ -4206,8 +4206,8 @@
   },
   {
    "anilistId": 135325,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 165,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:135325",
    "origins": [
     "anilist"
@@ -4302,8 +4302,8 @@
   },
   {
    "anilistId": 113501,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 210,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:113501",
    "origins": [
     "anilist"
@@ -4578,7 +4578,7 @@
   {
    "anilistId": 172619,
    "chapters": null,
-   "chaptersFrom": null,
+   "chaptersFrom": "none",
    "key": "anilist:172619",
    "origins": [
     "anilist"
@@ -4661,8 +4661,8 @@
   },
   {
    "anilistId": 86707,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 531,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:86707",
    "origins": [
     "anilist"
@@ -4702,8 +4702,8 @@
   },
   {
    "anilistId": 125636,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 251,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:125636",
    "origins": [
     "anilist"
@@ -4994,8 +4994,8 @@
   },
   {
    "anilistId": 180752,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 102,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:180752",
    "origins": [
     "anilist"
@@ -5053,8 +5053,8 @@
   },
   {
    "anilistId": 101315,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 232,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:101315",
    "origins": [
     "anilist"
@@ -5087,8 +5087,8 @@
   },
   {
    "anilistId": 107987,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 65,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:107987",
    "origins": [
     "anilist"
@@ -5249,8 +5249,8 @@
   },
   {
    "anilistId": 85435,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 96,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:85435",
    "origins": [
     "anilist"
@@ -5293,8 +5293,8 @@
   },
   {
    "anilistId": 107559,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 70,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:107559",
    "origins": [
     "anilist"
@@ -5347,8 +5347,8 @@
   },
   {
    "anilistId": 116353,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 922,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:116353",
    "origins": [
     "anilist"
@@ -5440,8 +5440,8 @@
   },
   {
    "anilistId": 105263,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 67,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:105263",
    "origins": [
     "anilist"
@@ -5564,8 +5564,8 @@
   },
   {
    "anilistId": 101942,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 86,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:101942",
    "origins": [
     "anilist"
@@ -5652,8 +5652,8 @@
   },
   {
    "anilistId": 151025,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 111,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:151025",
    "origins": [
     "anilist"
@@ -5705,8 +5705,8 @@
   },
   {
    "anilistId": 59211,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 153,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:59211",
    "origins": [
     "anilist"
@@ -5800,8 +5800,8 @@
   },
   {
    "anilistId": 137595,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 203,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:137595",
    "origins": [
     "anilist"
@@ -5832,8 +5832,8 @@
   },
   {
    "anilistId": 103156,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 274,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:103156",
    "origins": [
     "anilist"
@@ -6023,8 +6023,8 @@
   },
   {
    "anilistId": 144866,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 226,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:144866",
    "origins": [
     "anilist"
@@ -6119,8 +6119,8 @@
   },
   {
    "anilistId": 141007,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 208,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:141007",
    "origins": [
     "anilist"
@@ -6289,8 +6289,8 @@
   },
   {
    "anilistId": 116170,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 77,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:116170",
    "origins": [
     "anilist"
@@ -6342,8 +6342,8 @@
   },
   {
    "anilistId": 120385,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 250,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:120385",
    "origins": [
     "anilist"
@@ -6674,8 +6674,8 @@
   },
   {
    "anilistId": 122063,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 278,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:122063",
    "origins": [
     "anilist"
@@ -6866,7 +6866,7 @@
   {
    "anilistId": 153432,
    "chapters": null,
-   "chaptersFrom": null,
+   "chaptersFrom": "none",
    "key": "anilist:153432",
    "origins": [
     "anilist"
@@ -6951,8 +6951,8 @@
   },
   {
    "anilistId": 128882,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 222,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:128882",
    "origins": [
     "anilist"
@@ -7065,8 +7065,8 @@
   },
   {
    "anilistId": 114542,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 263,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:114542",
    "origins": [
     "anilist"
@@ -7164,8 +7164,8 @@
   },
   {
    "anilistId": 98544,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 90,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:98544",
    "origins": [
     "anilist"
@@ -7214,8 +7214,8 @@
   },
   {
    "anilistId": 135083,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 166,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:135083",
    "origins": [
     "anilist"
@@ -7466,8 +7466,8 @@
   },
   {
    "anilistId": 178379,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 100,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:178379",
    "origins": [
     "anilist"
@@ -7557,8 +7557,8 @@
   },
   {
    "anilistId": 85671,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 119,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:85671",
    "origins": [
     "anilist"
@@ -7732,8 +7732,8 @@
   },
   {
    "anilistId": 201773,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 45,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:201773",
    "origins": [
     "anilist"
@@ -7765,8 +7765,8 @@
   },
   {
    "anilistId": 153880,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 203,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:153880",
    "origins": [
     "anilist"
@@ -7823,8 +7823,8 @@
   },
   {
    "anilistId": 141013,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 137,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:141013",
    "origins": [
     "anilist"
@@ -7943,8 +7943,8 @@
   },
   {
    "anilistId": 85495,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 124,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:85495",
    "origins": [
     "anilist"
@@ -8029,8 +8029,8 @@
   },
   {
    "anilistId": 175946,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 121,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:175946",
    "origins": [
     "anilist"
@@ -8084,7 +8084,7 @@
   {
    "anilistId": 111075,
    "chapters": null,
-   "chaptersFrom": null,
+   "chaptersFrom": "none",
    "key": "anilist:111075",
    "origins": [
     "anilist"
@@ -8131,8 +8131,8 @@
   },
   {
    "anilistId": 111258,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 96,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:111258",
    "origins": [
     "anilist"
@@ -8270,8 +8270,8 @@
   },
   {
    "anilistId": 143031,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 57,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:143031",
    "origins": [
     "anilist"
@@ -8360,8 +8360,8 @@
   },
   {
    "anilistId": 187944,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 89,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:187944",
    "origins": [
     "anilist"
@@ -8390,8 +8390,8 @@
   },
   {
    "anilistId": 112275,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 12,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:112275",
    "origins": [
     "anilist"
@@ -8441,8 +8441,8 @@
   },
   {
    "anilistId": 171729,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 5,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:171729",
    "origins": [
     "anilist"
@@ -8480,8 +8480,8 @@
   },
   {
    "anilistId": 107780,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 143,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:107780",
    "origins": [
     "anilist"
@@ -8754,8 +8754,8 @@
   },
   {
    "anilistId": 125116,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 33,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:125116",
    "origins": [
     "anilist"
@@ -9327,8 +9327,8 @@
   },
   {
    "anilistId": 118695,
-   "chapters": null,
-   "chaptersFrom": null,
+   "chapters": 65,
+   "chaptersFrom": "mangaupdates",
    "key": "anilist:118695",
    "origins": [
     "anilist"
