@@ -1,26 +1,29 @@
 {
-  "_comment": "Read by tools/source_eval/tests/test_profile_fixture.py AND test/source_health/scoring/profile_fixture_test.dart: the DEFAULT scoring profile and golden judgements, so the two languages cannot drift.",
+  "_comment": "Read by tools/source_eval/tests/test_profile_fixture.py AND test/source_health/scoring/profile_fixture_test.dart: the DEFAULT scoring profile and golden judgements, so the two languages cannot drift. Python derives cutReasons and subsetOf from the records + found; Dart reads them as published.",
   "settingKey": "sourceHealth.scoring",
   "settingNode": "kartka/settings/sourceHealth~2Escoring",
-  "scale": {"fullWidthPx": 1400, "worstP95Ms": 5000},
-  "thresholds": {"minUptime": 0.95, "minCoverage": 0.6, "subsetOverlap": 0.9},
+  "scale": {"fullWidthPx": 1067, "worstP95Ms": 5000},
+  "thresholds": {
+    "minUptime": 0.95, "minCoverage": 0.6, "subsetOverlap": 0.5,
+    "subsetPenalty": 0.5, "hardChallengeRate": 0.5,
+    "completeChapterRatio": 0.8, "legacyCoverageShare": 0.6
+  },
   "default": {
     "weights": {
-      "coverage": 0.30, "chapterCompleteness": 0.20, "uptime": 0.20,
-      "imageQuality": 0.15, "speed": 0.15
+      "completeCoverage": 0.50, "uptime": 0.20, "imageQuality": 0.15,
+      "speed": 0.15
     },
     "pagesLoadMultiplier": true,
     "keepScore": 0.90,
     "cuts": {
-      "blocking": false, "subset": false, "coverage": false, "uptime": false,
+      "blocking": false, "coverage": false, "uptime": false,
       "needsBrowserEngine": false, "pagesNeverLoad": false
     }
   },
   "profiles": {
     "speedOnly": {
       "weights": {
-        "coverage": 0, "chapterCompleteness": 0, "uptime": 0,
-        "imageQuality": 0, "speed": 1
+        "completeCoverage": 0, "uptime": 0, "imageQuality": 0, "speed": 1
       },
       "pagesLoadMultiplier": false,
       "keepScore": 0.80,
@@ -28,8 +31,7 @@
     },
     "uneven": {
       "weights": {
-        "coverage": 1, "chapterCompleteness": 0.5, "uptime": 0.5,
-        "imageQuality": 0, "speed": 0
+        "completeCoverage": 1, "uptime": 0.5, "imageQuality": 0, "speed": 0
       },
       "pagesLoadMultiplier": true,
       "keepScore": 0.90,
@@ -37,14 +39,26 @@
     },
     "keepHalf": {
       "weights": {
-        "coverage": 0.30, "chapterCompleteness": 0.20, "uptime": 0.20,
-        "imageQuality": 0.15, "speed": 0.15
+        "completeCoverage": 0.50, "uptime": 0.20, "imageQuality": 0.15,
+        "speed": 0.15
       },
       "pagesLoadMultiplier": true,
       "keepScore": 0.5,
       "cuts": {
-        "blocking": false, "subset": false, "coverage": false, "uptime": false,
+        "blocking": false, "coverage": false, "uptime": false,
         "needsBrowserEngine": false, "pagesNeverLoad": false
+      }
+    },
+    "legacyScaled": {
+      "weights": {
+        "completeCoverage": 1.0, "uptime": 0.3333333333333333,
+        "imageQuality": 0.0, "speed": 0.0
+      }
+    },
+    "legacyNoCompleteness": {
+      "weights": {
+        "completeCoverage": 0.30, "uptime": 0.20, "imageQuality": 0.15,
+        "speed": 0.15
       }
     }
   },
@@ -54,77 +68,141 @@
      "input": {"keepScore": 0.5}, "profile": "keepHalf"},
     {"name": "unknown keys are ignored",
      "input": {"future": 1}, "profile": "default"},
+    {"name": "legacy coverage + completeness weights merge; cuts.subset is ignored",
+     "input": {"weights": {"coverage": 0.30, "chapterCompleteness": 0.20,
+                           "uptime": 0.20, "imageQuality": 0.15, "speed": 0.15},
+               "pagesLoadMultiplier": true, "keepScore": 0.90,
+               "cuts": {"blocking": false, "subset": true, "coverage": false,
+                        "uptime": false, "needsBrowserEngine": false,
+                        "pagesNeverLoad": false}},
+     "profile": "default"},
+    {"name": "a merged legacy weight above 1 scales every weight down",
+     "input": {"weights": {"coverage": 1, "chapterCompleteness": 0.5,
+                           "uptime": 0.5, "imageQuality": 0, "speed": 0}},
+     "profile": "legacyScaled"},
+    {"name": "a missing legacy weight takes its old default",
+     "input": {"weights": {"chapterCompleteness": 0}},
+     "profile": "legacyNoCompleteness"},
+    {"name": "the merged weight wins over legacy ones",
+     "input": {"weights": {"completeCoverage": 0.5, "coverage": 1}},
+     "profile": "default"},
+    {"name": "an invalid legacy weight", "input": {"weights": {"coverage": 2}}, "profile": null},
+    {"name": "the old subset switch is ignored, whatever it holds",
+     "input": {"cuts": {"subset": "yes"}}, "profile": "default"},
     {"name": "not an object", "input": [1], "profile": null},
-    {"name": "weight above 1", "input": {"weights": {"coverage": 1.5}}, "profile": null},
+    {"name": "weight above 1", "input": {"weights": {"completeCoverage": 1.5}}, "profile": null},
     {"name": "negative weight", "input": {"weights": {"uptime": -0.1}}, "profile": null},
     {"name": "weight not a number", "input": {"weights": {"speed": "high"}}, "profile": null},
     {"name": "all-zero weights",
+     "input": {"weights": {"completeCoverage": 0, "uptime": 0,
+                           "imageQuality": 0, "speed": 0}}, "profile": null},
+    {"name": "all-zero legacy weights",
      "input": {"weights": {"coverage": 0, "chapterCompleteness": 0, "uptime": 0,
                            "imageQuality": 0, "speed": 0}}, "profile": null},
     {"name": "keepScore above 1", "input": {"keepScore": 1.2}, "profile": null},
     {"name": "keepScore not a number", "input": {"keepScore": "x"}, "profile": null},
     {"name": "multiplier not a bool", "input": {"pagesLoadMultiplier": 1}, "profile": null},
-    {"name": "cut switch not a bool", "input": {"cuts": {"subset": "yes"}}, "profile": null},
+    {"name": "cut switch not a bool", "input": {"cuts": {"blocking": "yes"}}, "profile": null},
     {"name": "cuts not an object", "input": {"cuts": true}, "profile": null},
     {"name": "weights not an object", "input": {"weights": 3}, "profile": null}
   ],
+  "found": {
+    "star": ["a", "b", "c", "d", "e"],
+    "copy": ["a", "b", "c", "x", "y"],
+    "dead": ["a", "b", "c", "x", "y"]
+  },
   "records": [
-    {"id": "star", "origin": "suwayomi", "coverage": {"ratio": 1},
+    {"id": "star", "origin": "suwayomi", "coverage": {"ratio": 1, "completeRatio": 1},
      "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
      "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
      "blocking": {"challengeRate": 0}, "pagesLoad": {"ratio": 1, "sampled": 10},
-     "cutReasons": []},
-    {"id": "slow", "origin": "plugin", "coverage": {"ratio": 1},
+     "subsetOf": null, "cutReasons": []},
+    {"id": "slow", "origin": "plugin", "coverage": {"ratio": 1, "completeRatio": 1},
      "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
      "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 5000},
      "blocking": {"challengeRate": 0}, "pagesLoad": {"ratio": 1, "sampled": 10},
-     "cutReasons": []},
-    {"id": "nopages", "origin": "suwayomi", "coverage": {"ratio": 1},
+     "subsetOf": null, "cutReasons": []},
+    {"id": "nopages", "origin": "suwayomi", "coverage": {"ratio": 1, "completeRatio": 1},
      "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
      "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
      "blocking": {"challengeRate": 0}, "pagesLoad": {"ratio": 0, "sampled": 10},
-     "cutReasons": []},
-    {"id": "webview", "origin": "native", "coverage": {"ratio": 1},
+     "subsetOf": null, "cutReasons": []},
+    {"id": "webview", "origin": "native", "coverage": {"ratio": 1, "completeRatio": 1},
      "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
      "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
-     "blocking": {"challengeRate": 0.1, "kinds": ["webview"]},
+     "blocking": {"challengeRate": 0.1, "kinds": ["webview"], "hardRate": 0},
      "pagesLoad": {"ratio": 1, "sampled": 10},
-     "flags": ["needs-browser-engine"], "cutReasons": []},
-    {"id": "unmeasured", "origin": "native", "coverage": {"ratio": null},
+     "flags": ["needs-browser-engine"], "subsetOf": null, "cutReasons": []},
+    {"id": "unmeasured", "origin": "native",
+     "coverage": {"ratio": null, "completeRatio": null},
      "chapterCompleteness": {"medianRatio": null},
      "uptime": {"ratio": null, "status": "accruing"},
      "imageQuality": {"medianWidthPx": null}, "latencyMs": {"p95": null},
      "blocking": {"challengeRate": 0}, "pagesLoad": {"ratio": null, "sampled": 0},
-     "cutReasons": []},
-    {"id": "lowcover", "origin": "suwayomi", "coverage": {"ratio": 0.5},
+     "subsetOf": null, "cutReasons": []},
+    {"id": "lowcover", "origin": "suwayomi",
+     "coverage": {"ratio": 0.5, "completeRatio": 0.5},
      "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
      "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
      "blocking": {"challengeRate": 0}, "pagesLoad": {"ratio": 1, "sampled": 10},
-     "cutReasons": ["coverage<0.60"]}
+     "subsetOf": null, "cutReasons": ["coverage<0.60"]},
+    {"id": "legacy", "origin": "suwayomi", "coverage": {"ratio": 1},
+     "chapterCompleteness": {"medianRatio": 0.5}, "uptime": {"ratio": 1, "status": "final"},
+     "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
+     "blocking": {"challengeRate": 0}, "pagesLoad": {"ratio": 1, "sampled": 10},
+     "subsetOf": null, "cutReasons": []},
+    {"id": "copy", "origin": "plugin", "coverage": {"ratio": 1, "completeRatio": 1},
+     "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
+     "imageQuality": {"medianWidthPx": 1067}, "latencyMs": {"p95": 0},
+     "blocking": {"challengeRate": 0}, "pagesLoad": {"ratio": 1, "sampled": 10},
+     "subsetOf": {"sourceId": "star", "overlap": 0.6}, "cutReasons": ["subset"]},
+    {"id": "dead", "origin": "native", "coverage": {"ratio": 1, "completeRatio": 1},
+     "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
+     "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
+     "blocking": {"challengeRate": 0}, "pagesLoad": {"ratio": 1, "sampled": 10},
+     "unreachable": true, "subsetOf": null, "cutReasons": ["unreachable"]},
+    {"id": "walled", "origin": "suwayomi", "coverage": {"ratio": 1, "completeRatio": 1},
+     "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
+     "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
+     "blocking": {"challengeRate": 0.6, "kinds": ["cloudflare"], "hardRate": 0.6},
+     "pagesLoad": {"ratio": 1, "sampled": 10},
+     "subsetOf": null, "cutReasons": ["blocking>=0.50"]},
+    {"id": "browser", "origin": "plugin", "coverage": {"ratio": 1, "completeRatio": 1},
+     "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
+     "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
+     "blocking": {"challengeRate": 0.7, "kinds": ["webview"], "hardRate": 0},
+     "pagesLoad": {"ratio": 1, "sampled": 10},
+     "flags": ["needs-browser-engine"], "subsetOf": null, "cutReasons": []}
   ],
   "expect": {
     "default": {
-      "order": ["webview", "star", "lowcover", "slow", "unmeasured", "nopages"],
+      "order": ["dead", "webview", "star", "walled", "browser", "legacy", "slow",
+                "lowcover", "copy", "unmeasured", "nopages"],
       "judged": {
         "star": [1.0, "keep"], "slow": [0.85, "cut"], "nopages": [0.0, "cut"],
         "webview": [1.0, "keep"], "unmeasured": [0.0, "pending"],
-        "lowcover": [0.85, "cut"]
+        "lowcover": [0.75, "cut"], "legacy": [0.9, "keep"], "copy": [0.7, "cut"],
+        "dead": [1.0, "cut"], "walled": [1.0, "cut"], "browser": [1.0, "keep"]
       }
     },
     "speedOnly": {
-      "order": ["webview", "lowcover", "nopages", "star", "unmeasured", "slow"],
+      "order": ["dead", "webview", "legacy", "lowcover", "nopages", "star", "walled",
+                "browser", "copy", "unmeasured", "slow"],
       "judged": {
         "star": [1.0, "keep"], "slow": [0.0, "cut"], "nopages": [1.0, "keep"],
         "webview": [1.0, "cut"], "unmeasured": [0.0, "pending"],
-        "lowcover": [1.0, "keep"]
+        "lowcover": [1.0, "keep"], "legacy": [1.0, "keep"], "copy": [0.7, "cut"],
+        "dead": [1.0, "cut"], "walled": [1.0, "cut"], "browser": [1.0, "cut"]
       }
     },
     "uneven": {
-      "order": ["webview", "star", "slow", "lowcover", "unmeasured", "nopages"],
+      "order": ["dead", "webview", "star", "walled", "browser", "slow", "legacy",
+                "copy", "lowcover", "unmeasured", "nopages"],
       "judged": {
         "star": [1.0, "keep"], "slow": [1.0, "keep"], "nopages": [0.0, "cut"],
         "webview": [1.0, "keep"], "unmeasured": [0.0, "pending"],
-        "lowcover": [0.75, "cut"]
+        "lowcover": [0.667, "cut"], "legacy": [0.867, "cut"], "copy": [0.7, "cut"],
+        "dead": [1.0, "cut"], "walled": [1.0, "cut"], "browser": [1.0, "keep"]
       }
     }
   }

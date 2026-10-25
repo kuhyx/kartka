@@ -11,9 +11,13 @@ import pytest
 from source_eval import profile as profile_mod
 from source_eval.profile import DEFAULT, Profile, parse_profile
 from source_eval.score import (
+    COMPLETE_CHAPTERS,
     COVERAGE_MIN,
+    HARD_CHALLENGE_RATE,
+    LEGACY_COVERAGE_SHARE,
     P95_ZERO,
     SUBSET_MIN,
+    SUBSET_PENALTY,
     UPTIME_MIN,
     WIDTH_FULL,
     Record,
@@ -44,6 +48,10 @@ def test_scale_and_thresholds_are_shared() -> None:
         "minUptime": UPTIME_MIN,
         "minCoverage": COVERAGE_MIN,
         "subsetOverlap": SUBSET_MIN,
+        "subsetPenalty": SUBSET_PENALTY,
+        "hardChallengeRate": HARD_CHALLENGE_RATE,
+        "completeChapterRatio": COMPLETE_CHAPTERS,
+        "legacyCoverageShare": LEGACY_COVERAGE_SHARE,
     }
 
 
@@ -64,12 +72,15 @@ def test_golden_judgements(name: str) -> None:
     records = cast("list[Record]", copy.deepcopy(SHARED["records"]))
     for record in records:
         record.pop("cutReasons")  # the evaluator derives these itself
-    ranked = rank(records, {}, named(name))
+        record.pop("subsetOf")
+    found = {k: set(v) for k, v in SHARED["found"].items()}
+    ranked = rank(records, found, named(name))
     assert [r["id"] for r in ranked] == expected["order"]
     assert [r["rank"] for r in ranked] == list(range(1, len(ranked) + 1))
-    published = {r["id"]: r["cutReasons"] for r in SHARED["records"]}
+    published = {r["id"]: r for r in SHARED["records"]}
     for record in ranked:
         rid = str(record["id"])
         assert [record["score"], record["verdict"]] == expected["judged"][rid]
         assert record["defaultScore"] == SHARED["expect"]["default"]["judged"][rid][0]
-        assert record["cutReasons"] == published[rid]
+        assert record["cutReasons"] == published[rid]["cutReasons"]
+        assert record["subsetOf"] == published[rid]["subsetOf"]

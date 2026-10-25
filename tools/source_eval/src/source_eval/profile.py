@@ -20,15 +20,17 @@ SETTING_KEY = "sourceHealth.scoring"
 SETTING_NODE = "kartka/settings/sourceHealth~2Escoring"
 
 _WEIGHT_FIELDS = (
-    ("coverage", "coverage"),
-    ("chapterCompleteness", "chapter_completeness"),
+    ("completeCoverage", "complete_coverage"),
     ("uptime", "uptime"),
     ("imageQuality", "image_quality"),
     ("speed", "speed"),
 )
+#: Weights of profiles written before coverage and chapter completeness
+#: merged (2026-10-25), with their old defaults: they add up to the merged one.
+_LEGACY_WEIGHTS = (("coverage", 0.30), ("chapterCompleteness", 0.20))
+# ``subset`` is no longer a switch (a graded penalty instead): ignored.
 _CUT_FIELDS = (
     ("blocking", "blocking"),
-    ("subset", "subset"),
     ("coverage", "coverage"),
     ("uptime", "uptime"),
     ("needsBrowserEngine", "needs_browser_engine"),
@@ -38,10 +40,13 @@ _CUT_FIELDS = (
 
 @dataclass(frozen=True, slots=True)
 class Weights:
-    """Weights of the five score parts, each 0 to 1 (0 turns a part off)."""
+    """Weights of the four score parts, each 0 to 1 (0 turns a part off).
 
-    coverage: float = 0.30
-    chapter_completeness: float = 0.20
+    ``complete_coverage`` is the merged coverage (found with a complete
+    chapter list), the old coverage .30 + chapter completeness .20.
+    """
+
+    complete_coverage: float = 0.50
     uptime: float = 0.20
     image_quality: float = 0.15
     speed: float = 0.15
@@ -50,12 +55,18 @@ class Weights:
         """The raw weights in contract order."""
         return [getattr(self, attr) for _, attr in _WEIGHT_FIELDS]
 
-    def normalised(self) -> tuple[float, float, float, float, float]:
+    def total(self) -> float:
+        """Sum of the raw weights, added in order exactly as the app does."""
+        total = 0.0
+        for value in self.values():
+            total += value
+        return total
+
+    def normalised(self) -> tuple[float, float, float, float]:
         """The weights scaled to sum 1, in contract order. Needs a non-zero sum."""
-        values = self.values()
-        total = math.fsum(values)
-        c, cc, u, q, s = (v / total for v in values)
-        return c, cc, u, q, s
+        total = self.total()
+        c, u, q, s = (v / total for v in self.values())
+        return c, u, q, s
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,7 +74,6 @@ class Cuts:
     """Per-reason switches: an enabled one cuts every source it applies to."""
 
     blocking: bool = False
-    subset: bool = False
     coverage: bool = False
     uptime: bool = False
     needs_browser_engine: bool = False
@@ -118,25 +128,55 @@ def _fields(raw: object, names: tuple[tuple[str, str], ...]) -> dict[str, Any] |
     return {attr: raw[name] for name, attr in names if name in raw}
 
 
+def _weights(raw: object) -> dict[str, float] | None:
+    """Weight kwargs from the wire form; None when any is invalid.
+
+    Without ``completeCoverage``, the legacy ``coverage`` and
+    ``chapterCompleteness`` (each defaulting to its old value) add up to it;
+    a sum above 1 scales every weight down by it, keeping their ratios.
+    """
+    fields = _fields(raw, _WEIGHT_FIELDS)
+    if fields is None:
+        return None
+    parsed: dict[str, float] = {}
+    for attr, value in fields.items():
+        number = _number(value)
+        if number is None:
+            return None
+        parsed[attr] = number
+    if "complete_coverage" in parsed or not isinstance(raw, dict):
+        return parsed
+    merged = 0.0
+    for name, old_default in _LEGACY_WEIGHTS:
+        number = _number(raw.get(name, old_default))
+        if number is None:
+            return None
+        merged += number
+    if merged <= 1:
+        return {**parsed, "complete_coverage": merged}
+    full = {
+        attr: parsed.get(attr, getattr(DEFAULT.weights, attr))
+        for _, attr in _WEIGHT_FIELDS
+    }
+    full["complete_coverage"] = merged
+    return {attr: value / merged for attr, value in full.items()}
+
+
 def parse_profile(raw: object) -> Profile | None:
     """A profile from its wire form, or None when it is not valid.
 
     A missing field takes its DEFAULT; unknown keys are ignored. A field of
     the wrong type, a weight or ``keepScore`` outside 0..1 and weights that
     are all zero make the whole profile invalid (callers fall back to DEFAULT).
+    Legacy weights merge (see :func:`_weights`); the old ``cuts.subset`` is
+    ignored.
     """
     if not isinstance(raw, dict):
         return None
-    weights = _fields(raw.get("weights"), _WEIGHT_FIELDS)
+    parsed = _weights(raw.get("weights"))
     cuts = _fields(raw.get("cuts"), _CUT_FIELDS)
-    if weights is None or cuts is None:
+    if parsed is None or cuts is None:
         return None
-    parsed: dict[str, float] = {}
-    for attr, value in weights.items():
-        number = _number(value)
-        if number is None:
-            return None
-        parsed[attr] = number
     if not all(isinstance(value, bool) for value in cuts.values()):
         return None
     multiplier = raw.get("pagesLoadMultiplier", DEFAULT.pages_load_multiplier)
@@ -144,4 +184,4 @@ def parse_profile(raw: object) -> Profile | None:
     if not isinstance(multiplier, bool) or keep is None:
         return None
     result = Profile(Weights(**parsed), multiplier, keep, Cuts(**cuts))
-    return result if math.fsum(result.weights.values()) > 0 else None
+    return result if result.weights.total() > 0 else None

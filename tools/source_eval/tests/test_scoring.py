@@ -7,7 +7,7 @@ from typing import Any
 from hypothesis import given
 from hypothesis import strategies as st
 
-from source_eval.score import Record, cut_reasons, rank, score
+from source_eval.score import Record, cut_reasons, rank, round3, score
 
 
 def record(  # noqa: PLR0913
@@ -39,9 +39,28 @@ def record(  # noqa: PLR0913
 
 
 def test_score_matches_contract_formula_example() -> None:
-    # DOCS-contracts §5 example values; the formula, not the printed 0.81, wins.
+    # DOCS-contracts §5 example values, scored as a run without the merged
+    # coverage (legacy split): 0.5 * (0.6 * .788 + 0.4 * .97) + 0.2 * .964
+    # + 0.15 * 1 (1100 px >= 1067) + 0.15 * (1 - 1300 / 5000).
     example = record("x", coverage=0.788, complete=0.97, up=0.964, width=1100, p95=1300)
-    assert score(example) == 0.852
+    assert score(example) == 0.884
+    merged: Record = {**example, "coverage": {"ratio": 0.788, "completeRatio": 0.7}}
+    assert score(merged) == round3(0.5 * 0.7 + 0.2 * 0.964 + 0.15 + 0.111)
+
+
+def test_image_quality_is_full_from_1067_px() -> None:
+    def quality(width: float) -> float:
+        perfect = record("x", coverage=1, complete=1, up=1, width=width, p95=0)
+        return score(perfect)
+
+    assert quality(1067) == quality(4000) == 1.0
+    assert quality(1067 / 2) == round3(0.85 + 0.15 * 0.5)
+
+
+def test_round3_rounds_the_exact_value_half_up() -> None:
+    assert round3(0.0625) == 0.063  # an exact binary tie: round() gives 0.062
+    assert round3(1.0005) == 1.0  # 1.0005 is stored just below the tie
+    assert round3(1.0) == 1.0
 
 
 def test_score_caps_and_missing_metrics() -> None:
@@ -82,40 +101,72 @@ def test_cut_reasons() -> None:
     assert cut_reasons(record("x", coverage=None)) == []
 
 
-def test_rank_verdicts_and_subset() -> None:
-    # The score alone decides the verdict; cutReasons only explain it.
-    def strong(rid: str, **kw: Any) -> Record:  # noqa: ANN401
-        return record(rid, complete=1, p95=0, **kw)
+def strong(rid: str, **kw: Any) -> Record:  # noqa: ANN401
+    """Full uptime, completeness, width and speed; coverage as given."""
+    return record(rid, complete=1, p95=0, **kw)
 
+
+def test_rank_verdicts_and_the_graded_subset_penalty() -> None:
     records = [
-        strong("big", coverage=0.9),
-        strong("dup", coverage=0.85),
-        strong("narrow", coverage=0.85, width=2000),
-        strong("new", coverage=0.7, status="accruing"),
+        strong("big", coverage=0.9),  # 0.97
+        strong("dup", coverage=0.85),  # 0.955 base, all of it on big
+        strong("half", coverage=0.85),  # half of it on big
+        strong("low", coverage=0.85),  # a quarter on big: no penalty
+        strong("wide", coverage=0.85, width=1300),  # big is narrower
+        {**strong("hard", coverage=0.9), "blocking": {"hardRate": 0.6}},
+        strong("onhard", coverage=0.85),  # only on the hard-cut source
         strong("plugin", coverage=None, origin="plugin"),
         record("blocked", coverage=0.95, challenge=0.5, complete=0.5, p95=0),
     ]
     found = {
         "big": {"a", "b", "c", "d"},
         "dup": {"a", "b", "c"},
-        "narrow": {"a", "b", "c"},
-        "new": {"z"},
-        "blocked": {"a", "b", "c", "d", "e"},
+        "half": {"a", "b", "x", "y"},
+        "low": {"a", "s", "t", "u"},
+        "wide": {"a", "b", "c"},
+        "hard": {"a", "p", "q", "r"},
+        "onhard": {"p", "q"},
+        "blocked": {"m"},
     }
     ranked = {r["id"]: r for r in rank(copy.deepcopy(records), found)}
-    assert [ranked[k]["rank"] for k in ("narrow", "big", "dup")] == [1, 2, 3]
-    assert ranked["big"]["verdict"] == "keep"
-    assert ranked["blocked"]["verdict"] == "cut"
-    assert ranked["blocked"]["cutReasons"] == ["blocking"]
-    # "narrow" outranks "big" (wider images) and is the best superset of "dup".
-    assert ranked["dup"]["subsetOf"] == {"sourceId": "narrow", "overlap": 1.0}
+    assert ranked["big"]["rank"] == 1  # "hard" ties on score, "big" < "hard"
+    assert (ranked["big"]["verdict"], ranked["hard"]["verdict"]) == ("keep", "cut")
+    assert ranked["hard"]["cutReasons"] == ["blocking>=0.50"]
+    assert ranked["dup"]["subsetOf"] == {"sourceId": "big", "overlap": 1.0}
     assert ranked["dup"]["cutReasons"] == ["subset"]
-    assert ranked["dup"]["verdict"] == "keep"  # explanatory only: score 0.934
-    assert ranked["narrow"]["subsetOf"] is None  # outranks "big"
-    assert ranked["big"]["subsetOf"] is None  # "narrow" lacks "d"
-    assert ranked["new"]["verdict"] == "cut"  # measured, score 0.889, uptime accruing
-    assert ranked["new"]["cutReasons"] == []
+    assert ranked["dup"]["score"] == 0.478  # the unrounded 0.955 x 0.5
+    assert ranked["dup"]["defaultScore"] == ranked["dup"]["score"]
+    assert ranked["dup"]["verdict"] == "cut"
+    assert ranked["half"]["subsetOf"] == {"sourceId": "big", "overlap": 0.5}
+    assert ranked["half"]["score"] == 0.716
+    for free in ("low", "wide", "onhard"):
+        assert ranked[free]["subsetOf"] is None, free
+        assert (ranked[free]["score"], ranked[free]["verdict"]) == (0.955, "keep")
+    assert ranked["blocked"]["cutReasons"] == ["blocking"]
+    assert ranked["blocked"]["verdict"] == "cut"  # by score: 0.885
     assert ranked["plugin"]["verdict"] == "pending"  # nothing measured
+    # The penalty re-ranks: "dup" (0.478) falls below "plugin" (0.5).
+    assert [r["id"] for r in rank(copy.deepcopy(records), found)][-3:] == [
+        "half",
+        "plugin",
+        "dup",
+    ]
+
+
+def test_subset_eligibility_is_the_base_ranking_without_feedback() -> None:
+    """ "x" is itself penalised (half of it on "z") and ends up cut, yet it
+    still covers "y": who covers whom is decided once, before any penalty."""
+    z, x, y = (
+        strong("z", coverage=0.9),
+        strong("x", coverage=0.88),
+        strong("y", coverage=0.85),
+    )
+    found = {"z": {"m", "o"}, "x": {"m", "n"}, "y": {"n"}}
+    ranked = {r["id"]: r for r in rank([z, x, y], found)}
+    assert ranked["x"]["subsetOf"] == {"sourceId": "z", "overlap": 0.5}
+    assert ranked["x"]["verdict"] == "cut"
+    assert ranked["y"]["subsetOf"] == {"sourceId": "x", "overlap": 1.0}
+    assert ranked["y"]["score"] == 0.478
 
 
 def test_subset_needs_comparable_images() -> None:

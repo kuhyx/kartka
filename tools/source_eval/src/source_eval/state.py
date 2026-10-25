@@ -22,12 +22,19 @@ def sha1(text: str) -> str:
 
 @dataclass(frozen=True, slots=True)
 class Manifest:
-    """What every source in a run is measured against."""
+    """What every source in a run is measured against.
+
+    ``completeness`` is legacy (chapter lists are fetched for every found
+    title now). ``all_chapters`` marks a run made that way: only such a run
+    publishes the merged coverage (``coverage.completeRatio``); older runs
+    keep the old coverage.
+    """
 
     sample: list[str]
     completeness: int
     images: int
     pages: int
+    all_chapters: bool = False
 
     @classmethod
     def load(cls, path: Path) -> Manifest | None:
@@ -40,6 +47,7 @@ class Manifest:
             completeness=int(data["completeness"]),
             images=int(data["images"]),
             pages=int(data["pages"]),
+            all_chapters=bool(data.get("all_chapters", False)),
         )
 
     def save(self, path: Path) -> None:

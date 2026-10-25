@@ -104,7 +104,13 @@ def test_full_evaluation_and_metrics(tmp_path: Path) -> None:
     m = metrics(
         CAND, RunDir(tmp_path, "t").source(CAND.id), MANIFEST, probes, clock.now()
     )
-    assert m["coverage"] == {"referenceSize": 4, "found": 4, "ratio": 1.0}
+    assert m["coverage"] == {
+        "referenceSize": 4,
+        "found": 4,
+        "ratio": 1.0,
+        "complete": None,  # a legacy manifest: no merged coverage
+        "completeRatio": None,
+    }
     # Every found title has a chapter list: r4 has none (ratio 0).
     assert m["chapterCompleteness"] == {"sampled": 3, "medianRatio": 0.6}
     assert m["imageQuality"] == {
@@ -112,7 +118,13 @@ def test_full_evaluation_and_metrics(tmp_path: Path) -> None:
         "medianWidthPx": 120,
         "medianJpegQuality": None,
     }
-    assert m["blocking"] == {"challengeRate": 0.333, "kinds": ["webview"]}
+    assert m["blocking"] == {
+        "challengeRate": 0.333,
+        "kinds": ["webview"],
+        "hardRate": 0.0,
+    }
+    assert m["unreachable"] is False
+    assert (m["pkg"], m["plugin"]) == (None, None)
     assert m["flags"] == ["needs-browser-engine"]
     assert m["latencyMs"] == {"p50": 300, "p95": 900}
     assert cast("dict[str, object]", m["uptime"])["status"] == "accruing"
@@ -200,8 +212,14 @@ def test_unavailable_source_is_unmeasured(tmp_path: Path) -> None:
     )
     assert state.aborted == "unavailable"
     m = metrics(CAND, state, MANIFEST, [], 0.0)
-    assert m["coverage"] == {"referenceSize": 4, "found": None, "ratio": None}
-    assert m["blocking"] == {"challengeRate": 0.0, "kinds": []}
+    assert m["coverage"] == {
+        "referenceSize": 4,
+        "found": None,
+        "ratio": None,
+        "complete": None,
+        "completeRatio": None,
+    }
+    assert m["blocking"] == {"challengeRate": 0.0, "kinds": [], "hardRate": 0.0}
     assert m["flags"] == []
     assert m["latencyMs"] == {"p50": None, "p95": None}
 

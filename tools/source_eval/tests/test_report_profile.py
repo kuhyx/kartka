@@ -19,7 +19,7 @@ from tests.fakes import FakeTransport, resp
 if TYPE_CHECKING:
     from pathlib import Path
 
-CUSTOM = dataclasses.replace(DEFAULT, keep_score=0.5, cuts=Cuts(subset=True))
+CUSTOM = dataclasses.replace(DEFAULT, keep_score=0.5, cuts=Cuts(coverage=True))
 
 
 def node_for(profile: dict[str, Any] | str) -> dict[str, object]:
@@ -133,8 +133,7 @@ def test_cmd_report_scores_with_the_profile_and_keeps_the_default_score(
         DEFAULT,
         weights=dataclasses.replace(
             DEFAULT.weights,
-            coverage=0,
-            chapter_completeness=0,
+            complete_coverage=0,
             image_quality=0,
             speed=0,
         ),

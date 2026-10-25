@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from typing import cast
 lazy from pathlib import Path
 
 from source_eval.metrics import lang_scope, metrics, pages_load
@@ -63,14 +64,21 @@ def test_pages_never_loading_is_cut_by_score_alone() -> None:
 
 
 def test_high_score_keeps_despite_cut_reasons() -> None:
-    blocked = perfect("b", challenge=0.5, kinds=["cloudflare"])
-    dup = perfect("d", challenge=0.5, kinds=["cloudflare"], p95=10)
+    # Challenged on fewer than half of the requests: a reason, not a cut.
+    blocked = perfect("b", challenge=0.4, kinds=["cloudflare"])
+    cast("dict[str, object]", blocked["blocking"])["hardRate"] = 0.4
     top = perfect("t")
-    found = {"t": {"a", "b"}, "b": {"a", "b"}, "d": {"a", "b"}}
-    ranked = {r["id"]: r for r in rank([dup, blocked, top], found)}
-    assert ranked["d"]["verdict"] == "keep"
-    assert ranked["d"]["cutReasons"] == ["blocking", "subset"]
+    found = {"t": {"a", "b"}, "b": {"c"}}
+    ranked = {r["id"]: r for r in rank([blocked, top], found)}
+    assert ranked["b"]["cutReasons"] == ["blocking"]
     assert ranked["b"]["verdict"] == "keep"
+
+
+def test_a_subset_is_penalised_not_cut_by_a_switch() -> None:
+    top, dup = perfect("t"), perfect("d", p95=100)
+    ranked = {r["id"]: r for r in rank([dup, top], {"t": {"a", "b"}, "d": {"a"}})}
+    assert ranked["d"]["cutReasons"] == ["subset"]
+    assert ranked["d"]["score"] == 0.498  # 0.997 (stored below) x 0.5
 
 
 def test_high_score_keeps_while_uptime_accrues() -> None:

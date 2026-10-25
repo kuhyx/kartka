@@ -138,7 +138,7 @@ def dispatch(app: App, args: argparse.Namespace, rtdb: Callable[[], Rtdb]) -> in
         "init-run": lambda: app.cmd_init_run(
             args.run_id,
             args.sample,
-            Manifest([], args.completeness, args.images, args.pages),
+            Manifest([], args.completeness, args.images, args.pages, all_chapters=True),
         ),
         "enrich": lambda: app.cmd_enrich(args.run_id, args.budget),
         "probe": lambda: app.cmd_probe(
