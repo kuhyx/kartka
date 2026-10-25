@@ -15,6 +15,7 @@ import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/ui/global_search_screen.dart';
 import 'package:kartka/browse/ui/manga_detail_screen.dart';
 import 'package:kartka/browse/ui/source_screen.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
@@ -87,6 +88,7 @@ class Harness {
       coverLoader: withCovers ? (_) async => onePixelPng : null,
       clock: () => DateTime.utc(2026, 10, 24),
       browser: browser ?? const UnavailableBrowser(),
+      diagnostics: diagnostics,
     );
   }
 
@@ -96,6 +98,7 @@ class Harness {
   final DownloadService? downloadService;
   final library = FakeLibrary();
   final progress = FakeProgress();
+  final diagnostics = DiagnosticsLog(MemoryBlobStore());
   final downloads = FakeDownloads();
   late final BrowseDeps deps;
 

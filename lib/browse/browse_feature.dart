@@ -16,6 +16,7 @@ import 'package:kartka/browse/ui/browse_tab.dart';
 import 'package:kartka/browse/ui/global_search_screen.dart';
 import 'package:kartka/browse/ui/manga_detail_screen.dart';
 import 'package:kartka/browse/ui/source_screen.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/downloads/download_service.dart';
@@ -110,6 +111,7 @@ class BrowseRuntime {
     detailSlots: _env.registry.all<MangaDetailSlot>(),
     coverLoader: (url) => _covers.load(PageRef(index: 0, imageUrl: url)),
     browser: _env.platform.browser,
+    diagnostics: DiagnosticsLog.of(_env.platform.diagnostics),
   );
 
   /// The unread-count port implementation.

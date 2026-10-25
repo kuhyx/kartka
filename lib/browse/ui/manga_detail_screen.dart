@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/state/read_state.dart';
+import 'package:kartka/browse/state/refresh_outcome.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/browse/ui/chapter_tile.dart';
 import 'package:kartka/browse/ui/detail_header.dart';
@@ -51,6 +52,15 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
     super.dispose();
   }
 
+  /// Pull-to-refresh and the app-bar Refresh: reload, then say what changed.
+  Future<void> _refresh() async {
+    final outcome = await _controller!.refresh();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(refreshMessage(outcome))));
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = _controller!;
@@ -60,7 +70,7 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
           IconButton(
             tooltip: 'Refresh',
             icon: const Icon(Icons.refresh),
-            onPressed: () => unawaited(c.load()),
+            onPressed: () => unawaited(_refresh()),
           ),
         ],
       ),
@@ -125,30 +135,40 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
       initialData: ReadMarks.none,
       builder: (context, snap) {
         final read = readUrls(c.chapters, snap.data!);
-        return CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: DetailHeader(controller: c, details: details, read: read),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                child: Text(
-                  '${c.chapters.length} chapters',
-                  style: Theme.of(context).textTheme.titleMedium,
+        return RefreshIndicator(
+          onRefresh: _refresh,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: DetailHeader(
+                  controller: c,
+                  details: details,
+                  read: read,
                 ),
               ),
-            ),
-            SliverList.builder(
-              itemCount: newestFirst.length,
-              itemBuilder: (_, i) => ChapterTile(
-                controller: c,
-                chapter: newestFirst[i],
-                read: read.contains(newestFirst[i].url),
-                canDownload: canDownload,
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                  ),
+                  child: Text(
+                    '${c.chapters.length} chapters',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
               ),
-            ),
-          ],
+              SliverList.builder(
+                itemCount: newestFirst.length,
+                itemBuilder: (_, i) => ChapterTile(
+                  controller: c,
+                  chapter: newestFirst[i],
+                  read: read.contains(newestFirst[i].url),
+                  canDownload: canDownload,
+                ),
+              ),
+            ],
+          ),
         );
       },
     );

@@ -6,6 +6,7 @@ import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/platform/browser_engine.dart';
@@ -32,6 +33,7 @@ class BrowseDeps {
     this.detailSlots = const [],
     this.coverLoader,
     this.browser = const UnavailableBrowser(),
+    this.diagnostics,
     DateTime Function()? clock,
   }) : clock = clock ?? DateTime.now;
 
@@ -68,6 +70,10 @@ class BrowseDeps {
 
   /// "Open in WebView" (docs/DOCS-contracts-webview.md §7).
   final KartkaBrowser browser;
+
+  /// The shared diagnostics log (docs §7): failed detail refreshes land
+  /// here. Null in tests that do not check it.
+  final DiagnosticsLog? diagnostics;
 
   /// Clock for `addedAt` / `updatedAt` (injected in tests).
   final DateTime Function() clock;

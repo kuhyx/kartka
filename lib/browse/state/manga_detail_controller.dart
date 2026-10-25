@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/browse/state/read_state.dart';
+import 'package:kartka/browse/state/refresh_outcome.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
 
@@ -78,6 +80,30 @@ class MangaDetailController extends ChangeNotifier {
     }
     loading = false;
     _notify();
+  }
+
+  /// [load] again, reporting what changed against the chapters shown
+  /// before it. A failure is logged to the diagnostics log as
+  /// `details.refresh` with the source id only: no URL, no query string.
+  Future<RefreshOutcome> refresh() async {
+    final before = {for (final c in chapters) c.url};
+    await load();
+    final failure = error;
+    if (failure == null) {
+      return RefreshSucceeded([
+        for (final c in chapters)
+          if (!before.contains(c.url)) c,
+      ]);
+    }
+    await _deps.diagnostics?.append(
+      DiagnosticEntry.failure(
+        at: _deps.clock(),
+        kind: 'details.refresh',
+        error: stripUrls('$failure'),
+        sourceId: sourceId,
+      ),
+    );
+    return RefreshFailed(failure);
   }
 
   /// The route's source, waiting up to [sourceWait] for a runtime source.
