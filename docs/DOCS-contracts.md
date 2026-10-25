@@ -55,6 +55,12 @@ Each part exports one `KartkaFeature` (routes, settings tiles, sources it
 provides) and appends ONE line to the list in `registry.dart`. Parts do not
 edit each other's files.
 
+`ScreenObserver` (`lib/app/screen_observer.dart`) is a port a feature offers
+as a service. The shell's `reportScreens()` sends the top go_router route
+PATTERN (`/read/:sourceId/:mangaUrl/:chapterUrl`, `?` when unknown), never
+the concrete path, to every `ScreenObserver` service, once per change.
+`JankTracker` (`lib/perf/`) is one.
+
 ## 4. Sync model (RTDB root `/kartka/`, via crdt_sync_flutter)
 
 | Path | Value | Merge |
