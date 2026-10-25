@@ -16,7 +16,7 @@ import sys
 from typing import TYPE_CHECKING
 from urllib.parse import urlsplit
 
-from source_eval import STARTED
+from source_eval import STARTED, publishing
 from source_eval.app import App
 from source_eval.backends.suwayomi import SuwayomiConfig
 from source_eval.http import BoundedTransport, RequestsTransport, SystemClock
@@ -112,7 +112,10 @@ def _parser() -> argparse.ArgumentParser:
     ramp = sub.add_parser("ramp", help="the weekly sample ramp (start/finish a run)")
     ramp.add_argument("action", choices=("start", "finish"))
     ramp.add_argument("--sample", type=int, default=None, help="override the rule")
-    for cmd in (init, run, rep, enrich, ramp):
+    pub = sub.add_parser(
+        "published", help="exit 0 if the run finished its publish, 10 if not"
+    )
+    for cmd in (init, run, rep, enrich, ramp, pub):
         cmd.add_argument("--run", dest="run_id", default="weekly")
     for cmd in (cands, ref, run, enrich, probe, rep):
         cmd.add_argument(
@@ -200,6 +203,9 @@ def dispatch(app: App, args: argparse.Namespace, rtdb: Callable[[], Rtdb]) -> in
             app.cmd_ramp_start(args.run_id, args.sample)
             if args.action == "start"
             else app.cmd_ramp_finish(args.run_id)
+        ),
+        "published": lambda: publishing.published_cmd(
+            app.s.state_dir, args.run_id, app.out
         ),
     }
     return commands[args.cmd]()

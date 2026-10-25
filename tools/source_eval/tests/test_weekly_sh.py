@@ -39,7 +39,8 @@ def _run(
     stub = bin_dir / "uv"
     stub.write_text(STUB)
     stub.chmod(0o755)
-    for cmd, codes in plan.items():
+    # 10 = not published yet, the run goes on; a test overrides it with [0].
+    for cmd, codes in {"published": [10], **plan}.items():
         (plan_dir / cmd).write_text("".join(f"{c}\n" for c in codes))
     log = tmp_path / "calls.log"
     full_env = {
@@ -67,6 +68,7 @@ def test_weekly_loops_each_step_until_it_is_done(tmp_path: Path) -> None:
     done, calls = _run(tmp_path, "weekly.sh", {"run": [10, 10, 0], "enrich": [10, 0]})
     assert done.returncode == 0, done.stderr
     assert calls == [
+        "published --run 2026-W44",
         "ramp start --run 2026-W44",
         "candidates --budget 50",
         "reference --budget 50",
@@ -82,7 +84,7 @@ def test_weekly_loops_each_step_until_it_is_done(tmp_path: Path) -> None:
 def test_weekly_passes_a_sample_override(tmp_path: Path) -> None:
     done, calls = _run(tmp_path, "weekly.sh", {}, KARTKA_EVAL_SAMPLE="300")
     assert done.returncode == 0, done.stderr
-    assert calls[0] == "ramp start --run 2026-W44 --sample 300"
+    assert calls[1] == "ramp start --run 2026-W44 --sample 300"
 
 
 def test_weekly_stops_on_a_real_failure(tmp_path: Path) -> None:
@@ -105,6 +107,21 @@ def test_weekly_survives_a_hard_stop_with_a_warning(tmp_path: Path) -> None:
     assert done.returncode == 0, done.stderr
     assert sum(c.startswith("run ") for c in calls) == 2
     assert "hard stop" in done.stderr
+
+
+def test_weekly_is_a_no_op_for_a_published_run(tmp_path: Path) -> None:
+    """A rerun of a published week (Persistent=true) touches nothing."""
+    done, calls = _run(tmp_path, "weekly.sh", {"published": [0]})
+    assert done.returncode == 0, done.stderr
+    assert calls == ["published --run 2026-W44"]
+    assert done.stdout == "weekly: 2026-W44 already published, nothing to do\n"
+
+
+def test_weekly_fails_when_the_published_check_fails(tmp_path: Path) -> None:
+    """An error in the check never means "skip the week"; it fails the unit."""
+    done, calls = _run(tmp_path, "weekly.sh", {"published": [2]})
+    assert done.returncode == 2
+    assert calls == ["published --run 2026-W44"]
 
 
 @pytest.mark.parametrize("budget", ["50", "40"])

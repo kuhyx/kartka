@@ -7,6 +7,8 @@
 # The sample ramps (source-eval ramp): +50 titles while the previous run took
 # <= 2 h, -50 when it went over, within [200, 500]; KARTKA_EVAL_SAMPLE
 # overrides it. Sources the last published run hard-cut get one re-probe.
+# A week that already finished its publish is a no-op (Persistent=true reruns
+# a missed or moved timer; that must not re-publish or log a second ramp).
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -23,6 +25,17 @@ source "${HERE}/systemd/batch.sh"
 
 sample=()
 [[ -z ${KARTKA_EVAL_SAMPLE:-} ]] || sample=(--sample "${KARTKA_EVAL_SAMPLE}")
+
+rc=0
+eval_once published --run "${RUN}" >/dev/null || rc=$?
+case "${rc}" in
+0)
+	echo "weekly: ${RUN} already published, nothing to do"
+	exit 0
+	;;
+"${MORE_WORK}") ;;
+*) exit "${rc}" ;;
+esac
 
 eval_once ramp start --run "${RUN}" "${sample[@]}"
 eval_batches candidates

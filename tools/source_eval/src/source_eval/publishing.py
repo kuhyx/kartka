@@ -7,7 +7,8 @@ writes, records (in chunks) then meta; each is a step that starts only when its 
 case (``RTDB_STEP``) fits in the budget, and each finished step is
 remembered in ``runs/<run>/publish.json`` until both are done. A finished
 publish also leaves the run's hard cuts (``hard_cut.json``) for the next
-run's re-probe.
+run's re-probe; that file naming the run is also the "already published"
+marker ``published`` reads.
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ from source_eval.score import HARD_CODES
 from source_eval.state import sha1
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from pathlib import Path
 
     from source_eval.app import App
@@ -61,6 +63,20 @@ def previous_hard_cuts(
         return [], None
     ids = cast("dict[str, list[object]]", data)["ids"]
     return [str(i) for i in ids], str(prev)
+
+
+def published_cmd(state_dir: Path, run_id: str, out: Callable[[str], None]) -> int:
+    """``published``: 0 when ``run_id`` finished its publish, else ``MORE_WORK``.
+
+    The marker is ``hard_cut.json`` naming ``run_id``: ``report_cmd`` writes
+    it only after the last RTDB step, so an interrupted publish (or one never
+    started) cannot have it. weekly.sh skips a published week, which a
+    ``Persistent=true`` timer would otherwise rerun and re-publish.
+    """
+    data = read_json(state_dir / HARD_CUT_FILE, {})
+    done = isinstance(data, dict) and data.get("runId") == run_id
+    out(f"published: {run_id} {'yes' if done else 'not yet'}")
+    return 0 if done else MORE_WORK
 
 
 def publish_steps(
