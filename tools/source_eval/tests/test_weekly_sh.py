@@ -73,7 +73,7 @@ def test_weekly_loops_each_step_until_it_is_done(tmp_path: Path) -> None:
         "init-run --run 2026-W44 --ramp --reprobe",
         "enrich --run 2026-W44 --budget 50",
         "enrich --run 2026-W44 --budget 50",
-        *["run --run 2026-W44 --workers 128 --inflight 64 --budget 50"] * 3,
+        *["run --run 2026-W44 --workers 128 --inflight 48 --budget 50"] * 3,
         "report --run 2026-W44 --publish --budget 50",
         "ramp finish --run 2026-W44",
     ]
