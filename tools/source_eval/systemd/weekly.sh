@@ -13,7 +13,11 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RUN="${KARTKA_EVAL_RUN:-$(date -u +%G-W%V)}"
 readonly HERE RUN
 readonly WORKERS="${KARTKA_EVAL_WORKERS:-128}"
-readonly INFLIGHT="${KARTKA_EVAL_INFLIGHT:-64}"
+# In flight ~= req/s x latency. The eval Suwayomi (3 cores) should take ~25
+# req/s; 21 req/s needs ~21-40 slots at 1-2 s a request, and every slot above
+# capacity only queues (64 in flight on one core: median 7.6 s, p90 12 s of the
+# 20 s timeout). 48 keeps the queue near 2 s. Re-measure 32/48/64 after changes.
+readonly INFLIGHT="${KARTKA_EVAL_INFLIGHT:-48}"
 # shellcheck source=SCRIPTDIR/batch.sh
 source "${HERE}/systemd/batch.sh"
 

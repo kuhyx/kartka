@@ -10,8 +10,19 @@ UnsetEnvironment=DISPLAY XAUTHORITY WAYLAND_DISPLAY
 Environment=LD_PRELOAD=%h/services/suwayomi/app/current/bin/catch_abort.so
 # Same pinned release the live deploy installed (deploy/suwayomi/install.sh);
 # separate rootDir, port and extension set.
+# ParallelGC: a batch job wants throughput, not low pauses, and it has no
+# concurrent-marking overhead like G1 (the default once the JVM sees >1 CPU;
+# with the old 100 % quota it most likely saw one CPU and ran SerialGC). A
+# full GC at 3 GB should take 1-2 s with 3 GC threads, well under the 20 s
+# request timeout.
+# ActiveProcessorCount pins the JVM to the 3-core quota, so GC/JIT pools are
+# not sized for the 24 host cores and then throttled. gc.log (one line per
+# collection) is the evidence for or against this choice.
 ExecStart=%h/services/suwayomi/app/current/jre/bin/java \
-	-Xmx2g \
+	-Xmx3g \
+	-XX:ActiveProcessorCount=3 \
+	-XX:+UseParallelGC \
+	-Xlog:gc:file=%h/.local/share/kartka-source-eval/gc.log:uptime,level:filecount=3,filesize=5m \
 	-Djava.awt.headless=true \
 	-Dsuwayomi.tachidesk.config.server.rootDir=%h/.local/share/kartka-source-eval/suwayomi \
 	-Dsuwayomi.tachidesk.config.server.ip=127.0.0.1 \
@@ -26,7 +37,10 @@ ExecStart=%h/services/suwayomi/app/current/jre/bin/java \
 SuccessExitStatus=143
 Nice=19
 IOSchedulingClass=idle
-MemoryMax=3G
-CPUQuota=100%
+# Measured 2026-10-25 (sample 200, 128 lanes): 1 core and 3 GB were the limit,
+# 8.4 req/s at 64 in flight (about 120 ms of server CPU per request). 3 cores
+# and a 3 GB heap (+~0.9 GB metaspace, code cache, thread stacks) lift both.
+MemoryMax=4G
+CPUQuota=300%
 NoNewPrivileges=true
 PrivateTmp=true

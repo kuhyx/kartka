@@ -15,7 +15,8 @@ ExecStart=%h/src/kartka/tools/source_eval/systemd/weekly.sh
 Nice=19
 IOSchedulingClass=idle
 MemoryMax=2G
-# ~4 ms CPU per request (state checkpoints) x ~50 req/s across 128 lanes
-# is ~0.2 CPU; 25 % left no headroom for each batch's interpreter start.
-CPUQuota=50%
+# ~4 ms CPU per request (state checkpoints) + Pillow decode of ~30 images per
+# source: ~0.2 CPU at 25 req/s over 128 lanes. 100 % keeps a throttled client
+# from inflating the measured latencies (the server has its own 300 % quota).
+CPUQuota=100%
 TimeoutStartSec=36h

@@ -23,7 +23,7 @@ uv run source-eval init-run --run R --sample 30 --completeness 10 --images 3 --p
 uv run source-eval init-run --run R --ramp --reprobe # weekly: ramp + re-probes
 uv run source-eval enrich --run R --budget 50  # MangaUpdates chapter counts
 uv run source-eval probe [--ids ...|--installed] --fresh 10800 --budget 50
-uv run source-eval run --run R [--ids <id>] --workers 128 --inflight 64 --budget 50
+uv run source-eval run --run R [--ids <id>] --workers 128 --inflight 48 --budget 50
 uv run source-eval report --run R [--out F] [--publish] [--weights active|default] --budget 50
 uv run source-eval ramp finish --run R         # records the run's wall time
 ```
@@ -97,7 +97,7 @@ Timers (`systemd/`): probe 4x/day (`probe.sh`), full run weekly via
 3. **Run** (`evaluate.py`): one deterministic stratified sample per run, the
    same for every source. Per source: install/prepare; search each title
    (main title, then first alt; a `ja` source: native title, then the first
-   other title) and fuzzy-match (rapidfuzz ratio ≥ 0.90 on normalised titles,
+   other title; `queries.py` drops an alt that only differs by case/spacing) and fuzzy-match (rapidfuzz ratio ≥ 0.90 on normalised titles,
    any alt title, plus the native one for `ja`); chapter lists for the first N found;
    page images for the first M (median chapter, skip page 1, P pages).
    Every step checkpoints to disk atomically. A source stops early after 3
@@ -215,6 +215,16 @@ Suwayomi-Server v2.4.2366 jar (sha256-checked) in
 `~/.local/share/kartka-source-eval/`, rootDir `.../suwayomi`, `127.0.0.1:4590`,
 KCEF/FlareSolverr/tray/WebUI off, run as transient user unit
 `kartka-suwayomi-eval` (`systemctl --user stop kartka-suwayomi-eval`):
-`-Xmx2g`, `CPUQuota=100%`, `MemoryMax=3G`. `maxSourcesInParallel` stays 6:
+`-Xmx3g -XX:+UseParallelGC -XX:ActiveProcessorCount=3`, `CPUQuota=300%`,
+`MemoryMax=4G`, GC log in `~/.local/share/kartka-source-eval/gc.log`. Why:
+the 2026-10-25 pilot (sample 200, 128 lanes) had the old 1-core/2 GB server
+pinned at 96-105 % CPU (about 120 ms of server CPU per request) and 2.89 of
+3 GB, giving 6.5 req/s at 16 in flight, 8.0 at 32 and 8.4 at 64 (median
+7.6 s, p90 12.3 s of the 20 s timeout), a 5.1-5.3 h weekly projection
+against the <= 2 h target of 21 req/s. `systemd/eval_server_cpu.sh [s]`
+splits the JVM CPU by thread group (GC / JIT / request workers / database)
+while a batch runs. The weekly default is `--inflight 48` (in flight is
+req/s x latency: ~25 req/s x ~2 s); the full job unit has `CPUQuota=100%`.
+`maxSourcesInParallel` stays 6:
 in the server jar only the library updater and the downloader read it
 (range 1..20); the GraphQL browse/search/chapter path has no such limit.
