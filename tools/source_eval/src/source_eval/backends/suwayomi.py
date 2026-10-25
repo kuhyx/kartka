@@ -63,7 +63,11 @@ def _errors(response: Response) -> str | None:
     except ValueError:
         return "non-JSON response"
     errors = cast("list[dict[str, object]]", payload.get("errors") or [])
-    return str(errors[0].get("message", "error")).splitlines()[0] if errors else None
+    if not errors:
+        return None
+    # A blank message is still a failure, just one with nothing to classify.
+    lines = str(errors[0].get("message") or "").strip().splitlines()
+    return lines[0] if lines else "error"
 
 
 def judge_graphql(response: Response) -> tuple[bool, str | None]:

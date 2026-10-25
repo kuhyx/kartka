@@ -163,6 +163,10 @@ def test_judge_graphql() -> None:
     assert judge_graphql(resp(200, "<html>")) == (False, None)
     bad = {"errors": [{"message": "Failed to bypass Cloudflare\nstack"}]}
     assert judge_graphql(resp(200, bad)) == (False, "cloudflare")
+    # The 2026-10-25 pilot died on an error whose message was empty.
+    for empty in ("", "\n", None):
+        blank = {"errors": [{"message": empty}]}
+        assert judge_graphql(resp(200, blank)) == (False, None)
     assert SuwayomiConfig().headers() == {}
 
 
