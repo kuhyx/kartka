@@ -36,7 +36,8 @@ test directory at a time for that reason. Wrapper package:
 - `lib/app/` registry (`kartkaFeatureFactories`, append-only), shell
   (Library / Browse / Sources / More), routes, `KartkaScope`.
 - `desktop/` the wrapper: static build, `/proxy`, `/files`, `/secrets`,
-  `/oauth`, on `127.0.0.1:47391`.
+  `/oauth`, on `127.0.0.1:47391` (plus a one-shot `/sync-credentials` only
+  with `--sync-credentials`, the agent instance; contracts-runtime §17).
 - Feature dirs (`lib/sources`, `lib/library`, `lib/reader`, ...) belong to
   their parts; foundation never imports them.
 
@@ -64,6 +65,8 @@ cannot add it without a preflight, and OPTIONS is never granted), no
 `Access-Control-Allow-Origin` anywhere. `/proxy` forwards only allow-listed
 headers, never `Via` / `X-Forwarded-*`, always the Kartka UA. Secrets live in
 `~/.config/kartka/secrets.json` at 0600, never in browser storage.
+`/sync-credentials` follows the same rules and serves its seed once per
+launch (410 after); a refused or bad read consumes nothing and logs no content.
 
 ## Agent instance (headless E2E, never kuhy's screen)
 

@@ -3,6 +3,7 @@ library;
 
 import 'package:crdt_sync/crdt_sync.dart' show FirebaseProject;
 import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show SyncApp;
+import 'package:kartka/platform/sync_access.dart';
 
 /// The shared project every kuhy app syncs through. Safe to commit: the Web
 /// API key is a public identifier that already ships inside every APK, and
@@ -18,3 +19,8 @@ const SyncApp kKartkaSync = SyncApp(
   ),
   expectedUid: 'OvA2REQyLIhAHOEjzwS1o877rgG3',
 );
+
+/// [kKartkaSync] as this build reaches it: on the web build it also adopts a
+/// session the wrapper seeds (agent instance only, §17). Every account load
+/// and `openSync` goes through this, so no path skips the seed.
+final SyncAccess kartkaSyncAccess = SyncAccess.of(kKartkaSync);

@@ -216,3 +216,23 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   decrypt synced Suwayomi password", or "... not synced: set a sync
   passphrase in More → Sync". The node stays unapplied, so the next start
   or a new passphrase tries again.
+
+## 17. Seeded sync session (agent instance, 2026-10-25, kuhy's decision)
+
+- **Wrapper**: `--sync-credentials <file>` adds `GET /sync-credentials`
+  (`KartkaWrapper.syncCredentialsPath`). It is an API route (`x-kartka: 1`,
+  the Host check, no CORS). The first valid GET of a launch gets
+  `{id_token, refresh_token, expires_at[, email]}`, and later ones get 410.
+  A refused, missing or malformed read gets 403/421/405/404, consumes
+  nothing, and logs only the path. Without the flag the path is a plain
+  404, so kuhy's window keeps Google sign-in. Only `tools/agent` passes the
+  flag, with `~/.config/kartka-agent/firebase_auth.json`, which
+  `crdt-sync`'s `python3 -m tool.seed_session --app kartka-agent` writes.
+- **App**: every account load and `openSync` goes through
+  `kartkaSyncAccess` (`lib/platform/sync_access.dart`). On web its `SyncApp`
+  carries `WrapperRoutes(credentialsPath: '/sync-credentials')`, and its
+  client adds `x-kartka: 1` to wrapper-origin requests only (never to
+  Firebase, where it would trigger a preflight). crdt_sync_flutter adopts
+  the session into its store once. A 404 means signed out, which shows the
+  normal sign-in screen. A device that signed out has the opt-out flag set
+  and never re-adopts. Android: no route, default client, unchanged.

@@ -112,11 +112,11 @@ Widget buildAccountSettingsScreen({
   // dialog; the shared screen's factory takes no arguments.
   return Builder(
     builder: (context) => SyncSettingsScreen(
-      accountLoader: loadAccount,
+      accountLoader: kartkaSyncAccess.loadAccount,
       accountSaver: saveAccount,
       accountClearer: clearAccount,
       sessionProbe: () => isSyncConfigured(kKartkaSync),
-      firebaseFactory: () => openSync(kKartkaSync),
+      firebaseFactory: kartkaSyncAccess.openSync,
       googleFirebaseFactory: offered
           ? () => signInWithGoogle(
               kKartkaSync,

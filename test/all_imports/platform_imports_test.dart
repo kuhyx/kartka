@@ -23,6 +23,7 @@ import 'package:kartka/platform/oauth_redirect.dart';
 import 'package:kartka/platform/page_image.dart';
 import 'package:kartka/platform/platform.dart';
 import 'package:kartka/platform/plugin_file_picker.dart';
+import 'package:kartka/platform/sync_access.dart';
 import 'package:kartka/platform/web/idb_key_value_store.dart';
 import 'package:kartka/platform/wrapper_protocol.dart';
 import 'package:kartka/platform/wrapper_stores.dart';
