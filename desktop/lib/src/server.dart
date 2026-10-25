@@ -187,7 +187,25 @@ class WrapperServer {
   }
 }
 
-/// [text] with every URL query (`?...` up to whitespace, `,` or `)`)
-/// replaced by `?<redacted>`.
-String redactQueries(String text) =>
-    text.replaceAll(RegExp(r'\?[^\s,)]*'), '?<redacted>');
+/// [text] with the query/fragment of every http(s) URL replaced by
+/// `?<redacted>` / `#<redacted>` and its userinfo by `<redacted>@`.
+///
+/// The same rules as the app's `redactUrlQueries` (lib/core/redact.dart),
+/// which this package cannot import: a query runs to whitespace, a quote or
+/// `<>` (`,` and `)` are legal in it), and the query pass goes first.
+/// Unlike the app, a relative query with a `=` (`/proxy?url=...`, whose
+/// target is percent-encoded) is redacted too: the wrapper sees those.
+String redactQueries(String text) => text
+    .replaceAllMapped(_urlTail, (m) => '${m[1]}${m[2]}<redacted>')
+    .replaceAllMapped(_userInfo, (m) => '${m[1]}<redacted>@')
+    .replaceAll(_bareQuery, '?<redacted>');
+
+final _urlTail = RegExp(
+  r'''(https?://[^\s?#"'<>]*)([?#])[^\s"'<>]*''',
+  caseSensitive: false,
+);
+final _userInfo = RegExp(
+  r'''(https?://)[^\s/?#"'<>@]*@''',
+  caseSensitive: false,
+);
+final _bareQuery = RegExp(r'''\?[^\s"'<>?=]*=[^\s"'<>]*''');

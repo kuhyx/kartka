@@ -102,9 +102,33 @@ void main() {
 
   test('redactQueries scrubs every query, keeps the rest', () {
     expect(
-      redactQueries('x, uri = https://h/p?auth=t&a=b, y (http://h/?k=v)'),
-      'x, uri = https://h/p?<redacted>, y (http://h/?<redacted>)',
+      redactQueries('x, uri = https://h/p?auth=t&a=b y (http://h/?k=v)'),
+      'x, uri = https://h/p?<redacted> y (http://h/?<redacted>',
     );
     expect(redactQueries('no query'), 'no query');
+  });
+
+  test('redactQueries: a comma does not end a query (as lib/core/redact)', () {
+    expect(redactQueries('https://h/p?a=1,auth=T'), 'https://h/p?<redacted>');
+    expect(
+      redactQueries('https://h/cb#access_token=T'),
+      'https://h/cb#<redacted>',
+    );
+  });
+
+  test('redactQueries hides URL userinfo, not an @ in a path', () {
+    expect(
+      redactQueries('uri = https://u:p@h/p?auth=T'),
+      'uri = https://<redacted>@h/p?<redacted>',
+    );
+    expect(redactQueries('https://h/p/@me'), 'https://h/p/@me');
+  });
+
+  test('redactQueries: a relative query with a value is redacted too', () {
+    expect(
+      redactQueries('GET /proxy?url=https%3A%2F%2Fh%2Fa.json%3Fauth%3DT'),
+      'GET /proxy?<redacted>',
+    );
+    expect(redactQueries('Is it running? Retry.'), 'Is it running? Retry.');
   });
 }
