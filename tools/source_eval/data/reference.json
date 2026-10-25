@@ -1,6 +1,6 @@
 {
  "complete": true,
- "generatedAt": 1792895968.2476192,
+ "generatedAt": 1792915106.4495015,
  "progress": {
   "anilistPage": 10
  },
@@ -12,6 +12,7 @@
    "chapters": 232,
    "chaptersFrom": "anilist",
    "key": "anilist:105778",
+   "nativeTitle": "チェンソーマン",
    "origins": [
     "anilist"
    ],
@@ -33,6 +34,7 @@
    "chapters": 201,
    "chaptersFrom": "anilist",
    "key": "anilist:105398",
+   "nativeTitle": "나 혼자만 레벨업",
    "origins": [
     "anilist"
    ],
@@ -55,6 +57,7 @@
    "chapters": 272,
    "chaptersFrom": "anilist",
    "key": "anilist:101517",
+   "nativeTitle": "呪術廻戦",
    "origins": [
     "anilist"
    ],
@@ -82,6 +85,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:30002",
+   "nativeTitle": "ベルセルク",
    "origins": [
     "anilist"
    ],
@@ -106,6 +110,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:30013",
+   "nativeTitle": "ONE PIECE",
    "origins": [
     "anilist"
    ],
@@ -125,6 +130,7 @@
    "chapters": 141,
    "chaptersFrom": "anilist",
    "key": "anilist:53390",
+   "nativeTitle": "進撃の巨人",
    "origins": [
     "anilist"
    ],
@@ -160,6 +166,7 @@
    "chapters": 207,
    "chaptersFrom": "anilist",
    "key": "anilist:87216",
+   "nativeTitle": "鬼滅の刃",
    "origins": [
     "anilist"
    ],
@@ -188,6 +195,7 @@
    "chapters": 144,
    "chaptersFrom": "anilist",
    "key": "anilist:63327",
+   "nativeTitle": "東京喰種 トーキョーグール",
    "origins": [
     "anilist"
    ],
@@ -209,6 +217,7 @@
    "chapters": 147,
    "chaptersFrom": "anilist",
    "key": "anilist:34632",
+   "nativeTitle": "おやすみプンプン",
    "origins": [
     "anilist"
    ],
@@ -237,6 +246,7 @@
    "chapters": 432,
    "chaptersFrom": "anilist",
    "key": "anilist:85486",
+   "nativeTitle": "僕のヒーローアカデミア",
    "origins": [
     "anilist"
    ],
@@ -267,6 +277,7 @@
    "chapters": 239,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:74347",
+   "nativeTitle": "ワンパンマン",
    "origins": [
     "anilist"
    ],
@@ -288,6 +299,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:30656",
+   "nativeTitle": "バガボンド",
    "origins": [
     "anilist"
    ],
@@ -302,6 +314,7 @@
    "chapters": 141,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:108556",
+   "nativeTitle": "SPY×FAMILY",
    "origins": [
     "anilist"
    ],
@@ -322,6 +335,7 @@
    "chapters": 224,
    "chaptersFrom": "anilist",
    "key": "anilist:30642",
+   "nativeTitle": "ヴィンランド・サガ",
    "origins": [
     "anilist"
    ],
@@ -341,6 +355,7 @@
    "chapters": 181,
    "chaptersFrom": "anilist",
    "key": "anilist:87423",
+   "nativeTitle": "約束のネバーランド",
    "origins": [
     "anilist"
    ],
@@ -365,6 +380,7 @@
    "chapters": 308,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:119257",
+   "nativeTitle": "전지적 독자 시점",
    "origins": [
     "anilist"
    ],
@@ -392,6 +408,7 @@
    "chapters": 272,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:106130",
+   "nativeTitle": "ブルーロック",
    "origins": [
     "anilist"
    ],
@@ -410,6 +427,7 @@
    "chapters": 152,
    "chaptersFrom": "anilist",
    "key": "anilist:72451",
+   "nativeTitle": "ホリミヤ",
    "origins": [
     "anilist"
    ],
@@ -427,6 +445,7 @@
    "chapters": 706,
    "chaptersFrom": "anilist",
    "key": "anilist:30012",
+   "nativeTitle": "BLEACH",
    "origins": [
     "anilist"
    ],
@@ -445,6 +464,7 @@
    "chapters": 281,
    "chaptersFrom": "anilist",
    "key": "anilist:86635",
+   "nativeTitle": "かぐや様は告らせたい～天才たちの恋愛頭脳戦～",
    "origins": [
     "anilist"
    ],
@@ -469,6 +489,7 @@
    "chapters": 279,
    "chaptersFrom": "anilist",
    "key": "anilist:102988",
+   "nativeTitle": "東京卍リベンジャーズ",
    "origins": [
     "anilist"
    ],
@@ -494,6 +515,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:132029",
+   "nativeTitle": "ダンダダン",
    "origins": [
     "anilist"
    ],
@@ -510,6 +532,7 @@
    "chapters": 420,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:30026",
+   "nativeTitle": "HUNTER×HUNTER",
    "origins": [
     "anilist"
    ],
@@ -527,6 +550,7 @@
    "chapters": 249,
    "chaptersFrom": "anilist",
    "key": "anilist:30003",
+   "nativeTitle": "20世紀少年",
    "origins": [
     "anilist"
    ],
@@ -546,6 +570,7 @@
    "chapters": 392,
    "chaptersFrom": "anilist",
    "key": "anilist:86123",
+   "nativeTitle": "ブラッククローバー",
    "origins": [
     "anilist"
    ],
@@ -560,6 +585,7 @@
    "chapters": 162,
    "chaptersFrom": "anilist",
    "key": "anilist:30001",
+   "nativeTitle": "MONSTER",
    "origins": [
     "anilist"
    ],
@@ -574,6 +600,7 @@
    "chapters": 537,
    "chaptersFrom": "anilist",
    "key": "anilist:97852",
+   "nativeTitle": "古見さんは、コミュ症です。",
    "origins": [
     "anilist"
    ],
@@ -604,6 +631,7 @@
    "chapters": 171,
    "chaptersFrom": "anilist",
    "key": "anilist:117195",
+   "nativeTitle": "【推しの子】",
    "origins": [
     "anilist"
    ],
@@ -630,6 +658,7 @@
    "chapters": 129,
    "chaptersFrom": "anilist",
    "key": "anilist:120760",
+   "nativeTitle": "怪獣８号",
    "origins": [
     "anilist"
    ],
@@ -652,6 +681,7 @@
    "chapters": 95,
    "chaptersFrom": "anilist",
    "key": "anilist:31706",
+   "nativeTitle": "ジョジョの奇妙な冒険 スティール・ボール・ラン",
    "origins": [
     "anilist"
    ],
@@ -670,6 +700,7 @@
    "chapters": 83,
    "chaptersFrom": "anilist",
    "key": "anilist:87170",
+   "nativeTitle": "ファイアパンチ",
    "origins": [
     "anilist"
    ],
@@ -685,6 +716,7 @@
    "chapters": 181,
    "chaptersFrom": "anilist",
    "key": "anilist:85611",
+   "nativeTitle": "東京喰種-トーキョーグール-:re",
    "origins": [
     "anilist"
    ],
@@ -702,6 +734,7 @@
    "chapters": 404,
    "chaptersFrom": "anilist",
    "key": "anilist:65243",
+   "nativeTitle": "ハイキュー！！",
    "origins": [
     "anilist"
    ],
@@ -723,6 +756,7 @@
    "chapters": 119,
    "chaptersFrom": "anilist",
    "key": "anilist:101583",
+   "nativeTitle": "その着せ替え人形は恋をする",
    "origins": [
     "anilist"
    ],
@@ -751,6 +785,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:85143",
+   "nativeTitle": "신의 탑",
    "origins": [
     "anilist"
    ],
@@ -769,6 +804,7 @@
    "chapters": 108,
    "chaptersFrom": "anilist",
    "key": "anilist:30021",
+   "nativeTitle": "DEATH NOTE",
    "origins": [
     "anilist"
    ],
@@ -790,6 +826,7 @@
    "chapters": 700,
    "chaptersFrom": "anilist",
    "key": "anilist:30011",
+   "nativeTitle": "NARUTO -ナルト-",
    "origins": [
     "anilist"
    ],
@@ -809,6 +846,7 @@
    "chapters": 127,
    "chaptersFrom": "anilist",
    "key": "anilist:100994",
+   "nativeTitle": "地獄楽",
    "origins": [
     "anilist"
    ],
@@ -831,6 +869,7 @@
    "chapters": 64,
    "chaptersFrom": "anilist",
    "key": "anilist:85135",
+   "nativeTitle": "聲の形",
    "origins": [
     "anilist"
    ],
@@ -858,6 +897,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:125828",
+   "nativeTitle": "SAKAMOTO DAYS",
    "origins": [
     "anilist"
    ],
@@ -875,6 +915,7 @@
    "chapters": 236,
    "chaptersFrom": "anilist",
    "key": "anilist:98416",
+   "nativeTitle": "Dr.STONE",
    "origins": [
     "anilist"
    ],
@@ -888,6 +929,7 @@
    "chapters": 191,
    "chaptersFrom": "anilist",
    "key": "anilist:31133",
+   "nativeTitle": "ドロヘドロ",
    "origins": [
     "anilist"
    ],
@@ -904,6 +946,7 @@
    "chapters": 20,
    "chaptersFrom": "anilist",
    "key": "anilist:30436",
+   "nativeTitle": "うずまき",
    "origins": [
     "anilist"
    ],
@@ -927,6 +970,7 @@
    "chapters": 1,
    "chaptersFrom": "anilist",
    "key": "anilist:146983",
+   "nativeTitle": "さよなら絵梨",
    "origins": [
     "anilist"
    ],
@@ -948,6 +992,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:118586",
+   "nativeTitle": "葬送のフリーレン",
    "origins": [
     "anilist"
    ],
@@ -977,6 +1022,7 @@
    "chapters": 18,
    "chaptersFrom": "anilist",
    "key": "anilist:97553",
+   "nativeTitle": "寿命を買い取ってもらった。一年につき、一万円で。",
    "origins": [
     "anilist"
    ],
@@ -1000,6 +1046,7 @@
    "chapters": 120,
    "chaptersFrom": "anilist",
    "key": "anilist:74489",
+   "nativeTitle": "宝石の国",
    "origins": [
     "anilist"
    ],
@@ -1027,6 +1074,7 @@
    "chapters": 68,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:98263",
+   "nativeTitle": "とんがり帽子のアトリエ",
    "origins": [
     "anilist"
    ],
@@ -1057,6 +1105,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:140475",
+   "nativeTitle": "薫る花は凛と咲く",
    "origins": [
     "anilist"
    ],
@@ -1083,6 +1132,7 @@
    "chapters": 116,
    "chaptersFrom": "anilist",
    "key": "anilist:30025",
+   "nativeTitle": "鋼の錬金術師",
    "origins": [
     "anilist"
    ],
@@ -1111,6 +1161,7 @@
    "chapters": 94,
    "chaptersFrom": "anilist",
    "key": "anilist:86964",
+   "nativeTitle": "후레자식",
    "origins": [
     "anilist"
    ],
@@ -1132,6 +1183,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:107237",
+   "nativeTitle": "ブルーピリオド",
    "origins": [
     "anilist"
    ],
@@ -1150,6 +1202,7 @@
    "chapters": 832,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:46765",
+   "nativeTitle": "キングダム",
    "origins": [
     "anilist"
    ],
@@ -1165,6 +1218,7 @@
    "chapters": 189,
    "chaptersFrom": "anilist",
    "key": "anilist:100664",
+   "nativeTitle": "イジらないで、長瀞さん",
    "origins": [
     "anilist"
    ],
@@ -1189,6 +1243,7 @@
    "chapters": 276,
    "chaptersFrom": "anilist",
    "key": "anilist:30051",
+   "nativeTitle": "SLAM DUNK",
    "origins": [
     "anilist"
    ],
@@ -1206,6 +1261,7 @@
    "chapters": 58,
    "chaptersFrom": "anilist",
    "key": "anilist:54705",
+   "nativeTitle": "惡の華",
    "origins": [
     "anilist"
    ],
@@ -1229,6 +1285,7 @@
    "chapters": 170,
    "chaptersFrom": "anilist",
    "key": "anilist:37375",
+   "nativeTitle": "孤高の人",
    "origins": [
     "anilist"
    ],
@@ -1245,6 +1302,7 @@
    "chapters": 166,
    "chaptersFrom": "anilist",
    "key": "anilist:30936",
+   "nativeTitle": "ホムンクルス",
    "origins": [
     "anilist"
    ],
@@ -1259,6 +1317,7 @@
    "chapters": 158,
    "chaptersFrom": "anilist",
    "key": "anilist:33009",
+   "nativeTitle": "ジョジョの奇妙な冒険 ストーンオーシャン",
    "origins": [
     "anilist"
    ],
@@ -1276,6 +1335,7 @@
    "chapters": 4,
    "chaptersFrom": "anilist",
    "key": "anilist:105469",
+   "nativeTitle": "呪術廻戦 0 東京都立呪術高等専門学校",
    "origins": [
     "anilist"
    ],
@@ -1305,6 +1365,7 @@
    "chapters": 133,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:98842",
+   "nativeTitle": "地縛少年 花子くん",
    "origins": [
     "anilist"
    ],
@@ -1332,6 +1393,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:169355",
+   "nativeTitle": "カグラバチ",
    "origins": [
     "anilist"
    ],
@@ -1349,6 +1411,7 @@
    "chapters": 383,
    "chaptersFrom": "anilist",
    "key": "anilist:30564",
+   "nativeTitle": "GANTZ",
    "origins": [
     "anilist"
    ],
@@ -1365,6 +1428,7 @@
    "chapters": 222,
    "chaptersFrom": "anilist",
    "key": "anilist:140407",
+   "nativeTitle": "역대급 영지 설계사",
    "origins": [
     "anilist"
    ],
@@ -1387,6 +1451,7 @@
    "chapters": 122,
    "chaptersFrom": "anilist",
    "key": "anilist:100230",
+   "nativeTitle": "五等分の花嫁",
    "origins": [
     "anilist"
    ],
@@ -1412,6 +1477,7 @@
    "chapters": 157,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:128067",
+   "nativeTitle": "SSS급 죽어야 사는 헌터",
    "origins": [
     "anilist"
    ],
@@ -1432,6 +1498,7 @@
    "chapters": 117,
    "chaptersFrom": "anilist",
    "key": "anilist:30908",
+   "nativeTitle": "ソウルイーター",
    "origins": [
     "anilist"
    ],
@@ -1446,6 +1513,7 @@
    "chapters": 84,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:87395",
+   "nativeTitle": "ぐらんぶる",
    "origins": [
     "anilist"
    ],
@@ -1464,6 +1532,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:107098",
+   "nativeTitle": "終末のワルキューレ",
    "origins": [
     "anilist"
    ],
@@ -1485,6 +1554,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:101233",
+   "nativeTitle": "極主夫道",
    "origins": [
     "anilist"
    ],
@@ -1515,6 +1585,7 @@
    "chapters": 86,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:144946",
+   "nativeTitle": "ガチアクタ",
    "origins": [
     "anilist"
    ],
@@ -1529,6 +1600,7 @@
    "chapters": 159,
    "chaptersFrom": "anilist",
    "key": "anilist:30583",
+   "nativeTitle": "CLAYMORE",
    "origins": [
     "anilist"
    ],
@@ -1543,6 +1615,7 @@
    "chapters": 53,
    "chaptersFrom": "anilist",
    "key": "anilist:86218",
+   "nativeTitle": "やがて君になる",
    "origins": [
     "anilist"
    ],
@@ -1565,6 +1638,7 @@
    "chapters": 153,
    "chaptersFrom": "anilist",
    "key": "anilist:98397",
+   "nativeTitle": "血の轍",
    "origins": [
     "anilist"
    ],
@@ -1586,6 +1660,7 @@
    "chapters": 305,
    "chaptersFrom": "anilist",
    "key": "anilist:86310",
+   "nativeTitle": "炎炎ノ消防隊",
    "origins": [
     "anilist"
    ],
@@ -1608,6 +1683,7 @@
    "chapters": 203,
    "chaptersFrom": "anilist",
    "key": "anilist:111233",
+   "nativeTitle": "よふかしのうた",
    "origins": [
     "anilist"
    ],
@@ -1631,6 +1707,7 @@
    "chapters": 66,
    "chaptersFrom": "anilist",
    "key": "anilist:30149",
+   "nativeTitle": "BLAME!",
    "origins": [
     "anilist"
    ],
@@ -1647,6 +1724,7 @@
    "chapters": 115,
    "chaptersFrom": "anilist",
    "key": "anilist:86717",
+   "nativeTitle": "ヲタクに恋は難しい",
    "origins": [
     "anilist"
    ],
@@ -1678,6 +1756,7 @@
    "chapters": 21,
    "chaptersFrom": "anilist",
    "key": "anilist:100568",
+   "nativeTitle": "수평선",
    "origins": [
     "anilist"
    ],
@@ -1698,6 +1777,7 @@
    "chapters": 1,
    "chaptersFrom": "anilist",
    "key": "anilist:136807",
+   "nativeTitle": "ルックバック",
    "origins": [
     "anilist"
    ],
@@ -1714,6 +1794,7 @@
    "chapters": 5,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:30104",
+   "nativeTitle": "よつばと！",
    "origins": [
     "anilist"
    ],
@@ -1734,6 +1815,7 @@
    "chapters": 99,
    "chaptersFrom": "anilist",
    "key": "anilist:79865",
+   "nativeTitle": "亜人",
    "origins": [
     "anilist"
    ],
@@ -1754,6 +1836,7 @@
    "chapters": 109,
    "chaptersFrom": "anilist",
    "key": "anilist:54692",
+   "nativeTitle": "ノラガミ",
    "origins": [
     "anilist"
    ],
@@ -1770,6 +1853,7 @@
    "chapters": 110,
    "chaptersFrom": "anilist",
    "key": "anilist:55515",
+   "nativeTitle": "ジョジョの奇妙な冒険 ジョジョリオン",
    "origins": [
     "anilist"
    ],
@@ -1787,6 +1871,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:99943",
+   "nativeTitle": "彼女、お借りします",
    "origins": [
     "anilist"
    ],
@@ -1809,6 +1894,7 @@
    "chapters": 106,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:86399",
+   "nativeTitle": "転生したらスライムだった件",
    "origins": [
     "anilist"
    ],
@@ -1836,6 +1922,7 @@
    "chapters": 53,
    "chaptersFrom": "anilist",
    "key": "anilist:54294",
+   "nativeTitle": "アオハライド",
    "origins": [
     "anilist"
    ],
@@ -1858,6 +1945,7 @@
    "chapters": 162,
    "chaptersFrom": "anilist",
    "key": "anilist:114960",
+   "nativeTitle": "マッシュル-MASHLE-",
    "origins": [
     "anilist"
    ],
@@ -1877,6 +1965,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:30028",
+   "nativeTitle": "NANA",
    "origins": [
     "anilist"
    ],
@@ -1892,6 +1981,7 @@
    "chapters": 185,
    "chaptersFrom": "anilist",
    "key": "anilist:116186",
+   "nativeTitle": "少年のアビス",
    "origins": [
     "anilist"
    ],
@@ -1907,6 +1997,7 @@
    "chapters": 74,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:86551",
+   "nativeTitle": "メイドインアビス",
    "origins": [
     "anilist"
    ],
@@ -1926,6 +2017,7 @@
    "chapters": 107,
    "chaptersFrom": "anilist",
    "key": "anilist:33031",
+   "nativeTitle": "パンドラハーツ",
    "origins": [
     "anilist"
    ],
@@ -1943,6 +2035,7 @@
    "chapters": 549,
    "chaptersFrom": "anilist",
    "key": "anilist:30598",
+   "nativeTitle": "FAIRY TAIL",
    "origins": [
     "anilist"
    ],
@@ -1959,6 +2052,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:126297",
+   "nativeTitle": "입학용병",
    "origins": [
     "anilist"
    ],
@@ -1981,6 +2075,7 @@
    "chapters": 240,
    "chaptersFrom": "anilist",
    "key": "anilist:61499",
+   "nativeTitle": "ニセコイ",
    "origins": [
     "anilist"
    ],
@@ -1999,6 +2094,7 @@
    "chapters": 208,
    "chaptersFrom": "anilist",
    "key": "anilist:30336",
+   "nativeTitle": "GTO",
    "origins": [
     "anilist"
    ],
@@ -2017,6 +2113,7 @@
    "chapters": 111,
    "chaptersFrom": "anilist",
    "key": "anilist:86082",
+   "nativeTitle": "ダンジョン飯",
    "origins": [
     "anilist"
    ],
@@ -2043,6 +2140,7 @@
    "chapters": 141,
    "chaptersFrom": "anilist",
    "key": "anilist:100954",
+   "nativeTitle": "스위트홈",
    "origins": [
     "anilist"
    ],
@@ -2057,6 +2155,7 @@
    "chapters": 250,
    "chaptersFrom": "anilist",
    "key": "anilist:132182",
+   "nativeTitle": "アオのハコ",
    "origins": [
     "anilist"
    ],
@@ -2078,6 +2177,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:106064",
+   "nativeTitle": "魔都精兵のスレイブ",
    "origins": [
     "anilist"
    ],
@@ -2099,6 +2199,7 @@
    "chapters": 238,
    "chaptersFrom": "anilist",
    "key": "anilist:85849",
+   "nativeTitle": "ReLIFE",
    "origins": [
     "anilist"
    ],
@@ -2116,6 +2217,7 @@
    "chapters": 569,
    "chaptersFrom": "anilist",
    "key": "anilist:85141",
+   "nativeTitle": "갓 오브 하이스쿨",
    "origins": [
     "anilist"
    ],
@@ -2133,6 +2235,7 @@
    "chapters": 367,
    "chaptersFrom": "anilist",
    "key": "anilist:74485",
+   "nativeTitle": "七つの大罪",
    "origins": [
     "anilist"
    ],
@@ -2154,6 +2257,7 @@
    "chapters": 188,
    "chaptersFrom": "anilist",
    "key": "anilist:69883",
+   "nativeTitle": "暗殺教室",
    "origins": [
     "anilist"
    ],
@@ -2172,6 +2276,7 @@
    "chapters": 30,
    "chaptersFrom": "anilist",
    "key": "anilist:33731",
+   "nativeTitle": "ソラニン",
    "origins": [
     "anilist"
    ],
@@ -2188,6 +2293,7 @@
    "chapters": 295,
    "chaptersFrom": "anilist",
    "key": "anilist:51525",
+   "nativeTitle": "暁のヨナ",
    "origins": [
     "anilist"
    ],
@@ -2211,6 +2317,7 @@
    "chapters": 520,
    "chaptersFrom": "anilist",
    "key": "anilist:30042",
+   "nativeTitle": "ドラゴンボール",
    "origins": [
     "anilist"
    ],
@@ -2233,6 +2340,7 @@
    "chapters": 183,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:149544",
+   "nativeTitle": "気になってる人が男じゃなかった",
    "origins": [
     "anilist"
    ],
@@ -2260,6 +2368,7 @@
    "chapters": 65,
    "chaptersFrom": "anilist",
    "key": "anilist:30745",
+   "nativeTitle": "PLUTO",
    "origins": [
     "anilist"
    ],
@@ -2277,6 +2386,7 @@
    "chapters": 58,
    "chaptersFrom": "anilist",
    "key": "anilist:33986",
+   "nativeTitle": "デッドマン・ワンダーランド",
    "origins": [
     "anilist"
    ],
@@ -2291,6 +2401,7 @@
    "chapters": 314,
    "chaptersFrom": "anilist",
    "key": "anilist:86559",
+   "nativeTitle": "ゴールデンカムイ",
    "origins": [
     "anilist"
    ],
@@ -2307,6 +2418,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:137280",
+   "nativeTitle": "나 혼자 만렙 뉴비",
    "origins": [
     "anilist"
    ],
@@ -2327,6 +2439,7 @@
    "chapters": 202,
    "chaptersFrom": "anilist",
    "key": "anilist:97830",
+   "nativeTitle": "不滅のあなたへ",
    "origins": [
     "anilist"
    ],
@@ -2349,6 +2462,7 @@
    "chapters": 47,
    "chaptersFrom": "anilist",
    "key": "anilist:85412",
+   "nativeTitle": "少女終末旅行",
    "origins": [
     "anilist"
    ],
@@ -2373,6 +2487,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:30657",
+   "nativeTitle": "リアル",
    "origins": [
     "anilist"
    ],
@@ -2386,6 +2501,7 @@
    "chapters": 268,
    "chaptersFrom": "anilist",
    "key": "anilist:105393",
+   "nativeTitle": "귀환자의 마법은 특별해야 합니다",
    "origins": [
     "anilist"
    ],
@@ -2407,6 +2523,7 @@
    "chapters": 78,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:126693",
+   "nativeTitle": "超人X",
    "origins": [
     "anilist"
    ],
@@ -2423,6 +2540,7 @@
    "chapters": 369,
    "chaptersFrom": "anilist",
    "key": "anilist:44790",
+   "nativeTitle": "マギ",
    "origins": [
     "anilist"
    ],
@@ -2443,6 +2561,7 @@
    "chapters": 31,
    "chaptersFrom": "anilist",
    "key": "anilist:38967",
+   "nativeTitle": "オナニーマスター黒沢",
    "origins": [
     "anilist"
    ],
@@ -2458,6 +2577,7 @@
    "chapters": 81,
    "chaptersFrom": "anilist",
    "key": "anilist:87178",
+   "nativeTitle": "BORUTO-ボルト- -NARUTO NEXT GENERATIONS-",
    "origins": [
     "anilist"
    ],
@@ -2476,6 +2596,7 @@
    "chapters": 201,
    "chaptersFrom": "anilist",
    "key": "anilist:85189",
+   "nativeTitle": "モブサイコ100",
    "origins": [
     "anilist"
    ],
@@ -2495,6 +2616,7 @@
    "chapters": 196,
    "chaptersFrom": "anilist",
    "key": "anilist:98587",
+   "nativeTitle": "BEASTARS",
    "origins": [
     "anilist"
    ],
@@ -2512,6 +2634,7 @@
    "chapters": 335,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:120980",
+   "nativeTitle": "나노마신",
    "origins": [
     "anilist"
    ],
@@ -2530,6 +2653,7 @@
    "chapters": 80,
    "chaptersFrom": "anilist",
    "key": "anilist:55132",
+   "nativeTitle": "アカメが斬る！",
    "origins": [
     "anilist"
    ],
@@ -2548,6 +2672,7 @@
    "chapters": 44,
    "chaptersFrom": "anilist",
    "key": "anilist:31517",
+   "nativeTitle": "ジョジョの奇妙な冒険 ファントムブラッド",
    "origins": [
     "anilist"
    ],
@@ -2566,6 +2691,7 @@
    "chapters": 324,
    "chaptersFrom": "anilist",
    "key": "anilist:75757",
+   "nativeTitle": "食戟のソーマ",
    "origins": [
     "anilist"
    ],
@@ -2581,6 +2707,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:106758",
+   "nativeTitle": "陰の実力者になりたくて！",
    "origins": [
     "anilist"
    ],
@@ -2601,6 +2728,7 @@
    "chapters": 123,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:85564",
+   "nativeTitle": "無職転生 ～異世界行ったら本気だす～",
    "origins": [
     "anilist"
    ],
@@ -2616,6 +2744,7 @@
    "chapters": 120,
    "chaptersFrom": "anilist",
    "key": "anilist:30664",
+   "nativeTitle": "AKIRA",
    "origins": [
     "anilist"
    ],
@@ -2630,6 +2759,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:99022",
+   "nativeTitle": "薬屋のひとりごと",
    "origins": [
     "anilist"
    ],
@@ -2657,6 +2787,7 @@
    "chapters": 202,
    "chaptersFrom": "anilist",
    "key": "anilist:119521",
+   "nativeTitle": "북검전기",
    "origins": [
     "anilist"
    ],
@@ -2672,6 +2803,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:106929",
+   "nativeTitle": "일렉시드",
    "origins": [
     "anilist"
    ],
@@ -2688,6 +2820,7 @@
    "chapters": 17,
    "chaptersFrom": "anilist",
    "key": "anilist:85215",
+   "nativeTitle": "All You Need Is Kill",
    "origins": [
     "anilist"
    ],
@@ -2706,6 +2839,7 @@
    "chapters": 53,
    "chaptersFrom": "anilist",
    "key": "anilist:86770",
+   "nativeTitle": "とつくにの少女",
    "origins": [
     "anilist"
    ],
@@ -2738,6 +2872,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:85307",
+   "nativeTitle": "文豪ストレイドッグス",
    "origins": [
     "anilist"
    ],
@@ -2760,6 +2895,7 @@
    "chapters": 630,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:86848",
+   "nativeTitle": "외모지상주의",
    "origins": [
     "anilist"
    ],
@@ -2776,6 +2912,7 @@
    "chapters": 961,
    "chaptersFrom": "anilist",
    "key": "anilist:86300",
+   "nativeTitle": "トモちゃんは女の子!",
    "origins": [
     "anilist"
    ],
@@ -2791,6 +2928,7 @@
    "chapters": 185,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:163824",
+   "nativeTitle": "철혈검가 사냥개의 회귀",
    "origins": [
     "anilist"
    ],
@@ -2811,6 +2949,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:159441",
+   "nativeTitle": "픽 미 업!",
    "origins": [
     "anilist"
    ],
@@ -2827,6 +2966,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:105097",
+   "nativeTitle": "見える子ちゃん",
    "origins": [
     "anilist"
    ],
@@ -2850,6 +2990,7 @@
    "chapters": 193,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:123573",
+   "nativeTitle": "백작가의 망나니가 되었다",
    "origins": [
     "anilist"
    ],
@@ -2875,6 +3016,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:132144",
+   "nativeTitle": "화산귀환",
    "origins": [
     "anilist"
    ],
@@ -2896,6 +3038,7 @@
    "chapters": 133,
    "chaptersFrom": "anilist",
    "key": "anilist:119174",
+   "nativeTitle": "더 복서",
    "origins": [
     "anilist"
    ],
@@ -2913,6 +3056,7 @@
    "chapters": 163,
    "chaptersFrom": "anilist",
    "key": "anilist:98328",
+   "nativeTitle": "ジャガーン",
    "origins": [
     "anilist"
    ],
@@ -2930,6 +3074,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:144957",
+   "nativeTitle": "멸망 이후의 세계",
    "origins": [
     "anilist"
    ],
@@ -2949,6 +3094,7 @@
    "chapters": 235,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:109957",
+   "nativeTitle": "두번사는랭커",
    "origins": [
     "anilist"
    ],
@@ -2968,6 +3114,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:147149",
+   "nativeTitle": "スーパーの裏でヤニ吸うふたり",
    "origins": [
     "anilist"
    ],
@@ -2997,6 +3144,7 @@
    "chapters": 218,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:149332",
+   "nativeTitle": "검술명가 막내아들",
    "origins": [
     "anilist"
    ],
@@ -3017,6 +3165,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:150378",
+   "nativeTitle": "極楽街",
    "origins": [
     "anilist"
    ],
@@ -3032,6 +3181,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:73661",
+   "nativeTitle": "終わりのセラフ",
    "origins": [
     "anilist"
    ],
@@ -3053,6 +3203,7 @@
    "chapters": 176,
    "chaptersFrom": "anilist",
    "key": "anilist:39711",
+   "nativeTitle": "バクマン。",
    "origins": [
     "anilist"
    ],
@@ -3070,6 +3221,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:118408",
+   "nativeTitle": "악역의 엔딩은 죽음뿐",
    "origins": [
     "anilist"
    ],
@@ -3100,6 +3252,7 @@
    "chapters": 299,
    "chaptersFrom": "anilist",
    "key": "anilist:85802",
+   "nativeTitle": "ドメスティックな彼女",
    "origins": [
     "anilist"
    ],
@@ -3119,6 +3272,7 @@
    "chapters": 50,
    "chaptersFrom": "anilist",
    "key": "anilist:86136",
+   "nativeTitle": "ハピネス",
    "origins": [
     "anilist"
    ],
@@ -3133,6 +3287,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:43492",
+   "nativeTitle": "青の祓魔師",
    "origins": [
     "anilist"
    ],
@@ -3152,6 +3307,7 @@
    "chapters": 181,
    "chaptersFrom": "anilist",
    "key": "anilist:38848",
+   "nativeTitle": "サンケンロック",
    "origins": [
     "anilist"
    ],
@@ -3167,6 +3323,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:30024",
+   "nativeTitle": "ディー・グレイマン",
    "origins": [
     "anilist"
    ],
@@ -3187,6 +3344,7 @@
    "chapters": 51,
    "chaptersFrom": "anilist",
    "key": "anilist:138603",
+   "nativeTitle": "光が死んだ夏",
    "origins": [
     "anilist"
    ],
@@ -3212,6 +3370,7 @@
    "chapters": 265,
    "chaptersFrom": "anilist",
    "key": "anilist:44440",
+   "nativeTitle": "アイアムアヒーロー",
    "origins": [
     "anilist"
    ],
@@ -3227,6 +3386,7 @@
    "chapters": 158,
    "chaptersFrom": "anilist",
    "key": "anilist:112981",
+   "nativeTitle": "久保さんは僕を許さない",
    "origins": [
     "anilist"
    ],
@@ -3247,6 +3407,7 @@
    "chapters": 130,
    "chaptersFrom": "anilist",
    "key": "anilist:85911",
+   "nativeTitle": "トモダチゲーム",
    "origins": [
     "anilist"
    ],
@@ -3266,6 +3427,7 @@
    "chapters": 554,
    "chaptersFrom": "anilist",
    "key": "anilist:86099",
+   "nativeTitle": "윈드브레이커",
    "origins": [
     "anilist"
    ],
@@ -3283,6 +3445,7 @@
    "chapters": 13,
    "chaptersFrom": "anilist",
    "key": "anilist:30912",
+   "nativeTitle": "富江",
    "origins": [
     "anilist"
    ],
@@ -3297,6 +3460,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:159930",
+   "nativeTitle": "무한의 마법사",
    "origins": [
     "anilist"
    ],
@@ -3313,6 +3477,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:101177",
+   "nativeTitle": "トニカクカワイイ",
    "origins": [
     "anilist"
    ],
@@ -3335,6 +3500,7 @@
    "chapters": 87,
    "chaptersFrom": "anilist",
    "key": "anilist:63031",
+   "nativeTitle": "今際の国のアリス",
    "origins": [
     "anilist"
    ],
@@ -3354,6 +3520,7 @@
    "chapters": 101,
    "chaptersFrom": "anilist",
    "key": "anilist:85316",
+   "nativeTitle": "デッドデッドデーモンズデデデデデストラクション",
    "origins": [
     "anilist"
    ],
@@ -3369,6 +3536,7 @@
    "chapters": 101,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:136220",
+   "nativeTitle": "투신전생기",
    "origins": [
     "anilist"
    ],
@@ -3388,6 +3556,7 @@
    "chapters": 203,
    "chaptersFrom": "anilist",
    "key": "anilist:107282",
+   "nativeTitle": "可愛いだけじゃない式守さん",
    "origins": [
     "anilist"
    ],
@@ -3415,6 +3584,7 @@
    "chapters": 51,
    "chaptersFrom": "anilist",
    "key": "anilist:87347",
+   "nativeTitle": "ギヴン",
    "origins": [
     "anilist"
    ],
@@ -3430,6 +3600,7 @@
    "chapters": 54,
    "chaptersFrom": "anilist",
    "key": "anilist:98334",
+   "nativeTitle": "青のフラッグ",
    "origins": [
     "anilist"
    ],
@@ -3446,6 +3617,7 @@
    "chapters": 135,
    "chaptersFrom": "anilist",
    "key": "anilist:107521",
+   "nativeTitle": "어느 날 공주가 되어버렸다",
    "origins": [
     "anilist"
    ],
@@ -3474,6 +3646,7 @@
    "chapters": 165,
    "chaptersFrom": "anilist",
    "key": "anilist:41054",
+   "nativeTitle": "ビリーバット",
    "origins": [
     "anilist"
    ],
@@ -3488,6 +3661,7 @@
    "chapters": 72,
    "chaptersFrom": "anilist",
    "key": "anilist:38586",
+   "nativeTitle": "브레이커",
    "origins": [
     "anilist"
    ],
@@ -3502,6 +3676,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:117460",
+   "nativeTitle": "템빨",
    "origins": [
     "anilist"
    ],
@@ -3520,6 +3695,7 @@
    "chapters": 155,
    "chaptersFrom": "anilist",
    "key": "anilist:33008",
+   "nativeTitle": "ジョジョの奇妙な冒険 黄金の風",
    "origins": [
     "anilist"
    ],
@@ -3540,6 +3716,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:114416",
+   "nativeTitle": "君のことが大大大大大好きな100人の彼女",
    "origins": [
     "anilist"
    ],
@@ -3564,6 +3741,7 @@
    "chapters": 39,
    "chaptersFrom": "anilist",
    "key": "anilist:65573",
+   "nativeTitle": "orange [オレンジ]",
    "origins": [
     "anilist"
    ],
@@ -3583,6 +3761,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:143056",
+   "nativeTitle": "재앙급 영웅님이 귀환하셨다",
    "origins": [
     "anilist"
    ],
@@ -3601,6 +3780,7 @@
    "chapters": 97,
    "chaptersFrom": "anilist",
    "key": "anilist:30698",
+   "nativeTitle": "新世紀エヴァンゲリオン",
    "origins": [
     "anilist"
    ],
@@ -3621,6 +3801,7 @@
    "chapters": 99,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:109501",
+   "nativeTitle": "山田くんとLv999の恋をする",
    "origins": [
     "anilist"
    ],
@@ -3642,6 +3823,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:85734",
+   "nativeTitle": "她们的故事",
    "origins": [
     "anilist"
    ],
@@ -3661,6 +3843,7 @@
    "chapters": 190,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:33866",
+   "nativeTitle": "黒執事",
    "origins": [
     "anilist"
    ],
@@ -3686,6 +3869,7 @@
    "chapters": 279,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:118424",
+   "nativeTitle": "4000년 만에 귀환한 대마도사",
    "origins": [
     "anilist"
    ],
@@ -3704,6 +3888,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:99324",
+   "nativeTitle": "魔入りました！入間くん",
    "origins": [
     "anilist"
    ],
@@ -3726,6 +3911,7 @@
    "chapters": 279,
    "chaptersFrom": "anilist",
    "key": "anilist:55297",
+   "nativeTitle": "監獄学園",
    "origins": [
     "anilist"
    ],
@@ -3742,6 +3928,7 @@
    "chapters": 127,
    "chaptersFrom": "anilist",
    "key": "anilist:33378",
+   "nativeTitle": "君に届け",
    "origins": [
     "anilist"
    ],
@@ -3763,6 +3950,7 @@
    "chapters": 16,
    "chaptersFrom": "anilist",
    "key": "anilist:30743",
+   "nativeTitle": "21世紀少年",
    "origins": [
     "anilist"
    ],
@@ -3778,6 +3966,7 @@
    "chapters": 69,
    "chaptersFrom": "anilist",
    "key": "anilist:31630",
+   "nativeTitle": "ジョジョの奇妙な冒険 戦闘潮流",
    "origins": [
     "anilist"
    ],
@@ -3795,6 +3984,7 @@
    "chapters": 23,
    "chaptersFrom": "anilist",
    "key": "anilist:87208",
+   "nativeTitle": "しまなみ誰そ彼",
    "origins": [
     "anilist"
    ],
@@ -3820,6 +4010,7 @@
    "chapters": 79,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:105011",
+   "nativeTitle": "夫婦以上、恋人未満。",
    "origins": [
     "anilist"
    ],
@@ -3840,6 +4031,7 @@
    "chapters": 411,
    "chaptersFrom": "anilist",
    "key": "anilist:110462",
+   "nativeTitle": "도굴왕",
    "origins": [
     "anilist"
    ],
@@ -3859,6 +4051,7 @@
    "chapters": 6,
    "chaptersFrom": "anilist",
    "key": "anilist:87459",
+   "nativeTitle": "さびしすぎてレズ風俗に行きましたレポ",
    "origins": [
     "anilist"
    ],
@@ -3883,6 +4076,7 @@
    "chapters": 99,
    "chaptersFrom": "anilist",
    "key": "anilist:32921",
+   "nativeTitle": "会長はメイド様！",
    "origins": [
     "anilist"
    ],
@@ -3909,6 +4103,7 @@
    "chapters": 144,
    "chaptersFrom": "anilist",
    "key": "anilist:30004",
+   "nativeTitle": "ヨコハマ買い出し紀行",
    "origins": [
     "anilist"
    ],
@@ -3930,6 +4125,7 @@
    "chapters": 255,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:114605",
+   "nativeTitle": "이계 검왕 생존기",
    "origins": [
     "anilist"
    ],
@@ -3951,6 +4147,7 @@
    "chapters": 174,
    "chaptersFrom": "anilist",
    "key": "anilist:33006",
+   "nativeTitle": "ジョジョの奇妙な冒険 ダイヤモンドは砕けない",
    "origins": [
     "anilist"
    ],
@@ -3969,6 +4166,7 @@
    "chapters": 37,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:111189",
+   "nativeTitle": "ゆびさきと恋々",
    "origins": [
     "anilist"
    ],
@@ -3993,6 +4191,7 @@
    "chapters": 199,
    "chaptersFrom": "anilist",
    "key": "anilist:101557",
+   "nativeTitle": "僕の心のヤバイやつ",
    "origins": [
     "anilist"
    ],
@@ -4014,6 +4213,7 @@
    "chapters": 234,
    "chaptersFrom": "anilist",
    "key": "anilist:116671",
+   "nativeTitle": "十字架のろくにん",
    "origins": [
     "anilist"
    ],
@@ -4031,6 +4231,7 @@
    "chapters": 29,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:86568",
+   "nativeTitle": "ヴァニタスの手記",
    "origins": [
     "anilist"
    ],
@@ -4058,6 +4259,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:130511",
+   "nativeTitle": "레벨업 못하는 플레이어",
    "origins": [
     "anilist"
    ],
@@ -4076,6 +4278,7 @@
    "chapters": 152,
    "chaptersFrom": "anilist",
    "key": "anilist:30872",
+   "nativeTitle": "ジョジョの奇妙な冒険スターダストクルセイダース",
    "origins": [
     "anilist"
    ],
@@ -4096,6 +4299,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:30007",
+   "nativeTitle": "はじめの一歩",
    "origins": [
     "anilist"
    ],
@@ -4115,6 +4319,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:151512",
+   "nativeTitle": "빌어먹을 환생",
    "origins": [
     "anilist"
    ],
@@ -4130,6 +4335,7 @@
    "chapters": 99,
    "chaptersFrom": "anilist",
    "key": "anilist:85165",
+   "nativeTitle": "イノサン",
    "origins": [
     "anilist"
    ],
@@ -4144,6 +4350,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:85442",
+   "nativeTitle": "盾の勇者の成り上がり",
    "origins": [
     "anilist"
    ],
@@ -4161,6 +4368,7 @@
    "chapters": 104,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:86508",
+   "nativeTitle": "ドラゴンボール超",
    "origins": [
     "anilist"
    ],
@@ -4176,6 +4384,7 @@
    "chapters": 544,
    "chaptersFrom": "anilist",
    "key": "anilist:59983",
+   "nativeTitle": "노블레스",
    "origins": [
     "anilist"
    ],
@@ -4191,6 +4400,7 @@
    "chapters": 137,
    "chaptersFrom": "anilist",
    "key": "anilist:30102",
+   "nativeTitle": "フルーツバスケット",
    "origins": [
     "anilist"
    ],
@@ -4209,6 +4419,7 @@
    "chapters": 165,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:135325",
+   "nativeTitle": "나태 공자, 노력 천재 되다",
    "origins": [
     "anilist"
    ],
@@ -4227,6 +4438,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:150440",
+   "nativeTitle": "ルリドラゴン",
    "origins": [
     "anilist"
    ],
@@ -4244,6 +4456,7 @@
    "chapters": 9,
    "chaptersFrom": "anilist",
    "key": "anilist:47465",
+   "nativeTitle": "おもいでエマノン",
    "origins": [
     "anilist"
    ],
@@ -4264,6 +4477,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:31224",
+   "nativeTitle": "3月のライオン",
    "origins": [
     "anilist"
    ],
@@ -4287,6 +4501,7 @@
    "chapters": 187,
    "chaptersFrom": "anilist",
    "key": "anilist:98235",
+   "nativeTitle": "ぼくたちは勉強ができない",
    "origins": [
     "anilist"
    ],
@@ -4305,6 +4520,7 @@
    "chapters": 210,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:113501",
+   "nativeTitle": "帰ってください! 阿久津さん",
    "origins": [
     "anilist"
    ],
@@ -4325,6 +4541,7 @@
    "chapters": 246,
    "chaptersFrom": "anilist",
    "key": "anilist:65003",
+   "nativeTitle": "山田くんと7人の魔女",
    "origins": [
     "anilist"
    ],
@@ -4346,6 +4563,7 @@
    "chapters": 201,
    "chaptersFrom": "anilist",
    "key": "anilist:31649",
+   "nativeTitle": "LIAR GAME",
    "origins": [
     "anilist"
    ],
@@ -4361,6 +4579,7 @@
    "chapters": 539,
    "chaptersFrom": "anilist",
    "key": "anilist:39982",
+   "nativeTitle": "嘘喰い",
    "origins": [
     "anilist"
    ],
@@ -4376,6 +4595,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:179445",
+   "nativeTitle": "나 혼자만 레벨업 : 라그나로크",
    "origins": [
     "anilist"
    ],
@@ -4392,6 +4612,7 @@
    "chapters": 6,
    "chaptersFrom": "anilist",
    "key": "anilist:112579",
+   "nativeTitle": "マイ・ブロークン・マリコ",
    "origins": [
     "anilist"
    ],
@@ -4409,6 +4630,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:170400",
+   "nativeTitle": "별을 품은 소드마스터",
    "origins": [
     "anilist"
    ],
@@ -4428,6 +4650,7 @@
    "chapters": 103,
    "chaptersFrom": "anilist",
    "key": "anilist:30145",
+   "nativeTitle": "BECK",
    "origins": [
     "anilist"
    ],
@@ -4442,6 +4665,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:109285",
+   "nativeTitle": "スキップとローファー",
    "origins": [
     "anilist"
    ],
@@ -4460,6 +4684,7 @@
    "chapters": 54,
    "chaptersFrom": "anilist",
    "key": "anilist:76716",
+   "nativeTitle": "政宗くんのリベンジ",
    "origins": [
     "anilist"
    ],
@@ -4475,6 +4700,7 @@
    "chapters": 64,
    "chaptersFrom": "anilist",
    "key": "anilist:30401",
+   "nativeTitle": "寄生獣",
    "origins": [
     "anilist"
    ],
@@ -4497,6 +4723,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:153284",
+   "nativeTitle": "만 년 만에 귀환한 플레이어",
    "origins": [
     "anilist"
    ],
@@ -4515,6 +4742,7 @@
    "chapters": 20,
    "chaptersFrom": "anilist",
    "key": "anilist:47353",
+   "nativeTitle": "うみべの女の子",
    "origins": [
     "anilist"
    ],
@@ -4540,6 +4768,7 @@
    "chapters": 50,
    "chaptersFrom": "anilist",
    "key": "anilist:80145",
+   "nativeTitle": "citrus",
    "origins": [
     "anilist"
    ],
@@ -4557,6 +4786,7 @@
    "chapters": 219,
    "chaptersFrom": "anilist",
    "key": "anilist:30658",
+   "nativeTitle": "無限の住人",
    "origins": [
     "anilist"
    ],
@@ -4580,6 +4810,7 @@
    "chapters": null,
    "chaptersFrom": "none",
    "key": "anilist:172619",
+   "nativeTitle": "아카데미에서 살아남기",
    "origins": [
     "anilist"
    ],
@@ -4595,6 +4826,7 @@
    "chapters": 182,
    "chaptersFrom": "anilist",
    "key": "anilist:33285",
+   "nativeTitle": "ホーリーランド",
    "origins": [
     "anilist"
    ],
@@ -4609,6 +4841,7 @@
    "chapters": 125,
    "chaptersFrom": "anilist",
    "key": "anilist:110473",
+   "nativeTitle": "君は放課後インソムニア",
    "origins": [
     "anilist"
    ],
@@ -4631,6 +4864,7 @@
    "chapters": 98,
    "chaptersFrom": "anilist",
    "key": "anilist:106867",
+   "nativeTitle": "親愛なる僕へ殺意をこめて",
    "origins": [
     "anilist"
    ],
@@ -4647,6 +4881,7 @@
    "chapters": 80,
    "chaptersFrom": "anilist",
    "key": "anilist:66267",
+   "nativeTitle": "ぼくは麻理のなか",
    "origins": [
     "anilist"
    ],
@@ -4664,6 +4899,7 @@
    "chapters": 531,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:86707",
+   "nativeTitle": "妖神记",
    "origins": [
     "anilist"
    ],
@@ -4685,6 +4921,7 @@
    "chapters": 709,
    "chaptersFrom": "anilist",
    "key": "anilist:30044",
+   "nativeTitle": "銀魂",
    "origins": [
     "anilist"
    ],
@@ -4705,6 +4942,7 @@
    "chapters": 251,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:125636",
+   "nativeTitle": "만렙 영웅님 께서 귀환 하신다!",
    "origins": [
     "anilist"
    ],
@@ -4726,6 +4964,7 @@
    "chapters": 16,
    "chaptersFrom": "anilist",
    "key": "anilist:142568",
+   "nativeTitle": "タコピーの原罪",
    "origins": [
     "anilist"
    ],
@@ -4750,6 +4989,7 @@
    "chapters": 69,
    "chaptersFrom": "anilist",
    "key": "anilist:43702",
+   "nativeTitle": "となりの怪物くん",
    "origins": [
     "anilist"
    ],
@@ -4771,6 +5011,7 @@
    "chapters": 1,
    "chaptersFrom": "anilist",
    "key": "anilist:115122",
+   "nativeTitle": "DEATH NOTE 特別読切",
    "origins": [
     "anilist"
    ],
@@ -4788,6 +5029,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:87321",
+   "nativeTitle": "ゴブリンスレイヤー",
    "origins": [
     "anilist"
    ],
@@ -4804,6 +5046,7 @@
    "chapters": 54,
    "chaptersFrom": "anilist",
    "key": "anilist:30768",
+   "nativeTitle": "銃夢",
    "origins": [
     "anilist"
    ],
@@ -4828,6 +5071,7 @@
    "chapters": 240,
    "chaptersFrom": "anilist",
    "key": "anilist:94490",
+   "nativeTitle": "ザ・ファブル",
    "origins": [
     "anilist"
    ],
@@ -4842,6 +5086,7 @@
    "chapters": 8,
    "chaptersFrom": "anilist",
    "key": "anilist:41734",
+   "nativeTitle": "私たちの幸せな時間",
    "origins": [
     "anilist"
    ],
@@ -4857,6 +5102,7 @@
    "chapters": 190,
    "chaptersFrom": "anilist",
    "key": "anilist:85533",
+   "nativeTitle": "からかい上手の高木さん",
    "origins": [
     "anilist"
    ],
@@ -4879,6 +5125,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:41514",
+   "nativeTitle": "乙嫁語り",
    "origins": [
     "anilist"
    ],
@@ -4905,6 +5152,7 @@
    "chapters": 110,
    "chaptersFrom": "anilist",
    "key": "anilist:30756",
+   "nativeTitle": "BANANA FISH",
    "origins": [
     "anilist"
    ],
@@ -4920,6 +5168,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:104660",
+   "nativeTitle": "ゾン100 ～ゾンビになるまでにしたい100のこと～",
    "origins": [
     "anilist"
    ],
@@ -4944,6 +5193,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:152128",
+   "nativeTitle": "소설 속 엑스트라",
    "origins": [
     "anilist"
    ],
@@ -4964,6 +5214,7 @@
    "chapters": 157,
    "chaptersFrom": "anilist",
    "key": "anilist:100805",
+   "nativeTitle": "Here U Are",
    "origins": [
     "anilist"
    ],
@@ -4978,6 +5229,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:86952",
+   "nativeTitle": "蜘蛛ですが、なにか？",
    "origins": [
     "anilist"
    ],
@@ -4997,6 +5249,7 @@
    "chapters": 102,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:180752",
+   "nativeTitle": "魔男のイチ",
    "origins": [
     "anilist"
    ],
@@ -5015,6 +5268,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:167649",
+   "nativeTitle": "아카데미의 천재칼잡이",
    "origins": [
     "anilist"
    ],
@@ -5033,6 +5287,7 @@
    "chapters": 97,
    "chaptersFrom": "anilist",
    "key": "anilist:30030",
+   "nativeTitle": "桜蘭高校ホスト部",
    "origins": [
     "anilist"
    ],
@@ -5056,6 +5311,7 @@
    "chapters": 232,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:101315",
+   "nativeTitle": "やんちゃギャルの安城さん",
    "origins": [
     "anilist"
    ],
@@ -5076,6 +5332,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:138072",
+   "nativeTitle": "ジョジョの奇妙な冒険 The JOJOLands",
    "origins": [
     "anilist"
    ],
@@ -5090,6 +5347,7 @@
    "chapters": 65,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:107987",
+   "nativeTitle": "ささやくように恋を唄う",
    "origins": [
     "anilist"
    ],
@@ -5113,6 +5371,7 @@
    "chapters": 49,
    "chaptersFrom": "anilist",
    "key": "anilist:69325",
+   "nativeTitle": "僕だけがいない街",
    "origins": [
     "anilist"
    ],
@@ -5138,6 +5397,7 @@
    "chapters": 244,
    "chaptersFrom": "anilist",
    "key": "anilist:114791",
+   "nativeTitle": "アンデッドアンラック",
    "origins": [
     "anilist"
    ],
@@ -5152,6 +5412,7 @@
    "chapters": 50,
    "chaptersFrom": "anilist",
    "key": "anilist:30418",
+   "nativeTitle": "蟲師",
    "origins": [
     "anilist"
    ],
@@ -5169,6 +5430,7 @@
    "chapters": 158,
    "chaptersFrom": "anilist",
    "key": "anilist:104973",
+   "nativeTitle": "그녀가 공작저로 가야 했던 사정",
    "origins": [
     "anilist"
    ],
@@ -5195,6 +5457,7 @@
    "chapters": 171,
    "chaptersFrom": "anilist",
    "key": "anilist:31303",
+   "nativeTitle": "あしたのジョー",
    "origins": [
     "anilist"
    ],
@@ -5214,6 +5477,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:138222",
+   "nativeTitle": "신과 함께 레벨업",
    "origins": [
     "anilist"
    ],
@@ -5232,6 +5496,7 @@
    "chapters": 222,
    "chaptersFrom": "anilist",
    "key": "anilist:121991",
+   "nativeTitle": "싸움독학",
    "origins": [
     "anilist"
    ],
@@ -5252,6 +5517,7 @@
    "chapters": 96,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:85435",
+   "nativeTitle": "魔法使いの嫁",
    "origins": [
     "anilist"
    ],
@@ -5276,6 +5542,7 @@
    "chapters": 69,
    "chaptersFrom": "anilist",
    "key": "anilist:100557",
+   "nativeTitle": "幸色のワンルーム",
    "origins": [
     "anilist"
    ],
@@ -5296,6 +5563,7 @@
    "chapters": 70,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:107559",
+   "nativeTitle": "履いてください、鷹峰さん",
    "origins": [
     "anilist"
    ],
@@ -5314,6 +5582,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:137304",
+   "nativeTitle": "광마회귀",
    "origins": [
     "anilist"
    ],
@@ -5332,6 +5601,7 @@
    "chapters": 132,
    "chaptersFrom": "anilist",
    "key": "anilist:146139",
+   "nativeTitle": "어쩌다보니 천생연분",
    "origins": [
     "anilist"
    ],
@@ -5350,6 +5620,7 @@
    "chapters": 922,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:116353",
+   "nativeTitle": "魔皇大管家",
    "origins": [
     "anilist"
    ],
@@ -5371,6 +5642,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:177706",
+   "nativeTitle": "오늘만 사는 기사",
    "origins": [
     "anilist"
    ],
@@ -5391,6 +5663,7 @@
    "chapters": 411,
    "chaptersFrom": "anilist",
    "key": "anilist:30047",
+   "nativeTitle": "家庭教師ヒットマンREBORN!",
    "origins": [
     "anilist"
    ],
@@ -5410,6 +5683,7 @@
    "chapters": 81,
    "chaptersFrom": "anilist",
    "key": "anilist:136331",
+   "nativeTitle": "8클래스 마법사의 회귀",
    "origins": [
     "anilist"
    ],
@@ -5428,6 +5702,7 @@
    "chapters": 92,
    "chaptersFrom": "anilist",
    "key": "anilist:30267",
+   "nativeTitle": "HELLSING",
    "origins": [
     "anilist"
    ],
@@ -5443,6 +5718,7 @@
    "chapters": 67,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:105263",
+   "nativeTitle": "大ダーク",
    "origins": [
     "anilist"
    ],
@@ -5457,6 +5733,7 @@
    "chapters": 176,
    "chaptersFrom": "anilist",
    "key": "anilist:30053",
+   "nativeTitle": "幽☆遊☆白書",
    "origins": [
     "anilist"
    ],
@@ -5479,6 +5756,7 @@
    "chapters": 123,
    "chaptersFrom": "anilist",
    "key": "anilist:100991",
+   "nativeTitle": "アクタージュ act-age",
    "origins": [
     "anilist"
    ],
@@ -5494,6 +5772,7 @@
    "chapters": 260,
    "chaptersFrom": "anilist",
    "key": "anilist:86265",
+   "nativeTitle": "ケンガンアシュラ",
    "origins": [
     "anilist"
    ],
@@ -5508,6 +5787,7 @@
    "chapters": 110,
    "chaptersFrom": "anilist",
    "key": "anilist:105332",
+   "nativeTitle": "あせとせっけん",
    "origins": [
     "anilist"
    ],
@@ -5527,6 +5807,7 @@
    "chapters": 121,
    "chaptersFrom": "anilist",
    "key": "anilist:86279",
+   "nativeTitle": "寄宿学校のジュリエット",
    "origins": [
     "anilist"
    ],
@@ -5546,6 +5827,7 @@
    "chapters": 144,
    "chaptersFrom": "anilist",
    "key": "anilist:117540",
+   "nativeTitle": "그 악녀를 조심하세요!",
    "origins": [
     "anilist"
    ],
@@ -5567,6 +5849,7 @@
    "chapters": 86,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:101942",
+   "nativeTitle": "天国大魔境",
    "origins": [
     "anilist"
    ],
@@ -5590,6 +5873,7 @@
    "chapters": 231,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:130870",
+   "nativeTitle": "얼어붙은 플레이어의 귀환",
    "origins": [
     "anilist"
    ],
@@ -5607,6 +5891,7 @@
    "chapters": 157,
    "chaptersFrom": "anilist",
    "key": "anilist:105577",
+   "nativeTitle": "疑似ハーレム",
    "origins": [
     "anilist"
    ],
@@ -5622,6 +5907,7 @@
    "chapters": 138,
    "chaptersFrom": "anilist",
    "key": "anilist:85395",
+   "nativeTitle": "なまいきざかり。",
    "origins": [
     "anilist"
    ],
@@ -5640,6 +5926,7 @@
    "chapters": 85,
    "chaptersFrom": "anilist",
    "key": "anilist:85226",
+   "nativeTitle": "いぬやしき",
    "origins": [
     "anilist"
    ],
@@ -5655,6 +5942,7 @@
    "chapters": 111,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:151025",
+   "nativeTitle": "신화급 귀속 아이템을 손에 넣었다",
    "origins": [
     "anilist"
    ],
@@ -5675,6 +5963,7 @@
    "chapters": 120,
    "chaptersFrom": "anilist",
    "key": "anilist:105641",
+   "nativeTitle": "好きな子がめがねを忘れた",
    "origins": [
     "anilist"
    ],
@@ -5694,6 +5983,7 @@
    "chapters": 71,
    "chaptersFrom": "anilist",
    "key": "anilist:97897",
+   "nativeTitle": "킬링 스토킹",
    "origins": [
     "anilist"
    ],
@@ -5708,6 +5998,7 @@
    "chapters": 153,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:59211",
+   "nativeTitle": "月刊少女野崎くん",
    "origins": [
     "anilist"
    ],
@@ -5729,6 +6020,7 @@
    "chapters": 28,
    "chaptersFrom": "anilist",
    "key": "anilist:30481",
+   "nativeTitle": "プラネテス",
    "origins": [
     "anilist"
    ],
@@ -5746,6 +6038,7 @@
    "chapters": 259,
    "chaptersFrom": "anilist",
    "key": "anilist:30022",
+   "nativeTitle": "るろうに剣心 -明治剣客浪漫譚-",
    "origins": [
     "anilist"
    ],
@@ -5769,6 +6062,7 @@
    "chapters": 53,
    "chaptersFrom": "anilist",
    "key": "anilist:31474",
+   "nativeTitle": "デビルマン",
    "origins": [
     "anilist"
    ],
@@ -5785,6 +6079,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:134369",
+   "nativeTitle": "黒岩メダカに私の可愛いが通じない",
    "origins": [
     "anilist"
    ],
@@ -5803,6 +6098,7 @@
    "chapters": 203,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:137595",
+   "nativeTitle": "66666년만에 환생한 흑마법사",
    "origins": [
     "anilist"
    ],
@@ -5820,6 +6116,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:85850",
+   "nativeTitle": "19天",
    "origins": [
     "anilist"
    ],
@@ -5835,6 +6132,7 @@
    "chapters": 274,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:103156",
+   "nativeTitle": "해골병사는 던전을 지키지 못했다",
    "origins": [
     "anilist"
    ],
@@ -5854,6 +6152,7 @@
    "chapters": 93,
    "chaptersFrom": "anilist",
    "key": "anilist:115000",
+   "nativeTitle": "화이트 블러드",
    "origins": [
     "anilist"
    ],
@@ -5875,6 +6174,7 @@
    "chapters": 21,
    "chaptersFrom": "anilist",
    "key": "anilist:30909",
+   "nativeTitle": "ギョ",
    "origins": [
     "anilist"
    ],
@@ -5894,6 +6194,7 @@
    "chapters": 410,
    "chaptersFrom": "anilist",
    "key": "anilist:107279",
+   "nativeTitle": "アオアシ",
    "origins": [
     "anilist"
    ],
@@ -5909,6 +6210,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:117324",
+   "nativeTitle": "南号尚风",
    "origins": [
     "anilist"
    ],
@@ -5924,6 +6226,7 @@
    "chapters": 32,
    "chaptersFrom": "anilist",
    "key": "anilist:117620",
+   "nativeTitle": "君と綴るうたかた",
    "origins": [
     "anilist"
    ],
@@ -5945,6 +6248,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:104494",
+   "nativeTitle": "武炼巅峰",
    "origins": [
     "anilist"
    ],
@@ -5962,6 +6266,7 @@
    "chapters": 271,
    "chaptersFrom": "anilist",
    "key": "anilist:37519",
+   "nativeTitle": "神のみぞ知るセカイ",
    "origins": [
     "anilist"
    ],
@@ -5981,6 +6286,7 @@
    "chapters": 123,
    "chaptersFrom": "anilist",
    "key": "anilist:111403",
+   "nativeTitle": "道産子ギャルはなまらめんこい",
    "origins": [
     "anilist"
    ],
@@ -6003,6 +6309,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:130429",
+   "nativeTitle": "이번 생은 가주가 되겠습니다",
    "origins": [
     "anilist"
    ],
@@ -6026,6 +6333,7 @@
    "chapters": 226,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:144866",
+   "nativeTitle": "あかね噺",
    "origins": [
     "anilist"
    ],
@@ -6042,6 +6350,7 @@
    "chapters": 223,
    "chaptersFrom": "anilist",
    "key": "anilist:119276",
+   "nativeTitle": "튜토리얼 탑의 고인물",
    "origins": [
     "anilist"
    ],
@@ -6064,6 +6373,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:182066",
+   "nativeTitle": "회귀한 용병은 다 계획이 있다",
    "origins": [
     "anilist"
    ],
@@ -6084,6 +6394,7 @@
    "chapters": 5,
    "chaptersFrom": "anilist",
    "key": "anilist:80217",
+   "nativeTitle": "神様がうそをつく。",
    "origins": [
     "anilist"
    ],
@@ -6107,6 +6418,7 @@
    "chapters": 53,
    "chaptersFrom": "anilist",
    "key": "anilist:74929",
+   "nativeTitle": "クズの本懐",
    "origins": [
     "anilist"
    ],
@@ -6122,6 +6434,7 @@
    "chapters": 208,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:141007",
+   "nativeTitle": "회귀자 사용설명서",
    "origins": [
     "anilist"
    ],
@@ -6140,6 +6453,7 @@
    "chapters": 58,
    "chaptersFrom": "anilist",
    "key": "anilist:86526",
+   "nativeTitle": "プラチナエンド",
    "origins": [
     "anilist"
    ],
@@ -6155,6 +6469,7 @@
    "chapters": 66,
    "chaptersFrom": "anilist",
    "key": "anilist:60315",
+   "nativeTitle": "ラストゲーム",
    "origins": [
     "anilist"
    ],
@@ -6168,6 +6483,7 @@
    "chapters": 70,
    "chaptersFrom": "anilist",
    "key": "anilist:56736",
+   "nativeTitle": "たいようのいえ",
    "origins": [
     "anilist"
    ],
@@ -6191,6 +6507,7 @@
    "chapters": 9,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:85793",
+   "nativeTitle": "賭ケグルイ",
    "origins": [
     "anilist"
    ],
@@ -6210,6 +6527,7 @@
    "chapters": 158,
    "chaptersFrom": "anilist",
    "key": "anilist:75143",
+   "nativeTitle": "この音とまれ！",
    "origins": [
     "anilist"
    ],
@@ -6227,6 +6545,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:101724",
+   "nativeTitle": "宇崎ちゃんは遊びたい！",
    "origins": [
     "anilist"
    ],
@@ -6244,6 +6563,7 @@
    "chapters": 172,
    "chaptersFrom": "anilist",
    "key": "anilist:113666",
+   "nativeTitle": "FFF급 관심용사",
    "origins": [
     "anilist"
    ],
@@ -6260,6 +6580,7 @@
    "chapters": 194,
    "chaptersFrom": "anilist",
    "key": "anilist:43949",
+   "nativeTitle": "めだかボックス",
    "origins": [
     "anilist"
    ],
@@ -6274,6 +6595,7 @@
    "chapters": 67,
    "chaptersFrom": "anilist",
    "key": "anilist:105791",
+   "nativeTitle": "ひげを剃る。そして女子高生を拾う。",
    "origins": [
     "anilist"
    ],
@@ -6292,6 +6614,7 @@
    "chapters": 77,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:116170",
+   "nativeTitle": "Veil",
    "origins": [
     "anilist"
    ],
@@ -6305,6 +6628,7 @@
    "chapters": 259,
    "chaptersFrom": "anilist",
    "key": "anilist:111149",
+   "nativeTitle": "夜桜さんちの大作戦",
    "origins": [
     "anilist"
    ],
@@ -6327,6 +6651,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:175262",
+   "nativeTitle": "회귀한 공작가의 막내도련님은 암살자",
    "origins": [
     "anilist"
    ],
@@ -6345,6 +6670,7 @@
    "chapters": 250,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:120385",
+   "nativeTitle": "로그인 무림",
    "origins": [
     "anilist"
    ],
@@ -6363,6 +6689,7 @@
    "chapters": 258,
    "chaptersFrom": "anilist",
    "key": "anilist:85388",
+   "nativeTitle": "天空侵犯",
    "origins": [
     "anilist"
    ],
@@ -6380,6 +6707,7 @@
    "chapters": 214,
    "chaptersFrom": "anilist",
    "key": "anilist:30010",
+   "nativeTitle": "xxxHOLiC",
    "origins": [
     "anilist"
    ],
@@ -6398,6 +6726,7 @@
    "chapters": 154,
    "chaptersFrom": "anilist",
    "key": "anilist:38157",
+   "nativeTitle": "神様はじめました",
    "origins": [
     "anilist"
    ],
@@ -6417,6 +6746,7 @@
    "chapters": 252,
    "chaptersFrom": "anilist",
    "key": "anilist:40010",
+   "nativeTitle": "べるぜバブ",
    "origins": [
     "anilist"
    ],
@@ -6431,6 +6761,7 @@
    "chapters": 142,
    "chaptersFrom": "anilist",
    "key": "anilist:85247",
+   "nativeTitle": "双星の陰陽師",
    "origins": [
     "anilist"
    ],
@@ -6449,6 +6780,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:114383",
+   "nativeTitle": "カッコウの許嫁",
    "origins": [
     "anilist"
    ],
@@ -6466,6 +6798,7 @@
    "chapters": 139,
    "chaptersFrom": "anilist",
    "key": "anilist:102989",
+   "nativeTitle": "サマータイムレンダ",
    "origins": [
     "anilist"
    ],
@@ -6488,6 +6821,7 @@
    "chapters": 131,
    "chaptersFrom": "anilist",
    "key": "anilist:30731",
+   "nativeTitle": "EDEN 〜It's an Endless World!〜",
    "origins": [
     "anilist"
    ],
@@ -6503,6 +6837,7 @@
    "chapters": 132,
    "chaptersFrom": "anilist",
    "key": "anilist:66413",
+   "nativeTitle": "ヒナまつり",
    "origins": [
     "anilist"
    ],
@@ -6518,6 +6853,7 @@
    "chapters": 25,
    "chaptersFrom": "anilist",
    "key": "anilist:198372",
+   "nativeTitle": "呪術廻戦≡",
    "origins": [
     "anilist"
    ],
@@ -6535,6 +6871,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:104063",
+   "nativeTitle": "シャドーハウス",
    "origins": [
     "anilist"
    ],
@@ -6552,6 +6889,7 @@
    "chapters": 12,
    "chaptersFrom": "anilist",
    "key": "anilist:126135",
+   "nativeTitle": "ビブリオマニア",
    "origins": [
     "anilist"
    ],
@@ -6566,6 +6904,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:103082",
+   "nativeTitle": "パンプキンナイト",
    "origins": [
     "anilist"
    ],
@@ -6579,6 +6918,7 @@
    "chapters": 151,
    "chaptersFrom": "anilist",
    "key": "anilist:33438",
+   "nativeTitle": "PSYЯEN -サイレン-",
    "origins": [
     "anilist"
    ],
@@ -6594,6 +6934,7 @@
    "chapters": 72,
    "chaptersFrom": "anilist",
    "key": "anilist:104503",
+   "nativeTitle": "乙女ゲー世界はモブに厳しい世界です",
    "origins": [
     "anilist"
    ],
@@ -6611,6 +6952,7 @@
    "chapters": 248,
    "chaptersFrom": "anilist",
    "key": "anilist:43245",
+   "nativeTitle": "ちはやふる",
    "origins": [
     "anilist"
    ],
@@ -6626,6 +6968,7 @@
    "chapters": 266,
    "chaptersFrom": "anilist",
    "key": "anilist:116506",
+   "nativeTitle": "던전 리셋",
    "origins": [
     "anilist"
    ],
@@ -6643,6 +6986,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:173020",
+   "nativeTitle": "아카데미 플레이어를 죽였다",
    "origins": [
     "anilist"
    ],
@@ -6660,6 +7004,7 @@
    "chapters": 168,
    "chaptersFrom": "anilist",
    "key": "anilist:150836",
+   "nativeTitle": "아카데미에 위장취업당했다",
    "origins": [
     "anilist"
    ],
@@ -6677,6 +7022,7 @@
    "chapters": 278,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:122063",
+   "nativeTitle": "シャングリラ・フロンティア〜クソゲーハンター, 神ゲーに挑まんとす〜",
    "origins": [
     "anilist"
    ],
@@ -6696,6 +7042,7 @@
    "chapters": 59,
    "chaptersFrom": "anilist",
    "key": "anilist:30584",
+   "nativeTitle": "未来日記",
    "origins": [
     "anilist"
    ],
@@ -6714,6 +7061,7 @@
    "chapters": 40,
    "chaptersFrom": "anilist",
    "key": "anilist:30894",
+   "nativeTitle": "ロザリオとバンパイア",
    "origins": [
     "anilist"
    ],
@@ -6730,6 +7078,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:152404",
+   "nativeTitle": "時々ボソッとロシア語でデレる隣のアーリャさん",
    "origins": [
     "anilist"
    ],
@@ -6750,6 +7099,7 @@
    "chapters": 86,
    "chaptersFrom": "anilist",
    "key": "anilist:57231",
+   "nativeTitle": "ひるなかの流星",
    "origins": [
     "anilist"
    ],
@@ -6776,6 +7126,7 @@
    "chapters": 25,
    "chaptersFrom": "anilist",
    "key": "anilist:141261",
+   "nativeTitle": "アヤシモン",
    "origins": [
     "anilist"
    ],
@@ -6791,6 +7142,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:168468",
+   "nativeTitle": "BORUTO-ボルト- -TWO BLUE VORTEX-",
    "origins": [
     "anilist"
    ],
@@ -6808,6 +7160,7 @@
    "chapters": 153,
    "chaptersFrom": "anilist",
    "key": "anilist:117536",
+   "nativeTitle": "킬 더 히어로",
    "origins": [
     "anilist"
    ],
@@ -6821,6 +7174,7 @@
    "chapters": 125,
    "chaptersFrom": "anilist",
    "key": "anilist:116382",
+   "nativeTitle": "악녀는 모래시계를 되돌린다",
    "origins": [
     "anilist"
    ],
@@ -6843,6 +7197,7 @@
    "chapters": 10,
    "chaptersFrom": "anilist",
    "key": "anilist:99609",
+   "nativeTitle": "君の膵臓をたべたい",
    "origins": [
     "anilist"
    ],
@@ -6868,6 +7223,7 @@
    "chapters": null,
    "chaptersFrom": "none",
    "key": "anilist:153432",
+   "nativeTitle": "사신표월",
    "origins": [
     "anilist"
    ],
@@ -6885,6 +7241,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:96834",
+   "nativeTitle": "ありふれた職業で世界最強",
    "origins": [
     "anilist"
    ],
@@ -6902,6 +7259,7 @@
    "chapters": 260,
    "chaptersFrom": "anilist",
    "key": "anilist:75275",
+   "nativeTitle": "소녀더와일즈",
    "origins": [
     "anilist"
    ],
@@ -6921,6 +7279,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:170894",
+   "nativeTitle": "만렙 플레이어의 100번째 회귀",
    "origins": [
     "anilist"
    ],
@@ -6938,6 +7297,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:87225",
+   "nativeTitle": "月が導く異世界道中",
    "origins": [
     "anilist"
    ],
@@ -6954,6 +7314,7 @@
    "chapters": 222,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:128882",
+   "nativeTitle": "정글쥬스",
    "origins": [
     "anilist"
    ],
@@ -6971,6 +7332,7 @@
    "chapters": 203,
    "chaptersFrom": "anilist",
    "key": "anilist:52651",
+   "nativeTitle": "브레이커NW",
    "origins": [
     "anilist"
    ],
@@ -6988,6 +7350,7 @@
    "chapters": 44,
    "chaptersFrom": "anilist",
    "key": "anilist:67707",
+   "nativeTitle": "四月は君の嘘",
    "origins": [
     "anilist"
    ],
@@ -7010,6 +7373,7 @@
    "chapters": 48,
    "chaptersFrom": "anilist",
    "key": "anilist:30029",
+   "nativeTitle": "パラダイス・キス",
    "origins": [
     "anilist"
    ],
@@ -7024,6 +7388,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:176740",
+   "nativeTitle": "ケントゥリア",
    "origins": [
     "anilist"
    ],
@@ -7039,6 +7404,7 @@
    "chapters": 7,
    "chaptersFrom": "anilist",
    "key": "anilist:114027",
+   "nativeTitle": "ボーイミーツマリア",
    "origins": [
     "anilist"
    ],
@@ -7055,6 +7421,7 @@
    "chapters": 333,
    "chaptersFrom": "anilist",
    "key": "anilist:30043",
+   "nativeTitle": "アイシールド21",
    "origins": [
     "anilist"
    ],
@@ -7068,6 +7435,7 @@
    "chapters": 263,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:114542",
+   "nativeTitle": "하루만 네가 되고 싶어",
    "origins": [
     "anilist"
    ],
@@ -7091,6 +7459,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:130149",
+   "nativeTitle": "빌런투킬",
    "origins": [
     "anilist"
    ],
@@ -7107,6 +7476,7 @@
    "chapters": 117,
    "chaptersFrom": "anilist",
    "key": "anilist:51419",
+   "nativeTitle": "ノ・ゾ・キ・ア・ナ",
    "origins": [
     "anilist"
    ],
@@ -7125,6 +7495,7 @@
    "chapters": 45,
    "chaptersFrom": "anilist",
    "key": "anilist:120502",
+   "nativeTitle": "うるわしの宵の月",
    "origins": [
     "anilist"
    ],
@@ -7147,6 +7518,7 @@
    "chapters": 144,
    "chaptersFrom": "anilist",
    "key": "anilist:116266",
+   "nativeTitle": "カノジョも彼女",
    "origins": [
     "anilist"
    ],
@@ -7167,6 +7539,7 @@
    "chapters": 90,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:98544",
+   "nativeTitle": "憂国のモリアーティ",
    "origins": [
     "anilist"
    ],
@@ -7188,6 +7561,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:119968",
+   "nativeTitle": "桃源暗鬼",
    "origins": [
     "anilist"
    ],
@@ -7204,6 +7578,7 @@
    "chapters": 162,
    "chaptersFrom": "anilist",
    "key": "anilist:31101",
+   "nativeTitle": "アクメツ",
    "origins": [
     "anilist"
    ],
@@ -7217,6 +7592,7 @@
    "chapters": 166,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:135083",
+   "nativeTitle": "WIND BREAKER",
    "origins": [
     "anilist"
    ],
@@ -7232,6 +7608,7 @@
    "chapters": 88,
    "chaptersFrom": "anilist",
    "key": "anilist:86607",
+   "nativeTitle": "グレイプニル",
    "origins": [
     "anilist"
    ],
@@ -7245,6 +7622,7 @@
    "chapters": 510,
    "chaptersFrom": "anilist",
    "key": "anilist:85155",
+   "nativeTitle": "더 게이머",
    "origins": [
     "anilist"
    ],
@@ -7258,6 +7636,7 @@
    "chapters": 193,
    "chaptersFrom": "anilist",
    "key": "anilist:101311",
+   "nativeTitle": "化物語",
    "origins": [
     "anilist"
    ],
@@ -7277,6 +7656,7 @@
    "chapters": 268,
    "chaptersFrom": "anilist",
    "key": "anilist:113488",
+   "nativeTitle": "약한영웅",
    "origins": [
     "anilist"
    ],
@@ -7294,6 +7674,7 @@
    "chapters": 69,
    "chaptersFrom": "anilist",
    "key": "anilist:130229",
+   "nativeTitle": "엽총소년",
    "origins": [
     "anilist"
    ],
@@ -7311,6 +7692,7 @@
    "chapters": 133,
    "chaptersFrom": "anilist",
    "key": "anilist:97842",
+   "nativeTitle": "ヴィジランテ -僕のヒーローアカデミア ILLEGALS-",
    "origins": [
     "anilist"
    ],
@@ -7332,6 +7714,7 @@
    "chapters": 141,
    "chaptersFrom": "anilist",
    "key": "anilist:104241",
+   "nativeTitle": "付き合ってあげてもいいかな",
    "origins": [
     "anilist"
    ],
@@ -7350,6 +7733,7 @@
    "chapters": 125,
    "chaptersFrom": "anilist",
    "key": "anilist:50593",
+   "nativeTitle": "BTOOOM!-ブトゥーム",
    "origins": [
     "anilist"
    ],
@@ -7364,6 +7748,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:141958",
+   "nativeTitle": "내가 키운 S급들",
    "origins": [
     "anilist"
    ],
@@ -7383,6 +7768,7 @@
    "chapters": 115,
    "chaptersFrom": "anilist",
    "key": "anilist:110605",
+   "nativeTitle": "심해수",
    "origins": [
     "anilist"
    ],
@@ -7404,6 +7790,7 @@
    "chapters": 59,
    "chaptersFrom": "anilist",
    "key": "anilist:48597",
+   "nativeTitle": "さんかれあ",
    "origins": [
     "anilist"
    ],
@@ -7420,6 +7807,7 @@
    "chapters": 131,
    "chaptersFrom": "anilist",
    "key": "anilist:101434",
+   "nativeTitle": "今まで一度も女扱いされたことがない女騎士を女扱いする漫画",
    "origins": [
     "anilist"
    ],
@@ -7435,6 +7823,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:155485",
+   "nativeTitle": "던전 견문록",
    "origins": [
     "anilist"
    ],
@@ -7451,6 +7840,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:164857",
+   "nativeTitle": "게임 속 바바리안으로 살아남기",
    "origins": [
     "anilist"
    ],
@@ -7469,6 +7859,7 @@
    "chapters": 100,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:178379",
+   "nativeTitle": "마법학교 앞점멸 천재가 되었다",
    "origins": [
     "anilist"
    ],
@@ -7487,6 +7878,7 @@
    "chapters": 83,
    "chaptersFrom": "anilist",
    "key": "anilist:65719",
+   "nativeTitle": "日々蝶々",
    "origins": [
     "anilist"
    ],
@@ -7506,6 +7898,7 @@
    "chapters": 76,
    "chaptersFrom": "anilist",
    "key": "anilist:147997",
+   "nativeTitle": "正反対な君と僕",
    "origins": [
     "anilist"
    ],
@@ -7526,6 +7919,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:107120",
+   "nativeTitle": "Lv2からチートだった元勇者候補のまったり異世界ライフ",
    "origins": [
     "anilist"
    ],
@@ -7543,6 +7937,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:100476",
+   "nativeTitle": "回復術士のやり直し",
    "origins": [
     "anilist"
    ],
@@ -7560,6 +7955,7 @@
    "chapters": 119,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:85671",
+   "nativeTitle": "DEAD Tube ～デッドチューブ～",
    "origins": [
     "anilist"
    ],
@@ -7573,6 +7969,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:66213",
+   "nativeTitle": "モンスター娘のいる日常",
    "origins": [
     "anilist"
    ],
@@ -7593,6 +7990,7 @@
    "chapters": 78,
    "chaptersFrom": "anilist",
    "key": "anilist:85235",
+   "nativeTitle": "がっこうぐらし!",
    "origins": [
     "anilist"
    ],
@@ -7616,6 +8014,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:129210",
+   "nativeTitle": "여주인공의 오빠를 지키는 방법",
    "origins": [
     "anilist"
    ],
@@ -7636,6 +8035,7 @@
    "chapters": 28,
    "chaptersFrom": "anilist",
    "key": "anilist:60079",
+   "nativeTitle": "안나라수마나라",
    "origins": [
     "anilist"
    ],
@@ -7652,6 +8052,7 @@
    "chapters": 59,
    "chaptersFrom": "anilist",
    "key": "anilist:30651",
+   "nativeTitle": "風の谷のナウシカ",
    "origins": [
     "anilist"
    ],
@@ -7675,6 +8076,7 @@
    "chapters": 125,
    "chaptersFrom": "anilist",
    "key": "anilist:78881",
+   "nativeTitle": "ダーウィンズゲーム",
    "origins": [
     "anilist"
    ],
@@ -7690,6 +8092,7 @@
    "chapters": 90,
    "chaptersFrom": "anilist",
    "key": "anilist:125624",
+   "nativeTitle": "口が裂けても君には",
    "origins": [
     "anilist"
    ],
@@ -7706,6 +8109,7 @@
    "chapters": 60,
    "chaptersFrom": "anilist",
    "key": "anilist:100937",
+   "nativeTitle": "ダーリン・イン・ザ・フランキス",
    "origins": [
     "anilist"
    ],
@@ -7720,6 +8124,7 @@
    "chapters": 212,
    "chaptersFrom": "anilist",
    "key": "anilist:86481",
+   "nativeTitle": "徒然チルドレン",
    "origins": [
     "anilist"
    ],
@@ -7735,6 +8140,7 @@
    "chapters": 45,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:201773",
+   "nativeTitle": "灰宮先輩は怖くてかわいい",
    "origins": [
     "anilist"
    ],
@@ -7750,6 +8156,7 @@
    "chapters": 13,
    "chaptersFrom": "anilist",
    "key": "anilist:74155",
+   "nativeTitle": "君は淫らな僕の女王",
    "origins": [
     "anilist"
    ],
@@ -7768,6 +8175,7 @@
    "chapters": 203,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:153880",
+   "nativeTitle": "환생의 정석",
    "origins": [
     "anilist"
    ],
@@ -7787,6 +8195,7 @@
    "chapters": 240,
    "chaptersFrom": "anilist",
    "key": "anilist:108105",
+   "nativeTitle": "それでも歩は寄せてくる",
    "origins": [
     "anilist"
    ],
@@ -7805,6 +8214,7 @@
    "chapters": 247,
    "chaptersFrom": "anilist",
    "key": "anilist:113055",
+   "nativeTitle": "재혼 황후",
    "origins": [
     "anilist"
    ],
@@ -7826,6 +8236,7 @@
    "chapters": 137,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:141013",
+   "nativeTitle": "남편을 내 편으로 만드는 방법",
    "origins": [
     "anilist"
    ],
@@ -7844,6 +8255,7 @@
    "chapters": 79,
    "chaptersFrom": "anilist",
    "key": "anilist:159142",
+   "nativeTitle": "ホタルの嫁入り",
    "origins": [
     "anilist"
    ],
@@ -7864,6 +8276,7 @@
    "chapters": 296,
    "chaptersFrom": "anilist",
    "key": "anilist:113076",
+   "nativeTitle": "現実もたまには嘘をつく",
    "origins": [
     "anilist"
    ],
@@ -7883,6 +8296,7 @@
    "chapters": 9,
    "chaptersFrom": "anilist",
    "key": "anilist:58361",
+   "nativeTitle": "HIDEOUT",
    "origins": [
     "anilist"
    ],
@@ -7898,6 +8312,7 @@
    "chapters": 49,
    "chaptersFrom": "anilist",
    "key": "anilist:106726",
+   "nativeTitle": "シメジ シミュレーション",
    "origins": [
     "anilist"
    ],
@@ -7912,6 +8327,7 @@
    "chapters": 65,
    "chaptersFrom": "anilist",
    "key": "anilist:40552",
+   "nativeTitle": "惑星のさみだれ",
    "origins": [
     "anilist"
    ],
@@ -7931,6 +8347,7 @@
    "chapters": 209,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:136204",
+   "nativeTitle": "천마는 평범하게 살 수 없다",
    "origins": [
     "anilist"
    ],
@@ -7946,6 +8363,7 @@
    "chapters": 124,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:85495",
+   "nativeTitle": "Re:Monster -リ・モンスター",
    "origins": [
     "anilist"
    ],
@@ -7960,6 +8378,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:30735",
+   "nativeTitle": "ブラック・ラグーン",
    "origins": [
     "anilist"
    ],
@@ -7976,6 +8395,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:99897",
+   "nativeTitle": "来世は他人がいい",
    "origins": [
     "anilist"
    ],
@@ -7997,6 +8417,7 @@
    "chapters": 113,
    "chaptersFrom": "anilist",
    "key": "anilist:30933",
+   "nativeTitle": "エルフェンリート",
    "origins": [
     "anilist"
    ],
@@ -8012,6 +8433,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:98370",
+   "nativeTitle": "佐々木と宮野",
    "origins": [
     "anilist"
    ],
@@ -8032,6 +8454,7 @@
    "chapters": 121,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:175946",
+   "nativeTitle": "괴력 난신",
    "origins": [
     "anilist"
    ],
@@ -8049,6 +8472,7 @@
    "chapters": 4,
    "chaptersFrom": "anilist",
    "key": "anilist:85616",
+   "nativeTitle": "海辺のエトランゼ",
    "origins": [
     "anilist"
    ],
@@ -8071,6 +8495,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:78151",
+   "nativeTitle": "ワールドトリガー",
    "origins": [
     "anilist"
    ],
@@ -8086,6 +8511,7 @@
    "chapters": null,
    "chaptersFrom": "none",
    "key": "anilist:111075",
+   "nativeTitle": "어떤 계모님의 메르헨",
    "origins": [
     "anilist"
    ],
@@ -8108,6 +8534,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:34571",
+   "nativeTitle": "赤髪の白雪姫",
    "origins": [
     "anilist"
    ],
@@ -8134,6 +8561,7 @@
    "chapters": 96,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:111258",
+   "nativeTitle": "ぼっち・ざ・ろっく！",
    "origins": [
     "anilist"
    ],
@@ -8150,6 +8578,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:101625",
+   "nativeTitle": "暴食のベルセルク～俺だけレベルという概念を突破する～ THE COMIC",
    "origins": [
     "anilist"
    ],
@@ -8169,6 +8598,7 @@
    "chapters": 11,
    "chaptersFrom": "anilist",
    "key": "anilist:86549",
+   "nativeTitle": "ガンバレ！中村くん！！",
    "origins": [
     "anilist"
    ],
@@ -8189,6 +8619,7 @@
    "chapters": 294,
    "chaptersFrom": "anilist",
    "key": "anilist:103111",
+   "nativeTitle": "先輩がうざい後輩の話",
    "origins": [
     "anilist"
    ],
@@ -8204,6 +8635,7 @@
    "chapters": 130,
    "chaptersFrom": "anilist",
    "key": "anilist:121565",
+   "nativeTitle": "청춘 블라썸",
    "origins": [
     "anilist"
    ],
@@ -8224,6 +8656,7 @@
    "chapters": 108,
    "chaptersFrom": "anilist",
    "key": "anilist:112544",
+   "nativeTitle": "九龍ジェネリックロマンス",
    "origins": [
     "anilist"
    ],
@@ -8242,6 +8675,7 @@
    "chapters": 183,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:147329",
+   "nativeTitle": "マリッジトキシン",
    "origins": [
     "anilist"
    ],
@@ -8258,6 +8692,7 @@
    "chapters": 69,
    "chaptersFrom": "anilist",
    "key": "anilist:98112",
+   "nativeTitle": "ギャルごはん",
    "origins": [
     "anilist"
    ],
@@ -8273,6 +8708,7 @@
    "chapters": 57,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:143031",
+   "nativeTitle": "愛してるゲームを終わらせたい",
    "origins": [
     "anilist"
    ],
@@ -8291,6 +8727,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:167834",
+   "nativeTitle": "2레벨로 회귀한 무신",
    "origins": [
     "anilist"
    ],
@@ -8309,6 +8746,7 @@
    "chapters": 37,
    "chaptersFrom": "anilist",
    "key": "anilist:112621",
+   "nativeTitle": "ロンリーガールに逆らえない",
    "origins": [
     "anilist"
    ],
@@ -8329,6 +8767,7 @@
    "chapters": 9,
    "chaptersFrom": "anilist",
    "key": "anilist:97337",
+   "nativeTitle": "君の名は。",
    "origins": [
     "anilist"
    ],
@@ -8347,6 +8786,7 @@
    "chapters": 250,
    "chaptersFrom": "anilist",
    "key": "anilist:124577",
+   "nativeTitle": "리턴 투 플레이어",
    "origins": [
     "anilist"
    ],
@@ -8363,6 +8803,7 @@
    "chapters": 89,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:187944",
+   "nativeTitle": "내 최애는 막차를 탄다",
    "origins": [
     "anilist"
    ],
@@ -8379,6 +8820,7 @@
    "chapters": 46,
    "chaptersFrom": "anilist",
    "key": "anilist:68071",
+   "nativeTitle": "スピリットサークル",
    "origins": [
     "anilist"
    ],
@@ -8393,6 +8835,7 @@
    "chapters": 12,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:112275",
+   "nativeTitle": "天官赐福",
    "origins": [
     "anilist"
    ],
@@ -8414,6 +8857,7 @@
    "chapters": 293,
    "chaptersFrom": "anilist",
    "key": "anilist:101860",
+   "nativeTitle": "EDENS ZERO",
    "origins": [
     "anilist"
    ],
@@ -8430,6 +8874,7 @@
    "chapters": 358,
    "chaptersFrom": "anilist",
    "key": "anilist:30074",
+   "nativeTitle": "エア・ギア",
    "origins": [
     "anilist"
    ],
@@ -8444,6 +8889,7 @@
    "chapters": 5,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:171729",
+   "nativeTitle": "ラブ・バレット",
    "origins": [
     "anilist"
    ],
@@ -8461,6 +8907,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:109728",
+   "nativeTitle": "氷属性男子とクールな同僚女子",
    "origins": [
     "anilist"
    ],
@@ -8483,6 +8930,7 @@
    "chapters": 143,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:107780",
+   "nativeTitle": "復讐を希う最強勇者は、闇の力で殲滅無双する",
    "origins": [
     "anilist"
    ],
@@ -8504,6 +8952,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:165287",
+   "nativeTitle": "신과함께 돌아온 기사왕님",
    "origins": [
     "anilist"
    ],
@@ -8523,6 +8972,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:103255",
+   "nativeTitle": "FAIRY TAIL 100 YEARS QUEST",
    "origins": [
     "anilist"
    ],
@@ -8541,6 +8991,7 @@
    "chapters": 243,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:58533",
+   "nativeTitle": "私がモテないのはどう考えてもお前らが悪い!",
    "origins": [
     "anilist"
    ],
@@ -8559,6 +9010,7 @@
    "chapters": 87,
    "chaptersFrom": "anilist",
    "key": "anilist:87260",
+   "nativeTitle": "終末のハーレム",
    "origins": [
     "anilist"
    ],
@@ -8574,6 +9026,7 @@
    "chapters": 47,
    "chaptersFrom": "anilist",
    "key": "anilist:106454",
+   "nativeTitle": "先生は恋を教えられない",
    "origins": [
     "anilist"
    ],
@@ -8591,6 +9044,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:165182",
+   "nativeTitle": "시한부 천재 암흑기사",
    "origins": [
     "anilist"
    ],
@@ -8610,6 +9064,7 @@
    "chapters": 1,
    "chaptersFrom": "anilist",
    "key": "anilist:97812",
+   "nativeTitle": "刻どキ",
    "origins": [
     "anilist"
    ],
@@ -8624,6 +9079,7 @@
    "chapters": 62,
    "chaptersFrom": "anilist",
    "key": "anilist:107720",
+   "nativeTitle": "그녀의 소환수",
    "origins": [
     "anilist"
    ],
@@ -8639,6 +9095,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:180891",
+   "nativeTitle": "절대회귀",
    "origins": [
     "anilist"
    ],
@@ -8656,6 +9113,7 @@
    "chapters": 143,
    "chaptersFrom": "anilist",
    "key": "anilist:110042",
+   "nativeTitle": "나는 마도왕이다",
    "origins": [
     "anilist"
    ],
@@ -8670,6 +9128,7 @@
    "chapters": 288,
    "chaptersFrom": "anilist",
    "key": "anilist:30050",
+   "nativeTitle": "シャーマンキング",
    "origins": [
     "anilist"
    ],
@@ -8690,6 +9149,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:141479",
+   "nativeTitle": "역대급 창기사의 회귀",
    "origins": [
     "anilist"
    ],
@@ -8708,6 +9168,7 @@
    "chapters": 156,
    "chaptersFrom": "anilist",
    "key": "anilist:107918",
+   "nativeTitle": "외과의사 엘리제",
    "origins": [
     "anilist"
    ],
@@ -8733,6 +9194,7 @@
    "chapters": 50,
    "chaptersFrom": "anilist",
    "key": "anilist:30106",
+   "nativeTitle": "カードキャプターさくら",
    "origins": [
     "anilist"
    ],
@@ -8757,6 +9219,7 @@
    "chapters": 33,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:125116",
+   "nativeTitle": "杖と剣のウィストリア",
    "origins": [
     "anilist"
    ],
@@ -8774,6 +9237,7 @@
    "chapters": 1,
    "chaptersFrom": "anilist",
    "key": "anilist:151194",
+   "nativeTitle": "フツーに聞いてくれ",
    "origins": [
     "anilist"
    ],
@@ -8789,6 +9253,7 @@
    "chapters": 15,
    "chaptersFrom": "anilist",
    "key": "anilist:31373",
+   "nativeTitle": "虹ヶ原 ホログラフ",
    "origins": [
     "anilist"
    ],
@@ -8808,6 +9273,7 @@
    "chapters": 264,
    "chaptersFrom": "anilist",
    "key": "anilist:119363",
+   "nativeTitle": "플레이어",
    "origins": [
     "anilist"
    ],
@@ -8821,6 +9287,7 @@
    "chapters": 40,
    "chaptersFrom": "anilist",
    "key": "anilist:30463",
+   "nativeTitle": "NHKにようこそ!",
    "origins": [
     "anilist"
    ],
@@ -8837,6 +9304,7 @@
    "chapters": 82,
    "chaptersFrom": "anilist",
    "key": "anilist:120440",
+   "nativeTitle": "아기가 생겼어요",
    "origins": [
     "anilist"
    ],
@@ -8857,6 +9325,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:153513",
+   "nativeTitle": "디펜스 게임의 폭군이 되었다",
    "origins": [
     "anilist"
    ],
@@ -8874,6 +9343,7 @@
    "chapters": 21,
    "chaptersFrom": "anilist",
    "key": "anilist:35293",
+   "nativeTitle": "Doubt",
    "origins": [
     "anilist"
    ],
@@ -8888,6 +9358,7 @@
    "chapters": 314,
    "chaptersFrom": "anilist",
    "key": "anilist:99549",
+   "nativeTitle": "からかい上手の（元）高木さん",
    "origins": [
     "anilist"
    ],
@@ -8903,6 +9374,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:169272",
+   "nativeTitle": "真夜中ハートチューン",
    "origins": [
     "anilist"
    ],
@@ -8920,6 +9392,7 @@
    "chapters": 119,
    "chaptersFrom": "anilist",
    "key": "anilist:30142",
+   "nativeTitle": "バトル・ロワイアル",
    "origins": [
     "anilist"
    ],
@@ -8933,6 +9406,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:54903",
+   "nativeTitle": "GANGSTA.",
    "origins": [
     "anilist"
    ],
@@ -8948,6 +9422,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:86303",
+   "nativeTitle": "小林さんちのメイドラゴン",
    "origins": [
     "anilist"
    ],
@@ -8969,6 +9444,7 @@
    "chapters": 40,
    "chaptersFrom": "anilist",
    "key": "anilist:116534",
+   "nativeTitle": "おかえりアリス",
    "origins": [
     "anilist"
    ],
@@ -8985,6 +9461,7 @@
    "chapters": 87,
    "chaptersFrom": "anilist",
    "key": "anilist:96518",
+   "nativeTitle": "僕たちがやりました",
    "origins": [
     "anilist"
    ],
@@ -9000,6 +9477,7 @@
    "chapters": 252,
    "chaptersFrom": "anilist",
    "key": "anilist:107518",
+   "nativeTitle": "신마경천기",
    "origins": [
     "anilist"
    ],
@@ -9015,6 +9493,7 @@
    "chapters": 245,
    "chaptersFrom": "anilist",
    "key": "anilist:31149",
+   "nativeTitle": "北斗の拳",
    "origins": [
     "anilist"
    ],
@@ -9034,6 +9513,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:87234",
+   "nativeTitle": "姉なるもの",
    "origins": [
     "anilist"
    ],
@@ -9055,6 +9535,7 @@
    "chapters": 167,
    "chaptersFrom": "anilist",
    "key": "anilist:30671",
+   "nativeTitle": "To LOVEる -とらぶる-",
    "origins": [
     "anilist"
    ],
@@ -9075,6 +9556,7 @@
    "chapters": 69,
    "chaptersFrom": "anilist",
    "key": "anilist:30085",
+   "nativeTitle": "あずまんが大王",
    "origins": [
     "anilist"
    ],
@@ -9090,6 +9572,7 @@
    "chapters": 25,
    "chaptersFrom": "anilist",
    "key": "anilist:68105",
+   "nativeTitle": "加瀬さんシリーズ",
    "origins": [
     "anilist"
    ],
@@ -9118,6 +9601,7 @@
    "chapters": 61,
    "chaptersFrom": "anilist",
    "key": "anilist:30092",
+   "nativeTitle": "美少女戦士セーラームーン",
    "origins": [
     "anilist"
    ],
@@ -9138,6 +9622,7 @@
    "chapters": 84,
    "chaptersFrom": "anilist",
    "key": "anilist:31131",
+   "nativeTitle": "フリージア",
    "origins": [
     "anilist"
    ],
@@ -9151,6 +9636,7 @@
    "chapters": 276,
    "chaptersFrom": "anilist",
    "key": "anilist:85139",
+   "nativeTitle": "実は私は",
    "origins": [
     "anilist"
    ],
@@ -9167,6 +9653,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:107540",
+   "nativeTitle": "ひとりぼっちの異世界攻略",
    "origins": [
     "anilist"
    ],
@@ -9185,6 +9672,7 @@
    "chapters": 117,
    "chaptersFrom": "anilist",
    "key": "anilist:86720",
+   "nativeTitle": "ヘルク",
    "origins": [
     "anilist"
    ],
@@ -9203,6 +9691,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:100207",
+   "nativeTitle": "ジャヒー様はくじけない！",
    "origins": [
     "anilist"
    ],
@@ -9223,6 +9712,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:98466",
+   "nativeTitle": "怪物事変",
    "origins": [
     "anilist"
    ],
@@ -9246,6 +9736,7 @@
    "chapters": 142,
    "chaptersFrom": "anilist",
    "key": "anilist:30904",
+   "nativeTitle": "子連れ狼",
    "origins": [
     "anilist"
    ],
@@ -9264,6 +9755,7 @@
    "chapters": 80,
    "chaptersFrom": "anilist",
    "key": "anilist:35255",
+   "nativeTitle": "電撃デイジー",
    "origins": [
     "anilist"
    ],
@@ -9281,6 +9773,7 @@
    "chapters": 156,
    "chaptersFrom": "anilist",
    "key": "anilist:106434",
+   "nativeTitle": "瞳ちゃんは人見知り",
    "origins": [
     "anilist"
    ],
@@ -9295,6 +9788,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:141705",
+   "nativeTitle": "현실퀘스트",
    "origins": [
     "anilist"
    ],
@@ -9312,6 +9806,7 @@
    "chapters": 222,
    "chaptersFrom": "anilist",
    "key": "anilist:87213",
+   "nativeTitle": "ゆらぎ荘の幽奈さん",
    "origins": [
     "anilist"
    ],
@@ -9330,6 +9825,7 @@
    "chapters": 65,
    "chaptersFrom": "mangaupdates",
    "key": "anilist:118695",
+   "nativeTitle": "私の推しは悪役令嬢。",
    "origins": [
     "anilist"
    ],
@@ -9352,6 +9848,7 @@
    "chapters": 241,
    "chaptersFrom": "anilist",
    "key": "anilist:110785",
+   "nativeTitle": "2.5次元の誘惑",
    "origins": [
     "anilist"
    ],
@@ -9373,6 +9870,7 @@
    "chapters": 177,
    "chaptersFrom": "anilist",
    "key": "anilist:159439",
+   "nativeTitle": "나 혼자 특성빨로 무한 성장",
    "origins": [
     "anilist"
    ],
@@ -9389,6 +9887,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:123739",
+   "nativeTitle": "상수리나무 아래",
    "origins": [
     "anilist"
    ],
@@ -9407,6 +9906,7 @@
    "chapters": null,
    "chaptersFrom": null,
    "key": "anilist:110472",
+   "nativeTitle": "스터디그룹",
    "origins": [
     "anilist"
    ],
