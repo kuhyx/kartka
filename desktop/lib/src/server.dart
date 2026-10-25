@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:kartka_desktop/src/oauth_routes.dart';
 import 'package:kartka_desktop/src/protocol.dart';
 import 'package:kartka_desktop/src/proxy.dart';
+import 'package:kartka_desktop/src/seed_route.dart';
 import 'package:kartka_desktop/src/static_files.dart';
 import 'package:kartka_desktop/src/storage_routes.dart';
 
@@ -19,11 +20,13 @@ import 'package:kartka_desktop/src/storage_routes.dart';
 /// and never emits `Access-Control-Allow-Origin`.
 class WrapperServer {
   /// Serves [webRoot]; stores blobs under [filesDir] and secrets in
-  /// [secretsFile].
+  /// [secretsFile]. Only with [syncCredentialsFile] (the agent instance's
+  /// `--sync-credentials`) does [syncCredentialsPath] exist.
   new({
     required String webRoot,
     required String filesDir,
     required String secretsFile,
+    String? syncCredentialsFile,
     HttpClient? upstream,
     void Function(String line)? log,
   }) : this._(
@@ -31,6 +34,7 @@ class WrapperServer {
          webRoot,
          filesDir,
          secretsFile,
+         syncCredentialsFile,
          upstream ?? HttpClient(),
        );
 
@@ -39,16 +43,21 @@ class WrapperServer {
     String webRoot,
     String filesDir,
     String secretsFile,
+    String? syncCredentialsFile,
     HttpClient upstream,
   ) : _static = StaticFiles(webRoot),
       _files = FileRoutes(filesDir),
       _secrets = SecretRoutes(secretsFile),
+      _seed = syncCredentialsFile == null
+          ? null
+          : SeedRoute(syncCredentialsFile, _log),
       _proxy = ProxyRoute(upstream, _log);
 
   final void Function(String line) _log;
   final StaticFiles _static;
   final FileRoutes _files;
   final SecretRoutes _secrets;
+  final SeedRoute? _seed;
   final ProxyRoute _proxy;
   late OAuthRoutes _oauth;
   HttpServer? _server;
@@ -118,6 +127,7 @@ class WrapperServer {
   static bool _isApi(String path) =>
       path == proxyPath ||
       path == oauthResultPath ||
+      path == syncCredentialsPath ||
       _under(path, filesPath) ||
       _under(path, secretsPath);
 
@@ -129,6 +139,11 @@ class WrapperServer {
     if (path == proxyPath) return await _proxy.handle(request);
     if (_under(path, filesPath)) return await _files.handle(request);
     if (_under(path, secretsPath)) return await _secrets.handle(request);
+    // Without --sync-credentials the path falls through to a static 404.
+    final seed = _seed;
+    if (path == syncCredentialsPath && seed != null) {
+      return seed.handle(request);
+    }
     if (path == oauthPath || path == oauthResultPath) {
       return await _oauth.handle(request);
     }

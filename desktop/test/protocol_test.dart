@@ -19,6 +19,7 @@ void main() {
         secretsPath,
         oauthPath,
         oauthResultPath,
+        syncCredentialsPath,
       ]) {
         expect(app, contains("'$value'"), reason: value);
       }

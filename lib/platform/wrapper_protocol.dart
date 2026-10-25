@@ -46,4 +46,9 @@ abstract final class KartkaWrapper {
   /// `POST` (the callback page) / `GET` (the app; 204 while empty, consumed
   /// on read) / `DELETE` (clear a stale result).
   static const oauthResultPath = '/oauth/result';
+
+  /// `GET`: a seeded Firebase session, served once per wrapper launch and
+  /// only when the wrapper ran with `--sync-credentials` (the headless agent
+  /// instance); 404 otherwise. DOCS-contracts-runtime §17.
+  static const syncCredentialsPath = '/sync-credentials';
 }

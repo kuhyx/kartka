@@ -15,21 +15,32 @@ class Harness {
 
   /// Starts a wrapper on an ephemeral port with a tiny web build.
   /// [upstream] replaces the proxy's HttpClient; [log] captures the
-  /// wrapper's error log instead of stderr.
+  /// wrapper's error log instead of stderr. [seed] (file contents) turns on
+  /// the seeded-session route over a temp file; [seedFile] alone points it
+  /// at a path that does not exist.
   static Future<Harness> start({
     HttpClient? upstream,
     void Function(String line)? log,
+    String? seed,
+    bool seedFile = false,
   }) async {
     final dir = Directory.systemTemp.createTempSync('kartka_desktop');
     final web = Directory('${dir.path}/web')..createSync();
     File('${web.path}/index.html').writeAsStringSync('<title>Kartka</title>');
     File('${web.path}/main.wasm').writeAsBytesSync([0, 97, 115, 109]);
+    final seedPath = '${dir.path}/kartka-agent/firebase_auth.json';
+    if (seed != null) {
+      File(seedPath)
+        ..createSync(recursive: true)
+        ..writeAsStringSync(seed);
+    }
     final server = WrapperServer(
       webRoot: web.path,
       filesDir: '${dir.path}/files',
       secretsFile: '${dir.path}/config/kartka/secrets.json',
       upstream: upstream,
       log: log,
+      syncCredentialsFile: seed != null || seedFile ? seedPath : null,
     );
     await server.start(0);
     return Harness._(dir, server);

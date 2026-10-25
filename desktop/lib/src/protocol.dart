@@ -39,6 +39,9 @@ const oauthPath = '/oauth';
 /// OAuth result slot.
 const oauthResultPath = '/oauth/result';
 
+/// Seeded Firebase session, only with `--sync-credentials` (agent instance).
+const syncCredentialsPath = '/sync-credentials';
+
 /// Same string as the app's `kartkaUserAgent`: honest, no personal data.
 const kartkaUserAgent = 'Kartka/0.1 (+https://github.com/kuhyx/kartka)';
 

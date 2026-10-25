@@ -26,6 +26,9 @@ Future<void> main(List<String> args) async {
     secretsFile:
         _arg(args, '--secrets-path') ??
         p.join(home, '.config', 'kartka', 'secrets.json'),
+    // Agent instance only (tools/agent): kuhy's real window never passes it
+    // and keeps the Google sign-in.
+    syncCredentialsFile: _arg(args, '--sync-credentials'),
   );
   // --port is for headless verification only: the app's IndexedDB and the
   // OAuth redirect registered at AniList/MAL are keyed to kartkaPort.
