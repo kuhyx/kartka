@@ -137,8 +137,10 @@ def _searches(job: _Job) -> bool:
 
 
 def _chapter_lists(job: _Job) -> bool:
+    # Every found title: the merged coverage metric counts a title only when
+    # its chapter list is complete enough (``Manifest.completeness`` is legacy).
     state = job.state
-    for key in list(state.found())[: job.plan.manifest.completeness]:
+    for key in list(state.found()):
         if key in state.chapters:
             continue
         if job.deadline.expired():

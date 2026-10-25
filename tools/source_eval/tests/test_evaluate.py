@@ -105,7 +105,8 @@ def test_full_evaluation_and_metrics(tmp_path: Path) -> None:
         CAND, RunDir(tmp_path, "t").source(CAND.id), MANIFEST, probes, clock.now()
     )
     assert m["coverage"] == {"referenceSize": 4, "found": 4, "ratio": 1.0}
-    assert m["chapterCompleteness"] == {"sampled": 2, "medianRatio": 0.8}
+    # Every found title has a chapter list: r4 has none (ratio 0).
+    assert m["chapterCompleteness"] == {"sampled": 3, "medianRatio": 0.6}
     assert m["imageQuality"] == {
         "sampledPages": 2,
         "medianWidthPx": 120,
@@ -120,6 +121,17 @@ def test_full_evaluation_and_metrics(tmp_path: Path) -> None:
         "mangayomiJs": False,
         "keiyoushi": False,
     }
+
+
+def test_every_found_title_gets_a_chapter_list(tmp_path: Path) -> None:
+    """The merged coverage metric needs every found title's chapter count.
+
+    Whatever the legacy manifest ``completeness`` says.
+    """
+    state = RunDir(tmp_path, "t").source(CAND.id)
+    plan = Plan(REFS, Manifest(["r1", "r2", "r3", "r4"], 1, 2, 2))
+    assert evaluate(CAND, FakeBackend(), state, plan, Deadline(FakeClock(), None))
+    assert set(state.chapters) == {"r1", "r2", "r3", "r4"}
 
 
 def test_budget_stops_and_resumes(tmp_path: Path) -> None:
