@@ -16,14 +16,51 @@ uv run pytest                       # 100 % line+branch coverage gate
 uv run ruff check src tests && uv run ruff format --check src tests
 uv run mypy --strict src tests
 
-uv run source-eval candidates                  # data/candidates{,_skipped}.json
-uv run source-eval reference --budget 40       # data/reference.json (resumable)
+uv run source-eval candidates --budget 50      # data/candidates{,_skipped}.json
+uv run source-eval reference --budget 50       # data/reference.json (resumable)
+uv run source-eval ramp start --run R [--sample N]   # this run's sample (ramp)
 uv run source-eval init-run --run R --sample 30 --completeness 10 --images 3 --pages 2
-uv run source-eval enrich --run R --budget 40  # MangaUpdates chapter counts
-uv run source-eval probe [--ids ...|--installed]       # one uptime probe each
-uv run source-eval run --run R --ids <id> --budget 40  # resumable, exit 10 = more
-uv run source-eval report --run R [--out F] [--publish] [--weights active|default]
+uv run source-eval init-run --run R --ramp --reprobe # weekly: ramp + re-probes
+uv run source-eval enrich --run R --budget 50  # MangaUpdates chapter counts
+uv run source-eval probe [--ids ...|--installed] --fresh 10800 --budget 50
+uv run source-eval run --run R [--ids <id>] --workers 128 --inflight 64 --budget 50
+uv run source-eval report --run R [--out F] [--publish] [--weights active|default] --budget 50
+uv run source-eval ramp finish --run R         # records the run's wall time
 ```
+
+**Batches** (kuhy, 2026-10-25): every invocation finishes in < 60 s.
+`--budget S` is a hard wall-clock limit counted from process start, in-flight
+requests included: a request starts only when its timeout fits in what is
+left (minus 1 s grace), shortened to fit when needed (but at least 5 s, or
+its whole timeout); a shortened timeout that runs out is the budget's stop,
+never the source's failure, and the step is redone next call. A request's
+own full timeout (20 s for Suwayomi; W43 saw 0.07 % slower responses) is a
+failure as before. Every request runs under a total wall-clock cap
+(`BoundedTransport`), not just `requests`' per-socket timeout. Exit 10 =
+call again. `systemd/batch.sh` loops a step until exit 0 (`--budget 50`,
+`timeout 58` as a backstop that only warns, 2000 batches max per step);
+`weekly.sh` and `probe.sh` are such loops. `report --publish` remembers
+each finished RTDB write in `runs/<run>/publish.json`.
+
+**Throughput**: `run` groups sources by host into lanes (`--workers`, one
+host per lane, worked serially) with at most `--inflight` requests in the
+air (the eval server queues more itself, which would inflate the latency it
+reports). The 2 s per-host spacing of request *starts* is unchanged; the
+in-flight slot is taken under the host's lock, right before the claim.
+
+**Ramp** (`ramp.json` in the state dir): the weekly sample is 50 titles more
+than the previous run's when that run took <= 2 h (first `ramp start` to
+`ramp finish`, after the publish; a resumed run counts the whole span),
+50 fewer when it took longer, within [200, 500]. `KARTKA_EVAL_SAMPLE`
+overrides it (and is ramped from next week).
+
+**Re-probe**: a finished `report --publish` writes `hard_cut.json` (ids
+whose `cutReasons` hold `unreachable` or `blocking>=0.50`); `init-run
+--reprobe` freezes them into the next run's manifest. Each gets one
+`popular` request first: passed (an answer, or only a `webview` need) →
+measured as usual; failed → nothing else this run, record `reprobe:
+{passed, kind, previousRun}`, `flags: ["reprobe-only"]`, the hard cut kept
+(`unreachable`, or `blocking>=0.50` for a challenge).
 
 `--suwayomi-url` (or `KARTKA_SUWAYOMI_URL`, default the eval instance
 `http://127.0.0.1:4590`; the live 4567 is refused);
@@ -32,8 +69,8 @@ basic auth from `KARTKA_SUWAYOMI_USER/PASS` or the deploy env file's
 (runs, uptime history, per-host last-request times); cache:
 `$XDG_CACHE_HOME/kartka-source-eval`.
 
-Timers (`systemd/`, not installed by this branch): probe 4x/day, full run
-weekly via `systemd/weekly.sh` (ISO-week run id, 200-title sample, publish).
+Timers (`systemd/`): probe 4x/day (`probe.sh`), full run weekly via
+`systemd/weekly.sh` (ISO-week run id, ramped sample, publish).
 
 ## Pipeline
 
@@ -81,7 +118,8 @@ weekly via `systemd/weekly.sh` (ISO-week run id, 200-title sample, publish).
 honest User-Agent `kartka-source-eval/0.1 (+https://github.com/kuhyx/kartka)`;
 429 honours `Retry-After` (cap 20 s, 2 retries); JSON responses cached 6 days.
 Cache hits are never observed, so they cannot flatten latency or uptime.
-Challenges are detected, never solved: the Suwayomi server must run with KCEF
+Only the eval server's own extension lookup (its local database, no
+third-party host behind it) skips the gate. Challenges are detected, never solved: the Suwayomi server must run with KCEF
 and FlareSolverr off (the local dev server and the live deploy both do).
 
 ## Metric definitions and decisions
@@ -172,4 +210,7 @@ backups (`backupSources`) and entry URLs. All are `plugin:legacy-*`:
 Suwayomi-Server v2.4.2366 jar (sha256-checked) in
 `~/.local/share/kartka-source-eval/`, rootDir `.../suwayomi`, `127.0.0.1:4590`,
 KCEF/FlareSolverr/tray/WebUI off, run as transient user unit
-`kartka-suwayomi-eval` (`systemctl --user stop kartka-suwayomi-eval`).
+`kartka-suwayomi-eval` (`systemctl --user stop kartka-suwayomi-eval`):
+`-Xmx2g`, `CPUQuota=100%`, `MemoryMax=3G`. `maxSourcesInParallel` stays 6:
+in the server jar only the library updater and the downloader read it
+(range 1..20); the GraphQL browse/search/chapter path has no such limit.

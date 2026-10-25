@@ -116,7 +116,12 @@ under the line cap; same rules. Implementation notes:
   list of non-cutting warnings (absent = none; readers tolerate it missing and
   keep unknown entries). The only flag today is `needs-browser-engine`, set
   whenever `webview` challenges were seen. The app shows a "Needs browser
-  engine" chip on the Sources row, the detail page and the Browse badge. A metric that
+  engine" chip on the Sources row, the detail page and the Browse badge.
+  **`reprobe-only`** (2026-10-25): the previous published run hard-cut the
+  source and this run's one reachability request failed, so nothing else
+  was measured; the record keeps the hard code in `cutReasons` and adds
+  `reprobe: {passed, kind, previousRun}` (also on a re-probe that passed,
+  then fully measured). The app shows a "Re-probed only" chip. A metric that
   could not be measured is `null` at the leaf (`latencyMs.p50/p95`,
   `coverage.found/ratio`, `chapterCompleteness.medianRatio`,
   `imageQuality.medianJpegQuality`, `pagesLoad.ratio`); it adds 0 to the
