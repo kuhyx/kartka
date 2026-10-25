@@ -15,5 +15,7 @@ ExecStart=%h/src/kartka/tools/source_eval/systemd/weekly.sh
 Nice=19
 IOSchedulingClass=idle
 MemoryMax=2G
-CPUQuota=25%
+# ~4 ms CPU per request (state checkpoints) x ~50 req/s across 128 lanes
+# is ~0.2 CPU; 25 % left no headroom for each batch's interpreter start.
+CPUQuota=50%
 TimeoutStartSec=36h
