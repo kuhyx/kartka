@@ -1,6 +1,9 @@
 /// What the sync account screen shows.
 library;
 
+import 'package:crdt_sync/crdt_sync.dart' show RemoteSyncError;
+import 'package:kartka/core/redact.dart';
+
 /// Coarse sync state.
 enum SyncPhase {
   /// No account on this device; the app works locally only.
@@ -20,6 +23,15 @@ enum SyncPhase {
 class SyncStatus {
   /// Creates a status.
   const new({required this.phase, this.lastSync, this.message});
+
+  /// [SyncPhase.error] for [error]. A [RemoteSyncError] shows its message
+  /// minus URL queries; anything else (a bug, whose message may quote a URL
+  /// or a token) shows only its type.
+  new failed(Object error, {this.lastSync})
+    : phase = SyncPhase.error,
+      message = error is RemoteSyncError
+          ? redactUrlQueries(error.message)
+          : 'unexpected ${error.runtimeType}';
 
   /// Current phase.
   final SyncPhase phase;

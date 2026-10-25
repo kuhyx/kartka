@@ -12,7 +12,6 @@ import 'dart:async';
 
 import 'package:crdt_sync/crdt_sync.dart' show Hlc, RemoteSyncError;
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
-import 'package:kartka/core/redact.dart';
 import 'package:kartka/sync/merge/merge_rules.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/sync_feed.dart';
@@ -131,10 +130,10 @@ class SyncEngine {
   }
 
   Future<void> _sync({required bool force}) async {
-    final transport = await _connect();
-    if (transport == null) return;
-    _emit(_current.copyWith(phase: SyncPhase.syncing));
     try {
+      final transport = await _connect();
+      if (transport == null) return;
+      _emit(_current.copyWith(phase: SyncPhase.syncing));
       final revs = await transport.get('revs');
       final peers = <String, String>{
         if (revs is Map)
@@ -160,8 +159,10 @@ class SyncEngine {
       shadow.lastSync = _now();
       await shadow.save();
       _emit(SyncStatus(phase: SyncPhase.idle, lastSync: shadow.lastSync));
-    } on RemoteSyncError catch (e) {
+    } on Object catch (e) {
+      // A bug must not leave "syncing" up; the queue logs it as sync.error.
       _fail(e);
+      if (e is! RemoteSyncError) rethrow;
     }
   }
 
@@ -224,16 +225,10 @@ class SyncEngine {
     return _transport;
   }
 
-  void _fail(RemoteSyncError e) {
+  void _fail(Object e) {
     // The transport may hold an expired session; reopen on the next call.
     _transport = null;
-    _emit(
-      SyncStatus(
-        phase: SyncPhase.error,
-        lastSync: shadow.lastSync,
-        message: redactUrlQueries(e.message),
-      ),
-    );
+    _emit(SyncStatus.failed(e, lastSync: shadow.lastSync));
   }
 
   void _emit(SyncStatus s) {
