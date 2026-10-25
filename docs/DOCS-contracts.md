@@ -108,6 +108,8 @@ app-specific external files dir (`adb pull`, no root), the wrapper's
 `DiagnosticsLog.of(platform.diagnostics)` (`lib/core/diagnostics/`):
 redacted JSON lines, rolling at 1 MB / 2000 entries, at
 `diagnostics/kartka-diagnostics.jsonl`. Pull: `tools/phone/pull_diagnostics.sh`.
+The same store holds the pre-migration library snapshots
+(`backups/kartka-backup-<UTC>.json`, `format: kartka-backup` v1; `adb pull`).
 
 ## 8. Repositories (`lib/core/repositories/`, interfaces written by foundation; local impls by library part)
 
