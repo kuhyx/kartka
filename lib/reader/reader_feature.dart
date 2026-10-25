@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/app/settings_stores.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
@@ -36,6 +37,10 @@ KartkaFeature readerFeature(KartkaEnv env, {ReaderSystem? system}) =>
       ],
     );
 
+/// Route `extra` that opens the chapter on its last page (a JSON value, so
+/// the web build's history state can hold it).
+const readAtEndExtra = 'kartka.reader.atEnd';
+
 /// Wires the reader to the registry. Read at route build time because the
 /// registry (and therefore every service) is late in [KartkaEnv].
 ReaderDeps readerDeps(KartkaEnv env) {
@@ -53,6 +58,7 @@ ReaderDeps readerDeps(KartkaEnv env) {
     // The global settings sync (§16); per-manga modes are never listed.
     prefs: ReaderPrefs(syncedKv(env)),
     loadImage: images.load,
+    diagnostics: DiagnosticsLog.of(platform.diagnostics),
   );
 }
 
@@ -73,9 +79,11 @@ Widget _route(
     chapterUrl: args.chapterUrl,
     deps: readerDeps(env),
     system: system,
-    onOpenChapter: (c) =>
-        GoRouter.of(context)
-            .replace<void>(readRoute(args.sourceId, args.mangaUrl, c.url)),
+    startAtEnd: state.extra == readAtEndExtra,
+    onOpenChapter: (c, {atEnd = false}) => GoRouter.of(context).replace<void>(
+      readRoute(args.sourceId, args.mangaUrl, c.url),
+      extra: atEnd ? readAtEndExtra : null,
+    ),
     onExit: () {
       final router = GoRouter.of(context);
       if (router.canPop()) {

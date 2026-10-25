@@ -7,8 +7,9 @@ import 'package:kartka/reader/logic/progress_recorder.dart';
 void main() {
   late List<int> recorded;
   late int markedRead;
-  ProgressRecorder make({int pageCount = 5}) => ProgressRecorder(
+  ProgressRecorder make({int pageCount = 5, int? landing}) => ProgressRecorder(
     pageCount: pageCount,
+    landing: landing,
     debounce: const Duration(milliseconds: 500),
     record: (page) async => recorded.add(page),
     markRead: () async => markedRead++,
@@ -78,6 +79,23 @@ void main() {
   test('flush with nothing pending is a no-op', () async {
     await make().flush();
     expect(recorded, isEmpty);
+  });
+
+  test('the landing page is neither recorded nor read until left', () {
+    fakeAsync((async) {
+      final r = make(landing: 4)
+        ..onPage(4)
+        ..onPage(4);
+      async.elapse(const Duration(seconds: 1));
+      expect(recorded, isEmpty);
+      expect(markedRead, 0);
+      r.onPage(3);
+      async.elapse(const Duration(seconds: 1));
+      r.onPage(4);
+      async.flushMicrotasks();
+      expect(recorded, [3, 4]);
+      expect(markedRead, 1);
+    });
   });
 
   test('out-of-range pages are ignored', () {

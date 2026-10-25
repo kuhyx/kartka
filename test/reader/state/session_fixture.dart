@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
@@ -20,12 +21,16 @@ class SessionFixture {
   FakeProgress progress = FakeProgress();
   final List<String> fetched = [];
   final ReaderPrefs prefs = ReaderPrefs(MemoryKeyValueStore());
+  final MemoryBlobStore diagnosticsStore = MemoryBlobStore();
+  late final DiagnosticsLog diagnostics = DiagnosticsLog(diagnosticsStore);
 
   ReaderSession make({
     FakeSource? source,
     FakeDownloads? downloads,
     ReadingProgress? saved,
     String chapter = '/c/2',
+    bool startAtEnd = false,
+    Duration advanceTimeout = const Duration(seconds: 30),
   }) {
     progress = FakeProgress(initial: saved);
     final src =
@@ -38,7 +43,10 @@ class SessionFixture {
       sourceId: 'fake',
       mangaUrl: '/m/1',
       chapterUrl: chapter,
+      startAtEnd: startAtEnd,
       deps: ReaderDeps(
+        diagnostics: diagnostics,
+        advanceTimeout: advanceTimeout,
         findSource: (id) async => id == src.id ? src : null,
         progress: progress,
         downloads: downloads,

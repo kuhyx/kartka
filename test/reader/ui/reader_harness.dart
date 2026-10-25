@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
@@ -31,6 +32,8 @@ class ReaderHarness {
   final progress = FakeProgress();
   final system = FakeReaderSystem();
   final opened = <String>[];
+  final openedAtEnd = <String>[];
+  final diagnostics = DiagnosticsLog(MemoryBlobStore());
   final loaded = <String>[];
   int exits = 0;
 
@@ -45,12 +48,16 @@ class ReaderHarness {
           mangaUrl: '/m/1',
           chapterUrl: '/c/2',
           system: system,
-          onOpenChapter: (c) => opened.add(c.url),
+          onOpenChapter: (c, {atEnd = false}) {
+            opened.add(c.url);
+            if (atEnd) openedAtEnd.add(c.url);
+          },
           onExit: () => exits++,
           deps: ReaderDeps(
             findSource: (id) async => id == source.id ? source : null,
             progress: progress,
             prefs: prefs,
+            diagnostics: diagnostics,
             loadImage: (p) async {
               loaded.add(p.imageUrl);
               return onePixelPng;

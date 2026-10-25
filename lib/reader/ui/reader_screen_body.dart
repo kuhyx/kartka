@@ -4,7 +4,7 @@ part of 'reader_screen.dart';
 extension on _ReaderScreenState {
   Widget _reader() {
     final s = _session;
-    final item = s.strip.itemForPage(s.page);
+    final item = s.initialItem;
     if (s.mode.isPaged) {
       return PagedReaderView(
         key: ValueKey(s.mode),
@@ -12,7 +12,7 @@ extension on _ReaderScreenState {
         strip: s.strip,
         initialItem: item,
         slotBuilder: _slot,
-        onItemChanged: s.onItem,
+        onItemChanged: _onItem,
         controller: _view,
         onTap: _onTap,
       );
@@ -21,7 +21,7 @@ extension on _ReaderScreenState {
       strip: s.strip,
       initialItem: item,
       slotBuilder: _slot,
-      onItemChanged: s.onItem,
+      onItemChanged: _onItem,
       controller: _view,
       onTap: _onTap,
     );
@@ -30,21 +30,23 @@ extension on _ReaderScreenState {
   Widget _slot(BuildContext context, StripSlot slot) {
     final s = _session;
     final index = slot.index;
-    if (index != null) {
+    final flat = slot.flat;
+    if (index != null && flat != null) {
       return ReaderPageImage(
-        bytes: s.image(index),
+        bytes: s.image(flat),
         pageNumber: index + 1,
         onRetry: s.retry,
         fitWidth: !s.mode.isPaged,
       );
     }
     final forward = !slot.isPreviousChapter;
-    final target = forward ? s.neighbours.next : s.neighbours.previous;
+    final edge = forward ? s.segments.last : s.segments.first;
     final transition = ChapterTransition(
       forward: forward,
-      currentName: s.chapterName,
-      targetName: target?.name,
-      onGo: () => _openChapter(target),
+      currentName: edge.name,
+      targetName: (forward ? s.nextChapter : s.previousChapter)?.name,
+      error: forward ? s.nextError : null,
+      onRetry: s.retryNext,
     );
     // A webtoon item has unbounded height; give the transition a screen.
     return s.mode.isPaged
@@ -69,7 +71,8 @@ extension on _ReaderScreenState {
       onMode: (m) => unawaited(s.setMode(m)),
       onFullscreen: _toggleFullscreen,
       onSettings: () => unawaited(_showSettings()),
-      onPage: (p) => _view.jumpToItem(s.strip.itemForPage(p)),
+      onPage: (p) =>
+          _view.jumpToItem(s.strip.itemForPage(p, segment: s.segment)),
       onPreviousChapter: previous == null ? null : () => _openChapter(previous),
       onNextChapter: next == null ? null : () => _openChapter(next),
     );

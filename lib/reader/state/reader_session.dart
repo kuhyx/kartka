@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart' hide Category;
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/reader/data/page_source.dart';
 import 'package:kartka/reader/data/reader_settings.dart';
@@ -11,7 +13,10 @@ import 'package:kartka/reader/logic/page_cache.dart';
 import 'package:kartka/reader/logic/prefetch.dart';
 import 'package:kartka/reader/logic/progress_recorder.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
+import 'package:kartka/reader/state/chapter_segment.dart';
 import 'package:kartka/reader/state/reader_deps.dart';
+
+part 'reader_session_advance.dart';
 
 /// Where a session is in its life.
 enum ReaderPhase {
@@ -25,14 +30,24 @@ enum ReaderPhase {
   failed,
 }
 
-/// State of one open chapter: pages, position, mode and progress writes.
+const ChapterNeighbours _noNeighbours = (
+  current: null,
+  previous: null,
+  next: null,
+  position: null,
+);
+
+/// State of an open reader: the opened chapter plus every chapter the
+/// reader advanced into, its position, mode and progress writes.
 class ReaderSession extends ChangeNotifier {
-  /// A session for [chapterUrl] of [mangaUrl] on [sourceId].
+  /// A session for [chapterUrl] of [mangaUrl] on [sourceId], opened at its
+  /// last page when [startAtEnd] (going back from the next chapter).
   new({
     required this.sourceId,
     required this.mangaUrl,
     required this.chapterUrl,
     required this.deps,
+    this.startAtEnd = false,
   });
 
   /// Source id from the route.
@@ -41,11 +56,14 @@ class ReaderSession extends ChangeNotifier {
   /// Manga URL from the route.
   final String mangaUrl;
 
-  /// Chapter URL from the route.
+  /// Chapter URL from the route (the first loaded chapter).
   final String chapterUrl;
 
   /// Injected collaborators.
   final ReaderDeps deps;
+
+  /// Whether to open on the last page instead of the resume position.
+  final bool startAtEnd;
 
   /// The library key of this manga.
   MangaKey get key => mangaKeyOf(sourceId, mangaUrl);
@@ -62,148 +80,121 @@ class ReaderSession extends ChangeNotifier {
   /// Layout used for this manga.
   ReaderMode mode = const ReaderSettings().defaultMode;
 
-  /// Pages of the chapter in order.
-  List<PageRef> pages = const [];
+  /// Loaded chapters in reading order; the first is [chapterUrl].
+  final List<ChapterSegment> segments = [];
 
-  /// Whether [pages] come from a download.
-  bool offline = false;
+  /// Index into [segments] of the chapter being read.
+  int segment = 0;
 
-  /// This chapter and its neighbours, when the chapter list loaded.
-  ChapterNeighbours neighbours = (
-    current: null,
-    previous: null,
-    next: null,
-    position: null,
-  );
-
-  /// Current page, 0-based.
+  /// Current page within that chapter, 0-based.
   int page = 0;
 
+  /// Why the next chapter failed to load, redacted; null when it did not.
+  String? nextError;
+
+  List<ChapterInfo> _chapters = const [];
+  MangaSource? _source;
+  List<PageRef> _flat = const [];
+  Future<void>? _nextLoad;
+  bool _onTrailing = false;
   PageCache? _cache;
-  ProgressRecorder? _recorder;
   bool _disposed = false;
 
-  /// Pages framed by chapter transitions.
-  ChapterStrip get strip => ChapterStrip(pageCount: pages.length);
+  ChapterSegment? get _current => segments.isEmpty ? null : segments[segment];
 
-  /// The list item for [page] when the view first mounts.
-  int get initialItem => strip.itemForPage(page);
+  /// Pages of the chapter being read.
+  List<PageRef> get pages => _current?.pages ?? const [];
 
-  /// Display name of the chapter.
-  String get chapterName => neighbours.current?.name ?? 'Chapter';
+  /// Whether [pages] come from a download.
+  bool get offline => _current?.offline ?? false;
 
-  /// Resolves settings, chapter list, pages and the resume position.
+  /// The chapter being read and its neighbours.
+  ChapterNeighbours get neighbours => _current?.neighbours ?? _noNeighbours;
+
+  /// Display name of the chapter being read.
+  String get chapterName => _current?.name ?? 'Chapter';
+
+  /// Every loaded page framed by the two edges.
+  ChapterStrip get strip => ChapterStrip(
+    pageCounts: segments.isEmpty
+        ? const [0]
+        : [for (final s in segments) s.pages.length],
+  );
+
+  /// The list item for the current page when a view first mounts.
+  int get initialItem => strip.itemForPage(page, segment: segment);
+
+  /// The chapter after the last loaded one, or null at the end.
+  ChapterInfo? get nextChapter =>
+      segments.isEmpty ? null : segments.last.neighbours.next;
+
+  /// The chapter before the first loaded one, or null at the start.
+  ChapterInfo? get previousChapter =>
+      segments.isEmpty ? null : segments.first.neighbours.previous;
+
+  /// Whether the next chapter's pages are being fetched.
+  bool get nextLoading => _nextLoad != null;
+
+  /// Resolves settings, chapter list, pages and the start position.
   Future<void> open() async {
     settings = await deps.prefs.settings();
     mode = await deps.prefs.effectiveMode(key);
-    final source = await deps.findSource(sourceId);
-    neighbours = await _neighbours(source);
+    final source = _source = await deps.findSource(sourceId);
+    _chapters = await _chapterList(source);
+    final ChapterPages loaded;
     try {
-      final loaded = await loadChapterPages(
+      loaded = await loadChapterPages(
         key: key,
         chapterUrl: chapterUrl,
         downloads: deps.downloads,
         source: source,
       );
-      pages = loaded.pages;
-      offline = loaded.offline;
     } on ReaderLoadException catch (e) {
       return _fail(e.message);
     } on Object catch (e) {
       return _fail('$e');
     }
-    page = await _resumePage();
+    final last = loaded.pages.length - 1;
+    page = startAtEnd ? (last < 0 ? 0 : last) : await _resumePage(last);
     // The reader may have been left while this was loading.
     if (_disposed) return;
-    _cache = PageCache(fetch: (i) => deps.loadImage(pages[i]));
-    _recorder = ProgressRecorder(
-      pageCount: pages.length,
-      record: _record,
-      markRead: () async => await deps.progress?.markRead(key, chapterUrl),
-    );
+    _cache = PageCache(fetch: (i) => deps.loadImage(_flat[i]));
+    _add(chapterUrl, loaded, landing: startAtEnd ? page : null);
     phase = ReaderPhase.ready;
     _prefetch();
+    _maybeLoadNext();
     notifyListeners();
   }
 
-  void _fail(String message) {
-    error = message;
-    phase = ReaderPhase.failed;
-    notifyListeners();
-  }
-
-  Future<ChapterNeighbours> _neighbours(MangaSource? source) async {
-    try {
-      if (source != null) {
-        return neighboursOf(await source.chapters(mangaUrl), chapterUrl);
-      }
-    } on Object {
-      // Offline: fall back to what downloads knows.
-    }
-    try {
-      final downloaded = await deps.downloads?.downloadedChapters(key);
-      return neighboursOf(downloaded ?? const [], chapterUrl);
-    } on Object {
-      return neighboursOf(const [], chapterUrl);
-    }
-  }
-
-  Future<int> _resumePage() async {
-    final progress = deps.progress;
-    if (progress == null) return 0;
-    final saved = await progress
-        .watch(key)
-        .first
-        .timeout(const Duration(seconds: 2), onTimeout: () => null);
-    if (saved == null || saved.chapterUrl != chapterUrl) return 0;
-    return saved.page < pages.length - 1 ? saved.page : 0;
-  }
-
-  Future<void> _record(int page) async {
-    final number = progressNumber(neighbours.current, neighbours.position);
-    // Unknown chapter number (offline): only markRead may land.
-    if (number == null) return;
-    await deps.progress?.record(
-      ReadingProgress(
-        key: key,
-        chapterUrl: chapterUrl,
-        chapterNumber: number,
-        page: page,
-        readAt: deps.now(),
-      ),
-    );
-  }
-
-  /// The bytes of page [index].
-  Future<Uint8List> image(int index) => _cache!.get(index);
+  /// The bytes of the page at [flat] among every loaded page.
+  Future<Uint8List> image(int flat) => _cache!.get(flat);
 
   /// Rebuilds so failed pages fetch again.
   void retry() => notifyListeners();
 
-  /// Reports that the view now shows list item [item].
-  void onItem(int item) {
-    final recorder = _recorder;
-    if (recorder == null) return;
-    final slot = strip.slotAt(item);
-    if (slot.isPreviousChapter) {
-      page = 0;
-    } else {
-      page = slot.index ?? pages.length - 1;
-      recorder.onPage(page);
-    }
-    _prefetch();
+  /// Tries the failed next chapter again.
+  void retryNext() {
+    nextError = null;
+    _maybeLoadNext(force: true);
     notifyListeners();
   }
 
-  void _prefetch() {
-    final total = pages.length;
-    final ahead = settings.prefetchAhead;
-    _cache
-      ?..prefetch([
-        if (total > 0) page,
-        ...prefetchIndices(current: page, total: total, ahead: ahead),
-      ])
-      ..retain(retainWindow(current: page, total: total, ahead: ahead));
+  /// Reports that the view now shows list item [item].
+  void onItem(int item) {
+    if (segments.isEmpty) return;
+    final slot = strip.slotAt(item);
+    _onTrailing = !slot.isPage && !slot.isPreviousChapter;
+    if (slot.isPreviousChapter) {
+      segment = 0;
+      page = 0;
+    } else {
+      segment = slot.isPage ? slot.segment : segments.length - 1;
+      page = slot.index ?? segments.last.pages.length - 1;
+      segments[segment].recorder.onPage(page);
+    }
+    _prefetch();
+    _maybeLoadNext();
+    notifyListeners();
   }
 
   /// Switches this manga to [m] and remembers it.
@@ -223,14 +214,16 @@ class ReaderSession extends ChangeNotifier {
 
   @override
   void notifyListeners() {
-    // open() and the async setters outlive a reader that was left early.
+    // open() and the async loads outlive a reader that was left early.
     if (!_disposed) super.notifyListeners();
   }
 
   @override
   void dispose() {
     _disposed = true;
-    _recorder?.dispose();
+    for (final s in segments) {
+      s.recorder.dispose();
+    }
     _cache?.clear();
     super.dispose();
   }

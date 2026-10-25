@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/reader/data/page_source.dart';
 
@@ -64,5 +66,35 @@ void main() {
       downloads: FakeDownloads({'/c/1': pages}),
     );
     expect(result.pages.map((p) => p.index), [0, 1, 2]);
+  });
+
+  test('the next chapter must have pages and answer in time', () async {
+    final next = await loadNextChapterPages(
+      key: key,
+      chapterUrl: '/c/1',
+      downloads: FakeDownloads({'/c/1': fakePages('/c/1', 2)}),
+      timeout: const Duration(seconds: 1),
+    );
+    expect(next.pages, hasLength(2));
+    await expectLater(
+      loadNextChapterPages(
+        key: key,
+        chapterUrl: '/c/1',
+        downloads: null,
+        source: FakeSource(pageMap: {'/c/1': const []}),
+        timeout: const Duration(seconds: 1),
+      ),
+      throwsA(isA<ReaderLoadException>()),
+    );
+  });
+
+  test('advance failures read as plain messages', () {
+    expect(advanceFailureMessage(const ReaderLoadException('gone')), 'gone');
+    expect(
+      advanceFailureMessage(TimeoutException('x', const Duration(seconds: 30))),
+      'Timed out after 30 s.',
+    );
+    expect(advanceFailureMessage(TimeoutException('x')), contains('?'));
+    expect(advanceFailureMessage(StateError('boom')), contains('boom'));
   });
 }

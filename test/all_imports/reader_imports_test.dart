@@ -17,6 +17,7 @@ import 'package:kartka/reader/logic/tap_zones.dart';
 import 'package:kartka/reader/logic/webtoon_position.dart';
 import 'package:kartka/reader/platform/reader_system.dart';
 import 'package:kartka/reader/reader_feature.dart';
+import 'package:kartka/reader/state/chapter_segment.dart';
 import 'package:kartka/reader/state/reader_deps.dart';
 import 'package:kartka/reader/state/reader_session.dart';
 import 'package:kartka/reader/ui/chapter_transition.dart';

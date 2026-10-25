@@ -12,7 +12,13 @@ class ProgressRecorder {
     required this.record,
     required this.markRead,
     this.debounce = const Duration(milliseconds: 600),
+    this._landing,
   });
+
+  /// The page the reader was dropped on (the last page, reached by going
+  /// back from the next chapter): ignored until another page is shown, so
+  /// arriving at the end is not mistaken for having read through it.
+  int? _landing;
 
   /// Pages in the chapter.
   final int pageCount;
@@ -35,6 +41,8 @@ class ProgressRecorder {
   /// Reports that the reader now shows [page].
   void onPage(int page) {
     if (_disposed || page < 0 || page >= pageCount) return;
+    if (page == _landing) return;
+    _landing = null;
     _pending = page;
     _timer?.cancel();
     if (page == pageCount - 1) {

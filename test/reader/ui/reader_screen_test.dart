@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
-import 'package:kartka/reader/ui/chapter_transition.dart';
 import 'package:kartka/reader/ui/page_slider.dart';
 import 'package:kartka/reader/ui/webtoon_reader_view.dart';
 
@@ -69,30 +68,6 @@ void main() {
     expect(h.exits, 1);
   });
 
-  testWidgets('progress is recorded and the last page marks read', (
-    tester,
-  ) async {
-    await ltr(tester);
-    await key(tester, LogicalKeyboardKey.arrowRight);
-    expect(h.progress.recorded.map((p) => p.page), [1]);
-    for (var i = 0; i < 3; i++) {
-      await key(tester, LogicalKeyboardKey.arrowRight);
-    }
-    expect(h.progress.markedRead, ['/c/2']);
-    expect(find.byType(ChapterTransition), findsOneWidget);
-    await tester.tap(find.text('Next: Ch. 3'));
-    expect(h.opened, ['/c/3']);
-  });
-
-  testWidgets('going back past page 1 offers the previous chapter', (
-    tester,
-  ) async {
-    await ltr(tester);
-    await key(tester, LogicalKeyboardKey.arrowLeft);
-    await tester.tap(find.text('Previous: Ch. 1'));
-    expect(h.opened, ['/c/1']);
-  });
-
   testWidgets('slider and chapter buttons navigate', (tester) async {
     await ltr(tester);
     await tester.tapAt(const Offset(400, 300));
@@ -145,14 +120,14 @@ void main() {
     expect((await h.prefs.settings()).invertTaps, isTrue);
   });
 
-  testWidgets('webtoon scrolls back to the previous-chapter screen', (
+  testWidgets('webtoon scrolls back into the previous chapter at its end', (
     tester,
   ) async {
     await h.prefs.setModeFor('fake|/m/1', ReaderMode.webtoon);
     await h.pump(tester);
     await key(tester, LogicalKeyboardKey.arrowUp);
     await key(tester, LogicalKeyboardKey.arrowUp);
-    expect(find.text('Previous: Ch. 1'), findsOneWidget);
+    expect(h.openedAtEnd, ['/c/1']);
   });
 
   testWidgets('fullscreen follows the state the platform reports', (

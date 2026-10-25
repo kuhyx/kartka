@@ -8,7 +8,8 @@ void main() {
     WidgetTester tester, {
     required bool forward,
     String? target,
-    VoidCallback? onGo,
+    String? error,
+    VoidCallback? onRetry,
   }) => tester.pumpWidget(
     MaterialApp(
       home: Scaffold(
@@ -16,38 +17,53 @@ void main() {
           forward: forward,
           currentName: 'Ch. 5',
           targetName: target,
-          onGo: onGo,
+          error: error,
+          onRetry: onRetry,
         ),
       ),
     ),
   );
 
-  testWidgets('forward: finished current, offers next', (tester) async {
-    var went = 0;
-    await pump(tester, forward: true, target: 'Ch. 6', onGo: () => went++);
-    expect(find.text('Finished'), findsOneWidget);
-    expect(find.text('Ch. 5'), findsOneWidget);
+  testWidgets('a neighbour on its way shows progress, no button', (
+    tester,
+  ) async {
+    await pump(tester, forward: true, target: 'Ch. 6');
     expect(find.text('Next: Ch. 6'), findsOneWidget);
-    await tester.tap(find.text('Next: Ch. 6'));
-    expect(went, 1);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(FilledButton), findsNothing);
+    expect(find.text('Finished'), findsNothing);
+    await pump(tester, forward: false, target: 'Ch. 4');
+    expect(find.text('Previous: Ch. 4'), findsOneWidget);
   });
 
-  testWidgets('the button is keyboard reachable', (tester) async {
-    var went = 0;
-    await pump(tester, forward: false, target: 'Ch. 4', onGo: () => went++);
-    expect(find.text('Previous: Ch. 4'), findsOneWidget);
-    expect(find.text('Start of'), findsOneWidget);
+  testWidgets('a failed neighbour explains and retries from the keyboard', (
+    tester,
+  ) async {
+    var retried = 0;
+    await pump(
+      tester,
+      forward: true,
+      target: 'Ch. 6',
+      error: 'Timed out after 30 s.',
+      onRetry: () => retried++,
+    );
+    expect(find.text('Could not open Ch. 6'), findsOneWidget);
+    expect(find.text('Timed out after 30 s.'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pump();
-    expect(went, 1);
+    expect(retried, 1);
   });
 
   testWidgets('no neighbour says so and has no button', (tester) async {
     await pump(tester, forward: true);
+    expect(find.text('Finished'), findsOneWidget);
+    expect(find.text('Ch. 5'), findsOneWidget);
     expect(find.text('No next chapter'), findsOneWidget);
     expect(find.byType(FilledButton), findsNothing);
     await pump(tester, forward: false);
+    expect(find.text('Start of'), findsOneWidget);
     expect(find.text('No previous chapter'), findsOneWidget);
   });
 }

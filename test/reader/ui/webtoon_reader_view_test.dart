@@ -19,7 +19,7 @@ void main() {
       tester.pumpWidget(
         MaterialApp(
           home: WebtoonReaderView(
-            strip: const ChapterStrip(pageCount: 6),
+            strip: const ChapterStrip(pageCounts: [6]),
             initialItem: initial,
             slotBuilder: (context, slot) =>
                 SizedBox(height: 500, child: Text('$slot')),

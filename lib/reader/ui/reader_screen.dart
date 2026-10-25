@@ -21,6 +21,10 @@ import 'package:kartka/reader/ui/webtoon_reader_view.dart';
 
 part 'reader_screen_body.dart';
 
+/// Opens [chapter] of the same manga in place of this reader, on its last
+/// page when [atEnd] (going back from the chapter after it).
+typedef OpenChapter = void Function(ChapterInfo chapter, {bool atEnd});
+
 /// The reader for one chapter (route `/read/:sourceId/:mangaUrl/:chapterUrl`).
 class ReaderScreen extends StatefulWidget {
   /// Reads [chapterUrl] of [mangaUrl] from [sourceId].
@@ -32,6 +36,7 @@ class ReaderScreen extends StatefulWidget {
     required this.system,
     required this.onOpenChapter,
     required this.onExit,
+    this.startAtEnd = false,
     super.key,
   });
 
@@ -51,7 +56,10 @@ class ReaderScreen extends StatefulWidget {
   final ReaderSystem system;
 
   /// Replaces this reader with the given chapter of the same manga.
-  final ValueChanged<ChapterInfo> onOpenChapter;
+  final OpenChapter onOpenChapter;
+
+  /// Whether to open on the chapter's last page.
+  final bool startAtEnd;
 
   /// Leaves the reader.
   final VoidCallback onExit;
@@ -65,6 +73,8 @@ class _ReaderScreenState extends State<ReaderScreen> {
   late ReaderSession _session;
   bool _menu = false;
   bool _fullscreen = false;
+  int _shownSegment = 0;
+  bool _leaving = false;
 
   @override
   void initState() {
@@ -79,16 +89,48 @@ class _ReaderScreenState extends State<ReaderScreen> {
       mangaUrl: widget.mangaUrl,
       chapterUrl: widget.chapterUrl,
       deps: widget.deps,
+      startAtEnd: widget.startAtEnd,
     )..addListener(_changed);
     unawaited(s.open());
     return s;
   }
 
-  void _changed() => setState(() {});
+  void _changed() {
+    final s = _session;
+    if (s.segment != _shownSegment) {
+      _shownSegment = s.segment;
+      _toast(s.chapterName);
+    }
+    setState(() {});
+  }
+
+  /// Names the chapter the reader just moved into.
+  void _toast(String name) => ScaffoldMessenger.maybeOf(context)
+    ?..clearSnackBars()
+    ..showSnackBar(
+      SnackBar(
+        content: Text(name),
+        duration: const Duration(milliseconds: 1500),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
 
   void _retryOpen() {
     _session.dispose();
+    _shownSegment = 0;
     setState(() => _session = _open());
+  }
+
+  /// Reports the view's item; the leading edge opens the previous chapter
+  /// at its last page, mirroring the forward swipe into the next one.
+  void _onItem(int item) {
+    final s = _session..onItem(item);
+    final previous = s.previousChapter;
+    if (previous == null || _leaving) return;
+    if (s.strip.slotAt(item).isPreviousChapter) {
+      _leaving = true;
+      widget.onOpenChapter(previous, atEnd: true);
+    }
   }
 
   @override
@@ -106,9 +148,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
     unawaited(widget.system.setFullscreen(on: _fullscreen));
   }
 
-  void _openChapter(ChapterInfo? chapter) {
-    if (chapter != null) widget.onOpenChapter(chapter);
-  }
+  void _openChapter(ChapterInfo chapter) => widget.onOpenChapter(chapter);
 
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {
     if (event is KeyUpEvent) return KeyEventResult.ignored;

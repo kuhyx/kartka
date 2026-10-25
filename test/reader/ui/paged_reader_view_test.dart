@@ -21,7 +21,7 @@ void main() {
     MaterialApp(
       home: PagedReaderView(
         mode: mode,
-        strip: const ChapterStrip(pageCount: 3),
+        strip: const ChapterStrip(pageCounts: [3]),
         initialItem: 1,
         slotBuilder: (context, slot) => Text('$slot'),
         onItemChanged: items.add,

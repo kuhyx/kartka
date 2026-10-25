@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/routes.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
@@ -28,21 +29,35 @@ void main() {
   late KartkaRegistry registry;
   late FakeReaderSystem system;
   late MemoryBlobStore blobs;
+  late MemoryBlobStore diagnostics;
 
-  void build({bool injectSystem = true, List<Object> extra = const []}) {
+  void build({
+    bool injectSystem = true,
+    List<Object> extra = const [],
+    Map<String, List<PageRef>> pages = const {
+      '/c/1': [PageRef(index: 0, imageUrl: 'https://img.test/c/1/0.png')],
+      '/c/3': [PageRef(index: 0, imageUrl: 'https://img.test/c/3/0.png')],
+    },
+  }) {
     http = FakeKartkaHttp(
       (r) => KartkaResponse(statusCode: 200, bodyBytes: onePixelPng),
     );
     kv = MemoryKeyValueStore();
     blobs = MemoryBlobStore();
+    diagnostics = MemoryBlobStore();
     repos = LibraryRepositories(kv, decorators: () => []);
     system = FakeReaderSystem();
     final source = FakeSource(
       chapterList: harnessChapters,
-      pageMap: {'/c/2': fakePages('/c/2', 2), '/c/3': fakePages('/c/3', 2)},
+      pageMap: {'/c/2': fakePages('/c/2', 2), ...pages},
     );
     registry = KartkaRegistry.build(
-      memoryPlatform(http: http, kv: kv, blobs: blobs),
+      memoryPlatform(
+        http: http,
+        kv: kv,
+        blobs: blobs,
+        diagnostics: diagnostics,
+      ),
       [
         (env) => injectSystem
             ? readerFeature(env, system: system)
@@ -96,15 +111,13 @@ void main() {
     expect(first.headers['Referer'], 'https://src.test/');
   });
 
-  testWidgets('finishing a chapter records progress, marks read and opens '
-      'the next one', (tester) async {
+  testWidgets('finishing a chapter records progress, marks read and moves '
+      'into the next one in place', (tester) async {
     build();
     await ReaderPrefs(kv).setModeFor('fake|/m/1', ReaderMode.pagedLtr);
     await pump(tester, readRoute('fake', '/m/1', '/c/2'));
-    for (var i = 0; i < 2; i++) {
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
-      await settle(tester);
-    }
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await settle(tester);
     final saved = await tester.runAsync(
       () => repos.progress.watch('fake|/m/1').first,
     );
@@ -114,9 +127,45 @@ void main() {
       () => repos.progress.readChapters('fake|/m/1').first,
     );
     expect(read, {'/c/2'});
-    await tester.tap(find.text('Next: Ch. 3'));
+    expect(http.requests.map((r) => r.url.path), contains('/c/3/0.png'));
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
     await settle(tester);
-    expect(http.requests.last.url.path, startsWith('/c/3/'));
+    expect(find.text('Ch. 3'), findsOneWidget);
+    final screen = tester.widget<ReaderScreen>(find.byType(ReaderScreen));
+    expect(screen.chapterUrl, '/c/2');
+    await tester.pump(const Duration(seconds: 2));
+  });
+
+  testWidgets('going back past page 1 reopens the previous chapter at its '
+      'last page', (tester) async {
+    build(pages: {'/c/1': fakePages('/c/1', 3), '/c/3': fakePages('/c/3', 2)});
+    await ReaderPrefs(kv).setModeFor('fake|/m/1', ReaderMode.pagedLtr);
+    await pump(tester, readRoute('fake', '/m/1', '/c/2'));
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+    await settle(tester);
+    final screen = tester.widget<ReaderScreen>(find.byType(ReaderScreen));
+    expect(screen.chapterUrl, '/c/1');
+    expect(screen.startAtEnd, isTrue);
+    expect(http.requests.map((r) => r.url.path), contains('/c/1/2.png'));
+  });
+
+  testWidgets('a failed advance lands in the platform diagnostics log', (
+    tester,
+  ) async {
+    build(pages: const {});
+    await ReaderPrefs(kv).setModeFor('fake|/m/1', ReaderMode.pagedLtr);
+    await pump(tester, readRoute('fake', '/m/1', '/c/2'));
+    expect(find.text('Could not open Ch. 3'), findsNothing);
+    for (var i = 0; i < 2; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await settle(tester);
+    }
+    expect(find.text('Could not open Ch. 3'), findsOneWidget);
+    final logged = await tester.runAsync(
+      () => DiagnosticsLog.of(diagnostics).entries(),
+    );
+    expect(logged!.single.kind, 'reader.advance');
+    expect(logged.single.chapterUrl, '/c/3');
   });
 
   testWidgets('Escape with nothing to pop goes to the manga page', (
@@ -186,6 +235,7 @@ void main() {
     await pump(tester, readRoute('fake', '/m/1', '/c/2'));
     expect(find.byType(Image), findsWidgets);
     expect(find.text('Retry'), findsNothing);
-    expect(http.requests, isEmpty);
+    // Only the next, not downloaded, chapter is prefetched from the network.
+    expect(http.requests.map((r) => r.url.path), ['/c/3/0.png']);
   });
 }

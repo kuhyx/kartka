@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/manga_source.dart';
@@ -38,6 +40,35 @@ Future<ChapterPages> loadChapterPages({
   }
   return (pages: _sorted(await source.pages(chapterUrl)), offline: false);
 }
+
+/// Loads the chapter the reader advances into, failing on [timeout] and on
+/// a chapter with no pages (a blank screen would look like a hang).
+Future<ChapterPages> loadNextChapterPages({
+  required MangaKey key,
+  required String chapterUrl,
+  required DownloadRepository? downloads,
+  required Duration timeout,
+  MangaSource? source,
+}) async {
+  final loaded = await loadChapterPages(
+    key: key,
+    chapterUrl: chapterUrl,
+    downloads: downloads,
+    source: source,
+  ).timeout(timeout);
+  if (loaded.pages.isEmpty) {
+    throw const ReaderLoadException('The next chapter has no pages.');
+  }
+  return loaded;
+}
+
+/// What to show for a failed advance (still to be redacted).
+String advanceFailureMessage(Object error) => switch (error) {
+  ReaderLoadException(:final message) => message,
+  TimeoutException(:final duration) =>
+    'Timed out after ${duration?.inSeconds ?? '?'} s.',
+  _ => '$error',
+};
 
 List<PageRef> _sorted(List<PageRef> pages) =>
     List.of(pages)..sort((a, b) => a.index.compareTo(b.index));
