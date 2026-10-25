@@ -3,8 +3,12 @@
 // ignore_for_file: unused_import
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/platform/blob_store.dart';
+import 'package:kartka/platform/browser_engine.dart';
+import 'package:kartka/platform/challenge_detect.dart';
 import 'package:kartka/platform/coalescing_saver.dart';
 import 'package:kartka/platform/create_platform.dart';
+import 'package:kartka/platform/engine_core.dart';
+import 'package:kartka/platform/engine_scripts.dart';
 import 'package:kartka/platform/file_picker.dart';
 import 'package:kartka/platform/fullscreen.dart';
 import 'package:kartka/platform/fullscreen_stub.dart';
@@ -15,6 +19,7 @@ import 'package:kartka/platform/io/directory_files.dart';
 import 'package:kartka/platform/io/file_stores.dart';
 import 'package:kartka/platform/io/secure_key_value_store.dart';
 import 'package:kartka/platform/key_value_store.dart';
+import 'package:kartka/platform/memory/memory_browser.dart';
 import 'package:kartka/platform/memory/memory_fakes.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';

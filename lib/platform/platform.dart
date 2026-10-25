@@ -1,10 +1,12 @@
 import 'package:kartka/platform/blob_store.dart';
+import 'package:kartka/platform/browser_engine.dart';
 import 'package:kartka/platform/file_picker.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/key_value_store.dart';
 import 'package:kartka/platform/oauth_redirect.dart';
 
 export 'blob_store.dart';
+export 'browser_engine.dart';
 export 'file_picker.dart';
 export 'http_client.dart';
 export 'image_headers.dart';
@@ -26,6 +28,7 @@ class KartkaPlatform {
     required this.secrets,
     required this.filePicker,
     required this.oauth,
+    this.browser = const UnavailableBrowser(),
   });
 
   /// Network client (direct on Android, `/proxy` on web).
@@ -48,4 +51,9 @@ class KartkaPlatform {
 
   /// OAuth sign-in round trip.
   final OAuthRedirect oauth;
+
+  /// Headless engine and "Open in WebView"
+  /// (docs/DOCS-contracts-webview.md); optional, so constructions that
+  /// predate it keep compiling.
+  final KartkaBrowser browser;
 }

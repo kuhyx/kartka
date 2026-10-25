@@ -5,6 +5,7 @@ import 'package:kartka/platform/memory/memory_fakes.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/platform/platform.dart';
 
+export 'memory_browser.dart';
 export 'memory_fakes.dart';
 export 'memory_stores.dart';
 
@@ -16,6 +17,7 @@ KartkaPlatform memoryPlatform({
   MemoryKeyValueStore? secrets,
   FakeFilePicker? filePicker,
   FakeOAuthRedirect? oauth,
+  KartkaBrowser? browser,
 }) => KartkaPlatform(
   http: http ?? FakeKartkaHttp(),
   blobs: blobs ?? MemoryBlobStore(),
@@ -23,4 +25,5 @@ KartkaPlatform memoryPlatform({
   secrets: secrets ?? MemoryKeyValueStore(),
   filePicker: filePicker ?? FakeFilePicker(),
   oauth: oauth ?? FakeOAuthRedirect(),
+  browser: browser ?? const UnavailableBrowser(),
 );
