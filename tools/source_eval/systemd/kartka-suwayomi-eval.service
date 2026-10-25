@@ -11,7 +11,7 @@ Environment=LD_PRELOAD=%h/services/suwayomi/app/current/bin/catch_abort.so
 # Same pinned release the live deploy installed (deploy/suwayomi/install.sh);
 # separate rootDir, port and extension set.
 ExecStart=%h/services/suwayomi/app/current/jre/bin/java \
-	-Xmx1g \
+	-Xmx2g \
 	-Djava.awt.headless=true \
 	-Dsuwayomi.tachidesk.config.server.rootDir=%h/.local/share/kartka-source-eval/suwayomi \
 	-Dsuwayomi.tachidesk.config.server.ip=127.0.0.1 \
@@ -26,7 +26,7 @@ ExecStart=%h/services/suwayomi/app/current/jre/bin/java \
 SuccessExitStatus=143
 Nice=19
 IOSchedulingClass=idle
-MemoryMax=2G
-CPUQuota=50%
+MemoryMax=3G
+CPUQuota=100%
 NoNewPrivileges=true
 PrivateTmp=true

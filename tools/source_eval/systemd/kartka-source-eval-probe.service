@@ -13,7 +13,7 @@ Environment=KARTKA_SUWAYOMI_URL=http://127.0.0.1:4590
 ExecStartPre=%h/src/kartka/tools/source_eval/systemd/eval_server_ready.sh
 # A probe during the weekly run would pace hosts separately from it; skip.
 ExecCondition=/bin/sh -c '! systemctl --user is-active --quiet kartka-source-eval-full.service'
-ExecStart=%h/.local/bin/uv run --frozen source-eval probe --workers 16
+ExecStart=%h/src/kartka/tools/source_eval/systemd/probe.sh
 Nice=19
 IOSchedulingClass=idle
 MemoryMax=1G
