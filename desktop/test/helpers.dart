@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:kartka_desktop/kartka_desktop.dart';
+import 'package:kartka_desktop/src/engine.dart';
 
 /// A response as the tests see it.
 typedef Reply = ({int status, HttpHeaders headers, List<int> body});
@@ -23,6 +24,8 @@ class Harness {
     void Function(String line)? log,
     String? seed,
     bool seedFile = false,
+    EngineHost? engine,
+    bool allowLoopbackEngine = false,
   }) async {
     final dir = Directory.systemTemp.createTempSync('kartka_desktop');
     final web = Directory('${dir.path}/web')..createSync();
@@ -41,6 +44,8 @@ class Harness {
       upstream: upstream,
       log: log,
       syncCredentialsFile: seed != null || seedFile ? seedPath : null,
+      engine: engine,
+      allowLoopbackEngine: allowLoopbackEngine,
     );
     await server.start(0);
     return Harness._(dir, server);

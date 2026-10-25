@@ -33,6 +33,10 @@ const filesPath = '/files';
 /// Secrets: `/secrets/<key>`, `/secrets?prefix=`.
 const secretsPath = '/secrets';
 
+/// Browser engine: `/engine/page[/<id>[/navigate|/evaluate]]`,
+/// `/engine/open`, `/engine/finish` (docs/DOCS-contracts-webview.md §6).
+const enginePath = '/engine';
+
 /// OAuth redirect page.
 const oauthPath = '/oauth';
 

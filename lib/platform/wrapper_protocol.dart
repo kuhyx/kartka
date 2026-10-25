@@ -40,6 +40,11 @@ abstract final class KartkaWrapper {
   /// `GET|PUT|DELETE /secrets/<key>`, `GET /secrets?prefix=` (JSON map).
   static const secretsPath = '/secrets';
 
+  /// Browser engine routes (docs/DOCS-contracts-webview.md §6):
+  /// `POST /engine/page`, `POST /engine/page/<id>/navigate|evaluate`,
+  /// `DELETE /engine/page/<id>`, `POST /engine/open`, `POST /engine/finish`.
+  static const enginePath = '/engine';
+
   /// OAuth redirect target (an HTML page that hands the URL back).
   static const oauthPath = '/oauth';
 

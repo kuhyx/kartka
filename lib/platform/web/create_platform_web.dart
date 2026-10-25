@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // Thin wiring of browser APIs; the pieces it assembles (ProxyKartkaHttp,
-// the wrapper stores, IdbKeyValueStore, WrapperOAuthRedirect) are
-// unit-tested on the VM.
+// WrapperBrowser, the wrapper stores, IdbKeyValueStore,
+// WrapperOAuthRedirect) are unit-tested on the VM.
 import 'package:http/http.dart' as http;
 import 'package:idb_shim/idb_browser.dart';
 import 'package:kartka/platform/http_kartka.dart';
@@ -10,6 +10,7 @@ import 'package:kartka/platform/platform.dart';
 import 'package:kartka/platform/plugin_file_picker.dart';
 import 'package:kartka/platform/web/idb_key_value_store.dart';
 import 'package:kartka/platform/web/web_directory_picker.dart';
+import 'package:kartka/platform/wrapper_browser.dart';
 import 'package:kartka/platform/wrapper_stores.dart';
 import 'package:web/web.dart' as web;
 
@@ -29,5 +30,6 @@ Future<KartkaPlatform> createPlatform() async {
       base: base,
       open: (url) => web.window.open(url.toString(), '_blank'),
     ),
+    browser: WrapperBrowser(client, base),
   );
 }

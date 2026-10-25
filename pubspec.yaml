@@ -92,6 +92,10 @@ dev_dependencies:
     sdk: flutter
   # Property-based tests for models, parsers and merge rules.
   glados: 1.1.7
+  # The desktop wrapper, run in-process by the engine end-to-end test
+  # (test/plugins/runtime/engine_e2e_test.dart, real headless chromium).
+  kartka_desktop:
+    path: desktop
   plugin_platform_interface: 2.1.8
   # Mocked in sync tests to prove the device id persists (crdt.nodeId).
   shared_preferences: 2.5.6

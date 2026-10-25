@@ -29,7 +29,19 @@ Future<void> main(List<String> args) async {
     // Agent instance only (tools/agent): kuhy's real window never passes it
     // and keeps the Google sign-in.
     syncCredentialsFile: _arg(args, '--sync-credentials'),
+    // Default: next to --files-dir, so the agent instance (its own
+    // --files-dir) never shares the real app's engine profile.
+    engineProfile: _arg(args, '--engine-profile'),
+    // --no-browser is the headless instance: never a visible window.
+    headlessOnly: args.contains('--no-browser'),
   );
+  // Ctrl-C / systemd stop: take the engine's chromium down too.
+  for (final signal in [ProcessSignal.sigint, ProcessSignal.sigterm]) {
+    signal.watch().listen((_) async {
+      await server.stop();
+      exit(0);
+    });
+  }
   // --port is for headless verification only: the app's IndexedDB and the
   // OAuth redirect registered at AniList/MAL are keyed to kartkaPort.
   final port = int.tryParse(_arg(args, '--port') ?? '') ?? kartkaPort;

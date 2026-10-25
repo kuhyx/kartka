@@ -131,5 +131,6 @@ void main() {
     expect(KartkaWrapper.secretsPath, '/secrets');
     expect(KartkaWrapper.oauthPath, '/oauth');
     expect(KartkaWrapper.oauthResultPath, '/oauth/result');
+    expect(KartkaWrapper.enginePath, '/engine');
   });
 }

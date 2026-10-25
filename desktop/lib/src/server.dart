@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:kartka_desktop/src/chromium.dart';
+import 'package:kartka_desktop/src/engine.dart';
+import 'package:kartka_desktop/src/engine_routes.dart';
 import 'package:kartka_desktop/src/oauth_routes.dart';
 import 'package:kartka_desktop/src/protocol.dart';
 import 'package:kartka_desktop/src/proxy.dart';
 import 'package:kartka_desktop/src/seed_route.dart';
 import 'package:kartka_desktop/src/static_files.dart';
 import 'package:kartka_desktop/src/storage_routes.dart';
+import 'package:path/path.dart' as p;
 
 /// The local server behind the desktop app.
 ///
@@ -21,7 +25,11 @@ import 'package:kartka_desktop/src/storage_routes.dart';
 class WrapperServer {
   /// Serves [webRoot]; stores blobs under [filesDir] and secrets in
   /// [secretsFile]. Only with [syncCredentialsFile] (the agent instance's
-  /// `--sync-credentials`) does [syncCredentialsPath] exist.
+  /// `--sync-credentials`) does [syncCredentialsPath] exist. The browser
+  /// engine lives next to [filesDir] (`engine-profile`, `engine-hosts.json`)
+  /// unless [engine] is given; [headlessOnly] (the default, and the agent
+  /// instance) refuses the visible "Open in WebView" window.
+  /// [allowLoopbackEngine] is for tests.
   new({
     required String webRoot,
     required String filesDir,
@@ -29,6 +37,10 @@ class WrapperServer {
     String? syncCredentialsFile,
     HttpClient? upstream,
     void Function(String line)? log,
+    EngineHost? engine,
+    String? engineProfile,
+    bool headlessOnly = true,
+    bool allowLoopbackEngine = false,
   }) : this._(
          log ?? stderr.writeln,
          webRoot,
@@ -36,6 +48,18 @@ class WrapperServer {
          secretsFile,
          syncCredentialsFile,
          upstream ?? HttpClient(),
+         engine ??
+             ChromiumEngineHost(
+               exe: findEngineBrowser(),
+               profile:
+                   engineProfile ??
+                   p.join(p.dirname(filesDir), 'engine-profile'),
+               hosts: EngineHosts(
+                 p.join(p.dirname(filesDir), 'engine-hosts.json'),
+               ),
+               headlessOnly: headlessOnly,
+             ),
+         allowLoopbackEngine,
        );
 
   new _(
@@ -45,13 +69,16 @@ class WrapperServer {
     String secretsFile,
     String? syncCredentialsFile,
     HttpClient upstream,
+    this._engineHost,
+    bool allowLoopbackEngine,
   ) : _static = StaticFiles(webRoot),
       _files = FileRoutes(filesDir),
       _secrets = SecretRoutes(secretsFile),
       _seed = syncCredentialsFile == null
           ? null
           : SeedRoute(syncCredentialsFile, _log),
-      _proxy = ProxyRoute(upstream, _log);
+      _engine = EngineRoutes(_engineHost, allowLoopback: allowLoopbackEngine),
+      _proxy = ProxyRoute(upstream, _log, cookieFor: _engineHost.cookieHeader);
 
   final void Function(String line) _log;
   final StaticFiles _static;
@@ -59,6 +86,8 @@ class WrapperServer {
   final SecretRoutes _secrets;
   final SeedRoute? _seed;
   final ProxyRoute _proxy;
+  final EngineHost _engineHost;
+  final EngineRoutes _engine;
   late OAuthRoutes _oauth;
   HttpServer? _server;
 
@@ -82,6 +111,7 @@ class WrapperServer {
   Future<void> stop() async {
     await _server?.close(force: true);
     _proxy.close();
+    await _engineHost.stop();
   }
 
   Future<void> _respond(HttpRequest request) async {
@@ -128,6 +158,7 @@ class WrapperServer {
       path == proxyPath ||
       path == oauthResultPath ||
       path == syncCredentialsPath ||
+      _under(path, enginePath) ||
       _under(path, filesPath) ||
       _under(path, secretsPath);
 
@@ -138,6 +169,7 @@ class WrapperServer {
     final path = request.uri.path;
     if (path == proxyPath) return await _proxy.handle(request);
     if (_under(path, filesPath)) return await _files.handle(request);
+    if (_under(path, enginePath)) return await _engine.handle(request);
     if (_under(path, secretsPath)) return await _secrets.handle(request);
     // Without --sync-credentials the path falls through to a static 404.
     final seed = _seed;

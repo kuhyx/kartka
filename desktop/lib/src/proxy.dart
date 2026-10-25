@@ -47,7 +47,7 @@ const _hopByHop = {
 class ProxyRoute {
   /// Forwards through [client]; `_log` gets failures (never a target URL,
   /// whose query can hold a credential such as RTDB's `?auth=`).
-  new(this.client, this._log) {
+  new(this.client, this._log, {this.cookieFor}) {
     client
       ..userAgent = null
       ..connectionTimeout = const Duration(seconds: 20);
@@ -55,6 +55,10 @@ class ProxyRoute {
 
   /// Upstream client (follows redirects for GET/HEAD).
   final HttpClient client;
+
+  /// Cookies of the engine profile for a target ("Open in WebView" hosts,
+  /// docs/DOCS-contracts-webview.md §6); null when none apply.
+  final Future<String?> Function(Uri target)? cookieFor;
 
   final void Function(String line) _log;
 
@@ -92,6 +96,11 @@ class ProxyRoute {
         if (forwards(real)) out.headers.set(real, values.join(', '));
       });
       out.headers.set('user-agent', kartkaUserAgent);
+      final jar = await _jar(target);
+      if (jar != null) {
+        final mine = out.headers.value('cookie');
+        out.headers.set('cookie', mine == null ? jar : '$mine; $jar');
+      }
       if (body.isNotEmpty) {
         out
           ..contentLength = body.length
@@ -116,6 +125,18 @@ class ProxyRoute {
       // The headers are out, so the status cannot change any more: the
       // truncated body is the error. Escaping would kill the wrapper.
       _log('kartka-desktop: /proxy: upstream cut mid-body (${e.runtimeType})');
+    }
+  }
+
+  /// Never fails the request: no engine simply means no extra cookies.
+  Future<String?> _jar(Uri target) async {
+    try {
+      return await cookieFor?.call(target);
+    } on Object catch (e) {
+      _log(
+        'kartka-desktop: /proxy: engine cookies unavailable (${e.runtimeType})',
+      );
+      return null;
     }
   }
 
