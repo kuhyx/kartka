@@ -6,6 +6,7 @@ import 'package:kartka/platform/blob_store.dart';
 import 'package:kartka/platform/browser_engine.dart';
 import 'package:kartka/platform/challenge_detect.dart';
 import 'package:kartka/platform/coalescing_saver.dart';
+import 'package:kartka/platform/cookie_http.dart';
 import 'package:kartka/platform/create_platform.dart';
 import 'package:kartka/platform/engine_core.dart';
 import 'package:kartka/platform/engine_scripts.dart';

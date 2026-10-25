@@ -15,6 +15,7 @@ const _rules = {
   'package:file_picker/': 'lib/platform/',
   'package:path_provider/': 'lib/platform/io/',
   'package:idb_shim/': 'lib/platform/web/',
+  'package:webview_flutter/': 'lib/platform/io/',
 };
 
 final _directive = RegExp(

@@ -71,6 +71,9 @@ class _KartkaAppState extends State<KartkaApp> {
       theme: buildLightTheme(),
       darkTheme: buildDarkTheme(),
       routerConfig: _router,
+      // Hidden engine views (Android) mount beside the routes.
+      builder: (_, child) =>
+          widget.platform.browser.host(child ?? const SizedBox.shrink()),
     ),
   );
 }

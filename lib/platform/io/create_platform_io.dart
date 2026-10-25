@@ -8,10 +8,12 @@ import 'package:file_picker/file_picker.dart' as fp;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:kartka/platform/coalescing_saver.dart';
+import 'package:kartka/platform/cookie_http.dart';
 import 'package:kartka/platform/http_kartka.dart';
 import 'package:kartka/platform/io/directory_files.dart';
 import 'package:kartka/platform/io/file_stores.dart';
 import 'package:kartka/platform/io/secure_key_value_store.dart';
+import 'package:kartka/platform/io/webview_browser.dart';
 import 'package:kartka/platform/oauth_impls.dart';
 import 'package:kartka/platform/platform.dart';
 import 'package:kartka/platform/plugin_file_picker.dart';
@@ -26,8 +28,13 @@ Future<KartkaPlatform> createPlatform() async {
   final kv = FileKeyValueStore(File(p.join(support.path, 'kv.json')));
   // Held by the binding for the app's lifetime: pause/detach writes kv.json.
   flushOnBackground(kv.flush);
+  final hosts = WebViewHosts(kv);
   return KartkaPlatform(
-    http: DirectKartkaHttp(http.Client()),
+    http: CookieKartkaHttp(
+      DirectKartkaHttp(http.Client()),
+      hosts,
+      cookieFor: webViewCookieFor,
+    ),
     blobs: FileBlobStore(Directory(p.join(docs.path, 'blobs'))),
     kv: kv,
     secrets: SecureKeyValueStore(const FlutterSecureStorage()),
@@ -39,5 +46,6 @@ Future<KartkaPlatform> createPlatform() async {
       launch: (url) => launchUrl(url, mode: LaunchMode.externalApplication),
       links: AppLinks().uriLinkStream,
     ),
+    browser: WebViewBrowser(hosts),
   );
 }

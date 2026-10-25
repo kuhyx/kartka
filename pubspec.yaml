@@ -71,6 +71,9 @@ dependencies:
   url_launcher: 6.3.3
   wakelock_plus: 1.8.2
   web: 1.1.2
+  # Android browser engine + "Open in WebView" (lib/platform/io/ only;
+  # docs/DOCS-contracts-webview.md §5).
+  webview_flutter: 4.14.1
   # ComicInfo.xml metadata in local CBZs and folders.
   xml: 7.1.0
 
