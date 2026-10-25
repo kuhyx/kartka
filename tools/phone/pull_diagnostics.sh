@@ -1,6 +1,7 @@
 #!/bin/bash
 # ============================================================================
-# Pulls kartka's diagnostics log off the phone onto this PC.
+# Pulls kartka's diagnostics log, plus any migration backups (into
+# <run>/backups/), off the phone onto this PC.
 #
 # The release APK keeps it in the app-specific external files dir, which
 # `adb pull` reads without root or run-as (lib/platform/platform.dart,
@@ -18,7 +19,11 @@ set -euo pipefail
 
 readonly ADB_SERIAL="${ADB_SERIAL:-23181JEGR08034}"
 readonly DEST_ROOT="${KARTKA_DIAG_DEST:-$HOME/data/claude-scratch/kartka-diagnostics}"
-readonly REMOTE='/sdcard/Android/data/com.kuhy.kartka/files/diagnostics/kartka-diagnostics.jsonl'
+readonly REMOTE_FILES='/sdcard/Android/data/com.kuhy.kartka/files'
+readonly REMOTE="$REMOTE_FILES/diagnostics/kartka-diagnostics.jsonl"
+# Pre-migration library snapshots (lib/migration/migration_backup.dart,
+# blob keys `backups/kartka-backup-<stamp>.json` in the same store).
+readonly REMOTE_BACKUPS="$REMOTE_FILES/backups"
 
 die() {
     echo "pull_diagnostics: $*" >&2
@@ -26,6 +31,19 @@ die() {
 }
 
 phone() { adb -s "$ADB_SERIAL" "$@"; }
+
+# Pulls backups/ into $1/backups/ when the phone has any; none is not an
+# error (no migration has run yet). Reports the count on stderr so stdout
+# stays the log path alone.
+pull_backups() {
+    local dest="$1" listing
+    listing="$(phone shell ls "$REMOTE_BACKUPS" 2>/dev/null)" || return 0
+    [[ -n "$listing" ]] || return 0
+    phone pull "$REMOTE_BACKUPS" "$dest/" >/dev/null || die "adb pull of backups failed"
+    local count
+    count="$(find "$dest/backups" -type f | wc -l)"
+    echo "pull_diagnostics: $count backup(s) in $dest/backups" >&2
+}
 
 main() {
     command -v adb >/dev/null || die "adb not found (pacman -S android-tools)"
@@ -42,6 +60,7 @@ main() {
     phone pull "$REMOTE" "$dest/" >/dev/null || die "adb pull failed"
     local file="$dest/${REMOTE##*/}"
     [[ -s "$file" ]] || die "pulled an empty file: $file"
+    pull_backups "$dest"
     echo "$file"
 }
 
