@@ -48,6 +48,21 @@ void main() {
     expect(summaries!['mangadex']?.rank, 1);
   });
 
+  testWidgets('the tab shows the ranking when Browse subscribed first', (
+    tester,
+  ) async {
+    final reader = InMemoryRtdbReader({
+      'source_health': fixtureJson('rtdb_snapshot.json'),
+    });
+    final r = registryWith([reader]);
+    final browse = r.maybe<SourceHealthLookup>()!.watch().listen((_) {});
+    await tester.runAsync(pumpEventQueue);
+    await pumpSourcesTab(tester, r);
+    expect(find.byKey(const ValueKey('source-mangadex')), findsOne);
+    await tester.pumpWidget(const SizedBox());
+    await tester.runAsync(browse.cancel);
+  });
+
   testWidgets('without sync the tab says so', (tester) async {
     await pumpSourcesTab(tester, registryWith(const []));
     expect(find.textContaining('sync'), findsOne);

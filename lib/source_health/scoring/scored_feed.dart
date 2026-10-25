@@ -21,7 +21,9 @@ typedef _Snapshot = (List<SourceHealthRecord>, SourceHealthMeta?);
 /// nor defaultScore and used DEFAULT), so under DEFAULT the published ranking
 /// is exactly what is shown. Otherwise they are re-scored, and the meta's
 /// verdict totals are recounted. Records and meta share one subscription to
-/// the base feed.
+/// the base feed, and a listener that joins it late (the Sources tab after
+/// Browse) first gets the latest snapshot or error: the base re-emits only
+/// when the data changes, which may be a week away.
 class ScoredHealthFeed implements SourceHealthFeed {
   /// Re-scores the base feed with the store's profile.
   new(this._base, this._store);
@@ -42,17 +44,24 @@ class ScoredHealthFeed implements SourceHealthFeed {
     SourceHealthMeta? meta;
     var live = false;
     var profileKnown = false;
+    _Snapshot? latest;
+    (Object, StackTrace)? failure;
     late final StreamController<_Snapshot> out;
 
     void emit() {
       final r = records;
       if (!live || !profileKnown || r == null) return;
-      out.add(_apply(r, meta, _store.profile.value));
+      final snapshot = latest = _apply(r, meta, _store.profile.value);
+      failure = null;
+      out.add(snapshot);
     }
 
     void stop() {
       live = false;
       profileKnown = false;
+      // The restart re-emits from the kept records once the profile is read.
+      latest = null;
+      failure = null;
       _store.profile.removeListener(emit);
       for (final s in subs) {
         unawaited(s.cancel());
@@ -65,10 +74,17 @@ class ScoredHealthFeed implements SourceHealthFeed {
         live = true;
         subs
           ..add(
-            _base.watch().listen((r) {
-              records = r;
-              emit();
-            }, onError: out.addError),
+            _base.watch().listen(
+              (r) {
+                records = r;
+                emit();
+              },
+              onError: (Object e, StackTrace s) {
+                latest = null;
+                failure = (e, s);
+                out.addError(e, s);
+              },
+            ),
           )
           ..add(
             _base.watchMeta().listen((m) {
@@ -88,7 +104,12 @@ class ScoredHealthFeed implements SourceHealthFeed {
       },
       onCancel: stop,
     );
-    return out.stream;
+    return Stream.multi((listener) {
+      if (latest case final snapshot?) listener.add(snapshot);
+      if (failure case (final e, final s)?) listener.addError(e, s);
+      final sub = out.stream.listen(listener.add, onError: listener.addError);
+      listener.onCancel = sub.cancel;
+    }, isBroadcast: true);
   }
 
   _Snapshot _apply(
