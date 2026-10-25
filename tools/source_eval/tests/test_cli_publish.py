@@ -105,7 +105,7 @@ def test_cli_dispatch(
 
     args = parser.parse_args([*base, "report", "--run", "c", "--publish"])
     assert cli.dispatch(app, args, W) == 0
-    assert published == [report.RTDB_PATH]
+    assert published == [report.RTDB_PATH, report.META_PATH]
     assert lines
 
 

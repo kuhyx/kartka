@@ -24,14 +24,21 @@ BLOCKED_AFTER = 3
 DEAD_AFTER = 5
 
 
-def _queries(ref: RefTitle) -> list[str]:
+def queries(ref: RefTitle, lang: str) -> list[str]:
+    """Two search queries: the main title and the first alt title.
+
+    A Japanese source is searched by the native title first, then the first
+    other title.
+    """
+    if lang == "ja" and ref.native:
+        return list(dict.fromkeys((ref.native, *ref.titles)))[:2]
     return list(dict.fromkeys(ref.titles[:2]))
 
 
 def _search(backend: Backend, cand: Candidate, ref: RefTitle) -> dict[str, object]:
     try:
-        for query in _queries(ref):
-            hit = best_hit(backend.search(cand, query), ref)
+        for query in queries(ref, cand.lang):
+            hit = best_hit(backend.search(cand, query), ref, cand.lang)
             if hit is not None:
                 return {"status": "found", "hit": {"title": hit.title, "ref": hit.ref}}
     except SourceError as exc:

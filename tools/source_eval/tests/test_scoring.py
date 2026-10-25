@@ -82,13 +82,14 @@ def test_cut_reasons() -> None:
 
 
 def test_rank_verdicts_and_subset() -> None:
+    # complete=0.5 keeps every score below KEEP_SCORE, so the rules decide.
     records = [
-        record("big", coverage=0.9),
-        record("dup", coverage=0.85),
-        record("narrow", coverage=0.85, width=2000),
-        record("new", coverage=0.7, status="accruing"),
-        record("plugin", coverage=None, origin="plugin"),
-        record("blocked", coverage=0.95, challenge=0.5),
+        record("big", coverage=0.9, complete=0.5),
+        record("dup", coverage=0.85, complete=0.5),
+        record("narrow", coverage=0.85, width=2000, complete=0.5),
+        record("new", coverage=0.7, status="accruing", complete=0.5),
+        record("plugin", coverage=None, origin="plugin", complete=0.5),
+        record("blocked", coverage=0.95, challenge=0.5, complete=0.5),
     ]
     found = {
         "big": {"a", "b", "c", "d"},

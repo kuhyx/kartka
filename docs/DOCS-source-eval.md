@@ -1,9 +1,10 @@
 # Source evaluator (`tools/source_eval/`)
 
 Decides, by measurement, which manga sources Kartka keeps. Output is the
-contract §5 record (plus the additive `availability` block) per source, ranked,
-written to `tools/source_eval/out/latest.json` and, with `--publish`, to RTDB
-`/kartka/source_health/<sha1(sourceId)>`.
+contract §5 record ([`DOCS-contracts-source-health.md`](DOCS-contracts-source-health.md))
+per source, ranked, plus a run `meta` block, written to
+`tools/source_eval/out/latest.json` and, with `--publish`, to RTDB
+`/kartka/source_health/<sha1(sourceId)>` and `/kartka/source_health_meta`.
 
 ## Commands
 
@@ -15,7 +16,7 @@ uv run pytest                       # 100 % line+branch coverage gate
 uv run ruff check src tests && uv run ruff format --check src tests
 uv run mypy --strict src tests
 
-uv run source-eval candidates                  # data/candidates.json
+uv run source-eval candidates                  # data/candidates{,_skipped}.json
 uv run source-eval reference --budget 40       # data/reference.json (resumable)
 uv run source-eval init-run --run R --sample 30 --completeness 10 --images 3 --pages 2
 uv run source-eval enrich --run R --budget 40  # MangaUpdates chapter counts
@@ -24,7 +25,8 @@ uv run source-eval run --run R --ids <id> --budget 40  # resumable, exit 10 = mo
 uv run source-eval report --run R [--out F] [--publish]
 ```
 
-`--suwayomi-url` (or `KARTKA_SUWAYOMI_URL`, default `http://127.0.0.1:4567`);
+`--suwayomi-url` (or `KARTKA_SUWAYOMI_URL`, default the eval instance
+`http://127.0.0.1:4590`; the live 4567 is refused);
 basic auth from `KARTKA_SUWAYOMI_USER/PASS` or the deploy env file's
 `SUWAYOMI_USER/SUWAYOMI_PASSWORD`. State: `$XDG_STATE_HOME/kartka-source-eval`
 (runs, uptime history, per-host last-request times); cache:
@@ -35,20 +37,27 @@ weekly via `systemd/weekly.sh` (ISO-week run id, 200-title sample, publish).
 
 ## Pipeline
 
-1. **Candidates** (`candidates/`): every `en`/`all` source in Keiyoushi's
-   `index.pb` (gzipped protobuf, decoded schema-less by `protowire.py`;
-   MangaDex en decodes to `2499283573021220255`, as in the contract), native
-   MangaDex, Mangayomi **JS** sources on domains Keiyoushi does not cover
-   (`plugin:mangayomi-<id>`), and `data/legacy_sources.json`
+1. **Candidates** (`candidates/`): every `en`/`ja`/`all` source in
+   Keiyoushi's `index.pb` (gzipped protobuf, decoded schema-less by
+   `protowire.py`; MangaDex en decodes to `2499283573021220255`, as in the
+   contract), native MangaDex, Mangayomi **JS** sources on domains Keiyoushi
+   does not cover (`plugin:mangayomi-<id>`), and `data/legacy_sources.json`
    (`plugin:legacy-<slug>`, see below). kuhy's installed set is flagged.
+   Every dropped index entry goes to `data/candidates_skipped.json` with one
+   reason (`language` > `dart` > `domain-overlap` > `duplicate`), grouped per
+   index; it becomes the run meta's `skipped`.
 2. **Reference** (`reference/`): AniList top 500 manga by popularity
    (`format_not: NOVEL`) with every alt title; plus `data/sy_titles.json` if
    present (list of strings or `{title}`; gitignored), matched to AniList.
-   Missing chapter counts (ongoing series) come from MangaUpdates.
+   Missing chapter counts (ongoing series) come from MangaUpdates. Each
+   title stores AniList's native title (`nativeTitle`: `null` = not fetched,
+   `""` = none); titles stored before the field existed are backfilled by the
+   next `reference` call (batched `id_in`, 50 per request).
 3. **Run** (`evaluate.py`): one deterministic stratified sample per run, the
    same for every source. Per source: install/prepare; search each title
-   (main title, then first alt) and fuzzy-match (rapidfuzz ratio ≥ 0.90 on
-   normalised titles, any alt title); chapter lists for the first N found;
+   (main title, then first alt; a `ja` source: native title, then the first
+   other title) and fuzzy-match (rapidfuzz ratio ≥ 0.90 on normalised titles,
+   any alt title, plus the native one for `ja`); chapter lists for the first N found;
    page images for the first M (median chapter, skip page 1, P pages).
    Every step checkpoints to disk atomically. A source stops early after 3
    challenged requests (`blocking`) or 5 failed first searches (`unreachable`).
@@ -103,15 +112,29 @@ and FlareSolverr off (the local dev server and the live deploy both do).
   `null` for WebP/PNG-only sources.
 - **Unmeasured metrics are `null`, never 0**: a source no backend can read
   is never cut for coverage; it stays `pending`. It scores 0 for that term.
-- **score**: exactly the §5 formula (the §5 example's printed 0.81 is wrong;
-  its own inputs give 0.852, pinned by a test). Rounded to 3 places.
+- **pagesLoad**: loaded / attempted chapters of the image step, read from the
+  stored per-chapter outcomes (`state.images`: an `error` or an empty page
+  list is a failure), so any existing run state re-reports without
+  re-measuring. `null` when no chapter was attempted.
+- **langScope**: `en+ja` unless the source is `all` (then `unrestricted`).
+  Restricting an `all` Suwayomi extension would need per-extension language
+  preferences (keys differ per extension and are unverified here); MangaDex
+  native is restricted by `translatedLanguage=en`.
+- **score**: exactly the §5 formula, times `pagesLoad.ratio` when known (the
+  §5 example's printed 0.81 is wrong; its own inputs give 0.852, pinned by a
+  test). Rounded to 3 places.
 - **subset**: ≥ 90 % of found titles also found by a higher-ranked, not-cut
   source whose median width is ≥ (unknown width of the lower source counts as
   ≤; unknown width of the higher one never qualifies). Same-host pairs are
   compared too (native vs Suwayomi MangaDex): the lower one is redundant.
   Ties rank native > suwayomi > plugin.
-- **verdict**: `cut` if any cut reason; else `pending` while uptime accrues or
-  nothing was measured; else `keep`.
+- **verdict**: score ≥ `KEEP_SCORE` (0.90) → `keep` whatever the cut
+  reasons (still published as warnings) or uptime status. Below it: `cut` if
+  any cut reason; else `pending` while uptime accrues or nothing was
+  measured; else `keep`.
+- **meta**: `{runId, generatedAt, candidates, tested, verdicts, skipped}`
+  (contract §5 "Run meta"); `--publish` PATCHes it to
+  `/kartka/source_health_meta` after the records.
 - **availability** (additive): `native` (Kartka Dart source; today
   mangadex.org), `mangayomiJs` (a Mangayomi JS source on the same base
   domain), `keiyoushi`. `summary.keepOnlyViaKeiyoushi` lists `keep` sources

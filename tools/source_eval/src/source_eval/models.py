@@ -105,7 +105,11 @@ class Candidate:
 
 @dataclass(frozen=True, slots=True)
 class RefTitle:
-    """One title of the reference set, with every name it is known by."""
+    """One title of the reference set, with every name it is known by.
+
+    ``native`` is AniList's native-script title: ``None`` = not fetched yet,
+    ``""`` = AniList has none.
+    """
 
     key: str
     titles: tuple[str, ...]
@@ -113,6 +117,7 @@ class RefTitle:
     chapters_from: str | None = None
     anilist_id: int | None = None
     origins: tuple[str, ...] = ()
+    native: str | None = None
 
     def to_json(self) -> dict[str, object]:
         """JSON-ready dict."""
@@ -123,6 +128,7 @@ class RefTitle:
             "chaptersFrom": self.chapters_from,
             "anilistId": self.anilist_id,
             "origins": list(self.origins),
+            "nativeTitle": self.native,
         }
 
     @classmethod
@@ -137,6 +143,7 @@ class RefTitle:
             chapters_from=cast("str | None", data.get("chaptersFrom")),
             anilist_id=int(cast("int", anilist)) if anilist is not None else None,
             origins=tuple(cast("list[str]", data.get("origins", []))),
+            native=cast("str | None", data.get("nativeTitle")),
         )
 
 

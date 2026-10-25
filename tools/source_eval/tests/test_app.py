@@ -48,11 +48,13 @@ def test_end_to_end_commands(tmp_path: Path) -> None:
     assert app.cmd_run("t", chosen, None, 2) == 0
     clock.advance(60)
     published: list[dict[str, object]] = []
+    paths: list[str] = []
 
     class Writer:
         def patch(self, path: str, data: dict[str, object]) -> None:
-            assert path == report.RTDB_PATH
-            published.append(data)
+            paths.append(path)
+            if path == report.RTDB_PATH:
+                published.append(data)
 
     out = tmp_path / "out" / "r.json"
     assert app.cmd_report("t", out, Writer()) == 0
@@ -63,6 +65,10 @@ def test_end_to_end_commands(tmp_path: Path) -> None:
     assert by_id["plugin:legacy-x"]["verdict"] == "pending"
     assert "cloudflare" in str(by_id)
     assert len(published[0]) == len(data["sources"])
+    assert paths == [report.RTDB_PATH, report.META_PATH]
+    assert data["meta"]["candidates"] == len(cands)
+    assert data["meta"]["skipped"] == catalog.load_skipped(app.skipped_path)
+    assert data["meta"]["skipped"]  # the fixture indexes drop some entries
     assert any("published" in line for line in lines)
     # A source the candidate list no longer has is skipped; a hosts-blocked
     # last probe is surfaced in the summary.

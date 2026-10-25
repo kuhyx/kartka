@@ -68,9 +68,8 @@ def test_parse_keiyoushi_fixture() -> None:
     ids = {c.id: c for c in cands}
     assert "suwayomi:2499283573021220255" in ids  # MangaDex en, the contract id
     assert "suwayomi:4709139914729853090" in ids  # AllManga
-    assert {c.lang for c in cands} == {"en", "all"}
     assert ids["suwayomi:4709139914729853090"].installed
-    assert not any("rawkuma" in c.pkg for c in cands)
+    assert any("rawkuma" in c.pkg for c in cands)  # ja is a candidate language
     assert {c.host for c in cands if "hdoujin" in c.pkg} == {"hdoujin.org"}
 
 
@@ -108,7 +107,7 @@ def test_merge_availability() -> None:
     assert [base_domain(c.base_url) for c in plugins] == ["mangafire.to"]
     assert plugins[0].availability == Availability(mangayomi_js=True)
     dup = catalog.merge([*kei, kei[0]], [])
-    assert len(dup) == len(kei) + 1
+    assert dup == catalog.merge(kei, [])
 
 
 def test_base_domain() -> None:
@@ -134,7 +133,9 @@ def test_fetch_candidates(tmp_path: Path) -> None:
     t.add(catalog.KEIYOUSHI_INDEX, resp(200, fixture_bytes("keiyoushi_index.pb")))
     t.add(catalog.MANGAYOMI_INDEX, resp(200, fixture_bytes("mangayomi_index.json")))
     client = PoliteClient(t, HostGate(None, 2.0, clock), clock, None, "ua")
-    assert len(catalog.fetch_candidates(client)) > 3
+    cands, skipped = catalog.fetch_candidates(client)
+    assert len(cands) > 3
+    assert skipped
     t2 = FakeTransport()
     t2.add("https://", resp(500, "down"))
     with pytest.raises(RuntimeError, match="HTTP 500"):

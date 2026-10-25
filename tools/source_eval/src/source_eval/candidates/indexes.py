@@ -10,7 +10,8 @@ from typing import cast
 from source_eval import protowire as pw
 from source_eval.models import Candidate
 
-KEEP_LANGS = frozenset({"en", "all"})
+#: Candidate languages: English, Japanese, and multi-language sources.
+KEEP_LANGS = frozenset({"en", "ja", "all"})
 #: kuhy's installed SY set, matched as package suffixes.
 INSTALLED_PKGS = (
     "all.mangadex",
@@ -46,7 +47,11 @@ def is_installed(pkg: str) -> bool:
 
 
 def parse_keiyoushi(blob: bytes) -> list[Candidate]:
-    """Every English or multi-language source in a Keiyoushi ``index.pb``."""
+    """Every source in a Keiyoushi ``index.pb``, all languages.
+
+    The language filter lives in :func:`~source_eval.candidates.catalog.merge`
+    so every dropped entry can be reported with its reason.
+    """
     raw = gzip.decompress(blob) if blob.startswith(_GZIP_MAGIC) else blob
     root = pw.group(raw)
     out: list[Candidate] = []
@@ -57,8 +62,6 @@ def parse_keiyoushi(blob: bytes) -> list[Candidate]:
             for src_blob in ext.get(_EXT_SOURCE, []):
                 src = pw.group(cast("bytes", src_blob))
                 lang = pw.text(src, _SRC_LANG)
-                if lang not in KEEP_LANGS:
-                    continue
                 out.append(
                     Candidate(
                         id=f"suwayomi:{pw.integer(src, _SRC_ID)}",

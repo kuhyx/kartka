@@ -24,6 +24,10 @@ _TOP = (
 _SEARCH = (
     "query($q:String){Media(search:$q,type:MANGA,format_not:NOVEL){" + _FIELDS + "}}"
 )
+_NATIVES = (
+    "query($ids:[Int]){Page(perPage:50){"
+    "media(id_in:$ids,type:MANGA){id title{native}}}}"
+)
 _OK, _NOT_FOUND = 200, 404
 
 
@@ -61,6 +65,7 @@ def to_ref(media: dict[str, object], origin: str) -> RefTitle:
         chapters_from="anilist" if chapters else None,
         anilist_id=int(cast("int", media["id"])),
         origins=(origin,),
+        native=names.get("native") or "",
     )
 
 
@@ -85,3 +90,17 @@ def search(client: PoliteClient, title: str) -> RefTitle | None:
         return None
     ref = to_ref(media, "sy")
     return ref if title_score(title, ref.titles) >= THRESHOLD else None
+
+
+def natives(client: PoliteClient, ids: list[int]) -> dict[int, str]:
+    """Native-script titles of up to 50 AniList ids (absent: AniList has none)."""
+    data = _post(client, _NATIVES, {"ids": ids})
+    if data is None:
+        return {}
+    page = cast("dict[str, object]", data["Page"])
+    out: dict[int, str] = {}
+    for media in cast("list[dict[str, object]]", page["media"]):
+        native = cast("dict[str, str | None]", media["title"]).get("native")
+        if native:
+            out[int(cast("int", media["id"]))] = native
+    return out

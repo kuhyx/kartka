@@ -44,12 +44,20 @@ def title_score(title: str, names: Iterable[str]) -> float:
     return max((similarity(title, n) for n in names), default=0.0)
 
 
-def best_hit(hits: Iterable[Hit], ref: RefTitle) -> Hit | None:
+def names(ref: RefTitle, lang: str = "en") -> tuple[str, ...]:
+    """Every name ``ref`` is matched by; Japanese sources add the native title."""
+    if lang == "ja" and ref.native:
+        return (*ref.titles, ref.native)
+    return ref.titles
+
+
+def best_hit(hits: Iterable[Hit], ref: RefTitle, lang: str = "en") -> Hit | None:
     """The hit that best matches ``ref`` (any alt title), if good enough."""
     best: Hit | None = None
     best_score = THRESHOLD
+    known = names(ref, lang)
     for hit in hits:
-        score = title_score(hit.title, ref.titles)
+        score = title_score(hit.title, known)
         if score >= best_score:
             best, best_score = hit, score + 1e-9
     return best

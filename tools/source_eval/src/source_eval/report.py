@@ -22,18 +22,46 @@ if TYPE_CHECKING:
     from source_eval.uptime import UptimeLog
 
 RTDB_PATH = "kartka/source_health"
+#: The run meta: a separate node, so ``source_health`` stays ``{sha1(id): record}``.
+META_PATH = "kartka/source_health_meta"
 APP_NAME = "kartka-source-eval"
 _ONLY_KEIYOUSHI = {"native": False, "mangayomiJs": False, "keiyoushi": True}
 
 
-def build_report(
+def build_meta(
+    run_id: str,
+    generated_at: str,
+    candidates: int,
+    ranked: list[Record],
+    skipped: list[dict[str, object]],
+) -> dict[str, object]:
+    """Run meta: sizes, verdict counts and what the candidate merge dropped.
+
+    ``tested`` is the number of ranked records (sources the run touched).
+    """
+    verdicts = {"keep": 0, "cut": 0, "pending": 0}
+    for record in ranked:
+        verdicts[str(record["verdict"])] += 1
+    return {
+        "runId": run_id,
+        "generatedAt": generated_at,
+        "candidates": candidates,
+        "tested": len(ranked),
+        "verdicts": verdicts,
+        "skipped": skipped,
+    }
+
+
+def build_report(  # noqa: PLR0913 -- one argument per input the report joins
     cands: dict[str, Candidate],
     run: RunDir,
     manifest: Manifest,
     log: UptimeLog,
     now: float,
+    *,
+    skipped: list[dict[str, object]] | None = None,
 ) -> dict[str, object]:
-    """Ranked §5 records for every source the run touched, plus a summary."""
+    """Ranked §5 records for every source the run touched, summary and meta."""
     records: list[Record] = []
     found: dict[str, set[str]] = {}
     for source_id in run.evaluated_ids():
@@ -50,10 +78,9 @@ def build_report(
         if last is not None and last.kind == HOSTS_BLOCKED:
             blocked_here.append(record["id"])
     only = [r for r in ranked if r["availability"] == _ONLY_KEIYOUSHI]
+    generated = dt.datetime.fromtimestamp(now, dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     return {
-        "generatedAt": dt.datetime.fromtimestamp(now, dt.UTC).strftime(
-            "%Y-%m-%dT%H:%M:%SZ"
-        ),
+        "generatedAt": generated,
         "runId": run.run_id,
         "referenceSize": len(manifest.sample),
         "sources": ranked,
@@ -66,6 +93,7 @@ def build_report(
                 if r["verdict"] != "cut"
             ],
         },
+        "meta": build_meta(run.run_id, generated, len(cands), ranked, skipped or []),
     }
 
 
@@ -111,7 +139,11 @@ def firebase_writer() -> FirebaseRtdb:
 
 
 def publish(report: dict[str, object], writer: RtdbWriter) -> int:
-    """Write every record to ``/kartka/source_health/<sha1(id)>``; returns count."""
+    """Write every record to ``/kartka/source_health/<sha1(id)>``, then the meta.
+
+    Returns the record count.
+    """
     records = cast("list[Record]", report["sources"])
     writer.patch(RTDB_PATH, {sha1(str(r["id"])): r for r in records})
+    writer.patch(META_PATH, cast("dict[str, object]", report["meta"]))
     return len(records)

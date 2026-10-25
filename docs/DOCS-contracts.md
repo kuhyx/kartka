@@ -3,7 +3,8 @@
 Every part codes against these. Changing one is a coordinator decision; note
 the change here in the same commit. §10-§15 (service lookup, sync clocks,
 decisions log, foundation as built, integration) are in
-[`DOCS-contracts-runtime.md`](DOCS-contracts-runtime.md).
+[`DOCS-contracts-runtime.md`](DOCS-contracts-runtime.md); §5 (source health) is in
+[`DOCS-contracts-source-health.md`](DOCS-contracts-source-health.md).
 
 ## 1. Core models (`lib/core/models/`, immutable, `==`/`hashCode`, JSON)
 
@@ -64,6 +65,7 @@ edit each other's files.
 | `progress/<mangaKeyHash>` | `{chapterNumber, chapterUrl, page, readAt}` | max(chapterNumber, page); never decreases |
 | `trackers/<mangaKeyHash>/<service>` | `{remoteId, lastPushedChapter}` | max |
 | `source_health/<sourceIdHash>` | §5 record, written by the evaluator only | evaluator wins |
+| `source_health_meta` | §5 run meta (counts, verdicts, skipped candidates), evaluator only | evaluator wins |
 | `settings/<key>` | `{key, value}` or `{key, enc}`, plus `hlc` (§16) | LWW per key |
 
 `mangaKeyHash` = lowercase hex SHA-1 of `MangaKey` (RTDB-safe key).
@@ -73,57 +75,9 @@ markUnread is a `read: false` tombstone).
 
 ## 5. Source-health record (evaluator → RTDB → app UI)
 
-```json
-{
-  "id": "suwayomi:2499283573021220255", "name": "MangaDex", "lang": "en",
-  "origin": "suwayomi", "probedAt": "2026-10-24T12:00:00Z",
-  "uptime": {"windowDays": 7, "probes": 28, "ok": 27, "ratio": 0.964,
-             "status": "accruing|final"},
-  "latencyMs": {"p50": 420, "p95": 1300},
-  "blocking": {"challengeRate": 0.0, "kinds": ["cloudflare","captcha","403","429"]},
-  "coverage": {"referenceSize": 650, "found": 512, "ratio": 0.788},
-  "chapterCompleteness": {"sampled": 40, "medianRatio": 0.97},
-  "imageQuality": {"sampledPages": 120, "medianWidthPx": 1100,
-                   "medianJpegQuality": 88},
-  "subsetOf": {"sourceId": "mangadex", "overlap": 0.93},
-  "score": 0.852, "rank": 3,
-  "verdict": "keep|cut|pending",
-  "cutReasons": ["uptime<0.95", "blocking", "coverage<0.60", "subset"],
-  "flags": ["needs-browser-engine"]
-}
-```
-
-- **Reference set**: titles in the SY backup + AniList top 500 manga by
-  popularity, stored at `tools/source_eval/data/reference.json`.
-- **Chapter completeness**: source chapter count / AniList (fallback
-  MangaUpdates) chapter count for sampled reference titles, capped at 1.
-- **Subset**: ≥ 90 % of a source's found titles also found by a higher-ranked
-  source with ≥ its image quality → `subsetOf` set, verdict `cut`.
-- **Cut rules**: uptime ratio < 0.95 (only once `final`), challengeRate > 0
-  from any kind other than `webview`, coverage < 0.60, subset. Otherwise `keep`; `pending` while uptime accrues.
-- **Score**: 0.30 coverage + 0.20 completeness + 0.20 uptime + 0.15 image
-  quality (width/1400 capped) + 0.15 latency (1 − p95/5000 capped at 0).
-- **As built** (evaluator, 2026-10-24): every record also carries
-  `availability: {native, mangayomiJs, keiyoushi}` (bools: where else the
-  source can be read). `blocking.kinds` may also list `webview` (the extension
-  needs a browser engine; recorded, never defeated). `webview` is **flagged,
-  not cut** (decision 2026-10-24): it still counts in `challengeRate` and
-  `kinds`, but a record whose only kind is `webview` is not cut for
-  `blocking`; any other kind next to it still cuts. `flags` is an additive
-  list of non-cutting warnings (absent = none; readers tolerate it missing and
-  keep unknown entries). The only flag today is `needs-browser-engine`, set
-  whenever `webview` challenges were seen. The app shows a "Needs browser
-  engine" chip on the Sources row, the detail page and the Browse badge. A metric that
-  could not be measured is `null` at the leaf (`latencyMs.p50/p95`,
-  `coverage.found/ratio`, `chapterCompleteness.medianRatio`,
-  `imageQuality.medianJpegQuality`); it adds 0 to the score, and an unmeasured
-  coverage keeps the verdict `pending`. `subsetOf` is `null` unless the source
-  is a subset. The UI shows "not measured". The run file wraps records as `{generatedAt, runId,
-  referenceSize, sources: [§5...], summary: {hostsBlockedHere: [id],
-  keepOnlyViaKeiyoushi: [id], notCutOnlyViaKeiyoushi: [{id, name, verdict}]}}`;
-  the summary feeds the Suwayomi keep/drop decision (§13).
-- Cadence: uptime probe 4×/day; full metrics weekly; both systemd timers on
-  the server host. JSON also written to `tools/source_eval/out/latest.json`.
+Moved to [`DOCS-contracts-source-health.md`](DOCS-contracts-source-health.md)
+(record fields incl. `pagesLoad` and `langScope`, score, verdict rule, the
+`source_health_meta` run-meta node).
 
 ## 6. Plugin API v1 (`lib/plugins/runtime/`)
 

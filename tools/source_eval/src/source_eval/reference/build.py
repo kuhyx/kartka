@@ -82,11 +82,13 @@ def build(  # noqa: PLR0913 -- explicit knobs beat a config object here
     *,
     top: int = 500,
     per_page: int = 50,
+    batch: int = 50,
 ) -> bool:
     """Advance the build; True once every step is done.
 
     Never short-circuits on ``complete``: SY titles added after the AniList
-    part finished (a new ``sy_titles.json``) are still picked up.
+    part finished (a new ``sy_titles.json``) are still picked up, and titles
+    stored before native titles existed are backfilled ``batch`` at a time.
     """
     while ref.progress["anilistPage"] * per_page < top:
         if deadline.expired():
@@ -109,8 +111,29 @@ def build(  # noqa: PLR0913 -- explicit knobs beat a config object here
         )
         ref.sy_done.add(normalize(title))
         ref.save()
+    if not _backfill_natives(client, ref, deadline, batch):
+        return False
     ref.complete = True
     ref.save()
+    return True
+
+
+def _backfill_natives(
+    client: PoliteClient, ref: Reference, deadline: Deadline, batch: int
+) -> bool:
+    """Fill ``native`` for AniList titles that predate it; True when done."""
+    while todo := [
+        i
+        for i, t in enumerate(ref.titles)
+        if t.anilist_id is not None and t.native is None
+    ][:batch]:
+        if deadline.expired():
+            return False
+        ids = [cast("int", ref.titles[i].anilist_id) for i in todo]
+        found = anilist.natives(client, ids)
+        for i, aid in zip(todo, ids, strict=True):
+            ref.titles[i] = replace(ref.titles[i], native=found.get(aid, ""))
+        ref.save()
     return True
 
 

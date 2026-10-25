@@ -52,6 +52,29 @@ def measured(cand: Candidate, state: SourceState) -> bool:
     return cand.origin != "plugin" and state.aborted != "unavailable"
 
 
+def pages_load(state: SourceState) -> dict[str, object]:
+    """Share of sampled chapters whose page images all downloaded.
+
+    Each ``state.images`` entry is one attempted chapter; it counts as loaded
+    only with no error and at least one measured page.
+    """
+    tried = list(state.images.values())
+    ok = sum(1 for img in tried if "error" not in img and img.get("pages"))
+    return {
+        "ratio": round(ok / len(tried), 3) if tried else None,
+        "sampled": len(tried),
+    }
+
+
+def lang_scope(cand: Candidate) -> str:
+    """``en+ja`` when only English/Japanese content was measured.
+
+    A multi-language (``all``) source is measured as the backend serves it:
+    no backend restricts one to en/ja yet.
+    """
+    return "unrestricted" if cand.lang == "all" else "en+ja"
+
+
 def metrics(
     cand: Candidate,
     state: SourceState,
@@ -107,5 +130,7 @@ def metrics(
             "medianRatio": round(median(ratios), 3) if ratios else None,
         },
         "imageQuality": imagequality.summarize(pages),
+        "pagesLoad": pages_load(state),
+        "langScope": lang_scope(cand),
         "availability": cand.availability.to_json(),
     }

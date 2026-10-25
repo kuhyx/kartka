@@ -112,6 +112,11 @@ class App:
         """``data/candidates.json``."""
         return self.s.data_dir / "candidates.json"
 
+    @property
+    def skipped_path(self) -> Path:
+        """``data/candidates_skipped.json``: index entries the merge dropped."""
+        return self.s.data_dir / "candidates_skipped.json"
+
     def reference(self) -> Reference:
         """``data/reference.json``."""
         return Reference(self.s.data_dir / "reference.json", self.clock)
@@ -125,10 +130,13 @@ class App:
 
     def cmd_candidates(self) -> int:
         """Refresh ``data/candidates.json`` from both indexes."""
-        cands = catalog.fetch_candidates(
+        cands, skipped = catalog.fetch_candidates(
             self.client(), self.s.data_dir / "legacy_sources.json"
         )
         catalog.save(self.candidates_path, cands)
+        catalog.save_skipped(self.skipped_path, skipped)
+        for row in skipped:
+            self.out(f"skipped {row['index']} {row['reason']}: {row['count']}")
         self.out(f"candidates: {len(cands)}")
         return 0
 
@@ -225,7 +233,10 @@ class App:
         """Write the ranked report; publish it when a writer is given."""
         run, manifest = self._manifest(run_id)
         cands = {c.id: c for c in catalog.load(self.candidates_path)}
-        report = build_report(cands, run, manifest, self.uptime, self.clock.now())
+        skipped = catalog.load_skipped(self.skipped_path)
+        report = build_report(
+            cands, run, manifest, self.uptime, self.clock.now(), skipped=skipped
+        )
         write_json_atomic(out, report)
         count = len(cast("list[object]", report["sources"]))
         self.out(f"report: {count} sources -> {out}")

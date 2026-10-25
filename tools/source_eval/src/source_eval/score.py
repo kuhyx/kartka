@@ -10,6 +10,9 @@ from source_eval.challenge import WEBVIEW
 UPTIME_MIN = 0.95
 COVERAGE_MIN = 0.60
 SUBSET_MIN = 0.90
+#: A score at or above this keeps the source whatever its cut reasons say
+#: (they are still published, as warnings).
+KEEP_SCORE = 0.90
 _WIDTH_FULL, _P95_ZERO = 1400.0, 5000.0
 _ORIGIN_ORDER = {"native": 0, "suwayomi": 1, "plugin": 2}
 
@@ -21,8 +24,18 @@ def _get(record: Record, block: str, key: str) -> float | None:
     return float(cast("float", value)) if value is not None else None
 
 
+def _pages_ratio(record: Record) -> float | None:
+    block = cast("dict[str, object] | None", record.get("pagesLoad"))
+    value = block.get("ratio") if block else None
+    return float(cast("float", value)) if value is not None else None
+
+
 def score(record: Record) -> float:
-    """Weighted score in [0, 1]; an unmeasured metric contributes 0."""
+    """Weighted score in [0, 1]; an unmeasured metric contributes 0.
+
+    The weighted sum is multiplied by ``pagesLoad.ratio`` when that is known,
+    so a source whose page images never download scores 0.
+    """
     coverage = _get(record, "coverage", "ratio") or 0.0
     complete = _get(record, "chapterCompleteness", "medianRatio") or 0.0
     up = _get(record, "uptime", "ratio") or 0.0
@@ -33,7 +46,8 @@ def score(record: Record) -> float:
     total = (
         0.30 * coverage + 0.20 * complete + 0.20 * up + 0.15 * quality + 0.15 * speed
     )
-    return round(total, 3)
+    pages = _pages_ratio(record)
+    return round(total * pages if pages is not None else total, 3)
 
 
 def _blocked(record: Record) -> bool:
@@ -61,6 +75,8 @@ def cut_reasons(record: Record) -> list[str]:
 
 
 def _verdict(record: Record, reasons: list[str]) -> str:
+    if cast("float", record["score"]) >= KEEP_SCORE:
+        return "keep"
     if reasons:
         return "cut"
     accruing = cast("dict[str, object]", record["uptime"])["status"] != "final"
