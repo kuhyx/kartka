@@ -85,7 +85,7 @@ void main() {
 
   testWidgets('the More tile opens a review of the whole library', (t) async {
     final s = await _setup();
-    await _pump(t, s.feature, Builder(builder: s.feature.settingsTiles.single));
+    await _pump(t, s.feature, Builder(builder: s.feature.settingsTiles.first));
     await t.tap(find.text('Migrate to Atsumaru'));
     await t.pumpAndSettle();
     expect(find.byType(MigrationScreen), findsOneWidget);
