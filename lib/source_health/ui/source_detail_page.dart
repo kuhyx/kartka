@@ -156,6 +156,7 @@ class SourceDetailPage extends StatelessWidget {
                 scoreBreakdown(r, profile),
                 pagesLoad: r.pagesLoad,
                 profile: profile,
+                rankedLowBecause: rankTierReasons(r),
               ),
             ],
           ),

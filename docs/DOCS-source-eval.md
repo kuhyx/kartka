@@ -174,6 +174,9 @@ and FlareSolverr off (the local dev server and the live deploy both do).
   ≤; unknown width of the higher one never qualifies). Same-host pairs are
   compared too (native vs Suwayomi MangaDex): the lower one is redundant.
   Ties rank native > suwayomi > plugin.
+- **rank**: rank tier first (`tier.py`: needs-browser-engine flag + any
+  `blocking*` cut reason, 0..2), then score, origin, id. A KCEF or
+  challenged source ranks below every source without that, never cut for it.
 - **verdict**: an enabled cut switch whose reason applies → `cut`; else
   ≥ `keepScore` → `keep`; `pending` only while nothing was measured
   (coverage ratio `null`); else `cut`. DEFAULT enables no switch, so there the

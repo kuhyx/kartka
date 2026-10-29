@@ -2,7 +2,8 @@
 """Score, rank and verdicts (contract §5) under a scoring profile.
 
 Hard filter (unreachable, or >= 50 % non-webview challenges) first, then the
-profile's cut switches, then the score; a subset gets a graded penalty.
+profile's cut switches, then the score; a subset gets a graded penalty. The
+rank order is :mod:`source_eval.tier` (browser engine / challenge rank low).
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ from typing import cast
 
 from source_eval.challenge import WEBVIEW
 from source_eval.profile import DEFAULT, Profile
+from source_eval.tier import ordered
 
 UPTIME_MIN, COVERAGE_MIN = 0.95, 0.60
 #: Overlap with a better source from which the subset penalty applies,
@@ -29,7 +31,6 @@ HARD_CODES = frozenset({UNREACHABLE, HARD_BLOCKING})
 KEEP_SCORE = DEFAULT.keep_score
 #: Width earning full image quality; p95 latency at which speed reaches 0.
 WIDTH_FULL, P95_ZERO = 1067.0, 5000.0
-_ORIGIN_ORDER = {"native": 0, "suwayomi": 1, "plugin": 2}
 _THOUSANDTH = Decimal("0.001")
 
 Record = dict[str, object]
@@ -184,17 +185,6 @@ def _wider_or_equal(better: Record, worse: Record) -> bool:
     return w_better is not None and w_better >= w_worse
 
 
-def _ordered(records: list[Record]) -> list[Record]:
-    return sorted(
-        records,
-        key=lambda r: (
-            -cast("float", r["score"]),
-            _ORIGIN_ORDER.get(str(r["origin"]), 9),
-            str(r["id"]),
-        ),
-    )
-
-
 def _subset_of(
     ordered: list[Record], position: int, found: dict[str, set[str]]
 ) -> dict[str, object] | None:
@@ -235,7 +225,7 @@ def rank(
         record["cutReasons"] = cut_reasons(record)
         record["score"] = score(record, profile)
         record["verdict"] = verdict(record, profile)
-    base = _ordered(records)
+    base = ordered(records)
     subsets = [_subset_of(base, i, found) for i in range(len(base))]
     for record, subset in zip(base, subsets, strict=True):
         if subset is not None:
@@ -243,8 +233,8 @@ def rank(
             record["cutReasons"] = [*cast("list[str]", record["cutReasons"]), "subset"]
         record["score"] = score(record, profile)
         record["defaultScore"] = score(record, DEFAULT)
-    ordered = _ordered(records)
-    for position, record in enumerate(ordered, start=1):
+    final = ordered(records)
+    for position, record in enumerate(final, start=1):
         record["rank"] = position
         record["verdict"] = verdict(record, profile)
-    return ordered
+    return final

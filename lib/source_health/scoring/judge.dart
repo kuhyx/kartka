@@ -55,8 +55,9 @@ Set<HealthReason> applicableCuts(SourceHealthRecord r) {
 
 const _originOrder = {'native': 0, 'suwayomi': 1, 'plugin': 2};
 
-/// [records] re-scored under [profile], ranked (1 = best: score, then origin
-/// native < suwayomi < plugin < other, then id) and judged, in rank order.
+/// [records] re-scored under [profile], ranked (1 = best: [rankTier], then
+/// score, then origin native < suwayomi < plugin < other, then id) and
+/// judged, in rank order.
 /// Each also carries its DEFAULT-profile `defaultScore`.
 List<SourceHealthRecord> rescore(
   List<SourceHealthRecord> records,
@@ -64,6 +65,8 @@ List<SourceHealthRecord> rescore(
 ) {
   final scored = [for (final r in records) (r, scoreOf(r, profile))]
     ..sort((a, b) {
+      final byTier = rankTier(a.$1).compareTo(rankTier(b.$1));
+      if (byTier != 0) return byTier;
       final byScore = b.$2.compareTo(a.$2);
       if (byScore != 0) return byScore;
       final byOrigin = _origin(a.$1).compareTo(_origin(b.$1));
