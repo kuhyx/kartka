@@ -4,7 +4,7 @@ library;
 
 import 'dart:async';
 
-import 'package:kartka/sync/merge/merge_rules.dart';
+import 'package:kartka/sync/json_equal.dart';
 import 'package:kartka/sync/rtdb_reader.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 
@@ -20,7 +20,8 @@ class PollingRtdbReader implements RtdbReader {
   final ReaderOpener open;
 
   /// Poll period for [watch]. Source health changes weekly, so a minute is
-  /// generous; nothing polls while no one listens.
+  /// generous; nothing polls while no one listens. An unchanged tree is
+  /// detected by [jsonEquals] (no re-encode) and not re-emitted.
   final Duration interval;
 
   @override
@@ -33,14 +34,17 @@ class PollingRtdbReader implements RtdbReader {
   @override
   Stream<Object?> watch(String path) {
     Timer? timer;
-    String? last;
+    // `(value,)` once something was emitted; a record, so null data is
+    // distinguishable from "nothing yet".
+    (Object?,)? last;
     late final StreamController<Object?> controller;
     Future<void> tick() async {
       try {
         final value = await get(path);
-        final text = canon(value);
-        if (text == last || controller.isClosed) return;
-        last = text;
+        final seen = last;
+        if (controller.isClosed) return;
+        if (seen != null && jsonEquals(seen.$1, value)) return;
+        last = (value,);
         controller.add(value);
       } on Exception catch (e, s) {
         // Surface the failure, keep polling: the next tick may succeed.

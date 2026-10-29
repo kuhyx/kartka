@@ -2,8 +2,8 @@
 /// which nodes still need pushing or replaying, and change-detection
 /// bookkeeping.
 ///
-/// Write-behind and bucketed, because Android's KeyValueStore rewrites its
-/// whole file on every `set`: nodes live in one entry per `<ns>/<k1>`
+/// Write-behind and bucketed, because every Android KeyValueStore `set`
+/// rewrites a whole shard file: nodes live in one entry per `<ns>/<k1>`
 /// bucket (all read marks of a manga together), mutations only touch memory,
 /// and [SyncShadow.save] writes each changed bucket once per engine
 /// operation. A 25k-mark import is then ~800 bucket writes, not 25k.
@@ -14,6 +14,7 @@ import 'dart:convert';
 
 import 'package:kartka/platform/key_value_store.dart';
 import 'package:kartka/sync/merge/merge_rules.dart';
+import 'package:kartka/sync/off_ui_json.dart';
 
 const _bucketPrefix = 'sync.b.';
 const _dirtyKey = 'sync.dirty';
@@ -30,21 +31,28 @@ class SyncShadow {
   /// Loads the state persisted in [store] (empty on first run).
   static Future<SyncShadow> load(KeyValueStore store) async {
     final s = SyncShadow._(store);
-    for (final raw in (await store.entries(prefix: _bucketPrefix)).values) {
-      for (final e in (_decodeMap(raw) ?? const {}).entries) {
+    // Every bucket at once: a mirror of the whole library, so big ones
+    // are decoded off the UI isolate.
+    final raw = (await store.entries(prefix: _bucketPrefix)).values.toList();
+    for (final bucket in await decodeEachOffUi(raw)) {
+      if (bucket is! Map<String, Object?>) continue;
+      for (final e in bucket.entries) {
         if (e.value case final Map<String, Object?> node) s._set(e.key, node);
       }
     }
     s._dirty.addAll(_decodeList(await store.get(_dirtyKey)));
     s._unapplied.addAll(_decodeList(await store.get(_unappliedKey)));
+    for (final key in [_peersKey, _lastSyncKey, _hlcKey]) {
+      if (await store.get(key) case final value?) s._persisted[key] = value;
+    }
     s
       .._rev = int.tryParse(await store.get(_revKey) ?? '') ?? 0
       ..peers = {
-        for (final e in (_decodeMap(await store.get(_peersKey)) ?? {}).entries)
+        for (final e in (_decodeMap(s._persisted[_peersKey]) ?? {}).entries)
           e.key: '${e.value}',
       }
-      ..lastSync = DateTime.tryParse(await store.get(_lastSyncKey) ?? '')
-      ..lastHlc = await store.get(_hlcKey);
+      ..lastSync = DateTime.tryParse(s._persisted[_lastSyncKey] ?? '')
+      ..lastHlc = s._persisted[_hlcKey];
     return s;
   }
 
@@ -57,6 +65,9 @@ class SyncShadow {
   bool _unappliedChanged = false;
   int _rev = 0;
   Timer? _soon;
+  // The metadata strings as last read or written, so unchanged ones skip.
+  final Map<String, String> _persisted = {};
+  bool _clockDue = false;
 
   /// Revisions last seen per peer device (own device excluded).
   Map<String, String> peers = {};
@@ -118,28 +129,49 @@ class SyncShadow {
     return _rev;
   }
 
-  /// Writes every changed bucket and set once, plus the metadata.
-  Future<void> save() async {
+  /// Writes every changed bucket, set and metadata value once; an
+  /// unchanged one is not rewritten, so a no-op poll writes nothing.
+  ///
+  /// [lastSync] changes on every poll, so it is only written alongside
+  /// another change or when [withClock] (the pause flush) asks for it.
+  Future<void> save({bool withClock = false}) async {
     _soon?.cancel();
     _soon = null;
     final buckets = [..._changedBuckets];
     _changedBuckets.clear();
+    var wrote = buckets.isNotEmpty;
     for (final b in buckets) {
       await _store.set('$_bucketPrefix$b', canon(_buckets[b]));
     }
     if (_dirtyChanged) {
       _dirtyChanged = false;
+      wrote = true;
       await _store.set(_dirtyKey, jsonEncode([..._dirty]));
     }
     if (_unappliedChanged) {
       _unappliedChanged = false;
+      wrote = true;
       await _store.set(_unappliedKey, jsonEncode([..._unapplied]));
     }
-    await _store.set(_peersKey, jsonEncode(peers));
+    wrote |= await _put(_peersKey, jsonEncode(peers));
+    wrote |= await _put(_hlcKey, lastHlc);
+    // Due from a save that changed something until a lastSync is written
+    // (the engine sets it only after that save, at the end of a sync).
+    _clockDue |= wrote;
     final at = lastSync;
-    if (at != null) await _store.set(_lastSyncKey, at.toIso8601String());
-    final hlc = lastHlc;
-    if (hlc != null) await _store.set(_hlcKey, hlc);
+    if ((_clockDue || withClock) && at != null) {
+      await _put(_lastSyncKey, at.toIso8601String());
+      _clockDue = false;
+    }
+  }
+
+  /// Writes [value] under [key] unless it is null or what was last
+  /// persisted there; true when it wrote.
+  Future<bool> _put(String key, String? value) async {
+    if (value == null || _persisted[key] == value) return false;
+    await _store.set(key, value);
+    _persisted[key] = value;
+    return true;
   }
 
   String _set(String path, Node node) {

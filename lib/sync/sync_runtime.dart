@@ -17,6 +17,7 @@ import 'package:kartka/sync/sync_config.dart';
 import 'package:kartka/sync/sync_engine.dart';
 import 'package:kartka/sync/sync_scheduler.dart';
 import 'package:kartka/sync/sync_shadow.dart';
+import 'package:kartka/sync/sync_status.dart';
 
 /// Opens the production transport: a signed-in crdt_sync client, or null.
 ///
@@ -93,6 +94,8 @@ class SyncRuntime {
     final e = await engine;
     e.reset();
     await e.syncNow();
+    // A signed-out device was backing off; poll at the normal pace again.
+    scheduler?.kick();
   }
 
   Future<SyncEngine> _start() async {
@@ -103,7 +106,11 @@ class SyncRuntime {
       diagnostics: diagnostics,
     );
     if (startScheduler) {
-      scheduler = SyncScheduler(e.poll, onPause: e.flush)..attach();
+      scheduler = SyncScheduler(
+        e.poll,
+        onPause: e.flush,
+        ok: () => e.status.phase == SyncPhase.idle,
+      )..attach();
     }
     _started.complete(e);
     return e;

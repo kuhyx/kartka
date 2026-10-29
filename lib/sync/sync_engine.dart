@@ -95,11 +95,13 @@ class SyncEngine {
     _deferred ??= Timer(deferFor, () => unawaited(flush()));
   });
 
-  /// Pushes anything [writeDeferred] is holding back.
+  /// Pushes anything [writeDeferred] is holding back, and persists the
+  /// in-memory last-sync time (polls that find nothing do not write it).
   Future<void> flush() => _queue.run(() async {
     _deferred?.cancel();
     _deferred = null;
     await _push(await _connect());
+    await shadow.save(withClock: true);
   });
 
   /// Cheap change check: revs, then the feed, then only changed nodes.

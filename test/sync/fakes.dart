@@ -1,3 +1,4 @@
+import 'package:kartka/platform/key_value_store.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/sync_engine.dart';
@@ -17,7 +18,7 @@ Future<SyncEngine> engineFor(
   String deviceId,
   InMemoryRtdb db, {
   TestClock? clock,
-  MemoryKeyValueStore? kv,
+  KeyValueStore? kv,
   bool signedIn = true,
   Duration deferFor = const Duration(seconds: 3),
 }) async {
