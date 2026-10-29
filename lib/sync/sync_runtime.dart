@@ -69,6 +69,9 @@ class SyncRuntime {
   final Future<String> Function() _deviceId;
   RtdbTransport? _transport;
 
+  /// This install's device id (`crdt.nodeId`).
+  Future<String> deviceId() => _deviceId();
+
   /// Foreground polling, once started.
   SyncScheduler? scheduler;
 

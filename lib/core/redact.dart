@@ -6,8 +6,11 @@ library;
 /// The tail runs to whitespace, a quote or an angle bracket only: `,` and
 /// `)` are legal inside a query, so stopping there could leave a secret
 /// half shown. Over-redacting a trailing `)` is the cheaper mistake.
+///
+/// A tail that is already `<redacted>` is left alone, so redacting twice
+/// (an entry read back and re-serialised) changes nothing.
 final _urlTail = RegExp(
-  r'''(https?://[^\s?#"'<>]*)([?#])[^\s"'<>]*''',
+  r'''(https?://[^\s?#"'<>]*)([?#])(?!<redacted>)[^\s"'<>]*''',
   caseSensitive: false,
 );
 
