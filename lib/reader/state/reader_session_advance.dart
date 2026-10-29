@@ -142,6 +142,8 @@ extension _Advance on ReaderSession {
         );
       }
       final list = await source.chapters(mangaUrl).timeout(deps.advanceTimeout);
+      // The reader may have been left while the list was fetched.
+      if (_disposed) return;
       if (neighboursOf(list, url).current == null) {
         throw const ReaderLoadException(
           "This chapter is not in the source's chapter list.",

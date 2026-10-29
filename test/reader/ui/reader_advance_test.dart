@@ -93,7 +93,8 @@ void main() {
     expect(find.textContaining('https://src.test/c/3?<redacted>'), findsOne);
     expect(find.textContaining('SECRET'), findsNothing);
     final logged = await tester.runAsync(h.diagnostics.entries);
-    expect(logged!.single.chapterUrl, '/c/3');
+    // Once from the load on open, once from the retry on reaching the end.
+    expect(logged!.map((e) => e.chapterUrl), ['/c/3', '/c/3']);
     source.fail = false;
     await tester.tap(find.text('Retry'));
     await h.settle(tester);

@@ -15,7 +15,8 @@ const List<ChapterInfo> _four = [
 ];
 
 /// Chapter 2 has 5 pages, 3 has 3, 4 has 2. The chapter list fails while
-/// [listFailures] is above zero, or comes back as [list].
+/// [listFailures] is above zero, then waits on [gate] if set, or comes back
+/// as [list]; chapter 3's pages fail while [pageFailures] is above zero.
 class _Source extends FakeSource {
   new({this.listFailures = 0, this.list = _four})
     : super(
@@ -27,6 +28,7 @@ class _Source extends FakeSource {
       );
 
   int listFailures;
+  int pageFailures = 0;
   List<ChapterInfo> list;
   Completer<List<ChapterInfo>>? gate;
   int listCalls = 0;
@@ -34,13 +36,22 @@ class _Source extends FakeSource {
   @override
   Future<List<ChapterInfo>> chapters(String mangaUrl) async {
     listCalls++;
-    final wait = gate;
-    if (wait != null) return await wait.future;
     if (listFailures > 0) {
       listFailures--;
       throw StateError('GET https://src.test/m/1?token=SECRET -> 503');
     }
-    return list;
+    final wait = gate;
+    return wait == null ? list : await wait.future;
+  }
+
+  @override
+  Future<List<PageRef>> pages(String chapterUrl) async {
+    if (chapterUrl == '/c/3' && pageFailures > 0) {
+      pageFailures--;
+      pageCalls.add(chapterUrl);
+      throw StateError('429 Too Many Requests');
+    }
+    return await super.pages(chapterUrl);
   }
 }
 
@@ -155,5 +166,36 @@ void main() {
     expect(s.nextChapter, isNull);
     expect(s.nextError, isNull);
     expect(s.nextLoading, isFalse);
+  });
+
+  test('a reader left while the list is fetched again drops it', () async {
+    final source = _Source(listFailures: 1)..gate = Completer();
+    final s = await opened(source);
+    await idle();
+    expect(s.nextLoading, isTrue);
+    s.dispose();
+    source.gate!.complete(_four);
+    await idle();
+    await idle();
+    expect(source.pageCalls, ['/c/2']);
+    expect(s.strip.pageCounts, [5]);
+    expect(await f.diagnostics.entries(), isEmpty);
+  });
+
+  test('reaching the end retries a next chapter that failed early', () async {
+    final source = _Source()..pageFailures = 1;
+    final s = await opened(source);
+    await idle();
+    expect(s.nextError, contains('429'));
+    s.onItem(3);
+    await idle();
+    expect(source.pageCalls, ['/c/2', '/c/3'], reason: 'not before the end');
+    s.onItem(6);
+    expect(s.nextError, isNull);
+    expect(s.nextLoading, isTrue);
+    await idle();
+    expect(s.strip.pageCounts, [5, 3, 2]);
+    expect(s.segment, 1);
+    expect(s.page, 0);
   });
 }

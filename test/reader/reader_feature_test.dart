@@ -164,8 +164,9 @@ void main() {
     final logged = await tester.runAsync(
       () => DiagnosticsLog.of(diagnostics).entries(),
     );
-    expect(logged!.single.kind, 'reader.advance');
-    expect(logged.single.chapterUrl, '/c/3');
+    // Once from the load on open, once from the retry on reaching the end.
+    expect(logged!.map((e) => e.kind).toSet(), {'reader.advance'});
+    expect(logged.map((e) => e.chapterUrl), ['/c/3', '/c/3']);
   });
 
   testWidgets('Escape with nothing to pop goes to the manga page', (

@@ -184,7 +184,11 @@ class ReaderSession extends ChangeNotifier {
   void onItem(int item) {
     if (segments.isEmpty) return;
     final slot = strip.slotAt(item);
-    _onTrailing = !slot.isPage && !slot.isPreviousChapter;
+    final trailing = !slot.isPage && !slot.isPreviousChapter;
+    // The next chapter loads a whole chapter early; arriving at the end
+    // retries a failure from then (a blip) instead of stopping on it.
+    if (trailing && !_onTrailing) nextError = null;
+    _onTrailing = trailing;
     if (slot.isPreviousChapter) {
       segment = 0;
       page = 0;
