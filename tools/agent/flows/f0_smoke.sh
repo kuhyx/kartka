@@ -1,5 +1,5 @@
 #!/bin/bash
-# f0 smoke: the agent instance boots, shows the four-tab shell, a tap changes
+# f0 smoke: the agent instance boots, shows the five-tab shell, a tap changes
 # the screen, and a screenshot is not blank. Exit 0 = pass; otherwise the
 # failing step and a screenshot path are printed.
 #   tools/agent/flows/f0_smoke.sh
@@ -10,12 +10,12 @@ FLOW=f0
 # shellcheck source-path=SCRIPTDIR source=../lib.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
 readonly AGENT="$AGENT_DIR/kartka_agent.sh"
-readonly TABS=(Library Browse Sources More)
+readonly TABS=(Library Updates Browse Sources More)
 
 step "start the isolated agent instance"
 check "$AGENT" start
 
-step "wait for the Library/Browse/Sources/More shell"
+step "wait for the Library/Updates/Browse/Sources/More shell"
 pop_to_tabs
 for tab in "${TABS[@]}"; do
   check drive wait "$tab" --timeout 20 >/dev/null
@@ -24,7 +24,7 @@ done
 step "tree lists every tab label"
 tree="$(check drive tree)"
 for tab in "${TABS[@]}"; do
-  grep -q "\"${tab} | Tab [0-9] of 4\"" <<<"$tree" || fail "tab \"$tab\" missing from tree"
+  grep -q "\"${tab} | Tab [0-9] of 5\"" <<<"$tree" || fail "tab \"$tab\" missing from tree"
 done
 
 step "tap Library: Library becomes the current tab"

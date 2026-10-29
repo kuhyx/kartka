@@ -68,8 +68,8 @@ check() {
 pop_to_tabs() {
   local i
   for ((i = 0; i < 4; i++)); do
-    drive wait "Tab 4 of 4" --contains --timeout 1 >/dev/null 2>&1 && return 0
+    drive wait "Tab 5 of 5" --contains --timeout 1 >/dev/null 2>&1 && return 0
     check drive tap Back >/dev/null
   done
-  check drive wait "Tab 4 of 4" --contains --timeout 2 >/dev/null
+  check drive wait "Tab 5 of 5" --contains --timeout 2 >/dev/null
 }
