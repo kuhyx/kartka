@@ -49,6 +49,7 @@ class ErrorUploader {
     required this.kv,
     required this.transport,
     required this.deviceId,
+    this._now = DateTime.now,
   });
 
   /// RTDB namespace under `/kartka`.
@@ -56,6 +57,11 @@ class ErrorUploader {
 
   /// Where the ids already pushed are kept.
   static const sentKey = 'errors.sent';
+
+  /// Where the device's upload cutoff is kept: entries logged before it
+  /// (the backlog of up to 2000 the log held when the uploader first ran
+  /// here) are never uploaded. Set once, by the first [start] or flush.
+  static const sinceKey = 'errors.since';
 
   /// Most ids remembered (above the log's own 2000-entry cap).
   static const maxSent = 2500;
@@ -87,6 +93,8 @@ class ErrorUploader {
   /// This install's device id.
   final Future<String> Function() deviceId;
 
+  final DateTime Function() _now;
+  Future<DateTime>? _since;
   StreamSubscription<DiagnosticEntry>? _sub;
   Timer? _timer;
   Duration _backoff = minBackoff;
@@ -100,10 +108,24 @@ class ErrorUploader {
 
   static bool _reported(DiagnosticEntry e) => !e.kind.startsWith('perf.');
 
-  /// Starts flushing [debounce] after each reported append.
-  void start() => _sub ??= log.appended.listen((e) {
-    if (_reported(e)) schedule();
-  });
+  /// Fixes the cutoff (now, unless one is stored) and starts flushing
+  /// [debounce] after each reported append.
+  void start() {
+    _cutoff().ignore(); // A failure resurfaces in the next flush.
+    _sub ??= log.appended.listen((e) {
+      if (_reported(e)) schedule();
+    });
+  }
+
+  /// The stored cutoff, else the current time, stored. The time is taken
+  /// at the call, so entries logged during the start delay still count.
+  Future<DateTime> _cutoff() => _since ??= () async {
+    final at = _now().toUtc();
+    final stored = DateTime.tryParse(await kv.get(sinceKey) ?? '');
+    if (stored != null) return stored;
+    await kv.set(sinceKey, at.toIso8601String());
+    return at;
+  }();
 
   /// Flushes after [delay] (default [debounce]), replacing a pending one.
   void schedule([Duration delay = debounce]) {
@@ -124,10 +146,12 @@ class ErrorUploader {
 
   Future<bool> _flushOnce() async {
     try {
+      final since = await _cutoff();
       final sent = await _loadSent();
       final pending = [
         for (final e in await log.entries())
-          if (_reported(e) && !sent.contains(idOf(e))) e,
+          if (_reported(e) && !e.at.isBefore(since) && !sent.contains(idOf(e)))
+            e,
       ];
       if (pending.isEmpty) return true;
       final t = await transport();

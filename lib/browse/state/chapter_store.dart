@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:kartka/browse/state/chapter_list_decoder.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
@@ -27,6 +28,7 @@ class ChapterStore {
   final KeyValueStore? _kv;
   final ChaptersAdded? _onAdded;
   final Map<MangaKey, List<ChapterInfo>> _cache = {};
+  final _decoder = ChapterListDecoder();
   final _changes = StreamController<MangaKey>.broadcast(sync: true);
 
   /// Cached chapters of [key] (source order), or null when never loaded.
@@ -74,15 +76,11 @@ class ChapterStore {
   Future<List<ChapterInfo>?> _restore(MangaKey key) async {
     final raw = await _kv?.get(_kvKey(key));
     if (raw == null || _cache.containsKey(key)) return _cache[key];
-    final List<ChapterInfo> chapters;
-    try {
-      chapters = List.unmodifiable([
-        for (final c in jsonDecode(raw) as List<Object?>)
-          ChapterInfo.fromJson(c! as Map<String, Object?>),
-      ]);
-    } on Object {
-      return null; // Corrupt entry: behave as uncached; next load rewrites.
-    }
+    // Batched with every other restore of this turn, off the UI isolate
+    // when large (the cold-start burst of unread badges).
+    final chapters = await _decoder.decode(raw);
+    // A fetch may have landed meanwhile; it is newer than the stored copy.
+    if (chapters == null || _cache.containsKey(key)) return _cache[key];
     _cache[key] = chapters;
     _changes.add(key);
     return chapters;

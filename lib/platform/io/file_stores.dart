@@ -1,9 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:kartka/platform/blob_store.dart';
 import 'package:kartka/platform/coalescing_saver.dart';
+import 'package:kartka/platform/io/kv_shard_files.dart';
 import 'package:kartka/platform/key_value_store.dart';
 import 'package:path/path.dart' as p;
 
@@ -54,70 +55,96 @@ class FileBlobStore implements BlobStore {
   }
 }
 
-/// [KeyValueStore] as one JSON object in [file] (Android).
+/// [KeyValueStore] as [kvShardCount] JSON shard files in [dir] (Android).
 ///
-/// A save rewrites the whole file (write-then-rename, so a crash leaves the
-/// previous version, never half a file). The file reaches several MB after
-/// a backup import, so saves are coalesced: changes within one window
-/// (250 ms) cost one write, and the app shell calls [flush] when the app
+/// Every key is held in memory, read once at startup. A save rewrites only
+/// the shards that changed (tmp + rename, so a crash leaves the previous
+/// version of each, never half a file), and both the decode and the
+/// encode + file I/O run in a background isolate, off the UI thread. Saves
+/// are coalesced: changes within one window (250 ms) cost one write, an
+/// unchanged value costs none, and the app shell calls [flush] when the app
 /// leaves the foreground (`flushOnBackground` in create_platform_io.dart).
+///
+/// [legacy] is the old single kv.json; its keys are copied into the shards
+/// once, and it is then kept as `kv.json.migrated` (kv_shard_files.dart).
 class FileKeyValueStore implements KeyValueStore {
-  /// Persists to [file], at most once per [window] while changes keep coming.
-  new(this.file, {Duration window = const Duration(milliseconds: 250)}) {
+  /// Persists to [dir], at most once per [window] while changes keep coming.
+  new(
+    this.dir, {
+    this.legacy,
+    Duration window = const Duration(milliseconds: 250),
+  }) {
     _saver = CoalescingSaver(_save, window: window);
   }
 
-  /// The JSON file.
-  final File file;
+  /// The shard directory.
+  final Directory dir;
+
+  /// The pre-shard kv.json to migrate from, if any.
+  final File? legacy;
 
   late final CoalescingSaver _saver;
-  // One shared read: concurrent first calls must not each load the file and
-  // replace one another's map (a set into the loser would be lost).
-  late final Future<Map<String, String>> _cache = _read();
+  final Set<int> _dirty = {};
+  // One shared read: concurrent first calls must not each load the files
+  // and replace one another's maps (a set into the loser would be lost).
+  late final Future<List<Map<String, String>>> _shards = _readOff(
+    dir.path,
+    legacy?.path,
+  );
 
-  /// Writes any pending change to [file] now.
+  /// Whether a change has not been written yet.
+  bool get pending => _saver.pending;
+
+  /// Writes any pending change to [dir] now.
   Future<void> flush() => _saver.flush();
 
-  Future<Map<String, String>> _load() => _cache;
-
-  Future<Map<String, String>> _read() async {
-    if (!file.existsSync()) return {};
+  Future<void> _save() async {
+    final shards = await _shards;
+    // Taken (and copied) now: a set during the write marks it dirty again.
+    final batch = {for (final i in _dirty) i: Map.of(shards[i])};
+    _dirty.clear();
     try {
-      return (jsonDecode(await file.readAsString()) as Map<String, Object?>)
-          .cast<String, String>();
-    } on FormatException {
-      // A corrupt file is treated as empty rather than bricking startup.
-      return {};
+      await _writeOff(dir.path, batch);
+    } on Object {
+      _dirty.addAll(batch.keys);
+      rethrow;
     }
   }
 
-  Future<void> _save() async {
-    await file.parent.create(recursive: true);
-    final tmp = File('${file.path}.tmp');
-    // Encoded at write time, so it holds every change made so far.
-    await tmp.writeAsString(jsonEncode(await _cache), flush: true);
-    await tmp.rename(file.path);
-  }
-
-  @override
-  Future<String?> get(String key) async => (await _load())[key];
-
-  @override
-  Future<void> set(String key, String value) async {
-    final values = await _load();
-    values[key] = value;
+  void _changed(int shard) {
+    _dirty.add(shard);
     _saver.schedule();
   }
 
   @override
+  Future<String?> get(String key) async => (await _shards)[kvShardOf(key)][key];
+
+  @override
+  Future<void> set(String key, String value) async {
+    final shard = kvShardOf(key);
+    final values = (await _shards)[shard];
+    if (values[key] == value) return;
+    values[key] = value;
+    _changed(shard);
+  }
+
+  @override
   Future<void> remove(String key) async {
-    final values = await _load();
-    if (values.remove(key) != null) _saver.schedule();
+    final shard = kvShardOf(key);
+    if ((await _shards)[shard].remove(key) != null) _changed(shard);
   }
 
   @override
   Future<Map<String, String>> entries({String prefix = ''}) async => {
-    for (final e in (await _load()).entries)
-      if (e.key.startsWith(prefix)) e.key: e.value,
+    for (final shard in await _shards)
+      for (final e in shard.entries)
+        if (e.key.startsWith(prefix)) e.key: e.value,
   };
 }
+
+// Top-level, so each isolate closure captures only its arguments.
+Future<List<Map<String, String>>> _readOff(String dir, String? legacy) =>
+    Isolate.run(() => readKvDir(dir, legacy));
+
+Future<void> _writeOff(String dir, Map<int, Map<String, String>> batch) =>
+    Isolate.run(() => writeKvShards(dir, batch));

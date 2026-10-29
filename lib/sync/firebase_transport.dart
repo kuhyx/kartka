@@ -7,11 +7,10 @@
 /// with the token from the same client's auth.
 library;
 
-import 'dart:convert';
-
 import 'package:crdt_sync/crdt_sync.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/platform/http_client.dart';
+import 'package:kartka/sync/off_ui_json.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 
 /// The RTDB root every Kartka node lives under.
@@ -87,7 +86,8 @@ class FirebaseTransport implements RtdbTransport {
       // empty database, or the engine would happily re-push everything.
       throw FirebaseSyncError('reading $path failed: HTTP ${res.statusCode}');
     }
-    return jsonDecode(res.body);
+    // Full pulls and the source-health tree can be MBs: decoded off-UI.
+    return await decodeJsonOffUi(res.body);
   }
 
   @override

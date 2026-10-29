@@ -23,7 +23,8 @@ void main() {
     final up = startErrorUploads(
       runtime,
       log: log,
-      kv: MemoryKeyValueStore(),
+      // An install whose cutoff predates the earlier launch's entry.
+      kv: MemoryKeyValueStore({ErrorUploader.sinceKey: '2000-01-01T00:00Z'}),
       startDelay: Duration.zero,
     );
     addTearDown(up.dispose);

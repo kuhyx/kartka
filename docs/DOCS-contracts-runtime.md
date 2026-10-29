@@ -38,7 +38,8 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   `updatedAt` = max field Hlc millis. `progress/` and `trackers/` stay
   max-merge (a null chapterNumber sorts lowest). Change detection: tiny
   `revs/<deviceId>: "<counter>"`, polled every 5 s **only while the app is in
-  the foreground**. Subtrees are fetched only when it changes. RTDB writes use
+  the foreground** (failing polls back off 5→60 s); a no-op poll writes no
+  storage. Subtrees are fetched only when it changes. RTDB writes use
   crdt_sync's own client (RTDB allows CORS); reads go through `KartkaHttp`, so
   on web they pass the wrapper's /proxy with `?auth=` forwarded unchanged and
   never logged (§15).
@@ -155,11 +156,12 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   beside `Tracker`. The track sheet calls `showLogin(context)` when
   `tracker is CredentialsLogin`, else `tracker.login()`. MangaUpdates shows
   its username + password sheet; AniList and MAL stay OAuth (§9 unchanged).
-- **Android kv.json writes are coalesced.** `FileKeyValueStore` writes at
-  most once per 250 ms window while sets keep coming (bounded latency, not
-  a resetting debounce; `CoalescingSaver`, lib/platform/). `createPlatform()`
-  wires `flushOnBackground(kv.flush)`, which flushes on every non-resumed
-  `AppLifecycleState`, so a clean pause or detach loses nothing.
+- **Android kv is 64 shard files, writes coalesced, off the UI isolate.**
+  `<support>/kv/shard-NN.json` (FNV-1a, fixed forever): only changed shards
+  are rewritten, at most once per 250 ms, unchanged values never, all I/O in
+  `Isolate.run`. First launch copies `kv.json` in, writes `kv/.migrated`,
+  keeps it as `kv.json.migrated` (`.corrupt` if unreadable).
+  `flushOnBackground` flushes on every non-resumed lifecycle state.
 - **The wrapper never logs a /proxy target.** A query can carry a
   credential (RTDB `?auth=<token>`, forwarded byte-identical). A mid-body
   upstream cut is logged by error type only and no longer kills the

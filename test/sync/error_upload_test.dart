@@ -39,7 +39,8 @@ void main() {
 
   setUp(() {
     log = DiagnosticsLog(MemoryBlobStore());
-    kv = MemoryKeyValueStore();
+    // A device whose cutoff predates every entry below (see 'cutoff').
+    kv = MemoryKeyValueStore({ErrorUploader.sinceKey: '2000-01-01T00:00:00Z'});
     db = InMemoryRtdb();
     transport = db;
     opens = 0;
@@ -185,5 +186,59 @@ void main() {
     expect(sent, contains(ErrorUploader.idOf(_entry('new'))));
     await kv.set(ErrorUploader.sentKey, 'not json');
     expect(await make().flush(), isTrue);
+  });
+
+  group('cutoff', () {
+    ErrorUploader at(DateTime now) => ErrorUploader(
+      log: log,
+      kv: kv,
+      transport: () async => db,
+      deviceId: () async => 'dev.a',
+      now: () => now,
+    );
+
+    setUp(() => kv = MemoryKeyValueStore());
+
+    test('a first run uploads nothing logged before it', () async {
+      await log.append(_entry('old backlog'));
+      await log.append(_entry('just before', s: 9));
+      final up = at(DateTime.utc(2026, 10, 29, 12, 0, 10))..start();
+      addTearDown(up.dispose);
+      expect(await up.flush(), isTrue);
+      expect(uploaded(), isEmpty);
+      expect(db.writes, 0);
+      expect(await kv.get(ErrorUploader.sinceKey), '2026-10-29T12:00:10.000Z');
+      await log.append(_entry('at the cutoff', s: 10));
+      await log.append(_entry('after', s: 30));
+      expect(await up.flush(), isTrue);
+      final errors = uploaded().values.map((n) => (n! as Map)['error']);
+      expect(errors.toSet(), {'at the cutoff', 'after'});
+    });
+
+    test('the cutoff is kept once set; a restart does not move it', () async {
+      await at(DateTime.utc(2026, 10, 29, 12)).flush();
+      await log.append(_entry('between launches', s: 5));
+      final later = at(DateTime.utc(2026, 10, 30))..start();
+      addTearDown(later.dispose);
+      expect(await later.flush(), isTrue);
+      expect(uploaded(), hasLength(1));
+      expect(await kv.get(ErrorUploader.sinceKey), '2026-10-29T12:00:00.000Z');
+    });
+
+    test('it is captured at start, not at the delayed first flush', () async {
+      var now = DateTime.utc(2026, 10, 29, 12);
+      final up = ErrorUploader(
+        log: log,
+        kv: kv,
+        transport: () async => db,
+        deviceId: () async => 'dev.a',
+        now: () => now,
+      )..start();
+      addTearDown(up.dispose);
+      await log.append(_entry('during the start delay', s: 3));
+      now = DateTime.utc(2026, 10, 29, 12, 0, 20);
+      expect(await up.flush(), isTrue);
+      expect(uploaded(), hasLength(1));
+    });
   });
 }

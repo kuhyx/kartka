@@ -17,4 +17,18 @@ void main() {
     expect(await again.get('lib.y'), 'ż');
     expect(await again.entries(), hasLength(2));
   });
+
+  test('entries(prefix) reads only the prefix range, edges included', () async {
+    final kv = await IdbKeyValueStore.open(newIdbFactoryMemory());
+    for (final k in ['li', 'lia', 'lib.', 'lib.x', 'lib.\u{1F600}', 'lib/']) {
+      await kv.set(k, k);
+    }
+    expect((await kv.entries(prefix: 'lib.')).keys.toSet(), {
+      'lib.',
+      'lib.x',
+      'lib.\u{1F600}',
+    });
+    expect(await kv.entries(prefix: 'zz'), isEmpty);
+    expect(await kv.entries(), hasLength(6));
+  });
 }

@@ -13,6 +13,7 @@ import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_ordering.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
+import 'package:kartka/browse/state/chapter_list_decoder.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/browse/state/chapter_sort_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
