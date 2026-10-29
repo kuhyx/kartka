@@ -86,10 +86,11 @@ void main() {
     expect(bodies(http), isEmpty);
   });
 
-  test('exceptions describe themselves', () {
-    expect(
-      SuwayomiNotOnServerException('suwayomi:1', '/manga/x').toString(),
-      'SuwayomiException: /manga/x is not on the server for suwayomi:1',
-    );
+  test('exceptions describe themselves, without the manga url', () {
+    final e = SuwayomiNotOnServerException('suwayomi:1', '/manga/x');
+    // Diagnostics carry the source id only (no URLs): the message is logged
+    // verbatim by updates.check, so the url stays on the field.
+    expect(e.toString(), 'SuwayomiException: not on the server for suwayomi:1');
+    expect(e.url, '/manga/x');
   });
 }
