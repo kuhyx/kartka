@@ -24,6 +24,10 @@ class ChapterStore {
   /// Cached chapters of [key] (source order), or null when never loaded.
   List<ChapterInfo>? cached(MangaKey key) => _cache[key];
 
+  /// Chapters of [key] from the cache or the kv store; never the network.
+  Future<List<ChapterInfo>?> stored(MangaKey key) async =>
+      _cache[key] ?? await _restore(key);
+
   /// Chapters of [key]: the cache unless [refresh] or nothing is cached, in
   /// which case they are fetched and cached. Throws [StateError] when the
   /// key's source is not registered.

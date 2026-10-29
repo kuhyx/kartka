@@ -6,11 +6,9 @@ import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/browse/state/refresh_outcome.dart';
-import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/browse/ui/chapter_tile.dart';
 import 'package:kartka/browse/ui/detail_header.dart';
-import 'package:kartka/core/redact.dart';
-import 'package:kartka/core/source/challenge.dart';
+import 'package:kartka/browse/ui/detail_status.dart';
 
 /// `/manga/:sourceId/:mangaUrl`: header, actions and the chapter list
 /// (newest first, as sources and readers expect).
@@ -84,50 +82,10 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
   Widget _body(BuildContext context, MangaDetailController c) {
     final details = c.details;
     if (details == null) {
-      if (c.error != null) {
-        final retry = FilledButton(
-          onPressed: () => unawaited(c.load()),
-          child: const Text('Retry'),
-        );
-        if (c.error case final ChallengeRequired challenge) {
-          return Center(
-            child: ChallengePrompt(
-              challenge,
-              onRetry: () => unawaited(c.load()),
-            ),
-          );
-        }
-        if (c.error is SourceUnavailable) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              EmptyState(
-                icon: Icons.cloud_off_outlined,
-                title: 'Source unavailable',
-                message:
-                    'No installed source provides ${c.sourceId}. Install '
-                    'its plugin or check the Suwayomi server.',
-              ),
-              retry,
-            ],
-          );
-        }
-        return Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                redactUrlQueries('Could not load: ${c.error}'),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              retry,
-            ],
-          ),
-        );
-      }
+      if (c.error != null) return DetailFailure(c);
       return const Center(child: CircularProgressIndicator());
     }
+    final banner = staleBanner(c);
     final canDownload = BrowseScope.of(context).downloads != null;
     final newestFirst = c.chapters.reversed.toList();
     return StreamBuilder<ReadMarks>(
@@ -135,11 +93,12 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
       initialData: ReadMarks.none,
       builder: (context, snap) {
         final read = readUrls(c.chapters, snap.data!);
-        return RefreshIndicator(
+        final list = RefreshIndicator(
           onRefresh: _refresh,
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
+              if (banner != null) SliverToBoxAdapter(child: banner),
               SliverToBoxAdapter(
                 child: DetailHeader(
                   controller: c,
@@ -169,6 +128,19 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
               ),
             ],
           ),
+        );
+        // Stale content is on screen while the network refreshes it.
+        if (!c.loading) return list;
+        return Stack(
+          children: [
+            list,
+            const Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: LinearProgressIndicator(),
+            ),
+          ],
         );
       },
     );

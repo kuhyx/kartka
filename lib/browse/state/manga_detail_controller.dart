@@ -5,6 +5,7 @@ import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/browse/state/refresh_outcome.dart';
+import 'package:kartka/browse/state/stored_detail.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
@@ -62,23 +63,44 @@ class MangaDetailController extends ChangeNotifier {
   /// Loads details and a fresh chapter list in parallel. After a
   /// [SourceUnavailable] (the Retry button) it first asks every provider to
   /// re-list its sources, so a server that was down at start is seen again.
+  ///
+  /// Stale-while-revalidate: with nothing shown yet, a library entry (and
+  /// the stored chapter list) is shown at once while the network runs, so a
+  /// reopen never waits on the source. A failed refresh keeps it, in [error].
   Future<void> load() async {
     if (error is SourceUnavailable) unawaited(_deps.sources.refresh());
     loading = true;
     error = null;
     _notify();
+    // Started before the seed: the seed must never delay the network.
+    final fresh = _fetch()..ignore();
+    if (details == null) await _seed();
     try {
-      final source = await _source();
-      final results = await Future.wait<Object>([
-        source.details(mangaUrl),
-        _deps.chapters.load(key, refresh: true),
-      ]);
-      details = results[0] as MangaDetails;
-      chapters = readingOrder(results[1] as List<ChapterInfo>);
+      final (d, list) = await fresh;
+      details = d;
+      chapters = readingOrder(list);
     } on Object catch (e) {
       error = e;
     }
     loading = false;
+    _notify();
+  }
+
+  Future<(MangaDetails, List<ChapterInfo>)> _fetch() async {
+    final source = await _source();
+    final results = await Future.wait<Object>([
+      source.details(mangaUrl),
+      _deps.chapters.load(key, refresh: true),
+    ]);
+    return (results[0] as MangaDetails, results[1] as List<ChapterInfo>);
+  }
+
+  /// Shows the library entry and stored chapters, when there is an entry.
+  Future<void> _seed() async {
+    final stored = await storedDetail(_deps, key);
+    if (stored == null) return;
+    details = stored.$1;
+    chapters = readingOrder(stored.$2);
     _notify();
   }
 
