@@ -195,4 +195,8 @@ fetch added to a list stored before, whichever path fetched (detail open,
 `ChapterUpdateChecker`, reader, resolver); a first fetch is a baseline and
 reports nothing. The feed is local (KV `updates.feed`, newest 500, 60
 days), not synced. Update-all checks ≤ 4 manga at once, ≤ 1 per source,
-and logs failures as `updates.check` (source id only, URLs stripped).
+≤ 2 per server (every `suwayomi:*` source is one server), and logs each
+failure as it happens as `updates.check` (source id only, URLs stripped).
+A network failure (lookup, reset/abort, timeout) is retried twice (1 s,
+2 s); a server still unresolvable is not checked further: one
+`updates.offline` entry, counted as "offline: N not checked", not failed.

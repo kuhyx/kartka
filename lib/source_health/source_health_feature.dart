@@ -7,6 +7,7 @@ import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
+import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/migration/better/better_route.dart';
 import 'package:kartka/source_health/feed/reporting_feed.dart';
 import 'package:kartka/source_health/feed/rtdb_feed.dart';
@@ -26,8 +27,9 @@ import 'package:kartka/sync/rtdb_reader.dart';
 /// The source-health part: fills the Sources tab (with Install / Open per
 /// source) and supplies Browse's `SourceHealthLookup`, both fed from RTDB
 /// `/kartka/source_health` and re-scored with the synced scoring profile
-/// (`sourceHealth.scoring`). Also installs every Keep source on its own
-/// ([KeepReconciler], a service the migration part reads with the feed).
+/// (`sourceHealth.scoring`). Also installs every Keep source, and every
+/// source a library entry uses, on its own ([KeepReconciler], a service the
+/// migration part reads with the feed).
 KartkaFeature sourceHealthFeature(KartkaEnv env) {
   final store = ScoringProfileStore(syncedKv(env));
   final feed = ScoredHealthFeed(
@@ -47,6 +49,7 @@ KartkaFeature sourceHealthFeature(KartkaEnv env) {
     suwayomi: suwayomi,
     plugins: plugins,
     diagnostics: diagnostics,
+    librarySources: () => librarySourceIds(env.registry),
   );
   // Reconciles on start and on every new publish (DOCS-contracts-source-
   // health §5 "Keep auto-install"), from the app's first screen on: a bare
@@ -83,6 +86,14 @@ KartkaFeature sourceHealthFeature(KartkaEnv env) {
       startOnFirstScreen,
     ],
   );
+}
+
+/// The source ids of the library's entries, re-emitted when they change;
+/// none without a library part (a bare registry).
+Stream<Set<String>> librarySourceIds(KartkaRegistry registry) {
+  final library = registry.maybe<LibraryRepositories>()?.library;
+  if (library == null) return Stream.value(const {});
+  return library.watch().map((all) => {for (final e in all) e.sourceId});
 }
 
 /// Runs its callback on the first screen report only.

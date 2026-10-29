@@ -90,6 +90,26 @@ void main() {
     expect(checker.maxActive, 1);
   });
 
+  test('every suwayomi: source shares one server: at most 2 at once', () async {
+    final keys = [
+      for (final s in ['suwayomi:1', 'suwayomi:2', 'suwayomi:3', 'mangadex'])
+        mangaKeyOf(s, '/m'),
+    ];
+    final checker = GatedChecker();
+    final run = checkAll(keys, checker.check);
+    await pumpEventQueue();
+    expect(
+      [for (final k in checker.pending.keys) splitMangaKey(k).$1],
+      ['suwayomi:1', 'suwayomi:2', 'mangadex'],
+    );
+    while (checker.pending.isNotEmpty) {
+      await checker.releaseAll();
+    }
+    expect(await run, hasLength(4));
+    expect(updateHostOf('suwayomi:42'), 'suwayomi');
+    expect(updateHostOf('mangadex'), 'mangadex');
+  });
+
   test('no keys completes at once with nothing', () async {
     expect(await checkAll(const [], (_) => throw StateError('no')), isEmpty);
   });

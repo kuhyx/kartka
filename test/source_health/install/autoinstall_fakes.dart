@@ -109,6 +109,7 @@ class ReconcileRig {
     this.plugins,
     this.blind,
     MemoryKeyValueStore? kv,
+    this.withLibrary = false,
   }) : suwayomi = suwayomi ?? FakeSuwayomi(),
        kv = kv ?? MemoryKeyValueStore();
 
@@ -123,6 +124,12 @@ class ReconcileRig {
 
   /// Device-local storage.
   final MemoryKeyValueStore kv;
+
+  /// Whether the reconciler watches [library] (else it has no library).
+  final bool withLibrary;
+
+  /// Source-id sets of the library, as the reconciler watches them.
+  final library = StreamController<Set<String>>.broadcast();
 
   /// Probe answers by source id (missing = passes).
   final probeFailures = <String, String>{};
@@ -144,5 +151,6 @@ class ReconcileRig {
     plugins: () => plugins,
     diagnostics: log,
     now: () => DateTime.utc(2026, 10, 29),
+    librarySources: withLibrary ? () => library.stream : null,
   );
 }

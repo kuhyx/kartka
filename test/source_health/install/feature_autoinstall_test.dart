@@ -69,7 +69,7 @@ void main() {
     // Let a late meta poll land too: still one run, keyed by the run id.
     await Future<void>.delayed(const Duration(milliseconds: 50));
     expect(suwayomi.calls, ['list', 'install:pkg.a']);
-    expect(reconciler.status, 'Installed 1 Keep source');
+    expect(reconciler.status, 'Installed 1 source');
     expect(reconciler.state.publishId, '2026-W44');
     expect((await AutoInstallState.load(kv)).publishId, '2026-W44');
   });

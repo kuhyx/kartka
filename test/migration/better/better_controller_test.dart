@@ -97,6 +97,18 @@ void main() {
     expect(byTitle(listed)['Down']!.reason, 'its source is not installed');
   });
 
+  test('sources nothing can install (an SY built-in, a removed extension: '
+      'no record) are suggested away', () async {
+    await b.world.add('Gallery', sourceId: 'sy-builtin:6901');
+    await b.world.add('Batoto', sourceId: 'suwayomi:7890050626002177109');
+    b.installed = [...b.installed, ScriptedSource('suwayomi:8')];
+    final c = b.controller();
+    await c.load();
+    final rows = byTitle(c);
+    expect(rows['Gallery']!.reason, 'its source is not installed');
+    expect(rows['Batoto']!.reason, 'its source is not installed');
+  });
+
   test('migrate moves one entry after a backup; migrate all moves the rest '
       'with the existing migrator', () async {
     final c = b.controller();
