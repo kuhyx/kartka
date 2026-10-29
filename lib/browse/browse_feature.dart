@@ -13,6 +13,7 @@ import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/state/chapter_sort_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
+import 'package:kartka/browse/state/detail_store.dart';
 import 'package:kartka/browse/state/shared_health_lookup.dart';
 import 'package:kartka/browse/ui/browse_tab.dart';
 import 'package:kartka/browse/ui/global_search_screen.dart';
@@ -142,6 +143,7 @@ class BrowseRuntime {
     coverLoader: _covers.get,
     browser: _env.platform.browser,
     diagnostics: DiagnosticsLog.of(_env.platform.diagnostics),
+    details: DetailStore(_env.platform.kv),
     chapterSort: () {
       final kv = syncedKv(_env);
       return ChapterSortStore(kv, reloadOn: kv.remoteChanges);

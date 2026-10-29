@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:kartka/platform/blob_store.dart';
 import 'package:kartka/platform/coalescing_saver.dart';
 import 'package:kartka/platform/io/kv_shard_files.dart';
@@ -57,10 +57,13 @@ class FileBlobStore implements BlobStore {
 
 /// [KeyValueStore] as [kvShardCount] JSON shard files in [dir] (Android).
 ///
-/// Every key is held in memory, read once at startup. A save rewrites only
-/// the shards that changed (tmp + rename, so a crash leaves the previous
-/// version of each, never half a file), and both the decode and the
-/// encode + file I/O run in a background isolate, off the UI thread. Saves
+/// Every key is held in memory, read once at startup. A save hands only
+/// the changed keys to a background isolate, which patches the shards
+/// holding them into their files (tmp + rename, so a crash leaves the
+/// previous version of each, never half a file): the UI isolate does
+/// O(changed keys) per save, never a copy of whole shards. The files are
+/// the patch base, so a shard file deleted behind the store's back is not
+/// rebuilt from memory (a corrupt one is moved aside, as at startup). Saves
 /// are coalesced: changes within one window (250 ms) cost one write, an
 /// unchanged value costs none, and the app shell calls [flush] when the app
 /// leaves the foreground (`flushOnBackground` in create_platform_io.dart).
@@ -84,13 +87,19 @@ class FileKeyValueStore implements KeyValueStore {
   final File? legacy;
 
   late final CoalescingSaver _saver;
-  final Set<int> _dirty = {};
+  // Key -> new value (null: removed), since the last save.
+  final Map<String, String?> _changes = {};
   // One shared read: concurrent first calls must not each load the files
   // and replace one another's maps (a set into the loser would be lost).
   late final Future<List<Map<String, String>>> _shards = _readOff(
     dir.path,
     legacy?.path,
   );
+
+  /// Entries handed to the writer isolate so far (the save-cost tests
+  /// bound it: the UI isolate copies them).
+  @visibleForTesting
+  int sentEntries = 0;
 
   /// Whether a change has not been written yet.
   bool get pending => _saver.pending;
@@ -99,20 +108,25 @@ class FileKeyValueStore implements KeyValueStore {
   Future<void> flush() => _saver.flush();
 
   Future<void> _save() async {
-    final shards = await _shards;
-    // Taken (and copied) now: a set during the write marks it dirty again.
-    final batch = {for (final i in _dirty) i: Map.of(shards[i])};
-    _dirty.clear();
+    // The load must finish first: the shard files are the patch base.
+    await _shards;
+    // Taken now: a set during the write is saved by the next one.
+    final batch = Map.of(_changes);
+    _changes.clear();
+    sentEntries += batch.length;
     try {
-      await _writeOff(dir.path, batch);
+      await _patchOff(dir.path, batch);
     } on Object {
-      _dirty.addAll(batch.keys);
+      // Newer changes made during the write win over the failed batch.
+      for (final MapEntry(:key, :value) in batch.entries) {
+        _changes.putIfAbsent(key, () => value);
+      }
       rethrow;
     }
   }
 
-  void _changed(int shard) {
-    _dirty.add(shard);
+  void _changed(String key, String? value) {
+    _changes[key] = value;
     _saver.schedule();
   }
 
@@ -125,13 +139,13 @@ class FileKeyValueStore implements KeyValueStore {
     final values = (await _shards)[shard];
     if (values[key] == value) return;
     values[key] = value;
-    _changed(shard);
+    _changed(key, value);
   }
 
   @override
   Future<void> remove(String key) async {
     final shard = kvShardOf(key);
-    if ((await _shards)[shard].remove(key) != null) _changed(shard);
+    if ((await _shards)[shard].remove(key) != null) _changed(key, null);
   }
 
   @override
@@ -146,5 +160,5 @@ class FileKeyValueStore implements KeyValueStore {
 Future<List<Map<String, String>>> _readOff(String dir, String? legacy) =>
     Isolate.run(() => readKvDir(dir, legacy));
 
-Future<void> _writeOff(String dir, Map<int, Map<String, String>> batch) =>
-    Isolate.run(() => writeKvShards(dir, batch));
+Future<void> _patchOff(String dir, Map<String, String?> changes) =>
+    Isolate.run(() => patchKvShards(dir, changes));

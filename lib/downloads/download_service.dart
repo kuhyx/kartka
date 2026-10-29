@@ -57,7 +57,7 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
 
   Future<void> _load() async {
     _queue = DownloadQueue.decode(await kv.get(queueKvKey));
-    _index = DownloadIndex.decode(await kv.get(indexKvKey));
+    _index = await loadDownloadIndex(await kv.get(indexKvKey));
     _pump();
     onLoaded?.call();
   }

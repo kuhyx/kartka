@@ -105,6 +105,23 @@ Map<String, String>? _decodeObject(String text) {
   };
 }
 
+/// Applies [changes] (key → value, null removes it) to the shard files of
+/// [dir]: each touched shard is read, patched and written back with
+/// [writeKvShards]. A corrupt shard is moved aside and patched as empty.
+void patchKvShards(String dir, Map<String, String?> changes) {
+  final patched = <int, Map<String, String>>{};
+  for (final MapEntry(:key, :value) in changes.entries) {
+    final shard = kvShardOf(key);
+    final values = patched[shard] ??= _readShard(dir, shard);
+    if (value == null) {
+      values.remove(key);
+    } else {
+      values[key] = value;
+    }
+  }
+  writeKvShards(dir, patched);
+}
+
 /// Writes [shards] (index → entries) into [dir] in two phases: every
 /// `.tmp` is written and flushed, then all are renamed. A crash leaves
 /// each shard whole (old or new); only a crash between the renames can

@@ -157,9 +157,9 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   `tracker is CredentialsLogin`, else `tracker.login()`. MangaUpdates shows
   its username + password sheet; AniList and MAL stay OAuth (§9 unchanged).
 - **Android kv is 64 shard files, writes coalesced, off the UI isolate.**
-  `<support>/kv/shard-NN.json` (FNV-1a, fixed forever): only changed shards
-  are rewritten, at most once per 250 ms, unchanged values never, all I/O in
-  `Isolate.run`. First launch copies `kv.json` in, writes `kv/.migrated`,
+  `<support>/kv/shard-NN.json` (FNV-1a, fixed forever): only changed keys
+  leave the UI isolate, at most once per 250 ms, unchanged values never; an
+  `Isolate.run` patches their shards' files (`patchKvShards`). First launch copies `kv.json` in, writes `kv/.migrated`,
   keeps it as `kv.json.migrated` (`.corrupt` if unreadable).
   `flushOnBackground` flushes on every non-resumed lifecycle state.
 - **The wrapper never logs a /proxy target.** A query can carry a

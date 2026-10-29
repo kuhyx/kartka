@@ -18,6 +18,7 @@ import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/browse/state/chapter_sort_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/state/combine_latest.dart';
+import 'package:kartka/browse/state/detail_store.dart';
 import 'package:kartka/browse/state/global_search_controller.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/state/paged_controller.dart';

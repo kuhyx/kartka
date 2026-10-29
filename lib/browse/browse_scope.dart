@@ -7,6 +7,7 @@ import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/state/chapter_sort_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
+import 'package:kartka/browse/state/detail_store.dart';
 import 'package:kartka/browse/state/store_chapter_update_checker.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/repositories/repositories.dart';
@@ -24,7 +25,8 @@ class BrowseDeps {
   /// [health] → name order and no badges; no [downloads] → no download
   /// buttons; no [downloadService] → no cancel / delete buttons; no
   /// [coverLoader] → placeholder covers; no [updates] → a checker over
-  /// [chapters]; no [chapterSort] → an unsaved "Unread first" choice.
+  /// [chapters]; no [chapterSort] → an unsaved "Unread first" choice; no
+  /// [details] → a reopen shows only the library entry until the network.
   new({
     required this.sources,
     required this.languages,
@@ -40,6 +42,7 @@ class BrowseDeps {
     this.diagnostics,
     ChapterUpdateChecker? updates,
     ChapterSortStore? chapterSort,
+    this.details = const DetailStore(null),
     DateTime Function()? clock,
   }) : clock = clock ?? DateTime.now,
        updates = updates ?? StoreChapterUpdateChecker(chapters),
@@ -88,6 +91,9 @@ class BrowseDeps {
 
   /// The global "Unread first" chapter sort.
   final ChapterSortStore chapterSort;
+
+  /// Last fetched details per library manga (the instant detail header).
+  final DetailStore details;
 
   /// Clock for `addedAt` / `updatedAt` (injected in tests).
   final DateTime Function() clock;
