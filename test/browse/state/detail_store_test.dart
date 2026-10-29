@@ -66,11 +66,22 @@ void main() {
     expect(c.details?.description, 'A long description.');
     expect(
       c.details?.coverUrl,
-      'https://img.test/cover.jpg',
-      reason: 'the url the header showed last time: a cover cache hit',
+      'https://img.test/thumb.jpg',
+      reason: "the library grid's cover: a memory hit, drawn this frame",
     );
     src.detailsGate!.complete();
     await done;
+    expect(c.details?.title, 'Detail title', reason: 'fresh details');
+    expect(
+      c.details?.coverUrl,
+      'https://img.test/thumb.jpg',
+      reason: 'the shown cover is never swapped for a cold url',
+    );
+    expect(
+      (await DetailStore(kv).read(_key))?.coverUrl,
+      'https://img.test/cover.jpg',
+      reason: 'the store keeps what the source said',
+    );
   });
 
   test('a manga outside the library stores no details', () async {

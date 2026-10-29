@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:kartka/browse/browse_scope.dart';
+import 'package:kartka/browse/state/detail_store.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/library_repository.dart';
 
 /// What the detail screen can show for [key] without the network: the
 /// last fetched details (`BrowseDeps.details`; else the library entry's
-/// title and cover) plus the stored chapter list (source order, empty when
-/// none was stored). Null when the manga is not in the library.
+/// title) with the entry's cover (the grid's, already cached), plus the
+/// stored chapter list (source order, empty when none was stored). Null
+/// when the manga is not in the library.
 Future<(MangaDetails, List<ChapterInfo>)?> storedDetail(
   BrowseDeps deps,
   MangaKey key,
@@ -18,14 +20,15 @@ Future<(MangaDetails, List<ChapterInfo>)?> storedDetail(
     deps.details.read(key),
     deps.chapters.stored(key),
   ).wait;
+  final shown =
+      details ??
+      MangaDetails(
+        sourceId: entry.sourceId,
+        url: entry.mangaUrl,
+        title: entry.title,
+      );
   return (
-    details ??
-        MangaDetails(
-          sourceId: entry.sourceId,
-          url: entry.mangaUrl,
-          title: entry.title,
-          coverUrl: entry.coverUrl,
-        ),
+    withCover(shown, entry.coverUrl ?? shown.coverUrl),
     chapters ?? const <ChapterInfo>[],
   );
 }

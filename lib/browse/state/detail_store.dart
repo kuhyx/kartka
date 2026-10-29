@@ -33,3 +33,19 @@ class DetailStore {
   /// Drops the stored details of [key].
   Future<void> remove(MangaKey key) async => await _kv?.remove(_kvKey(key));
 }
+
+/// [d] showing [coverUrl]: the detail header keeps the cover it already
+/// drew (the library grid's, hot in the cover cache) instead of swapping
+/// to the source's detail url, which would flash a placeholder while it
+/// loads.
+MangaDetails withCover(MangaDetails d, String? coverUrl) => MangaDetails(
+  sourceId: d.sourceId,
+  url: d.url,
+  title: d.title,
+  coverUrl: coverUrl,
+  authors: d.authors,
+  description: d.description,
+  genres: d.genres,
+  status: d.status,
+  trackerIds: d.trackerIds,
+);

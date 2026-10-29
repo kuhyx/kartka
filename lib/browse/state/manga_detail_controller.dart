@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
+import 'package:kartka/browse/state/detail_store.dart';
 import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/browse/state/refresh_outcome.dart';
 import 'package:kartka/browse/state/source_wait.dart';
@@ -89,7 +90,8 @@ class MangaDetailController extends ChangeNotifier {
     if (details == null) await _seed();
     try {
       final (d, list) = await fresh;
-      details = d;
+      final shownCover = details?.coverUrl;
+      details = shownCover == null ? d : withCover(d, shownCover);
       _keep(d).ignore(); // A cache: a failed write only costs the next open.
       chapters = readingOrder(list);
     } on Object catch (e, stack) {
