@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:kartka/core/models/json_fields.dart';
 import 'package:kartka/core/models/models.dart';
 
@@ -59,6 +61,17 @@ class OfflineChapter {
   int get hashCode =>
       Object.hash(chapter, pageCount, bytes, instantHash(downloadedAt));
 }
+
+/// Stored indexes at least this long are decoded in a background isolate.
+const int downloadIndexOffUiChars = 64 * 1024;
+
+/// [DownloadIndex.decode] of the stored [raw], off the UI isolate when it
+/// is large: the first library paint loads it (every row's offline badge),
+/// and an index of thousands of chapters is a long frame on a phone.
+Future<DownloadIndex> loadDownloadIndex(String? raw) async =>
+    raw == null || raw.length < downloadIndexOffUiChars
+    ? DownloadIndex.decode(raw)
+    : await compute(DownloadIndex.decode, raw);
 
 /// Which chapters are stored offline, per manga (persisted in KeyValueStore).
 class DownloadIndex {
