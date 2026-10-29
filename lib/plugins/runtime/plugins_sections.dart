@@ -166,6 +166,8 @@ class _InstalledListState extends State<InstalledList> {
   Widget build(BuildContext context) => StreamBuilder<List<InstalledPlugin>>(
     stream: _stream,
     builder: (context, snap) {
+      // Nothing yet: no "none installed" claim before the first read.
+      if (!snap.hasData && !snap.hasError) return const SizedBox.shrink();
       final list = snap.data ?? const <InstalledPlugin>[];
       if (list.isEmpty) {
         return const Padding(

@@ -103,4 +103,29 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('No downloads'), findsOneWidget);
   });
+
+  testWidgets('a manga missing from the library shows its resolved title', (
+    tester,
+  ) async {
+    final s = Harness().service();
+    await s.enqueue(mangaKey, ch1);
+    final asked = <String>[];
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildDarkTheme(),
+        home: DownloadsScreen(
+          service: s,
+          titles: Stream.value(const {}),
+          resolveTitle: (key) async {
+            asked.add(key);
+            return 'Berserk (resolved)';
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Berserk (resolved)'), findsOneWidget);
+    expect(find.text('/title/1'), findsNothing);
+    expect(asked, [mangaKey]);
+  });
 }

@@ -24,6 +24,8 @@ class _PluginsScreenState extends State<PluginsScreen> {
   List<String> _repos = [];
   AvailableResult _available = const AvailableResult([], {});
   bool _loading = true;
+  // Until the first load lands, the empty states would be false claims.
+  bool _loaded = false;
   final Set<String> _busy = {};
 
   PluginManager get _m => widget.manager;
@@ -49,6 +51,7 @@ class _PluginsScreenState extends State<PluginsScreen> {
       _repos = repos;
       _available = available;
       _loading = false;
+      _loaded = true;
     });
   }
 
@@ -111,14 +114,21 @@ class _PluginsScreenState extends State<PluginsScreen> {
           ),
         const SectionHeader('Available'),
         if (_loading) const LinearProgressIndicator(),
-        AvailableList(
-          result: _available,
-          hasRepos: _repos.isNotEmpty,
-          busy: _busy,
-          onInstall: (e) => _guarded(e.manifest.id, () => _m.install(e)),
-        ),
+        if (!_loaded)
+          const Padding(
+            padding: EdgeInsets.all(AppSpacing.md),
+            child: Text('Loading plugins…'),
+          )
+        else
+          AvailableList(
+            result: _available,
+            hasRepos: _repos.isNotEmpty,
+            busy: _busy,
+            onInstall: (e) => _guarded(e.manifest.id, () => _m.install(e)),
+          ),
         const SectionHeader('Installed'),
-        InstalledList(manager: _m, busy: _busy, onUninstall: _uninstall),
+        if (_loaded)
+          InstalledList(manager: _m, busy: _busy, onUninstall: _uninstall),
       ],
     ),
   );

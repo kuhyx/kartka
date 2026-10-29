@@ -17,6 +17,7 @@ class DownloadsScreen extends StatefulWidget {
     required this.service,
     required this.titles,
     this.onOpen,
+    this.resolveTitle,
     super.key,
   });
 
@@ -29,6 +30,10 @@ class DownloadsScreen extends StatefulWidget {
   /// Called once when the screen opens (the auto-download check).
   final VoidCallback? onOpen;
 
+  /// Title of a manga missing from [titles] (`DownloadTitles.title`);
+  /// null for none. Until it answers, the manga url is shown.
+  final Future<String?> Function(MangaKey key)? resolveTitle;
+
   @override
   State<DownloadsScreen> createState() => _DownloadsScreenState();
 }
@@ -36,6 +41,8 @@ class DownloadsScreen extends StatefulWidget {
 class _DownloadsScreenState extends State<DownloadsScreen> {
   late final Stream<DownloadsSnapshot> _snapshots = widget.service.watchAll();
   late final Stream<Map<MangaKey, String>> _titles = widget.titles;
+  final Map<MangaKey, String> _resolved = {};
+  final Set<MangaKey> _asked = {};
 
   @override
   void initState() {
@@ -63,6 +70,21 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
       },
     ),
   );
+
+  /// [key]'s title: the library's, else a resolved one (asked once).
+  String _label(MangaKey key, Map<MangaKey, String> titles) {
+    final known = titles[key] ?? _resolved[key];
+    if (known != null) return known;
+    final resolve = widget.resolveTitle;
+    if (resolve != null && _asked.add(key)) {
+      unawaited(
+        resolve(key).then((t) {
+          if (t != null && mounted) setState(() => _resolved[key] = t);
+        }),
+      );
+    }
+    return mangaLabel(key, titles);
+  }
 
   Widget _pauseButton(bool paused) => IconButton(
     icon: Icon(paused ? Icons.play_arrow : Icons.pause),
@@ -105,7 +127,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
         for (final t in data.queue)
           QueueTile(
             task: t,
-            mangaTitle: mangaLabel(t.mangaKey, titles),
+            mangaTitle: _label(t.mangaKey, titles),
             paused: data.paused,
             onCancel: () => unawaited(s.cancel(t.mangaKey, t.chapter.url)),
             onRetry: () => unawaited(s.retry(t.mangaKey, t.chapter.url)),
@@ -114,7 +136,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
           const SectionHeader('Downloaded', padding: pad),
         for (final key in data.index.mangaKeys)
           OfflineMangaTile(
-            title: mangaLabel(key, titles),
+            title: _label(key, titles),
             chapters: data.index.chapters(key),
             onDeleteChapter: (url) => unawaited(s.deleteChapter(key, url)),
             onDeleteAll: () => unawaited(s.deleteManga(key)),
