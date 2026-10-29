@@ -82,4 +82,40 @@ void main() {
     expect(s.node('library/h7'), {'title': 'manga 7' * 20});
     expect(s.peers, isEmpty, reason: 'a corrupt peers entry reads as none');
   });
+
+  test('big unapplied/dirty lists decode off the UI isolate', () async {
+    final paths = [for (var i = 0; i < 4000; i++) 'read/h${i % 50}/c$i'];
+    final kv = MemoryKeyValueStore({
+      'sync.b.library/h1': jsonEncode({
+        'library/h1': {'title': 'one'},
+      }),
+      'sync.unapplied': jsonEncode(paths),
+      'sync.dirty': jsonEncode(paths.take(2000).toList()),
+    });
+    expect(
+      (await kv.get('sync.unapplied'))!.length,
+      greaterThan(offUiJsonChars),
+    );
+    final before = offUiRuns;
+
+    final s = await SyncShadow.load(kv);
+
+    // Before: the lists were parsed inline; only the (tiny) buckets could
+    // have gone off the UI isolate.
+    expect(offUiRuns, before + 1);
+    expect(s.unapplied, hasLength(4000));
+    expect(s.dirty, hasLength(2000));
+    expect(s.node('library/h1'), {'title': 'one'});
+  });
+
+  test('missing or corrupt lists read as empty', () async {
+    final kv = MemoryKeyValueStore({
+      'sync.unapplied': '{bad',
+      'sync.dirty': '{"a":1}',
+    });
+    final s = await SyncShadow.load(kv);
+    expect(s.unapplied, isEmpty);
+    expect(s.dirty, isEmpty);
+    expect((await SyncShadow.load(MemoryKeyValueStore())).dirty, isEmpty);
+  });
 }

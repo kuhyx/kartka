@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:kartka/platform/key_value_store.dart';
 import 'package:kartka/plugins/runtime/host_api.dart';
+import 'package:kartka/sync/off_ui_json.dart';
 
 /// A plugin kept in the [KeyValueStore].
 class InstalledPlugin {
@@ -78,16 +79,20 @@ class PluginStore {
   Future<void> setLanguages(List<String> langs) =>
       kv.set(_languages, jsonEncode(langs));
 
-  /// Every installed plugin, sorted by name.
+  /// Every installed plugin, sorted by name. Throws [FormatException] for a
+  /// row that is not a JSON object (the plugin screen shows the error).
   Future<List<InstalledPlugin>> installed() async {
     final all = await kv.entries(prefix: _installed);
-    final out = [
-      for (final v in all.values)
-        InstalledPlugin.fromJson(
-          (jsonDecode(v) as Map).cast<String, Object?>(),
-        ),
+    // Each row carries the plugin's whole JS source: together they are
+    // megabytes, so they are parsed off the UI isolate.
+    final rows = await decodeEachOffUi(all.values.toList());
+    return [
+      for (final row in rows)
+        InstalledPlugin.fromJson(switch (row) {
+          final Map<Object?, Object?> m => m.cast<String, Object?>(),
+          _ => throw const FormatException('installed plugin is not JSON'),
+        }),
     ]..sort((a, b) => a.manifest.name.compareTo(b.manifest.name));
-    return out;
   }
 
   /// Saves (or replaces) [p].
