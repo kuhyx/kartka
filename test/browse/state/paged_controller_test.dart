@@ -60,15 +60,21 @@ void main() {
 
   test('records an error and retries the same page', () async {
     final calls = <int>[];
+    final reported = <Object>[];
     var fail = true;
-    final c = PagedController<int>((page) async {
-      calls.add(page);
-      if (fail) throw StateError('boom');
-      return (items: [7], hasNext: false);
-    }, keyOf: (i) => i);
+    final c = PagedController<int>(
+      (page) async {
+        calls.add(page);
+        if (fail) throw StateError('boom');
+        return (items: [7], hasNext: false);
+      },
+      keyOf: (i) => i,
+      onError: (e, _) => reported.add(e),
+    );
     await c.loadMore();
     expect(c.error, isA<StateError>());
     expect(c.items, isEmpty);
+    expect(reported.single, isA<StateError>());
     fail = false;
     await c.loadMore();
     expect(c.error, isNull);
@@ -94,7 +100,12 @@ void main() {
 
   test('a stale failure does not surface after reset', () async {
     final stale = Completer<PageResult<int>>();
-    final c = PagedController<int>((_) => stale.future, keyOf: (i) => i);
+    final reported = <Object>[];
+    final c = PagedController<int>(
+      (_) => stale.future,
+      keyOf: (i) => i,
+      onError: (e, _) => reported.add(e),
+    );
     final pending = c.loadMore();
     await c.reset(
       fetch: pagesOf([
@@ -104,6 +115,7 @@ void main() {
     stale.completeError(StateError('old'));
     await pending;
     expect(c.error, isNull);
+    expect(reported, isEmpty);
     expect(c.items, [4]);
   });
 

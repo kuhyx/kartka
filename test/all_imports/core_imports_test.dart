@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/diagnostics/diagnostic_entry.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
+import 'package:kartka/core/diagnostics/error_reporter.dart';
+import 'package:kartka/core/diagnostics/report_redact.dart';
 import 'package:kartka/core/models/category.dart';
 import 'package:kartka/core/models/chapter_info.dart';
 import 'package:kartka/core/models/download_state.dart';

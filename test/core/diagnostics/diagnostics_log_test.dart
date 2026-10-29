@@ -59,6 +59,19 @@ void main() {
       expect(back.stack, isEmpty);
     });
 
+    test('route round-trips and is omitted when absent', () {
+      final e = DiagnosticEntry(
+        at: DateTime.utc(2026),
+        kind: 'k',
+        error: 'x',
+        route: '/browse/:id',
+      );
+      expect(e.toJson()['route'], '/browse/:id');
+      expect(DiagnosticEntry.fromJson(e.toJson()).route, '/browse/:id');
+      expect(e.withRoute('/other').route, '/other');
+      expect(e.withRoute('/other').error, 'x');
+    });
+
     test('every string field is redacted', () {
       final e = DiagnosticEntry(
         at: DateTime.utc(2026),
@@ -167,6 +180,39 @@ void main() {
         store,
       ).entries()).map((e) => e.error);
       expect(errors, ['kept', 'unwritten', 'later']);
+    });
+
+    test('stamps the current route on entries that carry none', () async {
+      final log = DiagnosticsLog(MemoryBlobStore());
+      await log.append(_entry('before'));
+      log.route = '/read/:sourceId';
+      await log.append(_entry('during'));
+      await log.append(
+        DiagnosticEntry(
+          at: DateTime.utc(2026),
+          kind: 'k',
+          error: 'own',
+          route: '/own',
+        ),
+      );
+      expect((await log.entries()).map((e) => e.route), [
+        null,
+        '/read/:sourceId',
+        '/own',
+      ]);
+    });
+
+    test('announces each entry once it is written', () async {
+      final store = _FlakyStore();
+      final log = DiagnosticsLog(store);
+      final seen = <String>[];
+      log.appended.listen((e) => seen.add(e.error));
+      await log.append(_entry('a'));
+      store.failGet = true;
+      await DiagnosticsLog(store).append(_entry('unread'));
+      await log.append(_entry('b'));
+      await Future<void>.delayed(Duration.zero);
+      expect(seen, ['a', 'b']);
     });
 
     test('of() shares one log per store', () {

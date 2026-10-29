@@ -9,6 +9,24 @@ extension _Advance on ReaderSession {
     notifyListeners();
   }
 
+  /// Fails the open with [message], logging [e] as `reader.open`.
+  void _openFailed(Object e, StackTrace stack, String message) {
+    unawaited(
+      deps.diagnostics?.append(
+        DiagnosticEntry.failure(
+          at: deps.now(),
+          kind: 'reader.open',
+          error: e,
+          stack: stack,
+          sourceId: sourceId,
+          mangaUrl: mangaUrl,
+          chapterUrl: chapterUrl,
+        ),
+      ),
+    );
+    _fail(message);
+  }
+
   Future<List<ChapterInfo>> _chapterList(MangaSource? source) async {
     try {
       if (source != null) return await source.chapters(mangaUrl);

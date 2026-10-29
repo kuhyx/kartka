@@ -85,6 +85,15 @@ void main() {
     expect(t.error, contains('no pages'));
   });
 
+  test('an open failure is logged as reader.open with its chapter', () async {
+    final s = make(source: FakeSource(chapterList: sessionChapters));
+    await s.open();
+    final e = (await f.diagnostics.entries()).single;
+    expect(e.kind, 'reader.open');
+    expect(e.error, contains('no pages'));
+    expect((e.sourceId, e.mangaUrl, e.chapterUrl), ('fake', '/m/1', '/c/2'));
+  });
+
   test('page changes record debounced progress and mark the end read', () {
     fakeAsync((async) {
       final s = make();

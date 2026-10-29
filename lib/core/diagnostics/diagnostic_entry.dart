@@ -15,6 +15,7 @@ class DiagnosticEntry {
     this.mangaUrl,
     this.chapterUrl,
     this.stack = const [],
+    this.route,
   });
 
   /// An entry for a caught [error], keeping the top [maxFrames] of [stack]
@@ -51,6 +52,7 @@ class DiagnosticEntry {
     mangaUrl: readOptString(json, 'mangaUrl'),
     chapterUrl: readOptString(json, 'chapterUrl'),
     stack: [...?(json['stack'] as List<Object?>?)?.cast<String>()],
+    route: readOptString(json, 'route'),
   );
 
   /// Stack frames kept by [DiagnosticEntry.failure].
@@ -80,6 +82,21 @@ class DiagnosticEntry {
   /// The top stack frames, innermost first.
   final List<String> stack;
 
+  /// The go_router pattern on top when it happened (never a location).
+  final String? route;
+
+  /// This entry with [route] set.
+  DiagnosticEntry withRoute(String route) => DiagnosticEntry(
+    at: at,
+    kind: kind,
+    error: error,
+    sourceId: sourceId,
+    mangaUrl: mangaUrl,
+    chapterUrl: chapterUrl,
+    stack: stack,
+    route: route,
+  );
+
   static List<String> _frames(StackTrace? stack) => [
     for (final line in '${stack ?? ''}'.split('\n'))
       if (line.trim().isNotEmpty) line.trim(),
@@ -94,5 +111,6 @@ class DiagnosticEntry {
     if (mangaUrl case final m?) 'mangaUrl': redactUrlQueries(m),
     if (chapterUrl case final c?) 'chapterUrl': redactUrlQueries(c),
     if (stack.isNotEmpty) 'stack': [for (final f in stack) redactUrlQueries(f)],
+    if (route case final r?) 'route': redactUrlQueries(r),
   };
 }

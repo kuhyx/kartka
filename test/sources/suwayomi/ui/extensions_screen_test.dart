@@ -4,6 +4,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
@@ -27,14 +28,18 @@ void main() {
     onChanged: () async => changes++,
   );
 
-  Future<void> pump(WidgetTester tester, SuwayomiExtensionsApi api) async {
+  Future<void> pump(
+    WidgetTester tester,
+    SuwayomiExtensionsApi api, {
+    DiagnosticsLog? log,
+  }) async {
     tester.view.physicalSize = const Size(1366, 768);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       MaterialApp(
         theme: buildDarkTheme(),
-        home: ExtensionsScreen(api: api),
+        home: ExtensionsScreen(api: api, diagnostics: log),
       ),
     );
     await tester.pumpAndSettle();
@@ -119,8 +124,16 @@ void main() {
   });
 
   testWidgets('shows load errors with a retry', (tester) async {
-    await pump(tester, api(FakeKartkaHttp(), const SuwayomiSettings()));
+    final log = DiagnosticsLog(MemoryBlobStore());
+    await pump(
+      tester,
+      api(FakeKartkaHttp(), const SuwayomiSettings()),
+      log: log,
+    );
     expect(find.text("Can't list extensions"), findsOneWidget);
+    final logged = (await tester.runAsync(log.entries))!.single;
+    expect(logged.kind, 'suwayomi.extensions');
+    expect(logged.error, contains('no server URL'));
     expect(find.textContaining('no server URL'), findsOneWidget);
     await tester.tap(find.text('Retry'));
     await tester.pumpAndSettle();

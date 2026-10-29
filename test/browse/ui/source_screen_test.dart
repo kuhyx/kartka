@@ -68,6 +68,10 @@ void main() {
     final h = Harness(sources: [src]);
     await h.pump(t, const SizedBox(), at: sourceRoute('mangadex'));
     expect(find.textContaining('Could not load'), findsOneWidget);
+    final logged = (await t.runAsync(h.diagnostics.entries))!.single;
+    expect(logged.kind, 'browse.page');
+    expect(logged.sourceId, 'mangadex');
+    expect(logged.error, 'Bad state: x');
     src.failWith = null;
     await t.tap(find.text('Retry'));
     await t.pumpAndSettle();
