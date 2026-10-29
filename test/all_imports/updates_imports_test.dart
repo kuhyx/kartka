@@ -4,6 +4,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/updates/data/update_feed.dart';
 import 'package:kartka/updates/state/library_keys.dart';
+import 'package:kartka/updates/state/network_errors.dart';
 import 'package:kartka/updates/state/update_rows.dart';
 import 'package:kartka/updates/state/update_runner.dart';
 import 'package:kartka/updates/state/update_scheduler.dart';
