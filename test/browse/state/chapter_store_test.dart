@@ -95,4 +95,15 @@ void main() {
     expect(await resolver.numberOf(key, '/c/none'), isNull);
     expect(await resolver.numberOf(mangaKeyOf('nope', '/x'), '/c/1'), isNull);
   });
+
+  test('stored: cache or kv, never a fetch; null when unknown', () async {
+    final kv = MemoryKeyValueStore();
+    final store = storeWith(kv: kv);
+    expect(await store.stored(key), isNull);
+    await store.load(key);
+    expect(await store.stored(key), hasLength(3));
+    src.calls.clear();
+    expect(await storeWith(kv: kv).stored(key), hasLength(3));
+    expect(src.calls, isEmpty);
+  });
 }

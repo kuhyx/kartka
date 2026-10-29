@@ -11,6 +11,7 @@ import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
+import 'package:kartka/browse/state/chapter_sort_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/ui/global_search_screen.dart';
 import 'package:kartka/browse/ui/manga_detail_screen.dart';
@@ -52,8 +53,13 @@ class FakeHealth implements SourceHealthLookup {
   ) => summary == null ? null : Text('badge:${summary.verdict.name}');
 }
 
-/// Detail slot rendering a marker text.
+/// Detail slot rendering a marker text; records [opened] calls.
 class FakeSlot implements MangaDetailSlot {
+  final List<String> opens = [];
+
+  @override
+  void opened(String key) => opens.add(key);
+
   @override
   Widget build(BuildContext context, String key, MangaDetails details) =>
       Text('slot:$key');
@@ -84,11 +90,12 @@ class Harness {
       downloads: withDownloads ? (downloadService ?? downloads) : null,
       downloadService: downloadService,
       health: health,
-      detailSlots: [FakeSlot()],
+      detailSlots: [slot],
       coverLoader: withCovers ? (_) async => onePixelPng : null,
       clock: () => DateTime.utc(2026, 10, 24),
       browser: browser ?? const UnavailableBrowser(),
       diagnostics: diagnostics,
+      chapterSort: ChapterSortStore(sortKv),
     );
   }
 
@@ -99,6 +106,8 @@ class Harness {
   final library = FakeLibrary();
   final progress = FakeProgress();
   final diagnostics = DiagnosticsLog(MemoryBlobStore());
+  final sortKv = MemoryKeyValueStore();
+  final slot = FakeSlot();
   final downloads = FakeDownloads();
   late final BrowseDeps deps;
 

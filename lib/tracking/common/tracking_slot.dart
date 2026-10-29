@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/core/models/models.dart';
@@ -10,6 +12,10 @@ class TrackingDetailSlot implements MangaDetailSlot {
   const new(this._service);
 
   final TrackingService _service;
+
+  /// Pulls remote progress forward once per detail-screen open.
+  @override
+  void opened(MangaKey key) => unawaited(_service.refresh(key));
 
   @override
   Widget build(BuildContext context, MangaKey key, MangaDetails details) =>

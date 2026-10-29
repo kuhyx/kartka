@@ -3,17 +3,20 @@ import 'dart:async';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/browse/browse_scope.dart';
+import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/browse/state/refresh_outcome.dart';
-import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/browse/ui/chapter_tile.dart';
+import 'package:kartka/browse/ui/continue_fab.dart';
 import 'package:kartka/browse/ui/detail_header.dart';
-import 'package:kartka/core/redact.dart';
-import 'package:kartka/core/source/challenge.dart';
+import 'package:kartka/browse/ui/detail_menu.dart';
+import 'package:kartka/browse/ui/detail_status.dart';
+import 'package:kartka/core/models/models.dart';
 
-/// `/manga/:sourceId/:mangaUrl`: header, actions and the chapter list
-/// (newest first, as sources and readers expect).
+/// `/manga/:sourceId/:mangaUrl`: a compact header, then the chapter list
+/// (newest first, or unread first) right away; "Continue" floats, every
+/// other action is in the app bar's overflow menu.
 class MangaDetailScreen extends StatefulWidget {
   /// Creates the screen for the manga at [mangaUrl] in [sourceId].
   const new({required this.sourceId, required this.mangaUrl, super.key});
@@ -30,19 +33,25 @@ class MangaDetailScreen extends StatefulWidget {
 
 class _MangaDetailScreenState extends State<MangaDetailScreen> {
   MangaDetailController? _controller;
-  Stream<ReadMarks>? _marks;
+  late Stream<ReadMarks> _marks;
+  late Stream<ReadingProgress?> _progress;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_controller != null) return;
+    final deps = BrowseScope.of(context);
     final c = MangaDetailController(
-      BrowseScope.of(context),
+      deps,
       sourceId: widget.sourceId,
       mangaUrl: widget.mangaUrl,
     );
     _controller = c;
     _marks = c.readMarks();
+    _progress = c.progress();
+    for (final slot in deps.detailSlots) {
+      slot.opened(c.key);
+    }
     unawaited(c.load());
   }
 
@@ -52,7 +61,8 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
     super.dispose();
   }
 
-  /// Pull-to-refresh and the app-bar Refresh: reload, then say what changed.
+  /// Pull-to-refresh and the app-bar Refresh: re-fetch the chapter list,
+  /// then say what changed.
   Future<void> _refresh() async {
     final outcome = await _controller!.refresh();
     if (!mounted) return;
@@ -64,113 +74,77 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final c = _controller!;
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            tooltip: 'Refresh',
-            icon: const Icon(Icons.refresh),
-            onPressed: () => unawaited(_refresh()),
-          ),
-        ],
-      ),
-      body: ListenableBuilder(
-        listenable: c,
-        builder: (context, _) => _body(context, c),
+    final sort = BrowseScope.of(context).chapterSort;
+    return ListenableBuilder(
+      listenable: Listenable.merge([c, sort]),
+      builder: (context, _) => StreamBuilder<ReadMarks>(
+        stream: _marks,
+        initialData: ReadMarks.none,
+        builder: (context, snap) {
+          final read = readUrls(c.chapters, snap.data!);
+          final details = c.details;
+          return Scaffold(
+            appBar: AppBar(
+              actions: [
+                IconButton(
+                  tooltip: 'Refresh',
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () => unawaited(_refresh()),
+                ),
+                if (details != null)
+                  DetailMenu(controller: c, details: details, read: read),
+              ],
+            ),
+            floatingActionButton: details == null
+                ? null
+                : ContinueFab(controller: c, progress: _progress, read: read),
+            body: details == null
+                ? DetailStatus(c)
+                : _list(context, c, details, read, unread: sort.value),
+          );
+        },
       ),
     );
   }
 
-  Widget _body(BuildContext context, MangaDetailController c) {
-    final details = c.details;
-    if (details == null) {
-      if (c.error != null) {
-        final retry = FilledButton(
-          onPressed: () => unawaited(c.load()),
-          child: const Text('Retry'),
-        );
-        if (c.error case final ChallengeRequired challenge) {
-          return Center(
-            child: ChallengePrompt(
-              challenge,
-              onRetry: () => unawaited(c.load()),
-            ),
-          );
-        }
-        if (c.error is SourceUnavailable) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              EmptyState(
-                icon: Icons.cloud_off_outlined,
-                title: 'Source unavailable',
-                message:
-                    'No installed source provides ${c.sourceId}. Install '
-                    'its plugin or check the Suwayomi server.',
-              ),
-              retry,
-            ],
-          );
-        }
-        return Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                redactUrlQueries('Could not load: ${c.error}'),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              retry,
-            ],
-          ),
-        );
-      }
-      return const Center(child: CircularProgressIndicator());
-    }
+  Widget _list(
+    BuildContext context,
+    MangaDetailController c,
+    MangaDetails details,
+    Set<String> read, {
+    required bool unread,
+  }) {
     final canDownload = BrowseScope.of(context).downloads != null;
     final newestFirst = c.chapters.reversed.toList();
-    return StreamBuilder<ReadMarks>(
-      stream: _marks,
-      initialData: ReadMarks.none,
-      builder: (context, snap) {
-        final read = readUrls(c.chapters, snap.data!);
-        return RefreshIndicator(
-          onRefresh: _refresh,
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(
-                child: DetailHeader(
-                  controller: c,
-                  details: details,
-                  read: read,
-                ),
+    final shown = unread ? unreadFirst(newestFirst, read) : newestFirst;
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverToBoxAdapter(child: DetailHeader(details: details)),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              child: Text(
+                '${c.chapters.length} chapters',
+                style: Theme.of(context).textTheme.titleSmall,
               ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                  ),
-                  child: Text(
-                    '${c.chapters.length} chapters',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-              ),
-              SliverList.builder(
-                itemCount: newestFirst.length,
-                itemBuilder: (_, i) => ChapterTile(
-                  controller: c,
-                  chapter: newestFirst[i],
-                  read: read.contains(newestFirst[i].url),
-                  canDownload: canDownload,
-                ),
-              ),
-            ],
+            ),
           ),
-        );
-      },
+          SliverList.builder(
+            itemCount: shown.length,
+            itemBuilder: (_, i) => ChapterTile(
+              controller: c,
+              chapter: shown[i],
+              read: read.contains(shown[i].url),
+              canDownload: canDownload,
+            ),
+          ),
+          // Room under the last row, so the FAB never covers its buttons.
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xxl * 2)),
+        ],
+      ),
     );
   }
 }

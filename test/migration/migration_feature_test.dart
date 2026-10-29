@@ -127,5 +127,6 @@ void main() {
       ),
     );
     expect(find.text('Migrate'), findsNothing);
+    slot.opened(_key); // Nothing to do when the screen opens.
   });
 }

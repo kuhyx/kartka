@@ -17,28 +17,40 @@ Future<Harness> _open(WidgetTester t, {bool downloads = true}) async {
   return h;
 }
 
+Future<void> _menu(WidgetTester t) async {
+  await t.tap(find.byTooltip('More'));
+  await t.pumpAndSettle();
+}
+
 void main() {
   testWidgets('shows cover, metadata, description, slot, chapters', (t) async {
-    await _open(t);
+    final h = await _open(t);
     expect(find.text('Detail title'), findsOneWidget);
     expect(find.text('Author A · ongoing'), findsOneWidget);
-    expect(find.text('A long description.'), findsOneWidget);
-    expect(find.text('Action'), findsOneWidget);
-    expect(find.text('slot:$_key'), findsOneWidget);
     expect(find.text('3 chapters'), findsOneWidget);
+    expect(h.slot.opens, [_key]);
     // Newest first in the list.
     expect(
       t.getTopLeft(find.text('Ch. 3')).dy,
       lessThan(t.getTopLeft(find.text('Ch. 1')).dy),
     );
     expect(find.byType(Image), findsWidgets);
+    await t.tap(find.byKey(const ValueKey('detail-header')));
+    await t.pumpAndSettle();
+    expect(find.text('A long description.'), findsOneWidget);
+    expect(find.text('Action'), findsOneWidget);
+    await _menu(t);
+    expect(find.text('slot:$_key'), findsOneWidget);
+    expect(h.slot.opens, [_key]); // Once per screen, not per menu open.
   });
 
   testWidgets('add to and remove from the library', (t) async {
     final h = await _open(t);
+    await _menu(t);
     await t.tap(find.byKey(const ValueKey('library')));
     await t.pumpAndSettle();
     expect(h.library.entries[_key]?.title, 'Detail title');
+    await _menu(t);
     expect(find.text('In library'), findsOneWidget);
     await t.tap(find.byKey(const ValueKey('library')));
     await t.pumpAndSettle();
@@ -62,35 +74,28 @@ void main() {
     await h.progress.markRead(_key, '/c/1');
     await t.pumpAndSettle();
     expect(h.downloads.enqueued, ['/c/3']);
-    await t.tap(find.byKey(const ValueKey('download-menu')));
-    await t.pumpAndSettle();
+    await _menu(t);
     await t.tap(find.text('Download unread'));
     await t.pumpAndSettle();
     expect(h.downloads.enqueued, ['/c/3', '/c/2', '/c/3']);
-    await t.tap(find.byKey(const ValueKey('download-menu')));
-    await t.pumpAndSettle();
+    await _menu(t);
     await t.tap(find.text('Download all'));
     await t.pumpAndSettle();
     expect(h.downloads.enqueued, hasLength(6));
-    // Pressing the anchor again closes an open menu.
-    await t.tap(find.byKey(const ValueKey('download-menu')));
-    await t.pumpAndSettle();
-    await t.tap(find.byKey(const ValueKey('download-menu')));
-    await t.pumpAndSettle();
-    expect(find.text('Download all'), findsNothing);
   });
 
   testWidgets('no downloads part: no download buttons', (t) async {
     await _open(t, downloads: false);
     expect(find.byTooltip('Download'), findsNothing);
-    expect(find.byKey(const ValueKey('download-menu')), findsNothing);
+    await _menu(t);
+    expect(find.text('Download all'), findsNothing);
   });
 
   testWidgets('Read opens the first unread chapter', (t) async {
     final h = await _open(t);
     await h.progress.markRead(_key, '/c/1');
     await t.pumpAndSettle();
-    expect(find.byKey(const ValueKey('continue')), findsNothing);
+    await _menu(t);
     await t.tap(find.byKey(const ValueKey('read')));
     await t.pumpAndSettle();
     expect(find.text('reader:/c/2'), findsOneWidget);
@@ -131,7 +136,9 @@ void main() {
     expect(find.text('Detail title'), findsOneWidget);
     await t.tap(find.byTooltip('Refresh'));
     await t.pumpAndSettle();
-    expect(src.calls.where((c) => c.startsWith('details')), hasLength(3));
+    // Refresh re-fetches the chapter list only; details stay as loaded.
+    expect(src.calls.where((c) => c.startsWith('details')), hasLength(2));
+    expect(src.calls.where((c) => c.startsWith('chapters')), hasLength(3));
   });
 
   testWidgets('a source id with no MangaSource shows unavailable', (t) async {

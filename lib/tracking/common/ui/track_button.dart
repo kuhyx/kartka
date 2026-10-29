@@ -8,8 +8,8 @@ import 'package:kartka/tracking/common/tracking_service.dart';
 import 'package:kartka/tracking/common/ui/tracker_section.dart';
 
 /// The manga-detail action: shows whether [mangaKey] is tracked and opens
-/// the track sheet. Opening the detail screen also pulls remote progress
-/// forward once.
+/// the track sheet. (The pull of remote progress on opening the detail
+/// screen is `TrackingDetailSlot.opened`.)
 class TrackButton extends StatefulWidget {
   /// Creates the button.
   const new({
@@ -35,12 +35,6 @@ class TrackButton extends StatefulWidget {
 class _TrackButtonState extends State<TrackButton> {
   late final Stream<List<TrackBinding>> _bindings = widget.service
       .watchBindings(widget.mangaKey);
-
-  @override
-  void initState() {
-    super.initState();
-    unawaited(widget.service.refresh(widget.mangaKey));
-  }
 
   @override
   Widget build(BuildContext context) => StreamBuilder<List<TrackBinding>>(

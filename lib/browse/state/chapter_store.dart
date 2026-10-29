@@ -45,6 +45,11 @@ class ChapterStore {
     return chapters;
   }
 
+  /// The stored chapters of [key] (memory cache, else the key-value copy),
+  /// or null when this device never fetched them. Never fetches.
+  Future<List<ChapterInfo>?> stored(MangaKey key) async =>
+      _cache[key] ?? await _restore(key);
+
   Future<List<ChapterInfo>?> _restore(MangaKey key) async {
     final raw = await _kv?.get(_kvKey(key));
     if (raw == null || _cache.containsKey(key)) return _cache[key];

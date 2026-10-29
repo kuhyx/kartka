@@ -5,6 +5,7 @@ import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/state/read_state.dart';
+import 'package:kartka/browse/state/refresh_outcome.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
@@ -51,6 +52,15 @@ void main() {
     expect(c.details?.title, 'Detail title');
     expect(c.chapters.map((ch) => ch.url), ['/c/1', '/c/2', '/c/3']);
     expect(c.key, mangaKeyOf('mangadex', '/m/1'));
+  });
+
+  test('refresh after a failed first load that fails again', () async {
+    src.failWith = StateError('down');
+    final c = ctl();
+    await c.load();
+    final outcome = await c.refresh();
+    expect(outcome, isA<RefreshFailed>());
+    expect(c.details, isNull);
   });
 
   test('a source failure becomes error', () async {
