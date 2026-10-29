@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart' hide Category;
+import 'package:flutter/scheduler.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/library/data/lww.dart';
 import 'package:kartka/library/state/entry_facts.dart';
@@ -9,16 +10,31 @@ import 'package:kartka/library/state/library_item.dart';
 import 'package:kartka/library/state/library_query.dart';
 import 'package:kartka/library/state/source_availability.dart';
 
+/// Runs a coalesced notification later.
+typedef NotifyScheduler = void Function(void Function() run);
+
+/// [NotifyScheduler] for the next event-loop turn.
+void nextTurn(void Function() run) => Timer.run(run);
+
+/// [NotifyScheduler] for just before the next frame builds (it schedules
+/// one): at most one library rebuild request per frame.
+void beforeNextFrame(void Function() run) =>
+    SchedulerBinding.instance.scheduleFrameCallback((_) => run());
+
 /// Entries removed together, kept for undo.
 typedef RemovedBatch = ({List<LibraryEntry> entries, DateTime at});
 
 /// State of the Library tab: the joined items, category tabs, the query and
 /// the multi-selection. Every write goes through the decorated repositories.
 class LibraryController extends ChangeNotifier {
-  /// Creates the controller; call [start] to subscribe.
-  new(this.deps) {
-    _facts = FactsTracker(deps, notifyListeners);
+  /// Creates the controller; call [start] to subscribe. `schedule` runs
+  /// the coalesced notify later: the screen passes [beforeNextFrame], the
+  /// default (unit tests, no binding) is the next event-loop turn.
+  new(this.deps, {this._schedule = nextTurn}) {
+    _facts = FactsTracker(deps, _dataChanged);
   }
+
+  final NotifyScheduler _schedule;
 
   /// Repositories, ports and clock.
   final LibraryDeps deps;
@@ -33,6 +49,10 @@ class LibraryController extends ChangeNotifier {
   final Set<MangaKey> _selected = {};
   bool _selecting = false;
   bool _loaded = false;
+  List<LibraryItem>? _items;
+  List<LibraryItem>? _visible;
+  bool _notifyPending = false;
+  bool _disposed = false;
 
   /// Whether the library has been read once.
   bool get loaded => _loaded;
@@ -44,14 +64,32 @@ class LibraryController extends ChangeNotifier {
   LibraryQuery get query => _query;
   set query(LibraryQuery q) {
     _query = q;
+    _visible = null;
     notifyListeners();
   }
 
-  /// Every entry joined with its facts, unsorted.
-  List<LibraryItem> get items => [for (final e in _entries.values) _item(e)];
+  /// Every entry joined with its facts, unsorted; rebuilt once per change.
+  List<LibraryItem> get items =>
+      _items ??= List.unmodifiable([for (final e in _entries.values) _item(e)]);
 
-  /// [items] after [query].
-  List<LibraryItem> get visible => applyQuery(items, _query);
+  /// [items] after [query]; recomputed only after a change, not per read.
+  List<LibraryItem> get visible =>
+      _visible ??= List.unmodifiable(applyQuery(items, _query));
+
+  /// Stream-driven changes (4 fact streams per entry, the repositories,
+  /// source availability): the cached lists are dropped at once, and one
+  /// notify covers everything that arrives in this event-loop turn, so a
+  /// cold start of N entries is not ~4N rebuild requests.
+  void _dataChanged() {
+    _items = null;
+    _visible = null;
+    if (_disposed || _notifyPending) return;
+    _notifyPending = true;
+    _schedule(() {
+      _notifyPending = false;
+      if (!_disposed) notifyListeners();
+    });
+  }
 
   /// Whether multi-select mode is on.
   bool get selecting => _selecting;
@@ -62,14 +100,14 @@ class LibraryController extends ChangeNotifier {
   /// Subscribes to the repositories.
   void start() {
     final repos = deps.repos;
-    _sources = SourceAvailability(deps.sourceProviders, notifyListeners);
+    _sources = SourceAvailability(deps.sourceProviders, _dataChanged);
     _subs
       ..add(repos.library.watch().listen(_onEntries))
       ..add(repos.categories.watch().listen(_onCategories))
       ..add(
         repos.categories.watchMembership().listen((m) {
           _membership = m;
-          notifyListeners();
+          _dataChanged();
         }),
       );
   }
@@ -79,7 +117,7 @@ class LibraryController extends ChangeNotifier {
     _selected.retainAll(_entries.keys);
     _facts.track(_entries.keys.toSet());
     _loaded = true;
-    notifyListeners();
+    _dataChanged();
   }
 
   void _onCategories(List<Category> categories) {
@@ -88,7 +126,7 @@ class LibraryController extends ChangeNotifier {
     if (tab != null && !categories.any((c) => c.id == tab)) {
       _query = _query.copyWith(clearCategory: true);
     }
-    notifyListeners();
+    _dataChanged();
   }
 
   LibraryItem _item(LibraryEntry e) {
@@ -183,6 +221,7 @@ class LibraryController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     for (final s in _subs) {
       unawaited(s.cancel());
     }

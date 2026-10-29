@@ -27,7 +27,10 @@ class LibraryScreen extends StatefulWidget {
 }
 
 class _LibraryScreenState extends State<LibraryScreen> {
-  late final LibraryController _c = LibraryController(widget.deps)..start();
+  late final LibraryController _c = LibraryController(
+    widget.deps,
+    schedule: beforeNextFrame,
+  )..start();
   bool _searching = false;
 
   @override

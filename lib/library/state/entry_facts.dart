@@ -46,20 +46,26 @@ class FactsTracker {
     }
     for (final key in keys.where((k) => !_facts.containsKey(k))) {
       final f = _facts[key] = EntryFacts();
-      void set(void Function() apply) {
+      // An equal value (a stream re-emitting) is not a change.
+      void set<V>(V old, V now, void Function() apply) {
+        if (old == now) return;
         apply();
         onChange();
       }
 
       _subs[key] = [
-        deps.repos.progress
+        deps.repos.progress.watch(key).listen((p) {
+          set(f.lastReadAt, p?.readAt, () => f.lastReadAt = p?.readAt);
+        }),
+        deps.unread
             .watch(key)
-            .listen((p) => set(() => f.lastReadAt = p?.readAt)),
-        deps.unread.watch(key).listen((n) => set(() => f.unread = n)),
+            .listen((n) => set(f.unread, n, () => f.unread = n)),
         deps.downloaded
             .hasDownloads(key)
-            .listen((d) => set(() => f.downloaded = d)),
-        deps.tracked.isTracked(key).listen((t) => set(() => f.tracked = t)),
+            .listen((d) => set(f.downloaded, d, () => f.downloaded = d)),
+        deps.tracked
+            .isTracked(key)
+            .listen((t) => set(f.tracked, t, () => f.tracked = t)),
       ];
     }
   }
