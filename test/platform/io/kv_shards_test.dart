@@ -91,6 +91,15 @@ void main() {
     expect(flattenShards(values), {'a': '1', 'b': '2'});
   });
 
+  test('a crash that kept only the rename re-migrates from the backup', () {
+    // The rename reached disk, the marker and shard renames did not.
+    File('${legacy.path}.migrated').writeAsStringSync('{"a":"1","b":"2"}');
+    final values = readKvDir(kvDir.path, legacy.path);
+    expect(flattenShards(values), {'a': '1', 'b': '2'});
+    expect(File('${kvDir.path}/$kvMigratedMarker').existsSync(), isTrue);
+    expect(File('${legacy.path}.migrated').existsSync(), isTrue);
+  });
+
   test('marker present: kv.json is ignored, the shards win', () {
     legacy.writeAsStringSync(jsonEncode({'a': 'old'}));
     writeKvShards(kvDir.path, {

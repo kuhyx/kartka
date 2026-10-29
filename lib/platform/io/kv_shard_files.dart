@@ -47,21 +47,31 @@ Map<String, String> flattenShards(List<Map<String, String>> shards) => {
 /// Loads every shard of [dir], first migrating [legacy] (the old single
 /// kv.json) when the directory has no [kvMigratedMarker] yet.
 ///
-/// Migration order makes it resumable: shards (tmp + rename), then the
-/// marker, then kv.json is renamed to `kv.json.migrated`, never deleted.
-/// A crash before the marker redoes it from kv.json (the store serves
-/// nothing until this returns, so no newer write can be overwritten). A
-/// corrupt kv.json is renamed to `kv.json.corrupt` and the store starts
-/// empty; the old code would have overwritten it on the next save.
+/// Migration order makes it resumable: shards (tmp + flush + rename), then
+/// the flushed marker, then kv.json is renamed to `kv.json.migrated`,
+/// never deleted. With no marker it is redone, from kv.json or else from
+/// `kv.json.migrated` (a crash can persist the rename yet lose the marker
+/// and shard renames); the store serves nothing until this returns, so at
+/// worst that drops seconds of writes, never the library. A corrupt
+/// kv.json is renamed to `kv.json.corrupt` and the store starts empty; the
+/// old code would have overwritten it on the next save.
 List<Map<String, String>> readKvDir(String dir, String? legacy) {
   final marker = File('$dir/$kvMigratedMarker');
-  final old = legacy == null ? null : File(legacy);
-  if (old != null && old.existsSync() && !marker.existsSync()) {
+  final source = legacy == null || marker.existsSync()
+      ? null
+      : [File(legacy), File('$legacy.migrated')].where((f) => f.existsSync());
+  if (source != null && source.isNotEmpty) {
+    final old = source.first;
     final values = _decodeObject(old.readAsStringSync());
     if (values != null) writeKvShards(dir, {..._indexed(values)});
     Directory(dir).createSync(recursive: true);
-    marker.writeAsStringSync(DateTime.now().toUtc().toIso8601String());
-    old.renameSync('$legacy.${values == null ? 'corrupt' : 'migrated'}');
+    marker.writeAsStringSync(
+      DateTime.now().toUtc().toIso8601String(),
+      flush: true,
+    );
+    if (old.path == legacy) {
+      old.renameSync('$legacy.${values == null ? 'corrupt' : 'migrated'}');
+    }
   }
   return [for (var i = 0; i < kvShardCount; i++) _readShard(dir, i)];
 }
