@@ -11,6 +11,7 @@ import 'package:kartka/library/ui/library_app_bar.dart';
 import 'package:kartka/library/ui/library_grid.dart';
 import 'package:kartka/library/ui/library_options_sheet.dart';
 import 'package:kartka/library/ui/library_swipe.dart';
+import 'package:kartka/library/ui/update_progress_strip.dart';
 
 /// The Library tab: category tabs over a cover grid, with search, sort,
 /// filters and multi-select. Escape leaves selection or search.
@@ -62,6 +63,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
     );
   }
 
+  Future<void> _updateAll() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final summary = await widget.deps.updater!.updateAll();
+    messenger.showSnackBar(SnackBar(content: Text(summary.message)));
+  }
+
   Future<void> _setCategories() async {
     final changes = await pickCategories(
       context,
@@ -99,31 +106,47 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => CallbackShortcuts(
-    bindings: {const SingleActivator(LogicalKeyboardKey.escape): _escape},
-    child: Focus(
-      autofocus: true,
-      child: ListenableBuilder(
-        listenable: _c,
-        builder: (context, _) => Scaffold(
-          appBar: LibraryAppBar(
-            controller: _c,
-            searching: _searching,
-            onSearch: () => setState(() => _searching = true),
-            onCloseSearch: _closeSearch,
-            onOptions: () => unawaited(showLibraryOptions(context, _c)),
-            onEditCategories: () =>
-                unawaited(context.push(libraryCategoriesRoute)),
-            onSetCategories: () => unawaited(_setCategories()),
-            onRemove: () => unawaited(_remove()),
-            bottom: _tabs(),
-          ),
-          body: CategorySwipe(
-            onStep: _step,
-            child: LibraryGrid(controller: _c),
+  Widget build(BuildContext context) {
+    final updater = widget.deps.updater;
+    return CallbackShortcuts(
+      bindings: {const SingleActivator(LogicalKeyboardKey.escape): _escape},
+      child: Focus(
+        autofocus: true,
+        child: ListenableBuilder(
+          listenable: _c,
+          builder: (context, _) => Scaffold(
+            appBar: LibraryAppBar(
+              controller: _c,
+              searching: _searching,
+              onSearch: () => setState(() => _searching = true),
+              onCloseSearch: _closeSearch,
+              onOptions: () => unawaited(showLibraryOptions(context, _c)),
+              onEditCategories: () =>
+                  unawaited(context.push(libraryCategoriesRoute)),
+              onSetCategories: () => unawaited(_setCategories()),
+              onRemove: () => unawaited(_remove()),
+              onUpdateAll: updater == null
+                  ? null
+                  : () => unawaited(_updateAll()),
+              bottom: _tabs(),
+            ),
+            body: Column(
+              children: [
+                if (updater != null) UpdateProgressStrip(updater),
+                Expanded(
+                  child: CategorySwipe(
+                    onStep: _step,
+                    child: LibraryGrid(
+                      controller: _c,
+                      onRefresh: updater == null ? null : _updateAll,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

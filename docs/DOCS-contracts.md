@@ -177,4 +177,15 @@ Library-local ports (lib/library/, default no-op, real impls injected by their
 owners via the registry): `UnreadCounts.watch(key) → Stream<int?>` (browse
 supplies, from its chapter cache), `DownloadedLookup.hasDownloads(key) →
 Stream<bool>` (downloads supplies), `TrackedLookup.isTracked(key) →
-Stream<bool>` (tracking-anilist supplies from TrackingService bindings).
+Stream<bool>` (tracking-anilist supplies from TrackingService bindings),
+`LibraryUpdater` (updates supplies: one shared "update all" run, a
+`Listenable` with `progress` and `updateAll() → UpdateSummary`; no
+updater hides the Library refresh action and pull).
+
+Updates feed (`lib/updates/`, the Updates tab): browse's `ChapterStore`
+tells every `ChapterAdditionSink` (`lib/core/updates/`) the chapters a
+fetch added to a list stored before, whichever path fetched (detail open,
+`ChapterUpdateChecker`, reader, resolver); a first fetch is a baseline and
+reports nothing. The feed is local (KV `updates.feed`, newest 500, 60
+days), not synced. Update-all checks ≤ 4 manga at once, ≤ 1 per source,
+and logs failures as `updates.check` (source id only, URLs stripped).

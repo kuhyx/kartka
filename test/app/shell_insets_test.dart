@@ -14,6 +14,7 @@ KartkaFeature _tabs(KartkaEnv env) => KartkaFeature(
   id: 'tabs',
   tabs: {
     KartkaTab.library: (_) => _top('library top'),
+    KartkaTab.updates: (_) => _top('updates top'),
     KartkaTab.browse: (_) => _top('browse top'),
     KartkaTab.sources: (_) => _top('sources top'),
   },
@@ -57,6 +58,7 @@ void main() {
     testWidgets('$name: every tab starts below the status bar', (t) async {
       await _pump(t, size);
       await _expectBelowStatusBar(t, 'Library', 'library top');
+      await _expectBelowStatusBar(t, 'Updates', 'updates top');
       await _expectBelowStatusBar(t, 'Browse', 'browse top');
       await _expectBelowStatusBar(t, 'Sources', 'sources top');
       await _expectBelowStatusBar(t, 'More', 'more top');

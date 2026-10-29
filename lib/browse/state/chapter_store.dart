@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/platform/key_value_store.dart';
@@ -8,16 +9,23 @@ import 'package:kartka/platform/key_value_store.dart';
 /// Finds the source for a source id (normally `SourceRegistry.byId`).
 typedef SourceLookup = MangaSource? Function(String sourceId);
 
+/// Told the chapters (oldest first, never empty) a fetch added to a list
+/// that was stored before (`ChapterAdditionSink`).
+typedef ChaptersAdded = void Function(MangaKey key, List<ChapterInfo> added);
+
 /// Chapter lists per manga, fetched from the owning source and cached so the
 /// library (unread counts) and tracking (chapter-number → url) can answer
 /// without a network call per row.
 class ChapterStore {
   /// Creates a store resolving sources through `lookup`; with a `kv` store,
   /// lists survive restarts (library unread counts show before a re-fetch).
-  new(this._lookup, {this._kv});
+  /// `onAdded` hears every fetch that grows a stored list, whichever caller
+  /// fetched; a first fetch is a baseline and is not reported.
+  new(this._lookup, {this._kv, this._onAdded});
 
   final SourceLookup _lookup;
   final KeyValueStore? _kv;
+  final ChaptersAdded? _onAdded;
   final Map<MangaKey, List<ChapterInfo>> _cache = {};
   final _changes = StreamController<MangaKey>.broadcast(sync: true);
 
@@ -35,6 +43,9 @@ class ChapterStore {
     final (sourceId, url) = splitMangaKey(key);
     final source = _lookup(sourceId);
     if (source == null) throw StateError('Unknown source $sourceId');
+    // The prior list, from the kv copy too: after a restart the cache is
+    // empty, and a cold refresh must still be diffed, not baselined.
+    final before = _onAdded == null ? null : await stored(key);
     final chapters = List<ChapterInfo>.unmodifiable(await source.chapters(url));
     _cache[key] = chapters;
     _changes.add(key);
@@ -42,7 +53,17 @@ class ChapterStore {
       _kvKey(key),
       jsonEncode([for (final c in chapters) c.toJson()]),
     );
+    if (before != null) _report(key, before, chapters);
     return chapters;
+  }
+
+  void _report(MangaKey key, List<ChapterInfo> before, List<ChapterInfo> now) {
+    final known = {for (final c in before) c.url};
+    final added = [
+      for (final c in now)
+        if (!known.contains(c.url)) c,
+    ];
+    if (added.isNotEmpty) _onAdded!(key, readingOrder(added));
   }
 
   /// The stored chapters of [key] (memory cache, else the key-value copy),
