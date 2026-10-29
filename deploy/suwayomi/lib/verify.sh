@@ -46,6 +46,24 @@ wait_edge() {
 	log "edge still not answering 200: ${out:-no response}"
 }
 
+# KCEF must really run, not just read back true: this start's journal must not
+# report a failed CEF, and CEF's helpers must be up. The first start downloads
+# the CEF bundle (~244 MB) before that, so "downloading" means rerun later.
+cef_state() {
+	local inv log
+	inv="$(systemctl --user show -p InvocationID --value "${UNIT_NAME}" 2>/dev/null || true)"
+	log="$(journalctl --user "_SYSTEMD_INVOCATION_ID=${inv}" --no-pager -o cat 2>/dev/null || true)"
+	if grep -qE 'Failed to set up CEF|ContentMainRun failed' <<<"${log}"; then
+		echo "failed (journalctl --user -u ${UNIT_NAME} | grep -i cef)"
+	elif pgrep -u "${USER}" -f "${DATA_DIR}/bin/kcef/jcef_helper" >/dev/null; then
+		echo running
+	elif grep -q 'CEFManager -- Downloading' <<<"${log}"; then
+		echo "downloading the CEF bundle; rerun --verify-only in a minute"
+	else
+		echo "not started"
+	fi
+}
+
 lan_ip() { ip -4 -o route get 1.1.1.1 2>/dev/null | sed -nE 's/.* src ([0-9.]+).*/\1/p'; }
 
 verify_cmd() {
@@ -64,6 +82,7 @@ verify_cmd() {
 		"true/NONE" "KCEF on for WebView extensions; Caddy is the only auth gate"
 	check "$(jq -r '.data.settings | "\(.flareSolverrEnabled)/\(.flareSolverrAsResponseFallback)"' <<<"${settings}")" \
 		"false/false" "no challenge solving (FlareSolverr and its fallback off)"
+	check "$(cef_state)" running "KCEF running under the unit's private Xvfb"
 	check "$(local_gql '{ extensionStores { nodes { indexUrl } } }' |
 		jq -r --arg u "${KEIYOUSHI_INDEX}" '[.data.extensionStores.nodes[].indexUrl] | index($u) != null')" \
 		true "Keiyoushi store configured"

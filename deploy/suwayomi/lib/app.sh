@@ -54,6 +54,15 @@ install_release() {
 # Install the unit (only when it differs), enable it, and (re)start it when
 # the unit or the release changed. Linger is required so it survives logout
 # and the nightly lightdm stop; the host already has it.
+# The installer needs no root, so it only checks: pacman -T prints the
+# packages that are not installed and needs no privileges.
+require_kcef_pkgs() {
+	local missing
+	missing="$(pacman -T "${KCEF_PKGS[@]}" | tr '\n' ' ' || true)"
+	[[ -z ${missing// /} ]] ||
+		die "KCEF needs packages that are not installed. Run: sudo pacman -S --needed ${missing% }"
+}
+
 install_unit() {
 	local src="${SCRIPT_DIR}/${UNIT_NAME}" dst="${UNIT_DIR}/${UNIT_NAME}" changed=0
 	[[ "$(loginctl show-user "${USER}" -p Linger --value 2>/dev/null)" == "yes" ]] ||

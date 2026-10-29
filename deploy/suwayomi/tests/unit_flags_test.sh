@@ -13,6 +13,8 @@ DIR="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
 readonly DIR
 readonly UNIT="${DIR}/suwayomi.service"
 readonly VERIFY="${DIR}/lib/verify.sh"
+readonly COMMON="${DIR}/lib/common.sh"
+readonly APP="${DIR}/lib/app.sh"
 readonly PREFIX='-Dsuwayomi.tachidesk.config.server.'
 FAILS=0
 
@@ -40,6 +42,19 @@ main() {
 		"unit pins the FlareSolverr response fallback off"
 	expect "${UNIT}" "${PREFIX}authMode=NONE " "unit keeps Caddy as the only auth gate"
 	expect "${UNIT}" "${PREFIX}ip=127.0.0.1 " "unit keeps the loopback bind"
+	# CEF needs an X display; the unit gives it a private Xvfb, never the desktop.
+	expect "${UNIT}" 'ExecStart=/usr/bin/xvfb-run -n 99 -s "-nolisten tcp -nolisten local ' \
+		"unit runs the server under a private Xvfb"
+	expect "${UNIT}" 'UnsetEnvironment=DISPLAY XAUTHORITY WAYLAND_DISPLAY' \
+		"unit still hides the desktop session from the server"
+	expect "${COMMON}" 'readonly KCEF_PKGS=(xorg-server-xvfb xorg-xauth nss nspr ' \
+		"installer lists the packages KCEF needs"
+	# shellcheck disable=SC2016 # the literal source text is what is grepped
+	expect "${APP}" 'pacman -T "${KCEF_PKGS[@]}"' "installer checks them without root"
+	expect "${VERIFY}" '_SYSTEMD_INVOCATION_ID=' "--verify-only reads this start's journal"
+	expect "${VERIFY}" 'Failed to set up CEF|ContentMainRun failed' \
+		"--verify-only fails a CEF that did not start"
+	expect "${VERIFY}" 'bin/kcef/jcef_helper' "--verify-only wants the CEF helpers running"
 	expect "${VERIFY}" 'flareSolverrEnabled flareSolverrAsResponseFallback' \
 		"--verify-only reads the FlareSolverr settings back"
 	expect "${VERIFY}" '"true/NONE"' "--verify-only expects KCEF on, auth NONE"

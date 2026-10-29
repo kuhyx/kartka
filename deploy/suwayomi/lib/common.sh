@@ -23,6 +23,10 @@ readonly SUWAYOMI_PORT=4567
 readonly SUWAYOMI_LOCAL="http://127.0.0.1:${SUWAYOMI_PORT}"
 readonly UNIT_NAME="suwayomi.service"
 readonly UNIT_DIR="${XDG_CONFIG_HOME:-${HOME}/.config}/systemd/user"
+# KCEF: the private Xvfb the unit runs under, plus the shared libraries the
+# downloaded CEF bundle links against (a bare Arch install lacks them).
+readonly KCEF_PKGS=(xorg-server-xvfb xorg-xauth nss nspr alsa-lib at-spi2-core
+	libcups libxcomposite libxcursor libxdamage libxi libxtst libxrender)
 readonly CACHE_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/kartka/suwayomi"
 
 # Credentials live outside the repo, 0600; never committed.
