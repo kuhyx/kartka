@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -31,7 +30,6 @@ void main() {
       sourceId: 'fake',
       mangaUrl: '/m/1',
       chapterUrl: chapter,
-      startAtEnd: false,
       deps: ReaderDeps(
         findSource: (id) async => source,
         progress: progress,
