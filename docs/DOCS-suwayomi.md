@@ -174,6 +174,12 @@ Facts the Dart client depends on (all observed, not assumed):
 - **Unknown manga.** For a MangaKey the server has never seen, `manga_by_url`
   returns no nodes. Reach the manga once through `fetchSourceManga` SEARCH, or
   load the SY backup into Suwayomi with the `restoreBackup` mutation.
+- **Legacy AllManga URLs** (2026-10-29). 76 library entries keep the old
+  allanime extension's `/manga/<id>/<slug>` (chapters
+  `/read/<id>/<slug>/chapter-<n>-sub`); the server only has `<id>` and `<n>`.
+  `SuwayomiSource` maps them (`lib/sources/suwayomi/legacy_urls.dart`), tries
+  the slug as a second search title, and lists a legacy manga's chapters
+  under their legacy URLs so read marks still match.
 - **Page size varies by source.** On MangaDex en, page 1 returned 20 manga
   for SEARCH and POPULAR and 71 for LATEST. Page with `hasNextPage` and never
   assume a fixed count.
