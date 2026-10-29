@@ -131,7 +131,9 @@ def test_rank_verdicts_and_the_graded_subset_penalty() -> None:
     ranked = {r["id"]: r for r in rank(copy.deepcopy(records), found)}
     assert ranked["big"]["rank"] == 1  # "hard" ties on score, "big" < "hard"
     assert (ranked["big"]["verdict"], ranked["hard"]["verdict"]) == ("keep", "cut")
-    assert ranked["hard"]["cutReasons"] == ["blocking>=0.50"]
+    # Challenged, so it ranks below "onhard" (tier) and is half on it.
+    assert ranked["hard"]["cutReasons"] == ["blocking>=0.50", "subset"]
+    assert ranked["hard"]["subsetOf"] == {"sourceId": "onhard", "overlap": 0.5}
     assert ranked["dup"]["subsetOf"] == {"sourceId": "big", "overlap": 1.0}
     assert ranked["dup"]["cutReasons"] == ["subset"]
     assert ranked["dup"]["score"] == 0.478  # the unrounded 0.955 x 0.5
@@ -145,11 +147,14 @@ def test_rank_verdicts_and_the_graded_subset_penalty() -> None:
     assert ranked["blocked"]["cutReasons"] == ["blocking"]
     assert ranked["blocked"]["verdict"] == "cut"  # by score: 0.885
     assert ranked["plugin"]["verdict"] == "pending"  # nothing measured
-    # The penalty re-ranks: "dup" (0.478) falls below "plugin" (0.5).
-    assert [r["id"] for r in rank(copy.deepcopy(records), found)][-3:] == [
+    # The penalty re-ranks: "dup" (0.478) falls below "plugin" (0.5); the
+    # challenged ones rank below every unchallenged one, whatever the score.
+    assert [r["id"] for r in rank(copy.deepcopy(records), found)][-5:] == [
         "half",
         "plugin",
         "dup",
+        "blocked",
+        "hard",
     ]
 
 

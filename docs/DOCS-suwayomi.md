@@ -28,9 +28,12 @@ deploy/suwayomi/install.sh                # as kuhy, never under sudo
 deploy/suwayomi/install.sh --verify-only  # end-to-end check, exit 0 = good
 ```
 
-- **No root.** The release tarball bundles its JRE (25.0.4), so pacman is not
-  needed. Linger is already on, and 80/443 are already open. The installer
-  dies with the exact fix if linger is ever off.
+- **No root.** The release tarball bundles its JRE (25.0.4). KCEF needs
+  system packages (`KCEF_PKGS` in `lib/common.sh`: Xvfb, xauth and the CEF
+  bundle's shared libraries; all present on the host 2026-10-29); the
+  installer checks them with `pacman -T` and dies with the exact
+  `sudo pacman -S` line. Linger is already on, and 80/443 are already open.
+  The installer dies with the exact fix if linger is ever off.
 - **Idempotent.** A rerun with nothing to change leaves the snippet and the env
   file byte-identical, does not reload Caddy and does not restart the unit.
 - **To update**, bump `SUWAYOMI_VERSION` and `SUWAYOMI_SHA256` (the release's
@@ -42,11 +45,30 @@ deploy/suwayomi/install.sh --verify-only  # end-to-end check, exit 0 = good
 - **Loopback is enforced in the unit.** `-Dsuwayomi.tachidesk.config.server.ip=127.0.0.1`
   overrides `server.conf`. On the host the conf still says `0.0.0.0` and the
   socket is `127.0.0.1:4567`, so the override is what actually applies. The
-  same flags also turn off the tray icon, the browser-on-start and KCEF
-  (bundled Chromium; Kartka records a challenged source as blocking and never
-  solves the challenge).
+  same flags also turn off the tray icon and the browser-on-start.
+- **KCEF on, FlareSolverr pinned off** (decision 2026-10-29). KCEF (bundled
+  Chromium) backs the extension WebView shim for sources that need it
+  (AllManga failed with "CEF is disabled" on `/fetchChapterPages`). CEF needs
+  an X display, so the unit runs the JVM under `xvfb-run -n 99` with
+  `-nolisten local`; PrivateTmp keeps that display private, and the desktop's
+  DISPLAY stays unset. The first start downloads the CEF bundle (~244 MB)
+  into `data/bin/kcef`. The Sources ranking puts such sources low rather than cutting them
+  (`DOCS-contracts-source-health.md`, rank tier). In v2.4.2366 FlareSolverr is
+  the only challenge solver, and Kartka never solves or waits out a challenge
+  (`DOCS-contracts-webview.md` §2), so `flareSolverrEnabled` and
+  `flareSolverrAsResponseFallback` are `-D false`: a web-UI toggle is undone
+  at the next restart. Residual risk, accepted: a WebView-using extension may
+  pass a JS check inside KCEF. `-Xmx1g` stays: CEF's browser and renderer are
+  native subprocesses outside the Java heap (vmbox: the unit idles at
+  ~0.5 GB, peak 1.44 GB on a first start incl. the download's page cache;
+  no OutOfMemoryError). The evaluator's own instance
+  (`tools/source_eval/systemd/kartka-suwayomi-eval.service`) keeps KCEF off,
+  because "CEF is disabled" is how it detects a needs-browser-engine source.
 - `--verify-only` checks these, all live:
-  - unit active and enabled, version and settings read back;
+  - unit active and enabled, version and settings read back (KCEF on,
+    FlareSolverr and its fallback off);
+  - KCEF really running: no "Failed to set up CEF" in this start's journal
+    and `jcef_helper` up (while the bundle downloads: rerun later);
   - Keiyoushi store present;
   - `LAN-IP:4567` refused;
   - Caddy returns 401 with no credentials and with a wrong password, and 200
@@ -74,6 +96,19 @@ that only imports `sites/*.caddy`, and a neighbour site that has to keep
 answering. These passed in vmbox on commit `794520d`: fresh install, verify,
 an idempotent rerun, rollback of an invalid snippet (neighbour unaffected), and
 verify after a guest reboot.
+
+Static check, runs anywhere: `deploy/suwayomi/tests/unit_flags_test.sh` (the
+KCEF / FlareSolverr / auth / loopback flags and their `--verify-only`
+readback).
+
+KCEF, in vmbox on 2026-10-29 (fresh guest, `vm scp` seeding): install died
+with the exact `pacman -S` line until the packages were in; then install,
+`--verify-only` (all OK, KCEF running), an idempotent rerun (no restart), a
+clean stop. Turning FlareSolverr on and KCEF off through `setSettings`, then
+restarting, read back `false/false/true`. A second `Xvfb :99` outside the
+unit did not stop it starting. Open: AllManga `fetchChapterPages` now fails
+with "Timed out waiting for WebView after 20s" instead of "CEF is
+disabled" (not diagnosed). Not verified on the host.
 
 Later changes were checked on the host only: the kcef/authMode readback and
 the early return that skips the download. In that vmbox run the tarball came

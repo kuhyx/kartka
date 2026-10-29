@@ -6,6 +6,13 @@
 # Loopback on purpose: on 0.0.0.0 anyone on the LAN could reach port 4567 and
 # skip Caddy's password. The -D flags below win over server.conf, so a setting
 # changed through the web UI cannot reopen it after a restart.
+#
+# KCEF (bundled Chromium) is on so extensions that need a WebView work; the
+# Sources ranking puts those low (decision 2026-10-29). FlareSolverr is pinned
+# off: Kartka never solves or waits out a challenge, and in v2.4.2366
+# FlareSolverr is the only challenge solver. CEF's browser and renderer are
+# native subprocesses outside the Java heap, so -Xmx stays at 1g (vmbox: the
+# whole unit idles at ~0.5 GB with CEF up, 1.44 GB peak on a first start).
 
 [Unit]
 Description=Suwayomi-Server for Kartka (loopback; published by Caddy)
@@ -21,7 +28,12 @@ WorkingDirectory=%h/services/suwayomi
 UnsetEnvironment=DISPLAY XAUTHORITY WAYLAND_DISPLAY
 # Upstream's suwayomi-server.sh preloads this (it catches KCEF aborts).
 Environment=LD_PRELOAD=%h/services/suwayomi/app/current/bin/catch_abort.so
-ExecStart=%h/services/suwayomi/app/current/jre/bin/java \
+# CEF needs an X display ("Missing X server or $DISPLAY" without one), so the
+# JVM runs under its own Xvfb. PrivateTmp keeps its socket and lock in this
+# unit's /tmp, and -nolisten local drops the abstract socket, so display 99
+# cannot clash with another Xvfb (e.g. a web E2E run) on the host.
+ExecStart=/usr/bin/xvfb-run -n 99 -s "-nolisten tcp -nolisten local -screen 0 1280x720x24" \
+	%h/services/suwayomi/app/current/jre/bin/java \
 	-Xmx1g \
 	-Djava.awt.headless=true \
 	-Dsuwayomi.tachidesk.config.server.rootDir=%h/services/suwayomi/data \
@@ -30,7 +42,9 @@ ExecStart=%h/services/suwayomi/app/current/jre/bin/java \
 	-Dsuwayomi.tachidesk.config.server.authMode=NONE \
 	-Dsuwayomi.tachidesk.config.server.initialOpenInBrowserEnabled=false \
 	-Dsuwayomi.tachidesk.config.server.systemTrayEnabled=false \
-	-Dsuwayomi.tachidesk.config.server.kcefEnabled=false \
+	-Dsuwayomi.tachidesk.config.server.kcefEnabled=true \
+	-Dsuwayomi.tachidesk.config.server.flareSolverrEnabled=false \
+	-Dsuwayomi.tachidesk.config.server.flareSolverrAsResponseFallback=false \
 	-jar %h/services/suwayomi/app/current/bin/Suwayomi-Server.jar
 # The JVM exits 143 on SIGTERM; that is a clean stop, not a failure.
 SuccessExitStatus=143

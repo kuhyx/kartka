@@ -67,8 +67,13 @@ class ScoreTable extends StatelessWidget {
     this.parts, {
     this.pagesLoad,
     this.profile = defaultScoringProfile,
+    this.rankedLowBecause = const [],
     super.key,
   });
+
+  /// [rankTierReasons] of the source: each ranks it below every source
+  /// without it. Empty for most sources.
+  final List<String> rankedLowBecause;
 
   /// The scoring profile the parts were weighted under.
   final ScoringProfile profile;
@@ -140,11 +145,26 @@ class ScoreTable extends StatelessWidget {
         ),
         Text(
           'Recomputed from the metrics under the ${profile.name} scoring '
-          'profile: $recomputed. The score is what ranks sources; '
-          '${profile.keepScore.toStringAsFixed(2)} or more keeps a source'
-          '${profile.cuts.isEmpty ? '' : ', unless a cut switch applies'}.',
+          'profile: $recomputed. The score ranks sources that share a rank '
+          'tier; ${profile.keepScore.toStringAsFixed(2)} or more keeps a '
+          'source${profile.cuts.isEmpty ? '' : _unlessCut}.',
         ),
+        if (_rankLine() case final line?) Text(line),
       ],
     );
   }
+
+  String? _rankLine() => switch (rankedLowBecause) {
+    [] => null,
+    [final one] =>
+      'Ranked low: it $one, so it ranks below every source that does not. '
+          '$_rankOnly',
+    _ =>
+      'Ranked lowest: it ${rankedLowBecause.join(' and ')}, so it ranks '
+          'below every source with only one of these or neither. $_rankOnly',
+  };
+
+  static const _unlessCut = ', unless a cut switch applies';
+
+  static const _rankOnly = 'The rank only: score and verdict are unchanged.';
 }

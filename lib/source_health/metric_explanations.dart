@@ -126,7 +126,9 @@ List<MetricExplanation> _explainMetrics(
         'Kartka never bypasses challenges; '
         '${pct(HealthThresholds.hardChallengeRate)} or more rules the source '
         'out whatever its score. Needing a browser engine only raises the '
-        '"Needs browser engine" flag.',
+        '"Needs browser engine" flag. A challenge or a browser engine each '
+        'ranks the source below every source without it, both lowest; '
+        'neither changes the score.',
     status: (r.blocking?.onlyBrowserEngine ?? false)
         ? MetricStatus.info
         : _below(r.blocking?.challengeRate, HealthThresholds.maxChallengeRate),

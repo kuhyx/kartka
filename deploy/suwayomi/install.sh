@@ -40,7 +40,8 @@ usage() {
 
 install_cmd() {
 	[[ ${EUID} -ne 0 ]] || die "run as your normal user, not root (sudo strips the user bus)"
-	require_cmds curl tar jq sha256sum docker systemctl loginctl cmp ip
+	require_cmds curl tar jq sha256sum docker systemctl loginctl cmp ip pacman
+	require_kcef_pkgs
 	ensure_credentials
 	fetch_release
 	install_release

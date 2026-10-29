@@ -94,8 +94,16 @@ under the line cap; same rules. Implementation notes:
   carry `cutReasons` (warnings). Uptime still accruing does not force
   `pending`. `subsetOf` is computed by the evaluator (it needs every source's
   found titles) under the profile it ran with; the app never recomputes it,
-  it re-scores, re-ranks (score, then origin native < suwayomi < plugin, then
-  id) and re-judges from the published metrics and `cutReasons`.
+  it re-scores, re-ranks (rank tier, then score, then origin native <
+  suwayomi < plugin, then id) and re-judges from the published metrics and
+  `cutReasons`.
+- **Rank tier** (2026-10-29): the `needs-browser-engine` flag and any
+  `blocking*` cut reason each add 1 (0..2), and ranking sorts by it before the
+  score, so such a source ranks below every source without it and both
+  lowest. Score and verdict are unchanged: a usable KCEF source stays `keep`.
+  The base ranking for `subsetOf` uses it too. `source_eval/tier.py` and
+  `rankTier` (`score_breakdown.dart`); the detail page's score breakdown says
+  why. A pre-flag record (`webview` kind, no `flags`) is not tiered.
 - **App** (2026-10-25): Sources has a "Scoring" button opening the Scoring
   page: a slider per weight (0 = off) with its share after normalisation, an
   "Only this" button per weight (zeroes the others; a zero weight becomes 1),

@@ -1,5 +1,5 @@
 {
-  "_comment": "Read by tools/source_eval/tests/test_profile_fixture.py AND test/source_health/scoring/profile_fixture_test.dart: the DEFAULT scoring profile and golden judgements, so the two languages cannot drift. Python derives cutReasons and subsetOf from the records + found; Dart reads them as published.",
+  "_comment": "Ranking is rank tier first (needs-browser-engine flag + any blocking cut reason, 0..2), then score. Read by tools/source_eval/tests/test_profile_fixture.py AND test/source_health/scoring/profile_fixture_test.dart: the DEFAULT scoring profile and golden judgements, so the two languages cannot drift. Python derives cutReasons and subsetOf from the records + found; Dart reads them as published.",
   "settingKey": "sourceHealth.scoring",
   "settingNode": "kartka/settings/sourceHealth~2Escoring",
   "scale": {"fullWidthPx": 1067, "worstP95Ms": 5000},
@@ -179,40 +179,55 @@
      "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
      "blocking": {"challengeRate": 0.2, "kinds": ["webview"]},
      "pagesLoad": {"ratio": 1, "sampled": 10},
-     "subsetOf": null, "cutReasons": []}
+     "subsetOf": null, "cutReasons": []},
+    {"id": "soft", "origin": "suwayomi", "coverage": {"ratio": 1, "completeRatio": 1},
+     "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
+     "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
+     "blocking": {"challengeRate": 0.2, "kinds": ["cloudflare"], "hardRate": 0.2},
+     "pagesLoad": {"ratio": 1, "sampled": 10},
+     "subsetOf": null, "cutReasons": ["blocking"]},
+    {"id": "both", "origin": "native", "coverage": {"ratio": 1, "completeRatio": 1},
+     "chapterCompleteness": {"medianRatio": 1}, "uptime": {"ratio": 1, "status": "final"},
+     "imageQuality": {"medianWidthPx": 1400}, "latencyMs": {"p95": 0},
+     "blocking": {"challengeRate": 0.4, "kinds": ["webview", "cloudflare"], "hardRate": 0.2},
+     "pagesLoad": {"ratio": 1, "sampled": 10},
+     "flags": ["needs-browser-engine"], "subsetOf": null, "cutReasons": ["blocking"]}
   ],
   "expect": {
     "default": {
-      "order": ["dead", "oldwebview", "webview", "star", "walled", "browser", "legacy", "slow",
-                "lowcover", "copy", "unmeasured", "nopages"],
+      "order": ["dead", "oldwebview", "star", "legacy", "slow", "lowcover", "copy",
+                "unmeasured", "nopages", "webview", "soft", "walled", "browser", "both"],
       "judged": {
         "star": [1.0, "keep"], "slow": [0.85, "cut"], "nopages": [0.0, "cut"],
         "webview": [1.0, "keep"], "unmeasured": [0.0, "pending"],
         "lowcover": [0.75, "cut"], "legacy": [0.9, "keep"], "copy": [0.7, "cut"],
         "dead": [1.0, "cut"], "walled": [1.0, "cut"],
-        "oldwebview": [1.0, "keep"], "browser": [1.0, "keep"]
+        "oldwebview": [1.0, "keep"], "browser": [1.0, "keep"],
+        "soft": [1.0, "keep"], "both": [1.0, "keep"]
       }
     },
     "speedOnly": {
-      "order": ["dead", "oldwebview", "webview", "legacy", "lowcover", "nopages", "star", "walled",
-                "browser", "copy", "unmeasured", "slow"],
+      "order": ["dead", "oldwebview", "legacy", "lowcover", "nopages", "star", "copy",
+                "unmeasured", "slow", "webview", "soft", "walled", "browser", "both"],
       "judged": {
         "star": [1.0, "keep"], "slow": [0.0, "cut"], "nopages": [1.0, "keep"],
         "webview": [1.0, "cut"], "unmeasured": [0.0, "pending"],
         "lowcover": [1.0, "keep"], "legacy": [1.0, "keep"], "copy": [0.7, "cut"],
         "dead": [1.0, "cut"], "walled": [1.0, "cut"],
-        "oldwebview": [1.0, "keep"], "browser": [1.0, "cut"]
+        "oldwebview": [1.0, "keep"], "browser": [1.0, "cut"],
+        "soft": [1.0, "keep"], "both": [1.0, "cut"]
       }
     },
     "uneven": {
-      "order": ["dead", "oldwebview", "webview", "star", "walled", "browser", "slow", "legacy",
-                "copy", "lowcover", "unmeasured", "nopages"],
+      "order": ["dead", "oldwebview", "star", "slow", "legacy", "copy", "lowcover",
+                "unmeasured", "nopages", "webview", "soft", "walled", "browser", "both"],
       "judged": {
         "star": [1.0, "keep"], "slow": [1.0, "keep"], "nopages": [0.0, "cut"],
         "webview": [1.0, "keep"], "unmeasured": [0.0, "pending"],
         "lowcover": [0.667, "cut"], "legacy": [0.867, "cut"], "copy": [0.7, "cut"],
         "dead": [1.0, "cut"], "walled": [1.0, "cut"],
-        "oldwebview": [1.0, "keep"], "browser": [1.0, "keep"]
+        "oldwebview": [1.0, "keep"], "browser": [1.0, "keep"],
+        "soft": [1.0, "keep"], "both": [1.0, "keep"]
       }
     }
   }

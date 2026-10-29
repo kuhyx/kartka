@@ -39,6 +39,19 @@ double? subsetFactor(SourceHealthRecord r) {
   return overlap == null ? null : 1 - HealthThresholds.subsetPenalty * overlap;
 }
 
+/// Why [r] ranks low, in tier order: it needs a browser engine (the
+/// `needs-browser-engine` flag) and/or hits a challenge (a `blocking` cut
+/// reason). Empty for most sources. Like the evaluator's `tier.py`.
+List<String> rankTierReasons(SourceHealthRecord r) => [
+  if (r.needsBrowserEngine) 'needs a browser engine',
+  if (r.cutReasons.any((c) => c.startsWith('blocking'))) 'hits a challenge',
+];
+
+/// [r]'s rank tier, 0..2: ranking sorts by it before the score, so either
+/// reason puts a source below every source without it, and both lowest
+/// (decision 2026-10-29). It changes neither the score nor the verdict.
+int rankTier(SourceHealthRecord r) => rankTierReasons(r).length;
+
 /// The merged coverage part of [r]: `coverage.completeRatio`; on a run
 /// before it, the old coverage and completeness in their old proportion
 /// (an unmeasured one counts 0); null when neither was measured.
