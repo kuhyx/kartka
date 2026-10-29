@@ -63,8 +63,15 @@ class _PerfTile extends StatelessWidget {
         '${s.janky} of ${s.frames} frames janky ($pct %) · '
         'p50 ${ms(s.p50Micros)} · p90 ${ms(s.p90Micros)} · '
         'p99 ${ms(s.p99Micros)} · worst ${ms(s.worstMicros)} · '
-        'budget ${ms(s.budgetMicros)}',
+        'budget ${ms(s.budgetMicros)}${_stalls(s, ms)}',
       ),
     );
   }
 }
+
+/// " · N stalls (worst X ms)", or nothing without stalls.
+String _stalls(PerfSummary s, String Function(int) ms) => switch (s.stalls) {
+  0 => '',
+  1 => ' · 1 stall (worst ${ms(s.worstStallMicros)})',
+  final n => ' · $n stalls (worst ${ms(s.worstStallMicros)})',
+};

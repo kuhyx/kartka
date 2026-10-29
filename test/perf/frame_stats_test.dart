@@ -78,7 +78,7 @@ void main() {
     expect(
       s.toLogLine(),
       'screen=/read/:sourceId frames=2 janky=1 worstMs=20.0 p50Ms=4.0 '
-      'p90Ms=20.0 p99Ms=20.0 budgetMs=16.7',
+      'p90Ms=20.0 p99Ms=20.0 budgetMs=16.7 stalls=0 worstStallMs=0.0',
     );
   });
 }

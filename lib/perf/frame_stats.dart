@@ -25,6 +25,7 @@ class ScreenFrameStats {
   int _next = 0;
   int _filled = 0;
   int _flushedFrames = 0;
+  int _flushedStalls = 0;
 
   /// Every frame recorded.
   int frames = 0;
@@ -34,6 +35,12 @@ class ScreenFrameStats {
 
   /// The slowest frame, in microseconds.
   int worstMicros = 0;
+
+  /// Event-loop stalls: heartbeats that ran late by more than the threshold.
+  int stalls = 0;
+
+  /// The longest stall, in microseconds.
+  int worstStallMicros = 0;
 
   /// When a summary of this screen was last written to the log.
   DateTime? lastFlushAt;
@@ -48,13 +55,20 @@ class ScreenFrameStats {
     if (_filled < capacity) _filled++;
   }
 
-  /// Whether frames arrived since the last [markFlushed].
-  bool get dirty => frames != _flushedFrames;
+  /// Counts one event-loop stall of [micros].
+  void recordStall(int micros) {
+    stalls++;
+    if (micros > worstStallMicros) worstStallMicros = micros;
+  }
+
+  /// Whether frames or stalls arrived since the last [markFlushed].
+  bool get dirty => frames != _flushedFrames || stalls != _flushedStalls;
 
   /// Notes that a summary was written at [at].
   void markFlushed(DateTime at) {
     lastFlushAt = at;
     _flushedFrames = frames;
+    _flushedStalls = stalls;
   }
 
   /// The current figures for [screen] against [budgetMicros].
@@ -73,6 +87,8 @@ class ScreenFrameStats {
       p90Micros: pct(90),
       p99Micros: pct(99),
       budgetMicros: budgetMicros,
+      stalls: stalls,
+      worstStallMicros: worstStallMicros,
     );
   }
 }
@@ -91,6 +107,8 @@ class PerfSummary {
     required this.p90Micros,
     required this.p99Micros,
     required this.budgetMicros,
+    this.stalls = 0,
+    this.worstStallMicros = 0,
   });
 
   /// The screen's route pattern.
@@ -117,6 +135,12 @@ class PerfSummary {
   /// The frame budget (one refresh interval).
   final int budgetMicros;
 
+  /// Event-loop stalls (UI isolate frozen, seen by the heartbeat).
+  final int stalls;
+
+  /// Longest stall.
+  final int worstStallMicros;
+
   /// Share of janky frames, 0 when nothing was measured.
   double get jankShare => frames == 0 ? 0 : janky / frames;
 
@@ -134,7 +158,8 @@ class PerfSummary {
       'screen=$screen frames=$frames janky=$janky '
       'worstMs=${ms(worstMicros)} p50Ms=${ms(p50Micros)} '
       'p90Ms=${ms(p90Micros)} p99Ms=${ms(p99Micros)} '
-      'budgetMs=${ms(budgetMicros)}';
+      'budgetMs=${ms(budgetMicros)} '
+      'stalls=$stalls worstStallMs=${ms(worstStallMicros)}';
 
   /// [micros] as milliseconds with one decimal.
   static String ms(int micros) => (micros / 1000).toStringAsFixed(1);
