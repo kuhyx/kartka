@@ -10,6 +10,7 @@ import 'package:kartka/library/ui/category_picker_dialog.dart';
 import 'package:kartka/library/ui/library_app_bar.dart';
 import 'package:kartka/library/ui/library_grid.dart';
 import 'package:kartka/library/ui/library_options_sheet.dart';
+import 'package:kartka/library/ui/library_swipe.dart';
 
 /// The Library tab: category tabs over a cover grid, with search, sort,
 /// filters and multi-select. Escape leaves selection or search.
@@ -70,29 +71,30 @@ class _LibraryScreenState extends State<LibraryScreen> {
     if (changes != null) await _c.setCategories(changes);
   }
 
+  /// The selected tab: 0 is "All", then one per category in order.
+  int get _tabIndex {
+    final tab = _c.query.categoryId;
+    if (tab == null) return 0;
+    return _c.categories.indexWhere((c) => c.id == tab) + 1;
+  }
+
+  void _selectTab(int i) => _c.query = i == 0
+      ? _c.query.copyWith(clearCategory: true)
+      : _c.query.copyWith(categoryId: _c.categories[i - 1].id);
+
+  void _step(int step) {
+    final count = _c.categories.length + 1;
+    final next = wrapIndex(_tabIndex, step, count);
+    if (next != _tabIndex) _selectTab(next);
+  }
+
   PreferredSizeWidget? _tabs() {
     final cats = _c.categories;
     if (cats.isEmpty) return null;
-    final tab = _c.query.categoryId;
-    final index = tab == null ? 0 : cats.indexWhere((c) => c.id == tab) + 1;
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(kTextTabBarHeight),
-      child: DefaultTabController(
-        key: ValueKey([for (final c in cats) c.id].join('\n')),
-        length: cats.length + 1,
-        initialIndex: index,
-        child: TabBar(
-          isScrollable: true,
-          tabAlignment: TabAlignment.start,
-          onTap: (i) => _c.query = i == 0
-              ? _c.query.copyWith(clearCategory: true)
-              : _c.query.copyWith(categoryId: cats[i - 1].id),
-          tabs: [
-            const Tab(text: 'All'),
-            for (final c in cats) Tab(text: c.name),
-          ],
-        ),
-      ),
+    return CategoryTabs(
+      labels: ['All', for (final c in cats) c.name],
+      index: _tabIndex,
+      onSelect: _selectTab,
     );
   }
 
@@ -116,7 +118,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
             onRemove: () => unawaited(_remove()),
             bottom: _tabs(),
           ),
-          body: LibraryGrid(controller: _c),
+          body: CategorySwipe(
+            onStep: _step,
+            child: LibraryGrid(controller: _c),
+          ),
         ),
       ),
     ),

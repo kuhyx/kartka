@@ -29,6 +29,7 @@ import 'package:kartka/library/ui/library_cover.dart';
 import 'package:kartka/library/ui/library_grid.dart';
 import 'package:kartka/library/ui/library_options_sheet.dart';
 import 'package:kartka/library/ui/library_screen.dart';
+import 'package:kartka/library/ui/library_swipe.dart';
 import 'package:kartka/library/ui/name_dialog.dart';
 
 void main() {
