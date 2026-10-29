@@ -100,9 +100,8 @@ void main() {
   });
 
   test('the Blocking explanation names the rank penalty', () {
-    final blocking = explainMetrics(
-      rec('a'),
-    ).firstWhere((e) => e.title == 'Blocking');
+    final blocking = explainMetrics(rec('a'))
+        .firstWhere((e) => e.title == 'Blocking');
     expect(
       blocking.threshold,
       contains(
