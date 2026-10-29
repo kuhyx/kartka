@@ -59,13 +59,18 @@ extension on _ReaderScreenState {
   }
 
   /// Decodes the page on screen, the next two and the one behind, at the
-  /// size [ReaderPageImage] draws them, as soon as their bytes arrive.
+  /// size [ReaderPageImage] draws them, as soon as their bytes arrive. The
+  /// pages ahead stay within the prefetch setting: no extra fetches.
   void _precacheAround() {
     final s = _session;
     if (s.phase != ReaderPhase.ready) return;
     final current = s.strip.offsetOf(s.segment) + s.page;
     final width = readerDecodeWidth(context);
-    for (final flat in [current, current + 1, current + 2, current - 1]) {
+    final ahead = math.min(2, s.settings.prefetchAhead);
+    for (final flat in [
+      for (var i = 0; i <= ahead; i++) current + i,
+      current - 1,
+    ]) {
       if (flat < 0 || flat >= s.strip.pageCount) continue;
       s.image(flat).then<void>((bytes) {
         if (!mounted) return;

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
+import 'package:kartka/reader/data/reader_settings.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/state/reader_deps.dart';
 import 'package:kartka/reader/ui/reader_screen.dart';
@@ -25,11 +26,12 @@ void main() {
     ),
   );
 
-  Future<void> open(WidgetTester tester) async {
+  Future<void> open(WidgetTester tester, {int prefetchAhead = 3}) async {
     bytesByUrl = {};
     precached = [];
     final prefs = ReaderPrefs(MemoryKeyValueStore());
     await prefs.setModeFor('fake|/m/1', ReaderMode.pagedLtr);
+    await prefs.saveSettings(ReaderSettings(prefetchAhead: prefetchAhead));
     final source = FakeSource(
       chapterList: harnessChapters,
       pageMap: {'/c/2': fakePages('/c/2', 6)},
@@ -94,5 +96,16 @@ void main() {
       tester.widget<PageView>(find.byType(PageView)).allowImplicitScrolling,
       isTrue,
     );
+  });
+
+  testWidgets('precaching never fetches past the prefetch setting', (
+    tester,
+  ) async {
+    await open(tester, prefetchAhead: 1);
+    expect(bytesByUrl.keys, [
+      'https://img.test/c/2/0.png',
+      'https://img.test/c/2/1.png',
+    ]);
+    expect(precachedPage(1), isTrue);
   });
 }
