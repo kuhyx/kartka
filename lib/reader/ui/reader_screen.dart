@@ -15,6 +15,7 @@ import 'package:kartka/reader/state/reader_session.dart';
 import 'package:kartka/reader/ui/chapter_transition.dart';
 import 'package:kartka/reader/ui/page_precache.dart';
 import 'package:kartka/reader/ui/paged_reader_view.dart';
+import 'package:kartka/reader/ui/precache_queue.dart';
 import 'package:kartka/reader/ui/reader_controls.dart';
 import 'package:kartka/reader/ui/reader_page_image.dart';
 import 'package:kartka/reader/ui/reader_settings_panel.dart';
@@ -77,6 +78,13 @@ class _ReaderScreenState extends State<ReaderScreen> {
   bool _fullscreen = false;
   int _shownSegment = 0;
   bool _leaving = false;
+  int? _precacheAt;
+  int? _precacheWidth;
+  late final _precache = PrecacheQueue(
+    decode: (provider) async {
+      if (mounted) await widget.deps.precache(provider, context);
+    },
+  );
 
   @override
   void initState() {
@@ -138,6 +146,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
   @override
   void dispose() {
+    _precache.cancel();
     _session.dispose();
     unawaited(widget.system.keepAwake(on: false));
     if (_fullscreen) unawaited(widget.system.setFullscreen(on: false));

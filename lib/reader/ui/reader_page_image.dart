@@ -4,6 +4,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/reader/ui/page_precache.dart';
+import 'package:kartka/reader/ui/zoomable_page.dart';
 
 /// One page image, with loading and retryable error states.
 class ReaderPageImage extends StatelessWidget {
@@ -43,7 +44,10 @@ class ReaderPageImage extends StatelessWidget {
       final data = snap.data;
       if (data == null) return _loading(context);
       return Image(
-        image: readerPageProvider(data, readerDecodeWidth(context)),
+        image: readerPageProvider(
+          data,
+          readerDecodeWidth(context, zoomed: ZoomScope.of(context)),
+        ),
         fit: fitWidth ? BoxFit.fitWidth : BoxFit.contain,
         width: fitWidth ? double.infinity : null,
         gaplessPlayback: true,

@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,6 +9,7 @@ import 'package:kartka/reader/data/reader_prefs.dart';
 import 'package:kartka/reader/data/reader_settings.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/state/reader_deps.dart';
+import 'package:kartka/reader/ui/page_precache.dart';
 import 'package:kartka/reader/ui/reader_screen.dart';
 
 import '../support/fakes.dart';
@@ -26,7 +30,11 @@ void main() {
     ),
   );
 
-  Future<void> open(WidgetTester tester, {int prefetchAhead = 3}) async {
+  Future<void> open(
+    WidgetTester tester, {
+    int prefetchAhead = 3,
+    PagePrecache? precache,
+  }) async {
     bytesByUrl = {};
     precached = [];
     final prefs = ReaderPrefs(MemoryKeyValueStore());
@@ -52,7 +60,8 @@ void main() {
               p.imageUrl,
               () => Uint8List.fromList(onePixelPng),
             ),
-            precache: (provider, _) async => precached.add(provider),
+            precache:
+                precache ?? (provider, _) async => precached.add(provider),
           ),
         ),
       ),
@@ -60,34 +69,125 @@ void main() {
     await ReaderHarness().settle(tester);
   }
 
-  testWidgets('decodes the next two pages ahead, then the one behind', (
+  /// Lets the reader sit still long enough for the precache to run.
+  Future<void> still(WidgetTester tester) async {
+    for (var i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
+  }
+
+  testWidgets('decodes the next two pages once the reader is still', (
     tester,
   ) async {
     await open(tester);
     expect(
       [for (var n = 0; n < 6; n++) precachedPage(n)],
       [
-        true, true, true, false, false, false, //
+        false, true, true, false, false, false, //
       ],
+      reason: 'page 0 is on screen: its own image decodes it',
     );
-    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
-    await ReaderHarness().settle(tester);
-    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
-    await ReaderHarness().settle(tester);
-    expect(precachedPage(3), isTrue);
-    expect(precachedPage(4), isTrue);
-    expect(precachedPage(5), isFalse);
   });
 
-  testWidgets('the precached provider is the one the page displays', (
+  testWidgets('a swipe decodes nothing in its own frames', (tester) async {
+    await open(tester);
+    precached.clear();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    // Frames of the page animation: no decode may start in any of them.
+    for (var i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 40));
+      expect(precached, isEmpty, reason: 'frame $i');
+    }
+    await still(tester);
+    expect(precachedPage(3), isTrue);
+    expect(precachedPage(0), isTrue, reason: 'the page behind');
+    expect(precachedPage(2), isFalse, reason: 'already decoded earlier');
+  });
+
+  testWidgets('swiping on before the pause drops the stale plan', (
+    tester,
+  ) async {
+    await open(tester);
+    precached.clear();
+    final pager = tester.widget<PageView>(find.byType(PageView)).controller!;
+    const quick = Duration(milliseconds: 20);
+    pager.animateToPage(1, duration: quick, curve: Curves.linear);
+    await tester.pump(const Duration(milliseconds: 100));
+    pager.animateToPage(3, duration: quick, curve: Curves.linear);
+    await tester.pump(const Duration(milliseconds: 100));
+    await still(tester);
+    final shown =
+        (tester.widget<Image>(find.byType(Image).first).image as ResizeImage)
+                .imageProvider
+            as MemoryImage;
+    final at = [for (var n = 0; n < 6; n++) page(n)]
+        .indexWhere((b) => identical(b, shown.bytes));
+    expect(at, greaterThan(1), reason: 'the reader moved on');
+    // Only the plan of the page the reader stopped on ran: its two pages
+    // ahead (the ones before it were decoded when still on page 0). Page 1's
+    // plan (2, 3 and the page behind, 0) was dropped.
+    expect(
+      [for (var n = 0; n < 6; n++) precachedPage(n)],
+      [for (var n = 0; n < 6; n++) n > 2 && n > at && n <= at + 2],
+    );
+  });
+
+  testWidgets('never more than one decode in flight', (tester) async {
+    var inFlight = 0;
+    var most = 0;
+    final gate = Completer<void>();
+    await open(
+      tester,
+      precache: (provider, _) async {
+        precached.add(provider);
+        inFlight++;
+        most = math.max(most, inFlight);
+        await gate.future;
+        inFlight--;
+      },
+    );
+    expect(precached, hasLength(1), reason: 'the second waits for the first');
+    gate.complete();
+    await still(tester);
+    expect(most, 1);
+    expect(precached, hasLength(2));
+  });
+
+  testWidgets('decodes at the physical screen width, double when zoomed', (
     tester,
   ) async {
     await open(tester);
     final shown = tester.widget<Image>(find.byType(Image).first).image;
-    expect(shown, isA<ResizeImage>());
-    expect(precached, contains(shown));
-    final view = tester.view;
-    expect((shown as ResizeImage).width, (view.physicalSize.width * 2).round());
+    expect(
+      (shown as ResizeImage).width,
+      tester.view.physicalSize.width.round(),
+    );
+    expect(precached.map((p) => (p as ResizeImage).width).toSet(), {
+      tester.view.physicalSize.width.round(),
+    });
+    final center = tester.getCenter(find.byType(Image).first);
+    await tester.tapAt(center);
+    await tester.pump(const Duration(milliseconds: 50));
+    await tester.tapAt(center);
+    await still(tester);
+    final zoomed = tester.widget<Image>(find.byType(Image).first).image;
+    expect(
+      (zoomed as ResizeImage).width,
+      (tester.view.physicalSize.width * 2).round(),
+    );
+  });
+
+  testWidgets('the page shown after a swipe uses the precached key', (
+    tester,
+  ) async {
+    await open(tester);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await ReaderHarness().settle(tester);
+    final keys = [
+      for (final p in precached) await p.obtainKey(ImageConfiguration.empty),
+    ];
+    final shown = tester.widget<Image>(find.byType(Image).first).image;
+    expect(keys, contains(await shown.obtainKey(ImageConfiguration.empty)));
   });
 
   testWidgets('the pager builds the neighbour page off screen', (tester) async {

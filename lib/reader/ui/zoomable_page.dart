@@ -1,6 +1,23 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 
+/// Tells the page image inside a [ZoomablePage] whether it is zoomed in, so
+/// it can decode at the larger size only then.
+class ZoomScope extends InheritedWidget {
+  /// Scopes [zoomed] over [child].
+  const new({required this.zoomed, required super.child, super.key});
+
+  /// Whether the page is zoomed past 1x.
+  final bool zoomed;
+
+  /// Whether the nearest [ZoomablePage] above [context] is zoomed in.
+  static bool of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<ZoomScope>()?.zoomed ?? false;
+
+  @override
+  bool updateShouldNotify(ZoomScope oldWidget) => oldWidget.zoomed != zoomed;
+}
+
 /// A page that zooms with pinch and double tap and reports single taps.
 ///
 /// Single taps are forwarded as positions inside the page so the caller can
@@ -56,7 +73,7 @@ class _ZoomablePageState extends State<ZoomablePage>
   void _report() {
     final zoomed = _transform.value.getMaxScaleOnAxis() > 1.01;
     if (zoomed == _zoomed) return;
-    _zoomed = zoomed;
+    setState(() => _zoomed = zoomed);
     widget.onZoomChanged?.call(zoomed);
   }
 
@@ -88,7 +105,7 @@ class _ZoomablePageState extends State<ZoomablePage>
       transformationController: _transform,
       maxScale: 5,
       onInteractionEnd: (_) => _report(),
-      child: widget.child,
+      child: ZoomScope(zoomed: _zoomed, child: widget.child),
     ),
   );
 }

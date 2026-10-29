@@ -24,6 +24,7 @@ import 'package:kartka/reader/ui/chapter_transition.dart';
 import 'package:kartka/reader/ui/page_precache.dart';
 import 'package:kartka/reader/ui/page_slider.dart';
 import 'package:kartka/reader/ui/paged_reader_view.dart';
+import 'package:kartka/reader/ui/precache_queue.dart';
 import 'package:kartka/reader/ui/reader_controls.dart';
 import 'package:kartka/reader/ui/reader_page_image.dart';
 import 'package:kartka/reader/ui/reader_screen.dart';
