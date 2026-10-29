@@ -105,6 +105,39 @@ Map<String, String>? _decodeObject(String text) {
   };
 }
 
+/// `decode` of the stored value of each of [keys] (null where absent or
+/// when [decode] says so), reading only the shards that hold them.
+///
+/// [live] has the keys changed since the shards were loaded, as the store
+/// holds them (null: removed): the files may not have caught up with those,
+/// so those come from here. Read-only, unlike [readKvDir]: a corrupt shard
+/// is read as empty and left where it is.
+List<R?> decodeKvKeys<R extends Object>(
+  String dir,
+  List<String> keys,
+  Map<String, String?> live,
+  R? Function(String text) decode,
+) {
+  final shards = <int, Map<String, String>>{};
+  Map<String, String> shardOf(String key) {
+    final shard = kvShardOf(key);
+    return shards[shard] ??= _peekShard(dir, shard);
+  }
+
+  String? textOf(String key) =>
+      live.containsKey(key) ? live[key] : shardOf(key)[key];
+
+  return [
+    for (final key in keys)
+      if (textOf(key) case final text?) decode(text) else null,
+  ];
+}
+
+Map<String, String> _peekShard(String dir, int shard) {
+  final file = File('$dir/${kvShardFileName(shard)}');
+  return file.existsSync() ? _decodeObject(file.readAsStringSync()) ?? {} : {};
+}
+
 /// Applies [changes] (key → value, null removes it) to the shard files of
 /// [dir]: each touched shard is read, patched and written back with
 /// [writeKvShards]. A corrupt shard is moved aside and patched as empty.

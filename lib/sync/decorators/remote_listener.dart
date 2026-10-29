@@ -14,6 +14,8 @@ mixin RemoteListener {
 
   StreamSubscription<RemoteChange>? _sub;
   Future<void> _applying = Future.value();
+  final _buffer = <RemoteChange>[];
+  bool _drainScheduled = false;
 
   /// Subscribes to [engine]'s changes under [namespaces] once it is ready.
   void listen(Future<SyncEngine> engine, Set<String> namespaces) {
@@ -38,12 +40,38 @@ mixin RemoteListener {
     );
   }
 
-  // Serial, so a later change for one node never lands first.
-  void _enqueue(SyncEngine e, RemoteChange c) =>
-      _applying = _applying.then((_) async {
-        await apply(e, c);
-        e.ack(c.path);
-      });
+  // Changes arriving in one event-loop turn (a pull replaying N nodes, or
+  // the startup replay) are replayed as one batch: every apply is started
+  // before any is awaited, so the local repository sees a burst and its
+  // watchers hear it once, not N times. Batches run one after another.
+  void _enqueue(SyncEngine e, RemoteChange c) {
+    _buffer.add(c);
+    if (_drainScheduled) return;
+    _drainScheduled = true;
+    // A broadcast stream delivers one event per microtask, so the drain
+    // waits a whole event-loop turn: by then the burst has all arrived.
+    _applying = _applying
+        .then((_) => Future<void>.delayed(Duration.zero))
+        .then((_) => _drain(e));
+  }
+
+  Future<void> _drain(SyncEngine e) async {
+    final batch = [..._buffer];
+    _buffer.clear();
+    _drainScheduled = false;
+    // Started in order: each apply reaches its repository's write queue
+    // synchronously, so per-node order holds without awaiting between them.
+    final failures = await Future.wait([
+      for (final c in batch)
+        apply(e, c).then<(Object, StackTrace)?>((_) {
+          // Only after the write is done: a crash before this replays it.
+          e.ack(c.path);
+          return null;
+        }, onError: (Object error, StackTrace stack) => (error, stack)),
+    ]);
+    final failed = failures.nonNulls.firstOrNull;
+    if (failed != null) Error.throwWithStackTrace(failed.$1, failed.$2);
+  }
 
   /// Replays one merged remote [change] into the wrapped local repository.
   Future<void> apply(SyncEngine engine, RemoteChange change);

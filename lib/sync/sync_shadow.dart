@@ -31,17 +31,23 @@ class SyncShadow {
   /// Loads the state persisted in [store] (empty on first run).
   static Future<SyncShadow> load(KeyValueStore store) async {
     final s = SyncShadow._(store);
-    // Every bucket at once: a mirror of the whole library, so big ones
-    // are decoded off the UI isolate.
+    // Every bucket and both lists at once: a mirror of the whole library
+    // (unapplied can be every path after a first pull), so big ones are
+    // decoded off the UI isolate in one run.
     final raw = (await store.entries(prefix: _bucketPrefix)).values.toList();
-    for (final bucket in await decodeEachOffUi(raw)) {
+    final decoded = await decodeEachOffUi([
+      ...raw,
+      await store.get(_dirtyKey) ?? '[]',
+      await store.get(_unappliedKey) ?? '[]',
+    ]);
+    for (final bucket in decoded.take(raw.length)) {
       if (bucket is! Map<String, Object?>) continue;
       for (final e in bucket.entries) {
         if (e.value case final Map<String, Object?> node) s._set(e.key, node);
       }
     }
-    s._dirty.addAll(_decodeList(await store.get(_dirtyKey)));
-    s._unapplied.addAll(_decodeList(await store.get(_unappliedKey)));
+    s._dirty.addAll(_strings(decoded[raw.length]));
+    s._unapplied.addAll(_strings(decoded[raw.length + 1]));
     for (final key in [_peersKey, _lastSyncKey, _hlcKey]) {
       if (await store.get(key) case final value?) s._persisted[key] = value;
     }
@@ -182,14 +188,8 @@ class SyncShadow {
 
   static String _bucket(String path) => path.split('/').take(2).join('/');
 
-  static List<String> _decodeList(String? text) {
-    try {
-      final decoded = jsonDecode(text ?? '[]');
-      return decoded is List ? decoded.whereType<String>().toList() : [];
-    } on FormatException {
-      return [];
-    }
-  }
+  static List<String> _strings(Object? decoded) =>
+      decoded is List ? decoded.whereType<String>().toList() : [];
 
   static Map<String, Object?>? _decodeMap(String? text) {
     if (text == null) return null;

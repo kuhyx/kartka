@@ -13,15 +13,24 @@ import 'package:flutter/foundation.dart';
 /// Payloads at least this long are decoded in a background isolate.
 const int offUiJsonChars = 64 * 1024;
 
+/// Background-isolate decodes started so far (tests check which loads leave
+/// the UI isolate).
+@visibleForTesting
+int offUiRuns = 0;
+
 /// `jsonDecode(text)`, in a background isolate when [text] is large.
-Future<Object?> decodeJsonOffUi(String text) async =>
-    text.length < offUiJsonChars ? jsonDecode(text) : compute(_decode, text);
+Future<Object?> decodeJsonOffUi(String text) async {
+  if (text.length < offUiJsonChars) return jsonDecode(text);
+  offUiRuns++;
+  return await compute(_decode, text);
+}
 
 /// Each of [texts] decoded (null when not valid JSON), in one background
 /// isolate when they are large together.
 Future<List<Object?>> decodeEachOffUi(List<String> texts) async {
   final total = texts.fold(0, (n, t) => n + t.length);
   if (total < offUiJsonChars) return _decodeEach(texts);
+  offUiRuns++;
   return await compute(_decodeEach, texts);
 }
 

@@ -70,7 +70,7 @@ class FileBlobStore implements BlobStore {
 ///
 /// [legacy] is the old single kv.json; its keys are copied into the shards
 /// once, and it is then kept as `kv.json.migrated` (kv_shard_files.dart).
-class FileKeyValueStore implements KeyValueStore {
+class FileKeyValueStore implements OffUiDecodingStore {
   /// Persists to [dir], at most once per [window] while changes keep coming.
   new(
     this.dir, {
@@ -101,6 +101,16 @@ class FileKeyValueStore implements KeyValueStore {
   @visibleForTesting
   int sentEntries = 0;
 
+  /// Characters of values the UI isolate had to hand to the decode isolate
+  /// (only those changed this launch; the cost tests bound it).
+  @visibleForTesting
+  int copiedChars = 0;
+
+  // Keys set or removed since the shards were loaded: the files may lag
+  // behind these (a save is coalesced and asynchronous), the files are
+  // exact for every other key.
+  final Set<String> _touched = {};
+
   /// Whether a change has not been written yet.
   bool get pending => _saver.pending;
 
@@ -126,6 +136,7 @@ class FileKeyValueStore implements KeyValueStore {
   }
 
   void _changed(String key, String? value) {
+    _touched.add(key);
     _changes[key] = value;
     _saver.schedule();
   }
@@ -149,6 +160,20 @@ class FileKeyValueStore implements KeyValueStore {
   }
 
   @override
+  Future<List<R?>> decodeAll<R extends Object>(
+    List<String> keys,
+    R? Function(String text) decode,
+  ) async {
+    final shards = await _shards;
+    final live = <String, String?>{
+      for (final key in keys)
+        if (_touched.contains(key)) key: shards[kvShardOf(key)][key],
+    };
+    copiedChars += live.values.fold(0, (n, v) => n + (v?.length ?? 0));
+    return await _decodeOff(dir.path, keys, live, decode);
+  }
+
+  @override
   Future<Map<String, String>> entries({String prefix = ''}) async => {
     for (final shard in await _shards)
       for (final e in shard.entries)
@@ -162,3 +187,10 @@ Future<List<Map<String, String>>> _readOff(String dir, String? legacy) =>
 
 Future<void> _patchOff(String dir, Map<String, String?> changes) =>
     Isolate.run(() => patchKvShards(dir, changes));
+
+Future<List<R?>> _decodeOff<R extends Object>(
+  String dir,
+  List<String> keys,
+  Map<String, String?> live,
+  R? Function(String text) decode,
+) => Isolate.run(() => decodeKvKeys(dir, keys, live, decode));

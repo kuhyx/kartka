@@ -9,6 +9,7 @@ import 'package:kartka/downloads/downloads_feature.dart';
 import 'package:kartka/downloads/downloads_snapshot.dart';
 import 'package:kartka/downloads/engine/download_engine.dart';
 import 'package:kartka/downloads/engine/host_limiter.dart';
+import 'package:kartka/downloads/engine/keyed_changes.dart';
 import 'package:kartka/downloads/engine/retry.dart';
 import 'package:kartka/downloads/engine/source_directory.dart';
 import 'package:kartka/downloads/engine/watch_value.dart';

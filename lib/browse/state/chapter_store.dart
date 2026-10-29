@@ -30,7 +30,7 @@ class ChapterStore {
   final KeyValueStore? _kv;
   final ChaptersAdded? _onAdded;
   final Map<MangaKey, List<ChapterInfo>> _cache = {};
-  final _decoder = ChapterListDecoder();
+  late final _decoder = ChapterListDecoder(_kv);
   // Per key, so a load tells only that key's watchers: one shared stream
   // filtered by every watcher made N restores at cold start cost N².
   final _watchers = <MangaKey, Set<StreamController<List<ChapterInfo>?>>>{};
@@ -95,11 +95,10 @@ class ChapterStore {
       _cache[key] ?? await _restore(key);
 
   Future<List<ChapterInfo>?> _restore(MangaKey key) async {
-    final raw = await _kv?.get(_kvKey(key));
-    if (raw == null || _cache.containsKey(key)) return _cache[key];
-    // Batched with every other restore of this turn, off the UI isolate
-    // when large (the cold-start burst of unread badges).
-    final chapters = await _decoder.decode(raw);
+    if (_kv == null) return _cache[key];
+    // Batched with every other restore of this turn and decoded off the UI
+    // isolate (the cold-start burst of unread badges).
+    final chapters = await _decoder.restore(_kvKey(key));
     // A fetch may have landed meanwhile; it is newer than the stored copy.
     if (chapters == null || _cache.containsKey(key)) return _cache[key];
     _cache[key] = chapters;
