@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:kartka/browse/state/chapter_list_decoder.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/core/models/models.dart';
@@ -29,7 +31,22 @@ class ChapterStore {
   final ChaptersAdded? _onAdded;
   final Map<MangaKey, List<ChapterInfo>> _cache = {};
   final _decoder = ChapterListDecoder();
-  final _changes = StreamController<MangaKey>.broadcast(sync: true);
+  // Per key, so a load tells only that key's watchers: one shared stream
+  // filtered by every watcher made N restores at cold start cost N².
+  final _watchers = <MangaKey, Set<StreamController<List<ChapterInfo>?>>>{};
+
+  /// Watcher callbacks run so far (the startup-cost tests bound it).
+  @visibleForTesting
+  int callbacks = 0;
+
+  void _changed(MangaKey key) {
+    final watchers = _watchers[key];
+    if (watchers == null) return;
+    for (final out in [...watchers]) {
+      callbacks++;
+      out.add(_cache[key]);
+    }
+  }
 
   /// Cached chapters of [key] (source order), or null when never loaded.
   List<ChapterInfo>? cached(MangaKey key) => _cache[key];
@@ -50,7 +67,7 @@ class ChapterStore {
     final before = _onAdded == null ? null : await stored(key);
     final chapters = List<ChapterInfo>.unmodifiable(await source.chapters(url));
     _cache[key] = chapters;
-    _changes.add(key);
+    _changed(key);
     await _kv?.set(
       _kvKey(key),
       jsonEncode([for (final c in chapters) c.toJson()]),
@@ -82,7 +99,7 @@ class ChapterStore {
     // A fetch may have landed meanwhile; it is newer than the stored copy.
     if (chapters == null || _cache.containsKey(key)) return _cache[key];
     _cache[key] = chapters;
-    _changes.add(key);
+    _changed(key);
     return chapters;
   }
 
@@ -91,16 +108,16 @@ class ChapterStore {
   /// Current cached chapters of [key] (null when none), then every update.
   Stream<List<ChapterInfo>?> watch(MangaKey key) {
     late StreamController<List<ChapterInfo>?> out;
-    StreamSubscription<MangaKey>? sub;
     out = StreamController<List<ChapterInfo>?>(
       onListen: () {
         out.add(_cache[key]);
-        sub = _changes.stream
-            .where((k) => k == key)
-            .listen((k) => out.add(_cache[k]));
+        (_watchers[key] ??= {}).add(out);
         if (_cache[key] == null) unawaited(_restore(key));
       },
-      onCancel: () => sub?.cancel(),
+      onCancel: () {
+        final watchers = _watchers[key]?..remove(out);
+        if (watchers != null && watchers.isEmpty) _watchers.remove(key);
+      },
     );
     return out.stream;
   }
