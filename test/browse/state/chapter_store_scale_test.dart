@@ -17,7 +17,39 @@ String _stored(int i) => jsonEncode([
   ChapterInfo(url: '/c$i', name: 'Chapter $i', number: 1).toJson(),
 ]);
 
+/// Counts writes: each one is a whole-list `jsonEncode` on the UI isolate.
+class _CountingKv extends MemoryKeyValueStore {
+  int sets = 0;
+
+  @override
+  Future<void> set(String key, String value) {
+    sets++;
+    return super.set(key, value);
+  }
+}
+
 void main() {
+  test(
+    'a refresh that finds the same list writes and notifies nothing',
+    () async {
+      final kv = _CountingKv();
+      final src = FakeSource('mangadex');
+      final store = ChapterStore((_) => src, kv: kv, onAdded: (_, _) {});
+      final first = await store.load(_key(1));
+      expect(kv.sets, 1);
+      final sub = store.watch(_key(1)).listen((_) {});
+      store.callbacks = 0;
+      expect(await store.load(_key(1), refresh: true), same(first));
+      expect(kv.sets, 1, reason: 'update-all: most manga did not change');
+      expect(store.callbacks, 0);
+      src.chapterList = [...src.chapterList.reversed];
+      await store.load(_key(1), refresh: true);
+      expect(kv.sets, 2);
+      expect(store.callbacks, 1);
+      await sub.cancel();
+    },
+  );
+
   test('N watchers restoring N lists cost O(N) callbacks, not N²', () async {
     final kv = MemoryKeyValueStore({
       for (var i = 0; i < _n; i++)
@@ -53,7 +85,8 @@ void main() {
   });
 
   test('two watchers of one key both hear, one cancel keeps the other', () {
-    final store = ChapterStore((_) => FakeSource('mangadex'));
+    final src = FakeSource('mangadex');
+    final store = ChapterStore((_) => src);
     final a = <int?>[];
     final b = <int?>[];
     final subA = store.watch(_key(1)).listen((l) => a.add(l?.length));
@@ -61,10 +94,11 @@ void main() {
     return Future(() async {
       await store.load(_key(1));
       await subA.cancel();
+      src.chapterList = src.chapterList.skip(1).toList();
       await store.load(_key(1), refresh: true);
       await pumpEventQueue();
       expect(a, [null, 3]);
-      expect(b, [null, 3, 3]);
+      expect(b, [null, 3, 2]);
       await subB.cancel();
     });
   });

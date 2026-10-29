@@ -66,6 +66,10 @@ class ChapterStore {
     // empty, and a cold refresh must still be diffed, not baselined.
     final before = _onAdded == null ? null : await stored(key);
     final chapters = List<ChapterInfo>.unmodifiable(await source.chapters(url));
+    // Most refreshes (update-all) find nothing new: an equal list keeps
+    // the stored one, and costs no encode, write or watcher work.
+    final prior = before ?? _cache[key];
+    if (prior != null && listEquals(prior, chapters)) return prior;
     _cache[key] = chapters;
     _changed(key);
     await _kv?.set(
