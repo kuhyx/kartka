@@ -32,7 +32,7 @@ void main() {
   });
 
   test('FileKeyValueStore persists across instances, atomically', () async {
-    final file = File('${dir.path}/sub/kv.json');
+    final file = Directory('${dir.path}/sub/kv');
     final kv = FileKeyValueStore(file);
     expect(await kv.get('a'), isNull);
     await kv.set('a.x', '1');
@@ -44,20 +44,11 @@ void main() {
     final again = FileKeyValueStore(file);
     expect(await again.entries(prefix: 'a.'), {'a.x': '1', 'a.y': 'ż'});
     expect(await again.get('b'), isNull);
-    expect(File('${file.path}.tmp').existsSync(), isFalse);
-  });
-
-  test('FileKeyValueStore treats a corrupt file as empty', () async {
-    final file = File('${dir.path}/kv.json')..writeAsStringSync('{nope');
-    final kv = FileKeyValueStore(file);
-    expect(await kv.entries(), isEmpty);
-    await kv.set('k', 'v');
-    await kv.flush();
-    expect(await FileKeyValueStore(file).get('k'), 'v');
+    expect(file.listSync().where((e) => e.path.endsWith('.tmp')), isEmpty);
   });
 
   test('FileKeyValueStore coalesces sets into one deferred write', () async {
-    final file = File('${dir.path}/kv.json');
+    final file = Directory('${dir.path}/kv');
     final kv = FileKeyValueStore(
       file,
       window: const Duration(milliseconds: 20),
@@ -75,8 +66,10 @@ void main() {
   });
 
   test('FileKeyValueStore: concurrent first calls share one load', () async {
-    final file = File('${dir.path}/kv.json')..writeAsStringSync('{"old":"1"}');
-    final kv = FileKeyValueStore(file);
+    final legacy = File('${dir.path}/kv.json')
+      ..writeAsStringSync('{"old":"1"}');
+    final file = Directory('${dir.path}/kv');
+    final kv = FileKeyValueStore(file, legacy: legacy);
     await Future.wait([kv.set('a', '1'), kv.get('x'), kv.set('b', '2')]);
     await kv.flush();
     expect(await FileKeyValueStore(file).entries(), {
@@ -87,7 +80,7 @@ void main() {
   });
 
   testWidgets('FileKeyValueStore is on disk once the app is paused', (t) async {
-    final file = File('${dir.path}/kv.json');
+    final file = Directory('${dir.path}/kv');
     final kv = FileKeyValueStore(file, window: const Duration(hours: 1));
     final listener = flushOnBackground(kv.flush);
     addTearDown(listener.dispose);

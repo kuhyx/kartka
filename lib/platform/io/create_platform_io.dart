@@ -28,8 +28,12 @@ Future<KartkaPlatform> createPlatform() async {
   final support = await getApplicationSupportDirectory();
   // getExternalFilesDir(null): adb can pull it from a release build.
   final external = await getExternalStorageDirectory();
-  final kv = FileKeyValueStore(File(p.join(support.path, 'kv.json')));
-  // Held by the binding for the app's lifetime: pause/detach writes kv.json.
+  // Sharded since 2026-10-29; the first launch migrates the old kv.json.
+  final kv = FileKeyValueStore(
+    Directory(p.join(support.path, 'kv')),
+    legacy: File(p.join(support.path, 'kv.json')),
+  );
+  // Held by the binding for the app's lifetime: pause/detach writes kv/.
   flushOnBackground(kv.flush);
   final hosts = WebViewHosts(kv);
   return KartkaPlatform(

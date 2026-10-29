@@ -50,11 +50,18 @@ class IdbKeyValueStore implements KeyValueStore {
   Future<void> remove(String key) =>
       _run(idbModeReadWrite, (s) => s.delete(key));
 
+  /// Visits only keys in `[prefix, prefix + U+FFFF]` (IndexedDB orders
+  /// strings by UTF-16 code unit, so that is every key starting with
+  /// [prefix]), not the whole store: the startup reads of each table no
+  /// longer scan every other table's rows too.
   @override
   Future<Map<String, String>> entries({String prefix = ''}) =>
       _run(idbModeReadOnly, (s) async {
         final result = <String, String>{};
-        await s.openCursor(autoAdvance: true).forEach((c) {
+        final range = prefix.isEmpty
+            ? null
+            : KeyRange.bound(prefix, '$prefix\uffff');
+        await s.openCursor(range: range, autoAdvance: true).forEach((c) {
           final key = c.key as String;
           if (key.startsWith(prefix)) result[key] = c.value as String;
         });

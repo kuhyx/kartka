@@ -155,11 +155,12 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   beside `Tracker`. The track sheet calls `showLogin(context)` when
   `tracker is CredentialsLogin`, else `tracker.login()`. MangaUpdates shows
   its username + password sheet; AniList and MAL stay OAuth (§9 unchanged).
-- **Android kv.json writes are coalesced.** `FileKeyValueStore` writes at
-  most once per 250 ms window while sets keep coming (bounded latency, not
-  a resetting debounce; `CoalescingSaver`, lib/platform/). `createPlatform()`
-  wires `flushOnBackground(kv.flush)`, which flushes on every non-resumed
-  `AppLifecycleState`, so a clean pause or detach loses nothing.
+- **Android kv is 64 shard files, writes coalesced, off the UI isolate.**
+  `<support>/kv/shard-NN.json` (FNV-1a, fixed forever): only changed shards
+  are rewritten, at most once per 250 ms, unchanged values never, all I/O in
+  `Isolate.run`. First launch copies `kv.json` in, writes `kv/.migrated`,
+  keeps it as `kv.json.migrated` (`.corrupt` if unreadable).
+  `flushOnBackground` flushes on every non-resumed lifecycle state.
 - **The wrapper never logs a /proxy target.** A query can carry a
   credential (RTDB `?auth=<token>`, forwarded byte-identical). A mid-body
   upstream cut is logged by error type only and no longer kills the
