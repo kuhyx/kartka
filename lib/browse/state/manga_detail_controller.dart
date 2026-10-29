@@ -90,6 +90,7 @@ class MangaDetailController extends ChangeNotifier {
     try {
       final (d, list) = await fresh;
       details = d;
+      _keep(d).ignore(); // A cache: a failed write only costs the next open.
       chapters = readingOrder(list);
     } on Object catch (e, stack) {
       error = e;
@@ -106,6 +107,13 @@ class MangaDetailController extends ChangeNotifier {
       _deps.chapters.load(key, refresh: true),
     ]);
     return (results[0] as MangaDetails, results[1] as List<ChapterInfo>);
+  }
+
+  /// Stores [d] for the next open when the manga is in the library.
+  Future<void> _keep(MangaDetails d) async {
+    if (await libraryEntry(_deps.library, key) != null) {
+      await _deps.details.write(key, d);
+    }
   }
 
   /// Shows the library entry and stored chapters, when there is an entry.
@@ -170,9 +178,11 @@ class MangaDetailController extends ChangeNotifier {
     final d = details;
     if (!add) {
       await _deps.library.remove(key);
+      await _deps.details.remove(key);
       return;
     }
     if (d == null) return;
+    await _deps.details.write(key, d);
     final now = _deps.clock();
     await _deps.library.upsert(
       LibraryEntry(
