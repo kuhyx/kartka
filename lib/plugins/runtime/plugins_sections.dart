@@ -2,6 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/plugins/runtime/plugin_index.dart';
+import 'package:kartka/plugins/runtime/plugin_languages.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
 
@@ -62,6 +63,7 @@ class AvailableList extends StatelessWidget {
     required this.hasRepos,
     required this.busy,
     required this.onInstall,
+    this.hidden = 0,
     super.key,
   });
 
@@ -76,6 +78,9 @@ class AvailableList extends StatelessWidget {
 
   /// Installs or updates an entry.
   final void Function(PluginIndexEntry) onInstall;
+
+  /// Offers left out of [result] by the language filter.
+  final int hidden;
 
   @override
   Widget build(BuildContext context) {
@@ -94,11 +99,11 @@ class AvailableList extends StatelessWidget {
         if (result.plugins.isEmpty && result.errors.isEmpty)
           Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
-            child: Text(
-              hasRepos
-                  ? 'These repositories offer no plugins.'
-                  : 'Add a repository URL to find plugins.',
-            ),
+            child: Text(switch ((hasRepos, hidden)) {
+              (false, _) => 'Add a repository URL to find plugins.',
+              (true, 0) => 'These repositories offer no plugins.',
+              _ => hiddenByLanguageMessage(hidden),
+            }),
           ),
         for (final p in result.plugins)
           ListTile(

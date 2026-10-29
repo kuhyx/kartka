@@ -55,6 +55,8 @@ class PluginStore {
   static const _repos = 'plugins.repos';
   static const _installed = 'plugins.installed.';
   static const _prefs = 'plugins.prefs.';
+  // Local: not in the sync settings catalog.
+  static const _languages = 'plugins.languages';
 
   /// Configured repo index URLs, in the order added.
   Future<List<String>> repos() async {
@@ -64,6 +66,17 @@ class PluginStore {
 
   /// Replaces the repo list.
   Future<void> setRepos(List<String> urls) => kv.set(_repos, jsonEncode(urls));
+
+  /// Languages the Available list shows, in the order picked; null when the
+  /// user never chose (the screen then applies its default).
+  Future<List<String>?> languages() async {
+    final raw = await kv.get(_languages);
+    return raw == null ? null : (jsonDecode(raw) as List).cast<String>();
+  }
+
+  /// Replaces the language selection.
+  Future<void> setLanguages(List<String> langs) =>
+      kv.set(_languages, jsonEncode(langs));
 
   /// Every installed plugin, sorted by name.
   Future<List<InstalledPlugin>> installed() async {
