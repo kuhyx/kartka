@@ -22,7 +22,7 @@ void main() {
     expect(rig.plugins!.calls, ['list', 'install:p']);
     expect(rig.probed, unorderedEquals(['suwayomi:1', 'plugin:p']));
     expect(rig.reconciler.state.publishId, '2026-W44');
-    expect(rig.reconciler.status, 'Installed 2 Keep sources');
+    expect(rig.reconciler.status, 'Installed 2 sources');
   });
 
   test('one extension serving several keep sources installs once, and '
@@ -68,7 +68,7 @@ void main() {
     expect(again.reconciler.state.publishId, 'W1');
     expect(again.reconciler.needsRun('W1'), isFalse);
     expect(again.reconciler.needsRun('W2'), isTrue);
-    expect(again.reconciler.status, 'Installed 1 Keep source');
+    expect(again.reconciler.status, 'Installed 1 source');
   });
 
   test('a failed test leaves the source installed, flags it and logs it '
@@ -86,10 +86,7 @@ void main() {
       'Installed — test failed: HTTP 500 from <url>',
     );
     expect(rig.reconciler.flagOf('suwayomi:2'), isNull);
-    expect(
-      rig.reconciler.status,
-      'Installed 2 Keep sources, 1 failed its test',
-    );
+    expect(rig.reconciler.status, 'Installed 2 sources, 1 failed its test');
     final logged = await rig.log.entries();
     expect(logged, hasLength(1));
     expect(logged.single.kind, 'sources.autoinstall');
@@ -109,7 +106,7 @@ void main() {
       rig.reconciler.flagOf('suwayomi:1'),
       contains('Auto-install failed'),
     );
-    expect(rig.reconciler.status, '1 Keep source failed to install');
+    expect(rig.reconciler.status, '1 source failed to install');
     final logged = await rig.log.entries();
     expect(logged.single.kind, 'sources.autoinstall');
     expect(logged.single.error, contains('install failed'));
@@ -219,12 +216,12 @@ void main() {
       },
     ).status;
     expect(status(0, 0, 0), isNull);
-    expect(status(5, 1, 0), 'Installed 5 Keep sources, 1 failed its test');
+    expect(status(5, 1, 0), 'Installed 5 sources, 1 failed its test');
     expect(
       status(3, 2, 1),
-      'Installed 3 Keep sources, 2 failed their tests, '
+      'Installed 3 sources, 2 failed their tests, '
       '1 failed to install',
     );
-    expect(status(0, 0, 2), '2 Keep sources failed to install');
+    expect(status(0, 0, 2), '2 sources failed to install');
   });
 }

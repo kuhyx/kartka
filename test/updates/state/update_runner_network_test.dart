@@ -62,9 +62,8 @@ void main() {
     var calls = 0;
     final runner = UpdateRunner(
       libraryKeys: () async => [key],
-      check: (k) async => ++calls < 2
-          ? UpdateFailed(k, TimeoutException('slow'))
-          : _found(k),
+      check: (k) async =>
+          ++calls < 2 ? UpdateFailed(k, TimeoutException('slow')) : _found(k),
       backoff: Duration.zero,
     );
     expect((await runner.updateAll()).failed, 0);

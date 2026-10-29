@@ -184,7 +184,8 @@ under the line cap; same rules. Implementation notes:
 - **Keep auto-install** (2026-10-29, kuhy's request): from the app's first
   screen on, and on every newly published run, `KeepReconciler`
   (`lib/source_health/install/`) installs every `keep` source (under the
-  active profile) that is not installed, with no prompt: `pkg` on the
+  active profile), and every source a library entry uses whatever its
+  verdict (2026-10-29), that is not installed, with no prompt: `pkg` on the
   Suwayomi server (one install per package), else `plugin` through the
   plugin manager; at most 2 at a time. "Installed" comes from the
   `InstalledExtensionLister` / `InstalledPluginLister` ports, never the
@@ -193,11 +194,15 @@ under the line cap; same rules. Implementation notes:
   lists a title within 30 s. A failure stays installed, shows "Installed —
   test failed: <reason>" (or "Auto-install failed: <reason>") under the
   card's action, is logged as `sources.autoinstall` (URLs stripped) and is
-  re-tested on the next run. The run id (else the newest `probedAt`) is
-  stored per device in kv `sourceHealth.autoInstall`, with the flags; a
-  side that cannot be read leaves it unset, so the next start retries.
-  The Sources tab shows one status line ("Installed 5 Keep sources, 1
-  failed its test") and "Migrate to better sources". Not done in the
+  re-tested on the next run. The run id (else the newest `probedAt`) and
+  the library's source ids are stored per device in kv
+  `sourceHealth.autoInstall`, with the flags; a new run id, or a library
+  source not seen last time, reconciles again. A side that cannot be read
+  leaves them unset, so the next start retries. A library source with no
+  record carrying `pkg` / `plugin` (an SY built-in, a removed extension)
+  cannot be installed; "Migrate to better sources" lists its entries. The
+  Sources tab shows one status line ("Installed 5 sources, 1 failed its
+  test") and "Migrate to better sources". Not done in the
   evaluator: it refuses the live server (4567) by design, and the first
   device to reconcile installs on the shared server for all of them.
 - **Migrate to better sources** (`lib/migration/better/`, route

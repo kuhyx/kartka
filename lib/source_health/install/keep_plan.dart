@@ -3,6 +3,7 @@ library;
 
 import 'dart:math' as math;
 
+import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ranking.dart';
@@ -16,6 +17,17 @@ String? publishIdOf(List<SourceHealthRecord> records, SourceHealthMeta? meta) {
   if (records.any((r) => r.defaultScore != null)) return null;
   return lastEvaluated(records)?.toUtc().toIso8601String();
 }
+
+/// What the auto-install keeps installed: every `keep` record, and every
+/// record of a source the library uses (any verdict: its entries need it),
+/// each once.
+List<SourceHealthRecord> installTargets(
+  List<SourceHealthRecord> records,
+  Set<String> library,
+) => [
+  for (final r in records)
+    if (r.verdict == HealthVerdict.keep || library.contains(r.id)) r,
+];
 
 /// The installs [keep] needs, one group of records per install: records
 /// with `pkg` whose package is not in [packages] (grouped by package: one

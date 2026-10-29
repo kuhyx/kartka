@@ -40,7 +40,7 @@ void main() {
 
     await tester.runAsync(() => rig.reconciler.reconcile(records, 'W1'));
     await tester.pump();
-    expect(find.text('Installed 2 Keep sources, 1 failed its test'), findsOne);
+    expect(find.text('Installed 2 sources, 1 failed its test'), findsOne);
     expect(find.byKey(const ValueKey('open-suwayomi:1')), findsOne);
     expect(find.text('Installed — test failed: no titles'), findsOne);
     expect(

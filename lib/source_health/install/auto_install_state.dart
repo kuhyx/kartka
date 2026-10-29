@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart' show immutable;
 import 'package:kartka/platform/key_value_store.dart';
 import 'package:kartka/source_health/model/json_read.dart';
 
-/// Where an auto-installed Keep source failed.
+/// Where an auto-installed source failed.
 enum AutoInstallStage {
   /// The install itself failed: the source is not installed.
   install,
@@ -67,6 +67,7 @@ class AutoInstallState {
     this.publishId,
     this.installed = const [],
     this.failures = const {},
+    this.librarySources = const [],
   });
 
   /// Parses [toJson]'s shape; anything unreadable reads as empty.
@@ -76,6 +77,7 @@ class AutoInstallState {
     return AutoInstallState(
       publishId: readString(m, 'publishId'),
       installed: readStrings(m, 'installed'),
+      librarySources: readStrings(m, 'librarySources'),
       failures: {
         for (final MapEntry(:key, :value) in failures.entries)
           key: ?AutoInstallFailure.fromJson(value),
@@ -106,10 +108,14 @@ class AutoInstallState {
   /// Source ids the last run installed (failed tests included).
   final List<String> installed;
 
-  /// Keep sources whose install or test failed, by source id.
+  /// Sources whose install or test failed, by source id.
   final Map<String, AutoInstallFailure> failures;
 
-  /// One quiet line about the last run, e.g. "Installed 5 Keep sources, 1
+  /// The library's source ids [publishId] was reconciled with, sorted
+  /// (empty in state stored before library sources were installed).
+  final List<String> librarySources;
+
+  /// One quiet line about the last run, e.g. "Installed 5 sources, 1
   /// failed its test"; null when it installed and flagged nothing.
   String? get status {
     final n = installed.length;
@@ -118,13 +124,13 @@ class AutoInstallState {
     );
     final t = tests.length;
     final installs = failures.length - t;
-    // The first count names the noun: "Installed 5 Keep sources, 1 failed
-    // its test", or "2 Keep sources failed to install" when none installed.
+    // The first count names the noun: "Installed 5 sources, 1 failed its
+    // test", or "2 sources failed to install" when none installed.
     var named = false;
     String count(int k) {
       if (named) return '$k';
       named = true;
-      return '$k Keep source${k == 1 ? '' : 's'}';
+      return '$k source${k == 1 ? '' : 's'}';
     }
 
     final parts = [
@@ -140,6 +146,7 @@ class AutoInstallState {
     'publishId': publishId,
     'installed': installed,
     'failures': {for (final e in failures.entries) e.key: e.value.toJson()},
+    'librarySources': librarySources,
   };
 
   @override

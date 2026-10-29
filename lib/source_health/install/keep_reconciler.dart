@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/diagnostics/diagnostic_entry.dart';
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
 import 'package:kartka/platform/key_value_store.dart';
@@ -14,8 +13,12 @@ import 'package:kartka/source_health/install/source_probe.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 
-/// Installs every `keep` source that is not installed yet, without asking,
-/// once per published evaluation, then tests each one it installed.
+/// Installs every `keep` source, and every source a library entry uses,
+/// that is not installed yet ([installTargets]), without asking, once per
+/// published evaluation and again when the library starts using a source,
+/// then tests each one it installed. A library source without a record
+/// carrying `pkg` / `plugin` cannot be installed: "Migrate to better
+/// sources" lists its entries.
 ///
 /// Installs only, never uninstalls (the ports cannot). A source carrying
 /// `pkg` installs on the Suwayomi server (one install per package, however
@@ -34,6 +37,7 @@ class KeepReconciler extends ChangeNotifier {
     this.diagnostics,
     this.now = DateTime.now,
     this.concurrency = 2,
+    this._librarySources,
   }) : _suwayomi = suwayomi ?? _none,
        _plugins = plugins ?? _none;
 
@@ -56,6 +60,8 @@ class KeepReconciler extends ChangeNotifier {
 
   final SuwayomiExtensionInstaller? Function() _suwayomi;
   final PluginRepoInstaller? Function() _plugins;
+  final Stream<Set<String>> Function()? _librarySources;
+  Set<String>? _library;
   final _subs = <StreamSubscription<Object?>>[];
   List<SourceHealthRecord>? _records;
   SourceHealthMeta? _meta;
@@ -72,8 +78,12 @@ class KeepReconciler extends ChangeNotifier {
   /// The flag shown for source [id] after a failed install or test.
   String? flagOf(String id) => state.failures[id]?.flag;
 
-  /// Whether the publish [id] still needs a reconcile.
-  bool needsRun(String id) => id != state.publishId;
+  /// Whether the publish [id] with the library's source ids [library]
+  /// still needs a reconcile: a new publish, or a source the last one did
+  /// not see in the library.
+  bool needsRun(String id, [Set<String> library = const {}]) =>
+      id != state.publishId ||
+      !state.librarySources.toSet().containsAll(library);
 
   /// Reads the stored state.
   Future<void> load() async {
@@ -98,6 +108,17 @@ class KeepReconciler extends ChangeNotifier {
           onError: (Object _) => _sawMeta(null),
         ),
       );
+    final library = _librarySources?.call();
+    if (library == null) {
+      _library = const {};
+    } else {
+      _subs.add(
+        library.listen((ids) {
+          _library = ids;
+          _kick();
+        }, onError: (Object _) {}),
+      );
+    }
   }
 
   void _sawMeta(SourceHealthMeta? meta) {
@@ -108,14 +129,15 @@ class KeepReconciler extends ChangeNotifier {
 
   void _kick() {
     final records = _records;
-    if (records == null || !_metaSeen) return;
+    final library = _library;
+    if (records == null || !_metaSeen || library == null) return;
     final id = publishIdOf(records, _meta);
-    if (id == null || !needsRun(id)) return;
+    if (id == null || !needsRun(id, library)) return;
     if (_running != null) {
       _again = true;
       return;
     }
-    _running = reconcile(records, id).whenComplete(() {
+    _running = reconcile(records, id, library: library).whenComplete(() {
       _running = null;
       if (_again) {
         _again = false;
@@ -124,18 +146,17 @@ class KeepReconciler extends ChangeNotifier {
     });
   }
 
-  /// Installs and tests the keep sources of [records] that are missing,
-  /// re-tests the ones flagged last time, and remembers [publishId] when
-  /// both sides could be read. A publish already reconciled is a no-op.
+  /// Installs and tests the [installTargets] of [records] and [library]
+  /// that are missing, re-tests the ones flagged last time, and remembers
+  /// [publishId] and [library] when both sides could be read. A publish
+  /// already reconciled with these library sources is a no-op.
   Future<void> reconcile(
     List<SourceHealthRecord> records,
-    String publishId,
-  ) async {
-    if (!needsRun(publishId)) return;
-    final keep = [
-      for (final r in records)
-        if (r.verdict == HealthVerdict.keep) r,
-    ];
+    String publishId, {
+    Set<String> library = const {},
+  }) async {
+    if (!needsRun(publishId, library)) return;
+    final keep = installTargets(records, library);
     final suwayomi = _suwayomi();
     final plugins = _plugins();
     final packages = await installedOf<InstalledExtensionLister>(
@@ -204,6 +225,9 @@ class KeepReconciler extends ChangeNotifier {
       publishId: complete ? publishId : state.publishId,
       installed: installed,
       failures: failures,
+      librarySources: complete
+          ? (library.toList()..sort())
+          : state.librarySources,
     );
     await state.save(kv);
     notifyListeners();
