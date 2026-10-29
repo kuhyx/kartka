@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/settings_stores.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_settings.dart';
@@ -79,7 +80,10 @@ KartkaFeature buildSuwayomiFeature(KartkaEnv env, {TitleLookup? titleOf}) {
       ),
       GoRoute(
         path: suwayomiExtensionsRoute,
-        builder: (_, _) => ExtensionsScreen(api: extensions),
+        builder: (_, _) => ExtensionsScreen(
+          api: extensions,
+          diagnostics: DiagnosticsLog.of(platform.diagnostics),
+        ),
       ),
     ],
   );

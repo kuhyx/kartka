@@ -3,6 +3,15 @@ import 'package:kartka/core/redact.dart';
 
 void main() {
   group('redactUrlQueries', () {
+    test('is idempotent, so a re-read entry is not redacted twice', () {
+      const once = 'GET https://<redacted>@h.test/a.json?<redacted> failed';
+      expect(redactUrlQueries(once), once);
+      expect(
+        redactUrlQueries('x https://h.test/#<redacted>'),
+        'x https://h.test/#<redacted>',
+      );
+    });
+
     test('an RTDB auth token never survives', () {
       expect(
         redactUrlQueries(

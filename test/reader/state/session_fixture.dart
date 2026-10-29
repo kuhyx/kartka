@@ -20,6 +20,9 @@ const sessionChapters = [
 class SessionFixture {
   FakeProgress progress = FakeProgress();
   final List<String> fetched = [];
+
+  /// When set, every page image load throws it.
+  Error? imageError;
   final ReaderPrefs prefs = ReaderPrefs(MemoryKeyValueStore());
   final MemoryBlobStore diagnosticsStore = MemoryBlobStore();
   late final DiagnosticsLog diagnostics = DiagnosticsLog(diagnosticsStore);
@@ -53,6 +56,7 @@ class SessionFixture {
         prefs: prefs,
         loadImage: (p) async {
           fetched.add(p.imageUrl);
+          if (imageError case final e?) throw e;
           return Uint8List(1);
         },
         now: () => DateTime.utc(2026, 10, 24),

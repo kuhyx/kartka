@@ -61,6 +61,14 @@ void main() {
         everyElement(PluginAvailability.available),
       );
       expect(r.errors.keys, ['https://repo.test/gone.json']);
+      final heard = <String>[];
+      final told = PluginManager(
+        http: http.client,
+        store: store,
+        onRepoError: (repo, e, _) => heard.add(repo),
+      );
+      await told.available();
+      expect(heard, ['https://repo.test/gone.json']);
       await m.install(r.plugins.first.entry);
       r = await m.available();
       expect(r.plugins.first.availability, PluginAvailability.installed);

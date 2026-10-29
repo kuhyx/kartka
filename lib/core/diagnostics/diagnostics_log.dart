@@ -41,13 +41,27 @@ class DiagnosticsLog {
   /// Most entries kept.
   final int maxEntries;
 
+  /// The screen on top (a go_router pattern), stamped onto every appended
+  /// entry that names none. Set by the app's screen observer.
+  String? route;
+
+  final _appended = StreamController<DiagnosticEntry>.broadcast();
+
+  /// Each entry once it is written to the store (so a reader sees it).
+  Stream<DiagnosticEntry> get appended => _appended.stream;
+
   List<String>? _lines;
   int _bytes = 0;
   Future<void> _tail = Future.value();
 
   /// Adds [entry]. Never throws: diagnostics must not break what failed.
-  Future<void> append(DiagnosticEntry entry) =>
-      _tail = _tail.then((_) => _append(entry));
+  Future<void> append(DiagnosticEntry entry) {
+    final here = route;
+    final stamped = entry.route == null && here != null
+        ? entry.withRoute(here)
+        : entry;
+    return _tail = _tail.then((_) => _append(stamped));
+  }
 
   Future<void> _append(DiagnosticEntry entry) async {
     try {
@@ -60,6 +74,7 @@ class DiagnosticsLog {
         _bytes -= _size(lines.removeAt(0));
       }
       await _store.put(key, utf8.encode(lines.map((l) => '$l\n').join()));
+      _appended.add(entry);
     } on Object {
       // Unreadable store: drop this entry rather than clobber the file. A
       // failed write keeps the entry in memory for the next append.

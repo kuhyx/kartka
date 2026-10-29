@@ -14,7 +14,11 @@ typedef PageFetcher<T> = Future<PageResult<T>> Function(int page);
 /// [reset] are dropped rather than appended to the new list.
 class PagedController<T> extends ChangeNotifier {
   /// Creates a controller; nothing is fetched until [loadMore] is called.
-  new(this._fetch, {required this._keyOf});
+  /// [onError] hears each failed fetch (not a stale one dropped by [reset]).
+  new(this._fetch, {required this._keyOf, this.onError});
+
+  /// Told about every failed fetch that surfaces as [error].
+  final void Function(Object error, StackTrace stack)? onError;
 
   final Object Function(T item) _keyOf;
   PageFetcher<T> _fetch;
@@ -56,9 +60,10 @@ class PagedController<T> extends ChangeNotifier {
       }
       _nextPage++;
       _hasNext = page.hasNext;
-    } on Object catch (e) {
+    } on Object catch (e, stack) {
       if (generation != _generation) return;
       _error = e;
+      onError?.call(e, stack);
     } finally {
       if (generation == _generation) {
         _loading = false;

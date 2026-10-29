@@ -3,6 +3,7 @@
 // ignore_for_file: unused_import
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/app.dart';
+import 'package:kartka/app/error_hooks.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/redacted_logging.dart';
 import 'package:kartka/app/registry.dart';

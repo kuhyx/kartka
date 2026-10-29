@@ -4,6 +4,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/source_health/cut_reasons.dart';
 import 'package:kartka/source_health/feed/fixture_feed.dart';
+import 'package:kartka/source_health/feed/reporting_feed.dart';
 import 'package:kartka/source_health/feed/rtdb_feed.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
 import 'package:kartka/source_health/format.dart';

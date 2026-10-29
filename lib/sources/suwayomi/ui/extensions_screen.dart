@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_exceptions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
@@ -12,10 +13,13 @@ import 'package:kartka/sources/suwayomi/ui/extension_tile.dart';
 /// uninstall. What is "available" is whatever the server's stores offer.
 class ExtensionsScreen extends StatefulWidget {
   /// Creates the screen.
-  const new({required this.api, super.key});
+  const new({required this.api, this.diagnostics, super.key});
 
   /// The server's extension API.
   final SuwayomiExtensionsApi api;
+
+  /// Where a failed listing (the Retry screen) is logged.
+  final DiagnosticsLog? diagnostics;
 
   @override
   State<ExtensionsScreen> createState() => _ExtensionsState();
@@ -38,7 +42,11 @@ class _ExtensionsState extends State<ExtensionsScreen> {
     try {
       final items = await widget.api.list();
       if (mounted) setState(() => _items = items);
-    } on Object catch (e) {
+    } on Object catch (e, stack) {
+      final log = widget.diagnostics;
+      if (log != null) {
+        ErrorReporter.of(log).report('suwayomi.extensions', e, stack: stack);
+      }
       if (mounted) setState(() => _error = _describe(e));
     }
   }

@@ -150,10 +150,10 @@ class ReaderSession extends ChangeNotifier {
         downloads: deps.downloads,
         source: source,
       );
-    } on ReaderLoadException catch (e) {
-      return _fail(e.message);
-    } on Object catch (e) {
-      return _fail('$e');
+    } on ReaderLoadException catch (e, stack) {
+      return _openFailed(e, stack, e.message);
+    } on Object catch (e, stack) {
+      return _openFailed(e, stack, '$e');
     }
     final last = loaded.pages.length - 1;
     page = startAtEnd ? (last < 0 ? 0 : last) : await _resumePage(last);
@@ -167,8 +167,11 @@ class ReaderSession extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// The bytes of the page at [flat] among every loaded page.
-  Future<Uint8List> image(int flat) => _cache!.get(flat);
+  /// The bytes of the page at [flat] among every loaded page. A failure
+  /// shown here (the page's Retry) is logged as `reader.page`; a failed
+  /// background prefetch is not.
+  Future<Uint8List> image(int flat) =>
+      _cache!.get(flat).onError<Object>(_pageFailed);
 
   /// Rebuilds so failed pages fetch again.
   void retry() => notifyListeners();

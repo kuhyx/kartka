@@ -8,6 +8,7 @@ import 'package:kartka/sync/decorators/synced_bindings.dart';
 import 'package:kartka/sync/decorators/synced_categories.dart';
 import 'package:kartka/sync/decorators/synced_library.dart';
 import 'package:kartka/sync/decorators/synced_progress.dart';
+import 'package:kartka/sync/error_upload.dart';
 import 'package:kartka/sync/firebase_transport.dart';
 import 'package:kartka/sync/google_client.dart';
 import 'package:kartka/sync/merge/merge_rules.dart';

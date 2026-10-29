@@ -6,6 +6,7 @@ import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/browse/state/refresh_outcome.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
@@ -61,6 +62,32 @@ void main() {
     final outcome = await c.refresh();
     expect(outcome, isA<RefreshFailed>());
     expect(c.details, isNull);
+  });
+
+  test('a failed load is logged as details.load, URLs stripped', () async {
+    final log = DiagnosticsLog(MemoryBlobStore());
+    deps = BrowseDeps(
+      sources: deps.sources,
+      languages: deps.languages,
+      chapters: deps.chapters,
+      library: library,
+      progress: progress,
+      downloads: downloads,
+      clock: () => when,
+      diagnostics: log,
+    );
+    src.failWith = StateError('down https://h.test/x?auth=SECRET');
+    final c = ctl();
+    await c.load();
+    final e = (await log.entries()).single;
+    expect(e.kind, 'details.load');
+    expect(e.sourceId, 'mangadex');
+    expect(e.error, 'Bad state: down <url>');
+    expect(e.stack, isNotEmpty);
+    src.failWith = null;
+    await c.refresh();
+    await c.load();
+    expect(await log.entries(), hasLength(1));
   });
 
   test('a source failure becomes error', () async {

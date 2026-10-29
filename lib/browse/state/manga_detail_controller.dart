@@ -63,7 +63,29 @@ class MangaDetailController extends ChangeNotifier {
   /// Loads details and a fresh chapter list in parallel. After a
   /// [SourceUnavailable] (the Retry button) it first asks every provider to
   /// re-list its sources, so a server that was down at start is seen again.
+  /// A failure is logged as `details.load` (source id only, URLs stripped).
   Future<void> load() async {
+    await _load();
+    final failure = error;
+    if (failure != null) await _log('details.load', failure, _stack);
+  }
+
+  StackTrace? _stack;
+
+  Future<void> _log(String kind, Object failure, [StackTrace? stack]) async =>
+      await _deps.diagnostics?.append(
+        DiagnosticEntry.failure(
+          at: _deps.clock(),
+          kind: kind,
+          error: stripUrls('$failure'),
+          stack: stack == null
+              ? null
+              : StackTrace.fromString(stripUrls('$stack')),
+          sourceId: sourceId,
+        ),
+      );
+
+  Future<void> _load() async {
     if (error is SourceUnavailable) unawaited(_deps.sources.refresh());
     loading = true;
     error = null;
@@ -76,8 +98,9 @@ class MangaDetailController extends ChangeNotifier {
       ]);
       details = results[0] as MangaDetails;
       chapters = readingOrder(results[1] as List<ChapterInfo>);
-    } on Object catch (e) {
+    } on Object catch (e, stack) {
       error = e;
+      _stack = stack;
     }
     loading = false;
     _notify();
@@ -86,12 +109,12 @@ class MangaDetailController extends ChangeNotifier {
   /// Re-fetches the chapter list through the shared checker
   /// (`BrowseDeps.updates`), which diffs it against the stored list and
   /// persists it; details stay as loaded. With nothing shown yet (a failed
-  /// first load) it runs [load] instead and reports nothing new. A failure
-  /// is logged to the diagnostics log as `details.refresh` with the source
-  /// id only: no URL, no query string.
+  /// first load) it reloads instead and reports nothing new. Any failure,
+  /// that reload's included, is logged once, as `details.refresh` (never
+  /// also `details.load`), with the source id only and URLs stripped.
   Future<RefreshOutcome> refresh() async {
     if (details == null) {
-      await load();
+      await _load();
       final failure = error;
       return failure == null
           ? const RefreshSucceeded([])
@@ -108,15 +131,7 @@ class MangaDetailController extends ChangeNotifier {
   }
 
   Future<RefreshOutcome> _failed(Object failure, StackTrace? stack) async {
-    await _deps.diagnostics?.append(
-      DiagnosticEntry.failure(
-        at: _deps.clock(),
-        kind: 'details.refresh',
-        error: stripUrls('$failure'),
-        stack: stack,
-        sourceId: sourceId,
-      ),
-    );
+    await _log('details.refresh', failure, stack);
     return RefreshFailed(failure);
   }
 

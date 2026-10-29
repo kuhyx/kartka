@@ -1,0 +1,16 @@
+[Unit]
+Description=Kartka: collect error reports from RTDB into TODO-fixme.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin
+# Exit 3: no kartka-source-eval session yet (the journal names the seed
+# command). Exit 1: RTDB unreachable; the next run retries, nothing lost.
+ExecStart=%h/src/kartka/tools/errors/run.sh ingest
+Nice=19
+IOSchedulingClass=idle
+MemoryMax=256M
+CPUQuota=10%
+TimeoutStartSec=5min

@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/settings_stores.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/downloads/auto/auto_downloader.dart';
 import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/downloads/engine/download_engine.dart';
 import 'package:kartka/downloads/engine/source_directory.dart';
+import 'package:kartka/downloads/queue/download_task.dart';
 import 'package:kartka/downloads/ui/downloads_screen.dart';
 import 'package:kartka/downloads/ui/downloads_tiles.dart';
 import 'package:kartka/library/library_repositories.dart';
@@ -40,6 +42,7 @@ KartkaFeature downloadsFeature(KartkaEnv env) {
       ).load(page),
     ),
     onLoaded: () => unawaited(auto.checkIfDue()),
+    onFailure: downloadFailureReporter(DiagnosticsLog.of(p.diagnostics)),
   );
   Stream<List<LibraryEntry>> library() =>
       env.registry.maybe<LibraryRepositories>()?.library.watch() ??
@@ -75,3 +78,14 @@ KartkaFeature downloadsFeature(KartkaEnv env) {
     services: [service],
   );
 }
+
+/// Logs a failed chapter download as `downloads.failed` with its source.
+void Function(DownloadTask, Object, StackTrace) downloadFailureReporter(
+  DiagnosticsLog log,
+) =>
+    (task, error, stack) => ErrorReporter.of(log).report(
+      'downloads.failed',
+      error,
+      stack: stack,
+      sourceId: splitMangaKey(task.mangaKey).$1,
+    );

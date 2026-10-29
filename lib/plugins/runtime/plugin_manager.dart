@@ -51,7 +51,15 @@ class AvailableResult {
 /// Repo management and install/update/uninstall.
 class PluginManager implements PluginRegistrar, PluginRepoInstaller {
   /// Creates a manager.
-  new({required this.http, required this.store, this.adapters = _noAdapters});
+  new({
+    required this.http,
+    required this.store,
+    this.adapters = _noAdapters,
+    this.onRepoError,
+  });
+
+  /// Told about each repo whose index failed to load (shown per repo).
+  final void Function(String repo, Object error, StackTrace stack)? onRepoError;
 
   /// All downloads go through this.
   final KartkaHttp http;
@@ -115,8 +123,9 @@ class PluginManager implements PluginRegistrar, PluginRepoInstaller {
           final have = installed[e.manifest.id];
           plugins.add(AvailablePlugin(e, _state(have, e.manifest)));
         }
-      } on Object catch (e) {
+      } on Object catch (e, stack) {
         errors[repo] = '$e';
+        onRepoError?.call(repo, e, stack);
       }
     }
     return AvailableResult(plugins, errors);
