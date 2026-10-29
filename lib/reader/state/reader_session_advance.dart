@@ -9,6 +9,14 @@ extension _Advance on ReaderSession {
     notifyListeners();
   }
 
+  Future<Uint8List> _pageFailed(Object e, StackTrace stack) {
+    if (deps.diagnostics case final log?) {
+      ErrorReporter.of(log)
+          .report('reader.page', e, stack: stack, sourceId: sourceId);
+    }
+    return Future.error(e, stack);
+  }
+
   /// Fails the open with [message], logging [e] as `reader.open`.
   void _openFailed(Object e, StackTrace stack, String message) {
     unawaited(

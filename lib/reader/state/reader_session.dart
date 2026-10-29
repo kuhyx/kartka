@@ -166,8 +166,11 @@ class ReaderSession extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// The bytes of the page at [flat] among every loaded page.
-  Future<Uint8List> image(int flat) => _cache!.get(flat);
+  /// The bytes of the page at [flat] among every loaded page. A failure
+  /// shown here (the page's Retry) is logged as `reader.page`; a failed
+  /// background prefetch is not.
+  Future<Uint8List> image(int flat) =>
+      _cache!.get(flat).onError<Object>(_pageFailed);
 
   /// Rebuilds so failed pages fetch again.
   void retry() => notifyListeners();

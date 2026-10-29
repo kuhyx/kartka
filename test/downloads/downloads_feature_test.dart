@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/registry.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/download_repository.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/downloads/downloads_feature.dart';
 import 'package:kartka/downloads/keys.dart';
+import 'package:kartka/downloads/queue/download_task.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
@@ -27,6 +29,21 @@ KartkaFeature _extras(KartkaEnv env) => KartkaFeature(
 );
 
 void main() {
+  test('a failed download is logged with its source', () async {
+    final log = DiagnosticsLog(MemoryBlobStore());
+    downloadFailureReporter(log)(
+      DownloadTask(
+        mangaKey: 'mangadex|/m/1',
+        chapter: const ChapterInfo(url: '/c/1', name: 'Ch. 1'),
+        enqueuedAt: DateTime.utc(2026),
+      ),
+      StateError('HTTP 503'),
+      StackTrace.empty,
+    );
+    final e = (await log.entries()).single;
+    expect((e.kind, e.sourceId), ('downloads.failed', 'mangadex'));
+  });
+
   late KartkaPlatform platform;
   late KartkaRegistry registry;
 

@@ -6,6 +6,7 @@ import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
+import 'package:kartka/source_health/feed/reporting_feed.dart';
 import 'package:kartka/source_health/feed/rtdb_feed.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
 import 'package:kartka/source_health/install/install_ports.dart';
@@ -41,8 +42,14 @@ KartkaFeature sourceHealthFeature(KartkaEnv env) {
   return KartkaFeature(
     id: 'source-health',
     tabs: {
-      KartkaTab.sources: (_) =>
-          SourcesTab(feed: feed, scoring: store, installs: installs),
+      KartkaTab.sources: (_) => SourcesTab(
+        feed: ReportingHealthFeed(
+          feed,
+          DiagnosticsLog.of(env.platform.diagnostics),
+        ),
+        scoring: store,
+        installs: installs,
+      ),
     },
     services: [FeedSourceHealthLookup(feed)],
   );

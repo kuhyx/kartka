@@ -106,6 +106,7 @@ void main() {
     await s.enqueue(mangaKey, ch1);
     final failed = await waitFor(s, ch1, DownloadStatus.failed);
     expect(failed.error, contains('flaky'));
+    expect(h.failures.single, contains('flaky'));
     await s.retry(mangaKey, ch1.url);
     await waitFor(s, ch1, DownloadStatus.done);
     await s.retry(mangaKey, ch1.url); // no task any more: no-op

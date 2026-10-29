@@ -26,6 +26,7 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
     required this.engine,
     this.maxChapters = 2,
     this.onLoaded,
+    this.onFailure,
     DateTime Function()? now,
   }) : _now = now ?? DateTime.now;
 
@@ -43,6 +44,9 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
 
   /// Called once the persisted state is loaded (auto-download hooks in).
   final void Function()? onLoaded;
+
+  /// Told about each chapter that failed (the queue's Retry).
+  final void Function(DownloadTask, Object, StackTrace)? onFailure;
 
   final DateTime Function() _now;
   late final Future<void> _ready = _load();
@@ -223,8 +227,9 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
       }
     } on DownloadStopped {
       if (!run.cancelled) restate(DownloadStatus.queued);
-    } on Object catch (e) {
+    } on Object catch (e, stack) {
       restate(DownloadStatus.failed, '$e');
+      onFailure?.call(task, e, stack);
     }
     if (run.cancelled) {
       _queue.remove(task.id);

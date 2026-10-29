@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/registry.dart';
 import 'package:kartka/app/settings_stores.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/plugins/runtime/engine.dart';
 import 'package:kartka/plugins/runtime/engine_default.dart';
 import 'package:kartka/plugins/runtime/kartka_host_services.dart';
@@ -41,6 +42,9 @@ KartkaFeature pluginsFeature(
     store: store,
     // Lazy: the registry is only complete after every factory has run.
     adapters: () => env.registry.all<PluginRepoAdapter>(),
+    onRepoError: (_, e, stack) =>
+        ErrorReporter.of(DiagnosticsLog.of(env.platform.diagnostics))
+            .report('plugins.repo', e, stack: stack),
   );
   final provider = PluginSourceProvider(
     registrar: manager,

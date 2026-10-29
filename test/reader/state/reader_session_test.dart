@@ -94,6 +94,23 @@ void main() {
     expect((e.sourceId, e.mangaUrl, e.chapterUrl), ('fake', '/m/1', '/c/2'));
   });
 
+  test('a page the reader fails to show is logged as reader.page', () async {
+    final s = make();
+    await s.open();
+    await pumpEventQueue();
+    expect(await f.diagnostics.entries(), isEmpty, reason: 'prefetch is quiet');
+    f.imageError = StateError('HTTP 404');
+    s.retry();
+    final failed = make();
+    await failed.open();
+    await expectLater(failed.image(0), throwsStateError);
+    await pumpEventQueue();
+    final e = (await f.diagnostics.entries()).single;
+    expect(e.kind, 'reader.page');
+    expect(e.error, 'Bad state: HTTP 404');
+    expect(e.sourceId, 'fake');
+  });
+
   test('page changes record debounced progress and mark the end read', () {
     fakeAsync((async) {
       final s = make();

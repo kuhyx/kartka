@@ -20,11 +20,15 @@ class Harness {
   final FakeSource source = FakeSource();
   FakeLoader loader;
 
+  /// Every failure the service reported, as `<task id>: <error>`.
+  final List<String> failures = [];
+
   DownloadService service({int maxChapters = 2, int perHost = 2}) =>
       DownloadService(
         kv: kv,
         blobs: blobs,
         maxChapters: maxChapters,
+        onFailure: (task, e, _) => failures.add('${task.id}: $e'),
         now: () => DateTime.utc(2026, 10, 24),
         engine: DownloadEngine(
           blobs: blobs,
