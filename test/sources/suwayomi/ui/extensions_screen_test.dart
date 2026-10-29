@@ -50,6 +50,17 @@ void main() {
     expect(find.text('Install'), findsWidgets);
   });
 
+  testWidgets('section headers keep the screen gutter', (tester) async {
+    await pump(tester, api(fixtureHttp(_fixtures)));
+    for (final header in ['Installed', 'Available']) {
+      expect(
+        tester.getTopLeft(find.text(header)).dx,
+        greaterThanOrEqualTo(AppSpacing.md),
+        reason: header,
+      );
+    }
+  });
+
   testWidgets('filters by name or language', (tester) async {
     await pump(tester, api(fixtureHttp(_fixtures)));
     await tester.enterText(find.byType(TextField), 'weeb');

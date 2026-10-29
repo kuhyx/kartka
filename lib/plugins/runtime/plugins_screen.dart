@@ -94,7 +94,10 @@ class _PluginsScreenState extends State<PluginsScreen> {
     ),
     body: ListView(
       children: [
-        const SectionHeader('Repositories'),
+        const SectionHeader(
+          'Repositories',
+          padding: SectionHeader.defaultPadding,
+        ),
         AddRepoRow(
           controller: _url,
           busy: _busy.contains('repo'),
@@ -109,7 +112,7 @@ class _PluginsScreenState extends State<PluginsScreen> {
               onPressed: () => _guarded('repo', () => _m.removeRepo(r)),
             ),
           ),
-        const SectionHeader('Available'),
+        const SectionHeader('Available', padding: SectionHeader.defaultPadding),
         if (_loading) const LinearProgressIndicator(),
         AvailableList(
           result: _available,
@@ -117,7 +120,7 @@ class _PluginsScreenState extends State<PluginsScreen> {
           busy: _busy,
           onInstall: (e) => _guarded(e.manifest.id, () => _m.install(e)),
         ),
-        const SectionHeader('Installed'),
+        const SectionHeader('Installed', padding: SectionHeader.defaultPadding),
         InstalledList(manager: _m, busy: _busy, onUninstall: _uninstall),
       ],
     ),

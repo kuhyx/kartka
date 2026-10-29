@@ -102,9 +102,11 @@ class _ExtensionsState extends State<ExtensionsScreen> {
       onAction: (a) => _run(e, a),
     );
     return [
-      if (installed.isNotEmpty) const SectionHeader('Installed'),
+      if (installed.isNotEmpty)
+        const SectionHeader('Installed', padding: SectionHeader.defaultPadding),
       ...installed.map(tile),
-      if (available.isNotEmpty) const SectionHeader('Available'),
+      if (available.isNotEmpty)
+        const SectionHeader('Available', padding: SectionHeader.defaultPadding),
       ...available.map(tile),
     ];
   }
