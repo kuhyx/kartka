@@ -68,8 +68,10 @@ List<SuwayomiExtension> sortExtensions(Iterable<SuwayomiExtension> all) {
 }
 
 /// Lists, installs, updates and uninstalls the server's extensions; also
-/// the Sources tab's [SuwayomiExtensionInstaller].
-class SuwayomiExtensionsApi implements SuwayomiExtensionInstaller {
+/// the Sources tab's [SuwayomiExtensionInstaller] and the Keep
+/// auto-install's [InstalledExtensionLister].
+class SuwayomiExtensionsApi
+    implements SuwayomiExtensionInstaller, InstalledExtensionLister {
   /// Creates the API; [onChanged] runs after every successful change (the
   /// feature re-lists the sources there).
   new({required this.client, required this.settings, this.onChanged});
@@ -100,6 +102,12 @@ class SuwayomiExtensionsApi implements SuwayomiExtensionInstaller {
 
   @override
   Future<void> installExtension(String pkg) => install(pkg);
+
+  @override
+  Future<Set<String>> installedPackages() async => {
+    for (final e in await list())
+      if (e.isInstalled) e.pkgName,
+  };
 
   /// Updates [pkgName] to the store's version.
   Future<SuwayomiExtension> update(String pkgName) => _patch(pkgName, 'update');

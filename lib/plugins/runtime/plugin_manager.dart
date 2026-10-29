@@ -49,7 +49,8 @@ class AvailableResult {
 }
 
 /// Repo management and install/update/uninstall.
-class PluginManager implements PluginRegistrar, PluginRepoInstaller {
+class PluginManager
+    implements PluginRegistrar, PluginRepoInstaller, InstalledPluginLister {
   /// Creates a manager.
   new({required this.http, required this.store, this.adapters = _noAdapters});
 
@@ -165,6 +166,11 @@ class PluginManager implements PluginRegistrar, PluginRepoInstaller {
       ),
     );
   }
+
+  @override
+  Future<Set<String>> installedPluginIds() async => {
+    for (final p in await store.installed()) p.manifest.id,
+  };
 
   /// The Sources tab's Install: adds [repo] (a no-op when configured; the
   /// repo list syncs), then installs its plugin [id]. Throws
