@@ -42,9 +42,20 @@ deploy/suwayomi/install.sh --verify-only  # end-to-end check, exit 0 = good
 - **Loopback is enforced in the unit.** `-Dsuwayomi.tachidesk.config.server.ip=127.0.0.1`
   overrides `server.conf`. On the host the conf still says `0.0.0.0` and the
   socket is `127.0.0.1:4567`, so the override is what actually applies. The
-  same flags also turn off the tray icon, the browser-on-start and KCEF
-  (bundled Chromium; Kartka records a challenged source as blocking and never
-  solves the challenge).
+  same flags also turn off the tray icon and the browser-on-start.
+- **KCEF on, FlareSolverr pinned off** (decision 2026-10-29). KCEF (bundled
+  Chromium) backs the extension WebView shim, so a source that needs it
+  (AllManga: "CEF is disabled" on `/fetchChapterPages`) now works. The
+  Sources ranking puts such sources low rather than cutting them
+  (`DOCS-contracts-source-health.md`, rank tier). In v2.4.2366 FlareSolverr is
+  the only challenge solver, and Kartka never solves or waits out a challenge
+  (`DOCS-contracts-webview.md` §2), so `flareSolverrEnabled` and
+  `flareSolverrAsResponseFallback` are `-D false`: a web-UI toggle is undone
+  at the next restart. Residual risk, accepted: a WebView-using extension may
+  pass a JS check inside KCEF. `-Xmx1g` stays: CEF's browser and renderer are
+  native subprocesses outside the Java heap. The evaluator's own instance
+  (`tools/source_eval/systemd/kartka-suwayomi-eval.service`) keeps KCEF off,
+  because "CEF is disabled" is how it detects a needs-browser-engine source.
 - `--verify-only` checks these, all live:
   - unit active and enabled, version and settings read back;
   - Keiyoushi store present;
@@ -74,6 +85,10 @@ that only imports `sites/*.caddy`, and a neighbour site that has to keep
 answering. These passed in vmbox on commit `794520d`: fresh install, verify,
 an idempotent rerun, rollback of an invalid snippet (neighbour unaffected), and
 verify after a guest reboot.
+
+Static check, runs anywhere: `deploy/suwayomi/tests/unit_flags_test.sh` (the
+KCEF / FlareSolverr / auth / loopback flags and their `--verify-only`
+readback).
 
 Later changes were checked on the host only: the kcef/authMode readback and
 the early return that skips the download. In that vmbox run the tarball came

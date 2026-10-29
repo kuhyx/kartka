@@ -6,6 +6,12 @@
 # Loopback on purpose: on 0.0.0.0 anyone on the LAN could reach port 4567 and
 # skip Caddy's password. The -D flags below win over server.conf, so a setting
 # changed through the web UI cannot reopen it after a restart.
+#
+# KCEF (bundled Chromium) is on so extensions that need a WebView work; the
+# Sources ranking puts those low (decision 2026-10-29). FlareSolverr is pinned
+# off: Kartka never solves or waits out a challenge, and in v2.4.2366
+# FlareSolverr is the only challenge solver. CEF's browser and renderer are
+# native subprocesses outside the Java heap, so -Xmx stays at 1g.
 
 [Unit]
 Description=Suwayomi-Server for Kartka (loopback; published by Caddy)
@@ -30,7 +36,9 @@ ExecStart=%h/services/suwayomi/app/current/jre/bin/java \
 	-Dsuwayomi.tachidesk.config.server.authMode=NONE \
 	-Dsuwayomi.tachidesk.config.server.initialOpenInBrowserEnabled=false \
 	-Dsuwayomi.tachidesk.config.server.systemTrayEnabled=false \
-	-Dsuwayomi.tachidesk.config.server.kcefEnabled=false \
+	-Dsuwayomi.tachidesk.config.server.kcefEnabled=true \
+	-Dsuwayomi.tachidesk.config.server.flareSolverrEnabled=false \
+	-Dsuwayomi.tachidesk.config.server.flareSolverrAsResponseFallback=false \
 	-jar %h/services/suwayomi/app/current/bin/Suwayomi-Server.jar
 # The JVM exits 143 on SIGTERM; that is a clean stop, not a failure.
 SuccessExitStatus=143
