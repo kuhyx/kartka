@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/app/screen_observer.dart';
 import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/source_registry.dart';
@@ -47,8 +48,11 @@ KartkaFeature sourceHealthFeature(KartkaEnv env) {
     diagnostics: diagnostics,
   );
   // Reconciles on start and on every new publish (DOCS-contracts-source-
-  // health §5 "Keep auto-install"), once the registry is complete.
-  scheduleMicrotask(() => unawaited(autoInstall.start(feed)));
+  // health §5 "Keep auto-install"), from the app's first screen on: a bare
+  // registry (tests, tools) never touches sync.
+  final startOnFirstScreen = _OnFirstScreen(
+    () => unawaited(autoInstall.start(feed)),
+  );
   late final installs = SourceInstalls(
     sourceIds: sources.watch().map((all) => {for (final s in all) s.ref.id}),
     open: (context, id) => unawaited(context.push(sourceRoute(id))),
@@ -68,8 +72,27 @@ KartkaFeature sourceHealthFeature(KartkaEnv env) {
         onMigrate: (context) => unawaited(context.push(betterSourcesRoute)),
       ),
     },
-    services: [FeedSourceHealthLookup(feed), feed, autoInstall],
+    services: [
+      FeedSourceHealthLookup(feed),
+      feed,
+      autoInstall,
+      startOnFirstScreen,
+    ],
   );
+}
+
+/// Runs its callback on the first screen report only.
+class _OnFirstScreen implements ScreenObserver {
+  new(this._run);
+
+  void Function()? _run;
+
+  @override
+  void screenChanged(String pattern) {
+    final run = _run;
+    _run = null;
+    run?.call();
+  }
 }
 
 /// Resolves the sync part's [RtdbReader] lazily: the registry is only

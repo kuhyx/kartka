@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/app/screen_observer.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
@@ -41,6 +42,15 @@ void main() {
     ]);
     final reconciler = registry.maybe<KeepReconciler>()!;
     expect(registry.maybe<SourceHealthFeed>(), isNotNull);
+    // Nothing runs until the app shows its first screen (a bare registry,
+    // as in tests, never touches sync).
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(suwayomi.calls, isEmpty);
+    for (final o in registry.all<ScreenObserver>()) {
+      o
+        ..screenChanged('/library')
+        ..screenChanged('/browse'); // later screens do not start it again
+    }
     for (var i = 0; i < 50 && reconciler.state.publishId == null; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 5));
     }
