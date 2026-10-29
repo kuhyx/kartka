@@ -28,6 +28,16 @@ class ChapterSegment {
   /// Debounced progress writes and the read mark, for this chapter only.
   final ProgressRecorder recorder;
 
+  /// This segment with [n] as its neighbours (a chapter list fetched
+  /// again), keeping its pages and recorder.
+  ChapterSegment withNeighbours(ChapterNeighbours n) => ChapterSegment(
+    url: url,
+    neighbours: n,
+    pages: pages,
+    offline: offline,
+    recorder: recorder,
+  );
+
   /// Display name of the chapter.
   String get name => neighbours.current?.name ?? 'Chapter';
 }

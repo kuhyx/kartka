@@ -132,7 +132,8 @@ class ReaderSession extends ChangeNotifier {
   ChapterInfo? get previousChapter =>
       segments.isEmpty ? null : segments.first.neighbours.previous;
 
-  /// Whether the next chapter's pages are being fetched.
+  /// Whether the next chapter's pages, or the chapter list that names it,
+  /// are being fetched.
   bool get nextLoading => _nextLoad != null;
 
   /// Resolves settings, chapter list, pages and the start position.
@@ -175,7 +176,7 @@ class ReaderSession extends ChangeNotifier {
   /// Tries the failed next chapter again.
   void retryNext() {
     nextError = null;
-    _maybeLoadNext(force: true);
+    _maybeLoadNext();
     notifyListeners();
   }
 

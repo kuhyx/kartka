@@ -47,6 +47,7 @@ extension on _ReaderScreenState {
       targetName: (forward ? s.nextChapter : s.previousChapter)?.name,
       error: forward ? s.nextError : null,
       onRetry: s.retryNext,
+      loading: forward && s.nextLoading,
     );
     // A webtoon item has unbounded height; give the transition a screen.
     return s.mode.isPaged

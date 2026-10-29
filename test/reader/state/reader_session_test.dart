@@ -114,6 +114,8 @@ void main() {
   test('mode and settings changes persist and notify', () async {
     final s = make();
     await s.open();
+    // Let the next chapter's load (started on open) settle first.
+    await Future<void>.delayed(Duration.zero);
     var notified = 0;
     s.addListener(() => notified++);
     await s.setMode(ReaderMode.pagedLtr);
