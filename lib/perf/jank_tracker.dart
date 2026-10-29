@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
@@ -15,8 +14,17 @@ const perfJankKind = 'perf.jank';
 /// pattern on top when the engine delivers them, summarised into the shared
 /// [DiagnosticsLog] as [perfJankKind] entries. Nothing is synced.
 ///
-/// A frame's cost is build + raster time; it is janky when that exceeds one
-/// refresh interval of the display (16.7 ms when the rate is unknown).
+/// A frame's cost is vsync overhead + build + raster time (a frame whose
+/// build starts late, because the UI isolate was busy, misses vsync just
+/// the same); it is janky when that exceeds one refresh interval of the
+/// display (16.7 ms when the rate is unknown).
+///
+/// Frames only report work the engine did. A UI isolate frozen by a long
+/// synchronous task renders no frames at all, so a heartbeat timer fires
+/// every [heartbeatInterval]; one that runs more than [stallThreshold] late
+/// counts as a stall on the screen on top. The heartbeat stops while the
+/// app is in the background, and lateness of [maxStall] or more (a
+/// suspended process, not a frozen one) is ignored.
 /// Timings arrive in engine batches (about one per second in release), so
 /// frames rendered just before a navigation can land on the new screen.
 ///
@@ -30,27 +38,46 @@ class JankTracker implements ScreenObserver {
   ///
   /// [enabled] `false` makes every method a no-op (tests). [attach] `false`
   /// keeps it off the binding: frames come only through [onTimings].
+  /// [heartbeat] (default: [attach]) runs the stall timer; tests can feed
+  /// [onBeat] directly. [monotonicMicros] is the heartbeat's clock.
   new({
     required this.log,
     this.enabled = true,
     this.attach = true,
+    bool? heartbeat,
     this.flushInterval = const Duration(seconds: 60),
     DateTime Function()? clock,
     double Function()? refreshRate,
-  }) : _clock = clock ?? DateTime.now,
-       _refreshRate = refreshRate ?? _viewRefreshRate;
+    int Function()? monotonicMicros,
+  }) : heartbeat = heartbeat ?? attach,
+       _clock = clock ?? DateTime.now,
+       _refreshRate = refreshRate ?? _viewRefreshRate,
+       _monotonic = monotonicMicros ?? _stopwatchMicros;
 
   /// Where summaries go (the shared log in the app).
   final DiagnosticsLog log;
 
   final DateTime Function() _clock;
   final double Function() _refreshRate;
+  final int Function() _monotonic;
+
+  /// Gap between heartbeats.
+  static const heartbeatInterval = Duration(milliseconds: 100);
+
+  /// Lateness above this is a stall.
+  static const stallThreshold = Duration(milliseconds: 50);
+
+  /// Lateness from here on is a suspended app, not a stall.
+  static const maxStall = Duration(seconds: 30);
 
   /// Whether the tracker does anything.
   final bool enabled;
 
   /// Whether the first screen hooks the binding's timings and lifecycle.
   final bool attach;
+
+  /// Whether the first screen starts the event-loop heartbeat.
+  final bool heartbeat;
 
   /// Shortest gap between two summaries of one screen.
   final Duration flushInterval;
@@ -60,11 +87,15 @@ class JankTracker implements ScreenObserver {
   ScreenFrameStats? _current;
   bool _attached = false;
   AppLifecycleListener? _lifecycle;
+  AppLifecycleListener? _beatLifecycle;
+  Timer? _beat;
+  int _lastBeat = 0;
 
   @override
   void screenChanged(String pattern) {
     if (!enabled) return;
     _hook();
+    _startHeartbeat();
     final left = _screen;
     if (left != null) _flush(left, _current!, periodic: false);
     _screen = pattern;
@@ -81,6 +112,42 @@ class JankTracker implements ScreenObserver {
     _lifecycle = flushOnBackground(() async => flushAll());
   }
 
+  void _startHeartbeat() {
+    if (!heartbeat || _beatLifecycle != null) return;
+    _beatLifecycle = AppLifecycleListener(
+      onStateChange: (state) =>
+          state == AppLifecycleState.resumed ? _resumeBeat() : _pauseBeat(),
+    );
+    _resumeBeat();
+  }
+
+  void _resumeBeat() {
+    if (_beat != null) return;
+    _lastBeat = _monotonic();
+    _beat = Timer.periodic(heartbeatInterval, (_) {
+      final now = _monotonic();
+      onBeat(now - _lastBeat - heartbeatInterval.inMicroseconds);
+      _lastBeat = now;
+    });
+  }
+
+  void _pauseBeat() {
+    _beat?.cancel();
+    _beat = null;
+  }
+
+  /// Records a heartbeat that ran [latenessMicros] late on the screen on
+  /// top: a stall when over [stallThreshold] and under [maxStall].
+  void onBeat(int latenessMicros) {
+    final stats = _current;
+    if (!enabled || stats == null) return;
+    if (latenessMicros <= stallThreshold.inMicroseconds ||
+        latenessMicros >= maxStall.inMicroseconds) {
+      return;
+    }
+    stats.recordStall(latenessMicros);
+  }
+
   /// Records an engine batch of [timings] against the screen on top.
   void onTimings(List<FrameTiming> timings) {
     final stats = _current;
@@ -88,10 +155,9 @@ class JankTracker implements ScreenObserver {
     final budget = budgetMicros;
     for (final t in timings) {
       stats.record(
-        t.timestampInMicroseconds(FramePhase.buildFinish) -
-            t.timestampInMicroseconds(FramePhase.buildStart) +
-            t.timestampInMicroseconds(FramePhase.rasterFinish) -
-            t.timestampInMicroseconds(FramePhase.rasterStart),
+        t.vsyncOverhead.inMicroseconds +
+            t.buildDuration.inMicroseconds +
+            t.rasterDuration.inMicroseconds,
         budget,
       );
     }
@@ -129,7 +195,7 @@ class JankTracker implements ScreenObserver {
     final budget = budgetMicros;
     return [
       for (final MapEntry(:key, :value) in _stats.entries)
-        if (value.frames > 0) value.summary(key, budget),
+        if (value.frames > 0 || value.stalls > 0) value.summary(key, budget),
     ]..sort(PerfSummary.worstFirst);
   }
 
@@ -142,13 +208,19 @@ class JankTracker implements ScreenObserver {
     }
   }
 
-  /// Unhooks from the binding.
+  /// Unhooks from the binding and stops the heartbeat.
   void dispose() {
+    _pauseBeat();
+    _beatLifecycle?.dispose();
+    _beatLifecycle = null;
     if (!_attached) return;
     _attached = false;
     SchedulerBinding.instance.removeTimingsCallback(onTimings);
     _lifecycle?.dispose();
   }
+
+  static final _stopwatch = Stopwatch()..start();
+  static int _stopwatchMicros() => _stopwatch.elapsedMicroseconds;
 
   static double _viewRefreshRate() {
     final views = WidgetsBinding.instance.platformDispatcher.views;

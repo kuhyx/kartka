@@ -114,14 +114,16 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
     Set<String> read, {
     required bool unread,
   }) {
+    final banner = staleBanner(c);
     final canDownload = BrowseScope.of(context).downloads != null;
     final newestFirst = c.chapters.reversed.toList();
     final shown = unread ? unreadFirst(newestFirst, read) : newestFirst;
-    return RefreshIndicator(
+    final list = RefreshIndicator(
       onRefresh: _refresh,
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
+          if (banner != null) SliverToBoxAdapter(child: banner),
           SliverToBoxAdapter(child: DetailHeader(details: details)),
           SliverToBoxAdapter(
             child: Padding(
@@ -145,6 +147,19 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
           const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xxl * 2)),
         ],
       ),
+    );
+    // Stale content is on screen while the network refreshes it.
+    if (!c.loading) return list;
+    return Stack(
+      children: [
+        list,
+        const Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: LinearProgressIndicator(),
+        ),
+      ],
     );
   }
 }

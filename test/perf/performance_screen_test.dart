@@ -44,6 +44,20 @@ void main() {
     expect(find.text('No frames measured yet'), findsOneWidget);
   });
 
+  testWidgets('event-loop stalls show on their screen', (tester) async {
+    final tracker = _tracker()
+      ..screenChanged('/library')
+      ..onBeat(180000)
+      ..screenChanged('/browse')
+      ..onBeat(60000)
+      ..onBeat(90000);
+    await tester.pumpWidget(
+      MaterialApp(home: PerformanceScreen(tracker: tracker)),
+    );
+    expect(find.textContaining('1 stall (worst 180.0 ms)'), findsOneWidget);
+    expect(find.textContaining('2 stalls (worst 90.0 ms)'), findsOneWidget);
+  });
+
   testWidgets('More tile opens the screen; the tracker sees the route', (
     tester,
   ) async {

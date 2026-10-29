@@ -117,6 +117,13 @@ redacted JSON lines, rolling at 1 MB / 2000 entries, at
 The same store holds the pre-migration library snapshots
 (`backups/kartka-backup-<UTC>.json`, `format: kartka-backup` v1; `adb pull`).
 
+`KartkaPlatform.cache` (optional `BlobStore`) holds disposable blobs worth
+keeping across launches: the app cache dir on Android (the OS may clear
+it), the wrapper's `/files` root on web. `CoverCache`
+(`lib/platform/cover_cache.dart`) keeps covers there under
+`cache/covers/<sha1(url)>`, behind a memory LRU; the library registers one
+shared instance and Browse uses it (`registry.maybe<CoverCache>()`).
+
 ## 8. Repositories (`lib/core/repositories/`, interfaces written by foundation; local impls by library part)
 
 ```dart

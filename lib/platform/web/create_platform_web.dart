@@ -36,5 +36,7 @@ Future<KartkaPlatform> createPlatform() async {
       open: (url) => web.window.open(url.toString(), '_blank'),
     ),
     browser: WrapperBrowser(client, base),
+    // Covers land under files/cache/ on the PC (CoverCache.prefix).
+    cache: WrapperBlobStore(client, base),
   );
 }

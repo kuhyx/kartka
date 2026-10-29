@@ -5,23 +5,13 @@ import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/browse/state/refresh_outcome.dart';
+import 'package:kartka/browse/state/source_wait.dart';
+import 'package:kartka/browse/state/stored_detail.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
-import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 
-/// No registered source has the route's source id (not installed, server
-/// unreachable, or an id kartka has no source for, e.g. `sy-builtin:*`).
-class SourceUnavailable implements Exception {
-  /// Creates the error for [sourceId].
-  const new(this.sourceId);
-
-  /// The missing source id.
-  final String sourceId;
-
-  @override
-  String toString() => 'Source $sourceId is not available';
-}
+export 'package:kartka/browse/state/source_wait.dart' show SourceUnavailable;
 
 /// State and actions of the manga detail screen.
 class MangaDetailController extends ChangeNotifier {
@@ -64,6 +54,10 @@ class MangaDetailController extends ChangeNotifier {
   /// [SourceUnavailable] (the Retry button) it first asks every provider to
   /// re-list its sources, so a server that was down at start is seen again.
   /// A failure is logged as `details.load` (source id only, URLs stripped).
+  ///
+  /// Stale-while-revalidate: with nothing shown yet, a library entry (and
+  /// the stored chapter list) is shown at once while the network runs, so a
+  /// reopen never waits on the source. A failed refresh keeps it, in [error].
   Future<void> load() async {
     await _load();
     final failure = error;
@@ -90,14 +84,13 @@ class MangaDetailController extends ChangeNotifier {
     loading = true;
     error = null;
     _notify();
+    // Started before the seed: the seed must never delay the network.
+    final fresh = _fetch()..ignore();
+    if (details == null) await _seed();
     try {
-      final source = await _source();
-      final results = await Future.wait<Object>([
-        source.details(mangaUrl),
-        _deps.chapters.load(key, refresh: true),
-      ]);
-      details = results[0] as MangaDetails;
-      chapters = readingOrder(results[1] as List<ChapterInfo>);
+      final (d, list) = await fresh;
+      details = d;
+      chapters = readingOrder(list);
     } on Object catch (e, stack) {
       error = e;
       _stack = stack;
@@ -106,20 +99,33 @@ class MangaDetailController extends ChangeNotifier {
     _notify();
   }
 
+  Future<(MangaDetails, List<ChapterInfo>)> _fetch() async {
+    final source = await waitForSource(_deps.sources, sourceId, sourceWait);
+    final results = await Future.wait<Object>([
+      source.details(mangaUrl),
+      _deps.chapters.load(key, refresh: true),
+    ]);
+    return (results[0] as MangaDetails, results[1] as List<ChapterInfo>);
+  }
+
+  /// Shows the library entry and stored chapters, when there is an entry.
+  Future<void> _seed() async {
+    final stored = await storedDetail(_deps, key);
+    if (stored == null) return;
+    details = stored.$1;
+    chapters = readingOrder(stored.$2);
+    _notify();
+  }
+
   /// Re-fetches the chapter list through the shared checker
   /// (`BrowseDeps.updates`), which diffs it against the stored list and
-  /// persists it; details stay as loaded. With nothing shown yet (a failed
-  /// first load) it reloads instead and reports nothing new. Any failure,
+  /// persists it; details stay as loaded. With no fresh details shown (a
+  /// failed first load, or stored data behind a failed load) it reloads
+  /// instead, reporting the chapters not shown before it. Any failure,
   /// that reload's included, is logged once, as `details.refresh` (never
   /// also `details.load`), with the source id only and URLs stripped.
   Future<RefreshOutcome> refresh() async {
-    if (details == null) {
-      await _load();
-      final failure = error;
-      return failure == null
-          ? const RefreshSucceeded([])
-          : await _failed(failure, null);
-    }
+    if (details == null || error != null) return await _reload();
     switch (await _deps.updates.check(key)) {
       case UpdateFound(:final chapters, :final added):
         this.chapters = readingOrder(chapters);
@@ -130,30 +136,21 @@ class MangaDetailController extends ChangeNotifier {
     }
   }
 
+  Future<RefreshOutcome> _reload() async {
+    final shown = {for (final c in chapters) c.url};
+    await _load();
+    final failure = error;
+    if (failure != null) return await _failed(failure, _stack);
+    return RefreshSucceeded([
+      if (shown.isNotEmpty)
+        for (final c in chapters)
+          if (!shown.contains(c.url)) c,
+    ]);
+  }
+
   Future<RefreshOutcome> _failed(Object failure, StackTrace? stack) async {
     await _log('details.refresh', failure, stack);
     return RefreshFailed(failure);
-  }
-
-  /// The route's source, waiting up to [sourceWait] for a runtime source.
-  /// Completes without awaiting the subscription's cancel, so a slow
-  /// provider teardown never delays the screen.
-  Future<MangaSource> _source() {
-    final found = Completer<MangaSource>();
-    late final StreamSubscription<void> sub;
-    final timer = Timer(sourceWait, () {
-      if (found.isCompleted) return;
-      found.completeError(SourceUnavailable(sourceId));
-      unawaited(sub.cancel());
-    });
-    sub = _deps.sources.watch().listen((_) {
-      final source = _deps.sources.byId(sourceId);
-      if (source == null || found.isCompleted) return;
-      timer.cancel();
-      found.complete(source);
-      unawaited(sub.cancel());
-    });
-    return found.future;
   }
 
   /// Whether the manga is in the library, live.

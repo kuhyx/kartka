@@ -26,6 +26,8 @@ class _PluginsScreenState extends State<PluginsScreen> {
   AvailableResult _available = const AvailableResult([], {});
   List<String> _langs = kDefaultPluginLanguages;
   bool _loading = true;
+  // Until the first load lands, the empty states would be false claims.
+  bool _loaded = false;
   final Set<String> _busy = {};
 
   PluginManager get _m => widget.manager;
@@ -53,6 +55,7 @@ class _PluginsScreenState extends State<PluginsScreen> {
       _langs = langs ?? kDefaultPluginLanguages;
       _available = available;
       _loading = false;
+      _loaded = true;
     });
   }
 
@@ -134,18 +137,25 @@ class _PluginsScreenState extends State<PluginsScreen> {
               onChanged: _setLanguages,
             ),
           if (_loading) const LinearProgressIndicator(),
-          AvailableList(
-            result: AvailableResult(shown, _available.errors),
-            hidden: _available.plugins.length - shown.length,
-            hasRepos: _repos.isNotEmpty,
-            busy: _busy,
-            onInstall: (e) => _guarded(e.manifest.id, () => _m.install(e)),
-          ),
+          if (!_loaded)
+            const Padding(
+              padding: EdgeInsets.all(AppSpacing.md),
+              child: Text('Loading plugins…'),
+            )
+          else
+            AvailableList(
+              result: AvailableResult(shown, _available.errors),
+              hidden: _available.plugins.length - shown.length,
+              hasRepos: _repos.isNotEmpty,
+              busy: _busy,
+              onInstall: (e) => _guarded(e.manifest.id, () => _m.install(e)),
+            ),
           const SectionHeader(
             'Installed',
             padding: SectionHeader.defaultPadding,
           ),
-          InstalledList(manager: _m, busy: _busy, onUninstall: _uninstall),
+          if (_loaded)
+            InstalledList(manager: _m, busy: _busy, onUninstall: _uninstall),
         ],
       ),
     );

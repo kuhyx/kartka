@@ -13,6 +13,7 @@ void main() {
     Future<Uint8List> bytes, {
     VoidCallback? onRetry,
     bool fitWidth = false,
+    Uint8List? initial,
   }) => tester.pumpWidget(
     MaterialApp(
       home: Scaffold(
@@ -21,6 +22,7 @@ void main() {
           pageNumber: 3,
           onRetry: onRetry ?? () {},
           fitWidth: fitWidth,
+          initial: initial,
         ),
       ),
     ),
@@ -61,5 +63,11 @@ void main() {
       await tester.pump();
     }
     expect(find.text('Retry'), findsOneWidget);
+  });
+
+  testWidgets('bytes already loaded show on the first frame', (tester) async {
+    await pump(tester, Completer<Uint8List>().future, initial: onePixelPng);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.byType(Image), findsOneWidget);
   });
 }

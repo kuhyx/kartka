@@ -5,6 +5,7 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
+import 'package:kartka/reader/ui/page_precache.dart';
 
 /// Everything the reader talks to, injected so tests use fakes.
 class ReaderDeps {
@@ -18,6 +19,7 @@ class ReaderDeps {
     this.now = DateTime.now,
     this.diagnostics,
     this.advanceTimeout = const Duration(seconds: 30),
+    this.precache = precacheQuietly,
   });
 
   /// The source with this id, or null when it is not installed.
@@ -45,4 +47,7 @@ class ReaderDeps {
   /// How long the next chapter's page list may take before it counts as
   /// failed.
   final Duration advanceTimeout;
+
+  /// Decodes the pages around the current one before they are swiped in.
+  final PagePrecache precache;
 }

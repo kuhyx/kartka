@@ -58,8 +58,17 @@ class FakeSource implements MangaSource {
   Future<SearchPage> search(String query, int page) =>
       throw UnimplementedError();
 
+  /// The title [details] returns; null makes it throw.
+  String? title;
+  int detailCalls = 0;
+
   @override
-  Future<MangaDetails> details(String mangaUrl) => throw UnimplementedError();
+  Future<MangaDetails> details(String mangaUrl) async {
+    detailCalls++;
+    final t = title;
+    if (t == null) throw StateError('no details');
+    return MangaDetails(sourceId: id, url: mangaUrl, title: t);
+  }
 }
 
 /// A page loader that fails the first [failures] calls per URL with [error],

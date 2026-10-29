@@ -38,6 +38,9 @@ class FakeSource implements MangaSource {
   /// When set, listing and details throw it (a browser challenge).
   ChallengeRequired? challenge;
   Completer<void>? searchGate;
+
+  /// When set, details and chapter listing wait for it (a slow network).
+  Completer<void>? detailsGate;
   final List<String> calls = [];
 
   SearchPage _page(String kind, int page) {
@@ -68,6 +71,7 @@ class FakeSource implements MangaSource {
   @override
   Future<MangaDetails> details(String mangaUrl) async {
     calls.add('details:$mangaUrl');
+    await detailsGate?.future;
     if (failWith != null) throw failWith!;
     if (challenge != null) throw challenge!;
     return MangaDetails(
@@ -85,6 +89,7 @@ class FakeSource implements MangaSource {
   @override
   Future<List<ChapterInfo>> chapters(String mangaUrl) async {
     calls.add('chapters:$mangaUrl');
+    await detailsGate?.future;
     if (failWith != null) throw failWith!;
     return chapterList;
   }

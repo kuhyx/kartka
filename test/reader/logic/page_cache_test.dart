@@ -84,4 +84,21 @@ void main() {
     pending[1].complete(Uint8List(1));
     expect(await second, hasLength(1));
   });
+
+  test('peek: the loaded bytes, synchronously; gone once dropped', () async {
+    final c = make();
+    final pending = c.get(1);
+    expect(c.peek(1), isNull);
+    final bytes = await pending;
+    expect(c.peek(1), same(bytes));
+    await c.get(2);
+    c.retain({2});
+    expect(c.peek(1), isNull);
+    expect(c.peek(2), isNotNull);
+    c.clear();
+    expect(c.peek(2), isNull);
+    fail = true;
+    await expectLater(c.get(3), throwsStateError);
+    expect(c.peek(3), isNull);
+  });
 }

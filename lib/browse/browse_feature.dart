@@ -13,6 +13,7 @@ import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/state/chapter_sort_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
+import 'package:kartka/browse/state/shared_health_lookup.dart';
 import 'package:kartka/browse/ui/browse_tab.dart';
 import 'package:kartka/browse/ui/global_search_screen.dart';
 import 'package:kartka/browse/ui/manga_detail_screen.dart';
@@ -25,6 +26,7 @@ import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
+import 'package:kartka/platform/cover_cache.dart';
 import 'package:kartka/platform/image_headers.dart';
 import 'package:kartka/platform/page_image.dart';
 import 'package:kartka/tracking/common/chapter_url_resolver.dart';
@@ -106,11 +108,25 @@ class BrowseRuntime {
       _env.registry.maybe<LibraryRepositories>() ??
       (throw StateError('browse needs the library feature registered'));
 
-  late final _covers = PageImageLoader(
-    http: _env.platform.http,
-    blobs: _env.platform.blobs,
-    imageHeaders: _env.registry.all<ImageHeaders>(),
-  );
+  // The library's shared cover cache (one fetch per cover across both
+  // grids); a private one when the library did not register it.
+  late final CoverCache _covers =
+      _env.registry.maybe<CoverCache>() ??
+      CoverCache(
+        load: (url) => PageImageLoader(
+          http: _env.platform.http,
+          blobs: _env.platform.blobs,
+          imageHeaders: _env.registry.all<ImageHeaders>(),
+        ).load(PageRef(index: 0, imageUrl: url)),
+        store: _env.platform.cache,
+      );
+
+  // One health subscription for every Browse mount (see SharedHealthLookup).
+  late final SourceHealthLookup? _health = switch (_env.registry
+      .maybe<SourceHealthLookup>()) {
+    final inner? => SharedHealthLookup(inner),
+    null => null,
+  };
 
   /// Dependencies of every browse screen.
   late final BrowseDeps deps = BrowseDeps(
@@ -121,9 +137,9 @@ class BrowseRuntime {
     progress: _repos.progress,
     downloads: _env.registry.maybe<DownloadRepository>(),
     downloadService: _env.registry.maybe<DownloadService>(),
-    health: _env.registry.maybe<SourceHealthLookup>(),
+    health: _health,
     detailSlots: _env.registry.all<MangaDetailSlot>(),
-    coverLoader: (url) => _covers.load(PageRef(index: 0, imageUrl: url)),
+    coverLoader: _covers.get,
     browser: _env.platform.browser,
     diagnostics: DiagnosticsLog.of(_env.platform.diagnostics),
     chapterSort: () {

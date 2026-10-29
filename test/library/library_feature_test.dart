@@ -11,6 +11,7 @@ import 'package:kartka/library/library_routes.dart';
 import 'package:kartka/library/repository_decorator.dart';
 import 'package:kartka/library/ui/categories_screen.dart';
 import 'package:kartka/library/ui/library_screen.dart';
+import 'package:kartka/platform/cover_cache.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 
@@ -69,6 +70,10 @@ void main() {
     expect(screen.deps.repos, same(registry.maybe<LibraryRepositories>()));
     await tester.runAsync(() => screen.deps.coverLoader!('https://x/c.jpg'));
     expect(http.requests.single.url.toString(), 'https://x/c.jpg');
+    // Cached and shared: a second mount costs no request.
+    await tester.runAsync(() => screen.deps.coverLoader!('https://x/c.jpg'));
+    expect(http.requests, hasLength(1));
+    expect(registry.maybe<CoverCache>()!.peek('https://x/c.jpg'), isNotNull);
     router.go(libraryCategoriesRoute);
     await tester.pumpAndSettle();
     final cats = tester.widget<CategoriesScreen>(find.byType(CategoriesScreen));

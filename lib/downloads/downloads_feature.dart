@@ -8,6 +8,7 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/downloads/auto/auto_downloader.dart';
 import 'package:kartka/downloads/download_service.dart';
+import 'package:kartka/downloads/download_titles.dart';
 import 'package:kartka/downloads/engine/download_engine.dart';
 import 'package:kartka/downloads/engine/source_directory.dart';
 import 'package:kartka/downloads/queue/download_task.dart';
@@ -47,6 +48,7 @@ KartkaFeature downloadsFeature(KartkaEnv env) {
   Stream<List<LibraryEntry>> library() =>
       env.registry.maybe<LibraryRepositories>()?.library.watch() ??
       Stream.value(const []);
+  final titles = DownloadTitles(kv: p.kv, findSource: sources.find);
   // The toggle syncs (§16); queue, index and baselines stay local.
   final kv = syncedKv(env);
   auto = AutoDownloader(
@@ -65,6 +67,7 @@ KartkaFeature downloadsFeature(KartkaEnv env) {
           service: service,
           titles: library().map((l) => {for (final e in l) e.key: e.title}),
           onOpen: () => unawaited(auto.checkIfDue()),
+          resolveTitle: titles.title,
         ),
       ),
     ],

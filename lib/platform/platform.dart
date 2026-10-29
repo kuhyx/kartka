@@ -30,6 +30,7 @@ class KartkaPlatform {
     required this.oauth,
     required this.diagnostics,
     this.browser = const UnavailableBrowser(),
+    this.cache,
   });
 
   /// Network client (direct on Android, `/proxy` on web).
@@ -64,4 +65,9 @@ class KartkaPlatform {
   /// (docs/DOCS-contracts-webview.md); optional, so constructions that
   /// predate it keep compiling.
   final KartkaBrowser browser;
+
+  /// Disposable blobs worth keeping across launches, e.g. cover images
+  /// (`CoverCache`). Android: the app cache dir, which the OS may clear.
+  /// Web: the wrapper's `/files/` root, under `cache/`. Null: memory only.
+  final BlobStore? cache;
 }

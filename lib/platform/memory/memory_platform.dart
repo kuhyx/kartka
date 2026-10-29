@@ -19,6 +19,7 @@ KartkaPlatform memoryPlatform({
   FakeOAuthRedirect? oauth,
   KartkaBrowser? browser,
   MemoryBlobStore? diagnostics,
+  MemoryBlobStore? cache,
 }) => KartkaPlatform(
   http: http ?? FakeKartkaHttp(),
   blobs: blobs ?? MemoryBlobStore(),
@@ -28,4 +29,5 @@ KartkaPlatform memoryPlatform({
   oauth: oauth ?? FakeOAuthRedirect(),
   browser: browser ?? const UnavailableBrowser(),
   diagnostics: diagnostics ?? MemoryBlobStore(),
+  cache: cache ?? MemoryBlobStore(),
 );

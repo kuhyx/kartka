@@ -173,6 +173,9 @@ class ReaderSession extends ChangeNotifier {
   Future<Uint8List> image(int flat) =>
       _cache!.get(flat).onError<Object>(_pageFailed);
 
+  /// The bytes of the page at [flat] if they have arrived, else null.
+  Uint8List? loadedImage(int flat) => _cache?.peek(flat);
+
   /// Rebuilds so failed pages fetch again.
   void retry() => notifyListeners();
 

@@ -26,6 +26,7 @@ import 'package:url_launcher/url_launcher.dart';
 Future<KartkaPlatform> createPlatform() async {
   final docs = await getApplicationDocumentsDirectory();
   final support = await getApplicationSupportDirectory();
+  final cacheDir = await getApplicationCacheDirectory();
   // getExternalFilesDir(null): adb can pull it from a release build.
   final external = await getExternalStorageDirectory();
   final kv = FileKeyValueStore(File(p.join(support.path, 'kv.json')));
@@ -54,5 +55,7 @@ Future<KartkaPlatform> createPlatform() async {
       links: AppLinks().uriLinkStream,
     ),
     browser: WebViewBrowser(hosts),
+    // Covers: the OS may clear this dir, and then they are fetched again.
+    cache: FileBlobStore(Directory(p.join(cacheDir.path, 'blobs'))),
   );
 }

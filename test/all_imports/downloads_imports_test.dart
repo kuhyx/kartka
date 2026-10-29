@@ -4,6 +4,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/downloads/auto/auto_downloader.dart';
 import 'package:kartka/downloads/download_service.dart';
+import 'package:kartka/downloads/download_titles.dart';
 import 'package:kartka/downloads/downloads_feature.dart';
 import 'package:kartka/downloads/downloads_snapshot.dart';
 import 'package:kartka/downloads/engine/download_engine.dart';

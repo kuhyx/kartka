@@ -5,11 +5,13 @@ import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/browse/browse_feature.dart';
 import 'package:kartka/browse/browse_routes.dart';
+import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
+import 'package:kartka/platform/cover_cache.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/tracking/common/chapter_url_resolver.dart';
@@ -22,6 +24,8 @@ KartkaRegistry _registry({
   bool withLibrary = true,
   FakeDownloadService? downloads,
   MemoryKeyValueStore? store,
+  SourceHealthLookup? health,
+  CoverCache? covers,
 }) {
   final kv = store ?? MemoryKeyValueStore();
   final http = FakeKartkaHttp(
@@ -34,6 +38,8 @@ KartkaRegistry _registry({
         StaticSourceProvider([FakeSource('mangadex', name: 'MangaDex')]),
         if (withLibrary) LibraryRepositories(kv, decorators: () => const []),
         ?downloads,
+        ?health,
+        ?covers,
       ],
     ),
     browseFeature,
@@ -66,6 +72,16 @@ void main() {
     expect(find.text('MangaDex'), findsOneWidget);
   });
 
+  testWidgets('a registered health lookup ranks the tab, shared', (t) async {
+    const ranks = {
+      'mangadex': SourceHealthSummary(rank: 4, verdict: HealthVerdict.keep),
+    };
+    await _pumpApp(t, _registry(health: const FakeHealth(ranks)), '/');
+    expect(find.text('EN · #4'), findsOneWidget);
+    await t.pumpWidget(const SizedBox());
+    await t.pump(const Duration(minutes: 2)); // The shared linger timer.
+  });
+
   testWidgets('the tab reads browse.languages from the platform kv', (t) async {
     final kv = MemoryKeyValueStore({'browse.languages': '["ko"]'});
     await _pumpApp(t, _registry(store: kv), '/');
@@ -77,6 +93,18 @@ void main() {
     await _pumpApp(t, _registry(), mangaRoute('mangadex', '/m/1?x=1'));
     expect(find.text('Detail title'), findsOneWidget);
     expect(find.byType(Image), findsWidgets);
+  });
+
+  testWidgets('covers come from the shared (library) cover cache', (t) async {
+    final urls = <String>[];
+    final covers = CoverCache(
+      load: (url) async {
+        urls.add(url);
+        return onePixelPng;
+      },
+    );
+    await _pumpApp(t, _registry(covers: covers), mangaRoute('mangadex', '/m'));
+    expect(urls, ['https://img.test/cover.jpg']);
   });
 
   testWidgets('a registered DownloadService reaches the chapter rows', (

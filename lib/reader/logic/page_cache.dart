@@ -14,9 +14,14 @@ class PageCache {
 
   final PageFetcher _fetch;
   final Map<int, Future<Uint8List>> _entries = {};
+  final Map<int, Uint8List> _loaded = {};
 
   /// Whether [index] is cached or being fetched.
   bool contains(int index) => _entries.containsKey(index);
+
+  /// The bytes of page [index] when they have arrived, else null: lets a
+  /// page that is already loaded draw on its first frame.
+  Uint8List? peek(int index) => _loaded[index];
 
   /// The bytes of page [index], fetching them on first use.
   ///
@@ -28,7 +33,9 @@ class PageCache {
     _entries[index] = future;
     unawaited(
       future.then<void>(
-        (_) {},
+        (bytes) {
+          if (identical(_entries[index], future)) _loaded[index] = bytes;
+        },
         onError: (Object _) {
           // Only evict our own entry: a retain + refetch may have replaced it.
           if (identical(_entries[index], future)) {
@@ -48,9 +55,14 @@ class PageCache {
   }
 
   /// Drops every entry whose index is not in [keep].
-  void retain(Set<int> keep) =>
-      _entries.removeWhere((index, _) => !keep.contains(index));
+  void retain(Set<int> keep) {
+    _entries.removeWhere((index, _) => !keep.contains(index));
+    _loaded.removeWhere((index, _) => !keep.contains(index));
+  }
 
   /// Drops every entry.
-  void clear() => _entries.clear();
+  void clear() {
+    _entries.clear();
+    _loaded.clear();
+  }
 }
