@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -93,6 +95,29 @@ void main() {
       s.kick();
       async.elapse(const Duration(seconds: 6));
       expect(at, [0, 5, 15, 16, 21]);
+      s.detach();
+    });
+  });
+
+  test('kicks and resumes during a hung poll start no second poll', () {
+    fakeAsync((async) {
+      var started = 0;
+      final hung = Completer<void>();
+      final s = SyncScheduler(() {
+        started++;
+        return started == 1 ? hung.future : Future<void>.value();
+      })..attach();
+      for (var i = 0; i < 3; i++) {
+        s
+          ..kick()
+          ..didChangeAppLifecycleState(AppLifecycleState.inactive)
+          ..didChangeAppLifecycleState(AppLifecycleState.resumed);
+      }
+      async.elapse(const Duration(seconds: 30));
+      expect(started, 1, reason: 'every restart waits for the hung poll');
+      hung.complete();
+      async.elapse(const Duration(seconds: 6));
+      expect(started, 2, reason: 'one loop resumes after it');
       s.detach();
     });
   });

@@ -49,6 +49,7 @@ class SyncScheduler with WidgetsBindingObserver {
   // Bumped by every start/stop, so a poll finishing after a stop (or a
   // stop + start) does not schedule a second loop.
   int _generation = 0;
+  Future<void>? _inFlight;
 
   /// Whether foreground polling is on.
   bool get running => _running;
@@ -97,11 +98,12 @@ class SyncScheduler with WidgetsBindingObserver {
   }
 
   /// Polls once, then waits [interval] (or the backoff) from its end, so a
-  /// slow network never queues up a backlog of polls.
+  /// slow network never queues up a backlog of polls. A restart (resume,
+  /// kick) while a poll hangs waits for that poll instead of adding one.
   Future<void> _fire(int generation) async {
     var healthy = false;
     try {
-      await poll();
+      await (_inFlight ??= poll().whenComplete(() => _inFlight = null));
       healthy = _ok();
     } on Object {
       // The engine logs its own failures; here a throw only means backoff.
