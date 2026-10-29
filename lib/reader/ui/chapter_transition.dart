@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 /// The slot past either end of the loaded chapters.
 ///
 /// The reader moves straight into a neighbouring chapter, so this only
-/// shows while that chapter is loading, when it failed ([error] plus a
-/// retry), or at the very start or end of the manga.
+/// shows while that chapter is loading (it turns into the chapter's first
+/// page on its own), when it failed ([error] plus a retry), or at the very
+/// start or end of the manga.
 class ChapterTransition extends StatelessWidget {
   /// The edge after the last page ([forward]) or before the first.
   const new({
@@ -14,6 +15,7 @@ class ChapterTransition extends StatelessWidget {
     this.targetName,
     this.error,
     this.onRetry,
+    this.loading = false,
     super.key,
   });
 
@@ -32,6 +34,10 @@ class ChapterTransition extends StatelessWidget {
   /// Tries the neighbour again.
   final VoidCallback? onRetry;
 
+  /// Whether the neighbour is still being looked for, before its name is
+  /// known (the chapter list is fetched again).
+  final bool loading;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -46,22 +52,34 @@ class ChapterTransition extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (target == null) ...[
-              Text(forward ? 'Finished' : 'Start of', style: muted),
-              const SizedBox(height: AppSpacing.xs),
-              Text(currentName, style: theme.textTheme.titleLarge),
-              const SizedBox(height: AppSpacing.lg),
-              Text(forward ? 'No next chapter' : 'No previous chapter'),
-            ] else if (failure != null) ...[
-              Text('Could not open $target', style: theme.textTheme.titleLarge),
+            if (failure != null) ...[
+              Text(
+                'Could not open ${target ?? 'the next chapter'}',
+                style: theme.textTheme.titleLarge,
+              ),
               const SizedBox(height: AppSpacing.sm),
               Text(failure, textAlign: TextAlign.center),
               const SizedBox(height: AppSpacing.lg),
               FilledButton(onPressed: onRetry, child: const Text('Retry')),
-            ] else ...[
+            ] else if (target != null || loading) ...[
               const CircularProgressIndicator(),
               const SizedBox(height: AppSpacing.md),
-              Text('${forward ? 'Next' : 'Previous'}: $target', style: muted),
+              Text(
+                target == null
+                    ? 'Looking for the next chapter'
+                    : '${forward ? 'Next' : 'Previous'}: $target',
+                style: muted,
+              ),
+            ] else if (forward) ...[
+              Text('No more chapters', style: theme.textTheme.titleLarge),
+              const SizedBox(height: AppSpacing.xs),
+              Text(currentName, style: muted),
+            ] else ...[
+              Text('Start of', style: muted),
+              const SizedBox(height: AppSpacing.xs),
+              Text(currentName, style: theme.textTheme.titleLarge),
+              const SizedBox(height: AppSpacing.lg),
+              const Text('No previous chapter'),
             ],
           ],
         ),

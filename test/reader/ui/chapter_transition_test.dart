@@ -10,6 +10,7 @@ void main() {
     String? target,
     String? error,
     VoidCallback? onRetry,
+    bool loading = false,
   }) => tester.pumpWidget(
     MaterialApp(
       home: Scaffold(
@@ -19,6 +20,7 @@ void main() {
           targetName: target,
           error: error,
           onRetry: onRetry,
+          loading: loading,
         ),
       ),
     ),
@@ -58,12 +60,23 @@ void main() {
 
   testWidgets('no neighbour says so and has no button', (tester) async {
     await pump(tester, forward: true);
-    expect(find.text('Finished'), findsOneWidget);
+    expect(find.text('Finished'), findsNothing);
     expect(find.text('Ch. 5'), findsOneWidget);
-    expect(find.text('No next chapter'), findsOneWidget);
+    expect(find.text('No more chapters'), findsOneWidget);
     expect(find.byType(FilledButton), findsNothing);
     await pump(tester, forward: false);
     expect(find.text('Start of'), findsOneWidget);
     expect(find.text('No previous chapter'), findsOneWidget);
+  });
+
+  testWidgets('an unknown next chapter still loads or fails', (tester) async {
+    await pump(tester, forward: true, loading: true);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.text('Looking for the next chapter'), findsOneWidget);
+    expect(find.text('No more chapters'), findsNothing);
+    await pump(tester, forward: true, error: 'Offline.', onRetry: () {});
+    expect(find.text('Could not open the next chapter'), findsOneWidget);
+    expect(find.text('Offline.'), findsOneWidget);
+    expect(find.text('Retry'), findsOneWidget);
   });
 }

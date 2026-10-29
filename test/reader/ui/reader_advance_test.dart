@@ -93,7 +93,8 @@ void main() {
     expect(find.textContaining('https://src.test/c/3?<redacted>'), findsOne);
     expect(find.textContaining('SECRET'), findsNothing);
     final logged = await tester.runAsync(h.diagnostics.entries);
-    expect(logged!.single.chapterUrl, '/c/3');
+    // Once from the load on open, once from the retry on reaching the end.
+    expect(logged!.map((e) => e.chapterUrl), ['/c/3', '/c/3']);
     source.fail = false;
     await tester.tap(find.text('Retry'));
     await h.settle(tester);
@@ -102,7 +103,7 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
   });
 
-  testWidgets('the last chapter ends on "No next chapter"', (tester) async {
+  testWidgets('the last chapter ends on "No more chapters"', (tester) async {
     h = ReaderHarness(
       source: FakeSource(
         chapterList: const [ChapterInfo(url: '/c/2', name: 'Ch. 2')],
@@ -113,7 +114,7 @@ void main() {
     for (var i = 0; i < 4; i++) {
       await key(tester, LogicalKeyboardKey.arrowRight);
     }
-    expect(find.text('No next chapter'), findsOneWidget);
+    expect(find.text('No more chapters'), findsOneWidget);
     await key(tester, LogicalKeyboardKey.arrowLeft);
     await key(tester, LogicalKeyboardKey.arrowLeft);
     for (var i = 0; i < 3; i++) {

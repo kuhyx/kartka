@@ -35,17 +35,16 @@ extension _Advance on ReaderSession {
 
   /// Appends the chapter at [url]; [landing] is a page arrived at, not read.
   void _add(String url, ChapterPages loaded, {int? landing}) {
-    final n = neighboursOf(_chapters, url);
     segments.add(
       ChapterSegment(
         url: url,
-        neighbours: n,
+        neighbours: neighboursOf(_chapters, url),
         pages: loaded.pages,
         offline: loaded.offline,
         recorder: ProgressRecorder(
           pageCount: loaded.pages.length,
           landing: landing,
-          record: (p) => _record(n, url, p),
+          record: (p) => _record(url, p),
           markRead: () async => await deps.progress?.markRead(key, url),
         ),
       ),
@@ -53,7 +52,10 @@ extension _Advance on ReaderSession {
     _flat = [..._flat, ...loaded.pages];
   }
 
-  Future<void> _record(ChapterNeighbours n, String url, int page) async {
+  /// Looks the chapter up at write time: a chapter list fetched again
+  /// after a failure supplies the number the first one could not.
+  Future<void> _record(String url, int page) async {
+    final n = neighboursOf(_chapters, url);
     final number = progressNumber(n.current, n.position);
     // Unknown chapter number (offline): only markRead may land.
     if (number == null) return;
@@ -83,14 +85,21 @@ extension _Advance on ReaderSession {
       ..retain(retainWindow(current: current, total: total, ahead: ahead));
   }
 
-  /// Starts loading the next chapter once the reader is within the prefetch
-  /// window of the last loaded page ([force]: right away, for a retry).
-  void _maybeLoadNext({bool force = false}) {
+  /// Starts loading the chapter after the last loaded one as soon as the
+  /// reader is in that last chapter, so its pages are known a whole chapter
+  /// before the swipe that reaches them. Only one chapter ahead: chapters
+  /// further on wait until the reader gets there.
+  void _maybeLoadNext() {
+    if (segments.isEmpty || _nextLoad != null || nextError != null) return;
+    if (segment < segments.length - 1) return;
     final next = nextChapter;
-    if (next == null || _nextLoad != null || nextError != null) return;
-    final remaining = _flat.length - 1 - (strip.offsetOf(segment) + page);
-    if (!force && remaining > settings.prefetchAhead) return;
-    _nextLoad = _loadNext(next);
+    if (next != null) {
+      _nextLoad = _loadNext(next);
+    } else if (segments.last.neighbours.current == null) {
+      // Not in the chapter list (it failed at open): no next is unknown,
+      // not the end, so ask the source again.
+      _nextLoad = _findNext(segments.last.url);
+    }
   }
 
   Future<void> _loadNext(ChapterInfo next) async {
@@ -113,25 +122,62 @@ extension _Advance on ReaderSession {
       }
       _prefetch();
     } on Object catch (e, stack) {
-      nextError = redactUrlQueries(advanceFailureMessage(e));
-      unawaited(
-        deps.diagnostics?.append(
-          DiagnosticEntry.failure(
-            at: deps.now(),
-            kind: 'reader.advance',
-            error: e,
-            stack: stack,
-            sourceId: sourceId,
-            mangaUrl: mangaUrl,
-            chapterUrl: next.url,
-          ),
-        ),
-      );
+      _advanceFailed(e, stack, next.url);
     } finally {
       _nextLoad = null;
     }
     // A short chapter may already put the reader near the new end.
     _maybeLoadNext();
     notifyListeners();
+  }
+
+  /// Fetches the chapter list again for the chapter at [url], which the
+  /// one fetched at open did not contain.
+  Future<void> _findNext(String url) async {
+    try {
+      final source = _source ??= await deps.findSource(sourceId);
+      if (source == null) {
+        throw const ReaderLoadException(
+          'The source is not available, so the next chapter is unknown.',
+        );
+      }
+      final list = await source.chapters(mangaUrl).timeout(deps.advanceTimeout);
+      // The reader may have been left while the list was fetched.
+      if (_disposed) return;
+      if (neighboursOf(list, url).current == null) {
+        throw const ReaderLoadException(
+          "This chapter is not in the source's chapter list.",
+        );
+      }
+      _chapters = list;
+      for (var i = 0; i < segments.length; i++) {
+        final s = segments[i];
+        segments[i] = s.withNeighbours(neighboursOf(list, s.url));
+      }
+    } on Object catch (e, stack) {
+      _advanceFailed(e, stack, url);
+    } finally {
+      _nextLoad = null;
+    }
+    _maybeLoadNext();
+    notifyListeners();
+  }
+
+  /// Shows [e] redacted on the trailing slot and logs it.
+  void _advanceFailed(Object e, StackTrace stack, String chapterUrl) {
+    nextError = redactUrlQueries(advanceFailureMessage(e));
+    unawaited(
+      deps.diagnostics?.append(
+        DiagnosticEntry.failure(
+          at: deps.now(),
+          kind: 'reader.advance',
+          error: e,
+          stack: stack,
+          sourceId: sourceId,
+          mangaUrl: mangaUrl,
+          chapterUrl: chapterUrl,
+        ),
+      ),
+    );
   }
 }
