@@ -16,6 +16,9 @@ const railBreakpoint = 840.0;
 
 /// The app frame: bottom navigation on phones, a rail on wide windows.
 ///
+/// Every tab starts below the status bar (a tab's own AppBar then sees no
+/// top inset, so nothing is padded twice).
+///
 /// Both are Material navigation widgets, so every tab is a focus stop and
 /// activates with Enter/Space (DOCS-operability rule 1-2).
 class KartkaShell extends StatelessWidget {
@@ -34,28 +37,32 @@ class KartkaShell extends StatelessWidget {
     final tabs = tabInfo.values.toList();
     if (wide) {
       return Scaffold(
-        body: Row(
-          children: [
-            NavigationRail(
-              selectedIndex: shell.currentIndex,
-              onDestinationSelected: _go,
-              labelType: NavigationRailLabelType.all,
-              destinations: [
-                for (final t in tabs)
-                  NavigationRailDestination(
-                    icon: Icon(t.icon),
-                    label: Text(t.label),
-                  ),
-              ],
-            ),
-            const VerticalDivider(width: 1),
-            Expanded(child: shell),
-          ],
+        body: SafeArea(
+          bottom: false,
+          child: Row(
+            children: [
+              NavigationRail(
+                selectedIndex: shell.currentIndex,
+                onDestinationSelected: _go,
+                labelType: NavigationRailLabelType.all,
+                destinations: [
+                  for (final t in tabs)
+                    NavigationRailDestination(
+                      icon: Icon(t.icon),
+                      label: Text(t.label),
+                    ),
+                ],
+              ),
+              const VerticalDivider(width: 1),
+              Expanded(child: shell),
+            ],
+          ),
         ),
       );
     }
     return Scaffold(
-      body: shell,
+      // The bar keeps the bottom inset; the tabs only lose the top one.
+      body: SafeArea(bottom: false, child: shell),
       bottomNavigationBar: NavigationBar(
         selectedIndex: shell.currentIndex,
         onDestinationSelected: _go,
