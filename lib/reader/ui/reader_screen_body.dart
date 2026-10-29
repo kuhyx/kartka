@@ -34,6 +34,7 @@ extension on _ReaderScreenState {
     if (index != null && flat != null) {
       return ReaderPageImage(
         bytes: s.image(flat),
+        initial: s.loadedImage(flat),
         pageNumber: index + 1,
         onRetry: s.retry,
         fitWidth: !s.mode.isPaged,
@@ -55,6 +56,24 @@ extension on _ReaderScreenState {
             height: MediaQuery.sizeOf(context).height,
             child: transition,
           );
+  }
+
+  /// Decodes the page on screen, the next two and the one behind, at the
+  /// size [ReaderPageImage] draws them, as soon as their bytes arrive.
+  void _precacheAround() {
+    final s = _session;
+    if (s.phase != ReaderPhase.ready) return;
+    final current = s.strip.offsetOf(s.segment) + s.page;
+    final width = readerDecodeWidth(context);
+    for (final flat in [current, current + 1, current + 2, current - 1]) {
+      if (flat < 0 || flat >= s.strip.pageCount) continue;
+      s.image(flat).then<void>((bytes) {
+        if (!mounted) return;
+        unawaited(
+          widget.deps.precache(readerPageProvider(bytes, width), context),
+        );
+      }, onError: (Object _) {}).ignore();
+    }
   }
 
   Widget _controls() {

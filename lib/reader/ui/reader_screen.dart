@@ -12,6 +12,7 @@ import 'package:kartka/reader/platform/reader_system.dart';
 import 'package:kartka/reader/state/reader_deps.dart';
 import 'package:kartka/reader/state/reader_session.dart';
 import 'package:kartka/reader/ui/chapter_transition.dart';
+import 'package:kartka/reader/ui/page_precache.dart';
 import 'package:kartka/reader/ui/paged_reader_view.dart';
 import 'package:kartka/reader/ui/reader_controls.dart';
 import 'package:kartka/reader/ui/reader_page_image.dart';
@@ -102,6 +103,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
       _toast(s.chapterName);
     }
     setState(() {});
+    _precacheAround();
   }
 
   /// Names the chapter the reader just moved into.

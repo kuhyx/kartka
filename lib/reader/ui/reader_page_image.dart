@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
+import 'package:kartka/reader/ui/page_precache.dart';
 
 /// One page image, with loading and retryable error states.
 class ReaderPageImage extends StatelessWidget {
@@ -12,6 +13,7 @@ class ReaderPageImage extends StatelessWidget {
     required this.pageNumber,
     required this.onRetry,
     this.fitWidth = false,
+    this.initial,
     super.key,
   });
 
@@ -27,16 +29,21 @@ class ReaderPageImage extends StatelessWidget {
   /// Whether to fill the width (webtoon) instead of fitting the viewport.
   final bool fitWidth;
 
+  /// [bytes]' value when it has already arrived: drawn on the first frame,
+  /// not after a spinner frame.
+  final Uint8List? initial;
+
   @override
   Widget build(BuildContext context) => FutureBuilder<Uint8List>(
     future: bytes,
+    initialData: initial,
     builder: (context, snap) {
       final error = snap.error;
       if (error != null) return _failed(context, redactUrlQueries('$error'));
       final data = snap.data;
       if (data == null) return _loading(context);
-      return Image.memory(
-        data,
+      return Image(
+        image: readerPageProvider(data, readerDecodeWidth(context)),
         fit: fitWidth ? BoxFit.fitWidth : BoxFit.contain,
         width: fitWidth ? double.infinity : null,
         gaplessPlayback: true,

@@ -99,6 +99,9 @@ class _PagedReaderViewState extends State<PagedReaderView>
       final size = box.biggest;
       return PageView.builder(
         controller: _pages,
+        // Lays out the neighbour pages off screen, so a swipe shows a page
+        // that is already built and decoded.
+        allowImplicitScrolling: true,
         scrollDirection: widget.mode.axis,
         reverse: widget.mode.reversed,
         physics: _zoomed
