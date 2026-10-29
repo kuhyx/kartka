@@ -41,7 +41,7 @@ class LocalProgressRepository implements ProgressRepository {
   @override
   Stream<ReadingProgress?> watch(MangaKey key) {
     final id = mangaKeyHash(key);
-    return _progress.watch().map((rows) => rows[id]).distinct();
+    return _progress.watchRow(id).distinct();
   }
 
   @override
@@ -77,11 +77,10 @@ class LocalProgressRepository implements ProgressRepository {
   Stream<Map<String, bool>> readMarks(MangaKey key) {
     final id = mangaKeyHash(key);
     return _marks
-        .watch()
+        .watchRow(id)
         .map(
-          (rows) => Map<String, bool>.unmodifiable({
-            for (final MapEntry(:key, :value)
-                in (rows[id]?.marks ?? {}).entries)
+          (row) => Map<String, bool>.unmodifiable({
+            for (final MapEntry(:key, :value) in (row?.marks ?? {}).entries)
               key: value.on,
           }),
         )
