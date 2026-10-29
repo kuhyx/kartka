@@ -13,6 +13,7 @@ class LibraryAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.onEditCategories,
     required this.onSetCategories,
     required this.onRemove,
+    this.onUpdateAll,
     this.bottom,
     super.key,
   });
@@ -40,6 +41,9 @@ class LibraryAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   /// Removes the selection from the library.
   final VoidCallback onRemove;
+
+  /// Runs "update all"; `null` hides the action.
+  final VoidCallback? onUpdateAll;
 
   /// Category tabs.
   final PreferredSizeWidget? bottom;
@@ -99,6 +103,12 @@ class LibraryAppBar extends StatelessWidget implements PreferredSizeWidget {
             tooltip: 'Search',
             icon: const Icon(Icons.search),
             onPressed: onSearch,
+          ),
+        if (onUpdateAll != null)
+          IconButton(
+            tooltip: 'Update library',
+            icon: const Icon(Icons.refresh),
+            onPressed: onUpdateAll,
           ),
         IconButton(
           tooltip: 'Sort and filter',

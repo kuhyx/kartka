@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 
-/// Label and icon of each shell tab.
+/// Label and icon of each shell tab, in [KartkaTab] order (the destinations
+/// must line up with the router's branches).
 const Map<KartkaTab, ({String label, IconData icon})> tabInfo = {
   KartkaTab.library: (label: 'Library', icon: Icons.collections_bookmark),
+  KartkaTab.updates: (label: 'Updates', icon: Icons.new_releases),
   KartkaTab.browse: (label: 'Browse', icon: Icons.explore),
   KartkaTab.sources: (label: 'Sources', icon: Icons.insights),
   KartkaTab.more: (label: 'More', icon: Icons.more_horiz),
@@ -34,7 +36,7 @@ class KartkaShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wide = MediaQuery.sizeOf(context).width >= railBreakpoint;
-    final tabs = tabInfo.values.toList();
+    final tabs = [for (final t in KartkaTab.values) tabInfo[t]!];
     if (wide) {
       return Scaffold(
         body: SafeArea(

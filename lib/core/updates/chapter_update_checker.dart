@@ -22,11 +22,12 @@ import 'package:kartka/core/models/models.dart';
 ///   single fetch and complete with the identical result. Different keys run
 ///   independently; callers checking a whole library bound the parallelism
 ///   themselves.
-/// - Only [check] reports new chapters. Opening a detail page re-fetches
-///   and stores the list directly (and tracking's chapter resolver stores a
-///   first one), moving the baseline without reporting anything, so an
-///   "update all" run right after finds nothing new for that manga. An
-///   updates feed that must see those has to route them through [check].
+/// - Only [check] reports new chapters to its caller. Opening a detail page
+///   re-fetches and stores the list directly (and tracking's chapter
+///   resolver stores a first one), moving the baseline, so an "update all"
+///   run right after finds nothing new for that manga. Every such store
+///   that adds chapters is still told to each `ChapterAdditionSink` (the
+///   updates feed), so the feed misses none whichever path fetched.
 /// - Callers log failures (the detail screen writes `details.refresh` to the
 ///   diagnostics log); the checker itself logs nothing, so a caller with its
 ///   own entry kind never logs twice.

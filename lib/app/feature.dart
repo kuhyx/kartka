@@ -2,10 +2,14 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/platform/platform.dart';
 
-/// The four bottom-navigation tabs of the app shell.
+/// The bottom-navigation tabs of the app shell, in display order (the
+/// router builds one branch per value, in this order).
 enum KartkaTab {
   /// Saved manga and categories.
   library,
+
+  /// New chapters found in library manga.
+  updates,
 
   /// Search and browse sources.
   browse,

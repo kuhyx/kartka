@@ -6,6 +6,7 @@
 /// `registry.maybe<T>()`, falling back to the no-op default below.
 library;
 
+import 'package:flutter/foundation.dart';
 import 'package:kartka/core/models/manga_key.dart';
 
 /// Unread chapter count per entry. Supplied by browse (chapter cache).
@@ -51,4 +52,63 @@ class NoTrackedLookup implements TrackedLookup {
 
   @override
   Stream<bool> isTracked(MangaKey key) => Stream.value(false);
+}
+
+/// "Update all": checks every library manga for new chapters. Supplied by
+/// updates; one shared run, so the Library and Updates tabs show the same
+/// progress. Notifies listeners whenever [progress] changes.
+abstract interface class LibraryUpdater implements Listenable {
+  /// The run in flight, or `null` when idle.
+  UpdateProgress? get progress;
+
+  /// Checks every library manga; a call while a run is in flight joins it.
+  Future<UpdateSummary> updateAll();
+}
+
+/// How far an update-all run is.
+@immutable
+class UpdateProgress {
+  /// [done] of [total] manga checked.
+  const new(this.done, this.total);
+
+  /// Manga checked so far.
+  final int done;
+
+  /// Manga in the run.
+  final int total;
+
+  /// The progress line, e.g. `Checking 12/87`.
+  String get label => 'Checking $done/$total';
+
+  @override
+  bool operator ==(Object other) =>
+      other is UpdateProgress && other.done == done && other.total == total;
+
+  @override
+  int get hashCode => Object.hash(done, total);
+}
+
+/// What an update-all run found.
+@immutable
+class UpdateSummary {
+  /// [newChapters] across [manga]; [failed] manga could not be checked.
+  const new({this.newChapters = 0, this.manga = 0, this.failed = 0});
+
+  /// New chapters found.
+  final int newChapters;
+
+  /// Manga with at least one new chapter.
+  final int manga;
+
+  /// Manga whose check failed.
+  final int failed;
+
+  /// The snackbar line.
+  String get message => [
+    if (newChapters == 0)
+      'No new chapters'
+    else
+      '$newChapters new chapter${newChapters == 1 ? '' : 's'} in $manga manga',
+    if (failed > 0) '$failed failed',
+  ].join(' · ');
 }

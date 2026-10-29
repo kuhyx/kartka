@@ -50,5 +50,6 @@ LibraryDeps _deps(KartkaEnv env, LibraryRepositories repos) {
     tracked: registry.maybe<TrackedLookup>() ?? const NoTrackedLookup(),
     sourceProviders: registry.all<SourceProvider>(),
     coverLoader: (url) => images.load(PageRef(index: 0, imageUrl: url)),
+    updater: registry.maybe<LibraryUpdater>(),
   );
 }

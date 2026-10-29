@@ -22,6 +22,7 @@ import 'package:kartka/sync/sync_feature.dart';
 import 'package:kartka/tracking/anilist/tracking_feature.dart';
 import 'package:kartka/tracking/mal/mal_feature.dart';
 import 'package:kartka/tracking/mangaupdates/mu_feature.dart';
+import 'package:kartka/updates/updates_feature.dart';
 
 export 'package:kartka/app/feature.dart';
 
@@ -45,4 +46,5 @@ final List<KartkaFeatureFactory> kartkaFeatureFactories = [
   mangaUpdatesFeature,
   migrationFeature,
   perfFeature,
+  updatesFeature,
 ];

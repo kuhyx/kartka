@@ -31,13 +31,21 @@ Future<KartkaRegistry> _pump(WidgetTester tester, Size size) async {
 }
 
 void main() {
-  testWidgets('phone: bottom navigation with four tabs', (tester) async {
+  testWidgets('phone: bottom navigation with five tabs in order', (
+    tester,
+  ) async {
     await _pump(tester, const Size(400, 800));
     expect(find.byType(NavigationBar), findsOneWidget);
-    for (final label in ['Library', 'Browse', 'Sources', 'More']) {
-      expect(find.text(label), findsOneWidget);
-    }
+    final bar = tester.widget<NavigationBar>(find.byType(NavigationBar));
+    expect(
+      [for (final d in bar.destinations) (d as NavigationDestination).label],
+      ['Library', 'Updates', 'Browse', 'Sources', 'More'],
+    );
     expect(find.text('my library'), findsOneWidget);
+
+    await tester.tap(find.text('Updates'));
+    await tester.pumpAndSettle();
+    expect(find.text('Updates is not built yet'), findsOneWidget);
 
     await tester.tap(find.text('Browse'));
     await tester.pumpAndSettle();
@@ -55,6 +63,8 @@ void main() {
     await tester.tap(find.text('Sources'));
     await tester.pumpAndSettle();
     expect(find.text('Sources is not built yet'), findsOneWidget);
+    final rail = tester.widget<NavigationRail>(find.byType(NavigationRail));
+    expect(rail.destinations, hasLength(5));
   });
 
   testWidgets('feature routes are mounted and see KartkaScope', (tester) async {

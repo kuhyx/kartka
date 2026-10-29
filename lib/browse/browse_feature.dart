@@ -20,6 +20,7 @@ import 'package:kartka/browse/ui/source_screen.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
+import 'package:kartka/core/updates/chapter_addition_sink.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/library/library_repositories.dart';
@@ -89,10 +90,16 @@ class BrowseRuntime {
     return BrowseLanguageStore(kv, reloadOn: kv.remoteChanges);
   }();
 
-  /// Persistent chapter cache.
+  /// Persistent chapter cache; every list it grows is told to each
+  /// [ChapterAdditionSink] (the updates feed), looked up at call time.
   late final ChapterStore chapters = ChapterStore(
     sources.byId,
     kv: _env.platform.kv,
+    onAdded: (key, added) {
+      for (final sink in _env.registry.all<ChapterAdditionSink>()) {
+        sink.record(key, added).ignore();
+      }
+    },
   );
 
   late final LibraryRepositories _repos =

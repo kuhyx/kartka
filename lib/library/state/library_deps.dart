@@ -19,6 +19,7 @@ class LibraryDeps {
     this.clock = utcNow,
     this.coverLoader,
     this.sourceProviders = const [],
+    this.updater,
   });
 
   /// Decorated repositories (always through the accessor, so sync sees UI
@@ -43,4 +44,7 @@ class LibraryDeps {
   /// Every registered source provider; entries whose source none of them
   /// offers get the "source unavailable" badge.
   final List<SourceProvider> sourceProviders;
+
+  /// "Update all" (updates); `null` hides the refresh action and the pull.
+  final LibraryUpdater? updater;
 }
