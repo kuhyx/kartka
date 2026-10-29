@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:kartka/core/diagnostics/diagnostic_entry.dart';
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
 import 'package:kartka/source_health/install/install_ports.dart';
+import 'package:kartka/source_health/install/keep_reconciler.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 
 /// Navigates to the browse screen of [sourceId].
@@ -42,8 +43,10 @@ class SourceInstalls extends ChangeNotifier {
     PluginRepoInstaller? Function()? plugins,
     this.diagnostics,
     this.now = DateTime.now,
+    this.autoInstall,
   }) : _suwayomi = suwayomi ?? _none,
        _plugins = plugins ?? _none {
+    autoInstall?.addListener(notifyListeners);
     _sub = sourceIds.listen((ids) {
       _listed = ids;
       notifyListeners();
@@ -60,6 +63,12 @@ class SourceInstalls extends ChangeNotifier {
 
   /// Current time, for the log.
   final DateTime Function() now;
+
+  /// The Keep auto-install, whose failure flags the buttons show.
+  final KeepReconciler? autoInstall;
+
+  /// The auto-install flag of source [id]; null when it has none.
+  String? flagOf(String id) => autoInstall?.flagOf(id);
 
   final SuwayomiExtensionInstaller? Function() _suwayomi;
   final PluginRepoInstaller? Function() _plugins;
@@ -114,6 +123,7 @@ class SourceInstalls extends ChangeNotifier {
 
   @override
   void dispose() {
+    autoInstall?.removeListener(notifyListeners);
     unawaited(_sub.cancel());
     super.dispose();
   }

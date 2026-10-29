@@ -188,6 +188,7 @@ void main() {
     await m.installPlugin(repo: ' $repo ', id: 'demo');
     expect(await m.repos(), [repo]);
     expect([for (final p in await store.installed()) p.manifest.id], ['demo']);
+    expect(await m.installedPluginIds(), {'demo'});
   });
 
   test('installPlugin names the repo error, else "not offered"', () async {

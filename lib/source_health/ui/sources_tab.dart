@@ -2,6 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
+import 'package:kartka/source_health/install/keep_reconciler.dart';
 import 'package:kartka/source_health/install/source_installs.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
@@ -11,6 +12,7 @@ import 'package:kartka/source_health/scoring/profile_store.dart';
 import 'package:kartka/source_health/ui/counts_header.dart';
 import 'package:kartka/source_health/ui/filter_bar.dart';
 import 'package:kartka/source_health/ui/freshness_banner.dart';
+import 'package:kartka/source_health/ui/keep_actions_bar.dart';
 import 'package:kartka/source_health/ui/query_bar.dart';
 import 'package:kartka/source_health/ui/scoring_page.dart';
 import 'package:kartka/source_health/ui/source_card.dart';
@@ -25,8 +27,16 @@ class SourcesTab extends StatefulWidget {
     this.scoring,
     this.clock = DateTime.now,
     this.installs,
+    this.autoInstall,
+    this.onMigrate,
     super.key,
   });
+
+  /// The Keep auto-install; its status shows above the ranking.
+  final KeepReconciler? autoInstall;
+
+  /// Opens "Migrate to better sources"; null hides the button.
+  final void Function(BuildContext context)? onMigrate;
 
   /// Install / Open state of every source; null shows no action buttons.
   final SourceInstalls? installs;
@@ -145,6 +155,10 @@ class _SourcesTabState extends State<SourcesTab> {
             children: [
               _searchField(),
               if (widget.scoring case final store?) _scoringButton(store),
+              KeepActionsBar(
+                autoInstall: widget.autoInstall,
+                onMigrate: widget.onMigrate,
+              ),
               CountsHeader(records: records, meta: meta, showing: shown.length),
             ],
           ),

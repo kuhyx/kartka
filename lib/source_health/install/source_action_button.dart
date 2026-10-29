@@ -27,7 +27,27 @@ class SourceActionButton extends StatelessWidget {
     listenable: installs,
     builder: (context, _) {
       final id = record.id;
-      return switch (installs.actionOf(record)) {
+      final button = _button(context, id);
+      final flag = installs.flagOf(id);
+      if (flag == null) return button;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        spacing: AppSpacing.xs,
+        children: [
+          button,
+          Text(
+            flag,
+            key: ValueKey('autoinstall-flag-$id'),
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
+        ],
+      );
+    },
+  );
+
+  Widget _button(BuildContext context, String id) =>
+      switch (installs.actionOf(record)) {
         SourceAction.open => OutlinedButton.icon(
           key: ValueKey('open-$id'),
           icon: const Icon(Icons.open_in_new),
@@ -50,6 +70,4 @@ class SourceActionButton extends StatelessWidget {
           onPressed: null,
         ),
       };
-    },
-  );
 }

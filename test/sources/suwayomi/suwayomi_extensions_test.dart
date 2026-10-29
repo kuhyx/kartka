@@ -46,6 +46,10 @@ void main() {
     expect(changes, 0);
   });
 
+  test('installedPackages lists only the installed extensions', () async {
+    expect(await api().installedPackages(), {_mangadex});
+  });
+
   test('install, update and uninstall patch by pkgName', () async {
     final installed = await api().install(_spare);
     expect(installed.isInstalled, isTrue);

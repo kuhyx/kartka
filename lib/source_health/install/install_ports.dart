@@ -15,3 +15,18 @@ abstract interface class PluginRepoInstaller {
   /// Installs plugin [id] offered by the repo index at [repo].
   Future<void> installPlugin({required String repo, required String id});
 }
+
+/// Lists the extensions installed on the Suwayomi-Server (implemented by the
+/// same API as [SuwayomiExtensionInstaller]). The Keep auto-install reads
+/// it, never the source list: that list is empty while the server is slow.
+abstract interface class InstalledExtensionLister {
+  /// Package names of every installed extension; throws when unreadable.
+  Future<Set<String>> installedPackages();
+}
+
+/// Lists the plugins installed on this device (implemented by the plugin
+/// manager next to [PluginRepoInstaller]).
+abstract interface class InstalledPluginLister {
+  /// Ids of every installed plugin; throws when unreadable.
+  Future<Set<String>> installedPluginIds();
+}

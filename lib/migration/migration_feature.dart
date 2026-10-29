@@ -8,6 +8,7 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
+import 'package:kartka/migration/better/better_wiring.dart';
 import 'package:kartka/migration/migration_controller.dart';
 import 'package:kartka/migration/migration_deps.dart';
 import 'package:kartka/migration/migration_screen.dart';
@@ -25,7 +26,8 @@ String migrateRouteFor(Iterable<MangaKey> keys) => Uri(
 ).toString();
 
 /// The migration part: the review route, a More tile (the whole library)
-/// and a manga-detail slot (that one entry).
+/// and a manga-detail slot (that one entry); plus "Migrate to better
+/// sources" (route and More tile).
 KartkaFeature migrationFeature(KartkaEnv env) => KartkaFeature(
   id: 'migration',
   routes: [
@@ -41,6 +43,7 @@ KartkaFeature migrationFeature(KartkaEnv env) => KartkaFeature(
         );
       },
     ),
+    betterSourcesGoRoute(() => env.registry, () => _deps(env)),
   ],
   settingsTiles: [
     (context) => ListTile(
@@ -49,6 +52,7 @@ KartkaFeature migrationFeature(KartkaEnv env) => KartkaFeature(
       subtitle: const Text('Move entries, progress, categories and trackers'),
       onTap: () => unawaited(context.push(migrateRoute)),
     ),
+    betterSourcesTile,
   ],
   services: [_MigrateSlot(env)],
 );

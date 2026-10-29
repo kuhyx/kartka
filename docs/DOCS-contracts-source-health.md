@@ -181,3 +181,29 @@ under the line cap; same rules. Implementation notes:
   configured server), `plugin` through `PluginRepoInstaller` (adds the repo,
   then installs `id`). Ports: `lib/source_health/install/install_ports.dart`.
   Failures: snackbar + diagnostics `sources.install`, URLs stripped.
+- **Keep auto-install** (2026-10-29, kuhy's request): from the app's first
+  screen on, and on every newly published run, `KeepReconciler`
+  (`lib/source_health/install/`) installs every `keep` source (under the
+  active profile) that is not installed, with no prompt: `pkg` on the
+  Suwayomi server (one install per package), else `plugin` through the
+  plugin manager; at most 2 at a time. "Installed" comes from the
+  `InstalledExtensionLister` / `InstalledPluginLister` ports, never the
+  live source list (empty while a server is slow). It never uninstalls.
+  Each new source is then tested: listed within 60 s and `popular(1)`
+  lists a title within 30 s. A failure stays installed, shows "Installed —
+  test failed: <reason>" (or "Auto-install failed: <reason>") under the
+  card's action, is logged as `sources.autoinstall` (URLs stripped) and is
+  re-tested on the next run. The run id (else the newest `probedAt`) is
+  stored per device in kv `sourceHealth.autoInstall`, with the flags; a
+  side that cannot be read leaves it unset, so the next start retries.
+  The Sources tab shows one status line ("Installed 5 Keep sources, 1
+  failed its test") and "Migrate to better sources". Not done in the
+  evaluator: it refuses the live server (4567) by design, and the first
+  device to reconcile installs on the shared server for all of them.
+- **Migrate to better sources** (`lib/migration/better/`, route
+  `/more/migrate-better`, also a More tile): every library entry whose
+  source is not installed, failed that test, is unreachable / re-probed
+  only, cut, or hits a challenge, with the best installed, passing keep
+  source (rank order, stopping at the first title match: exact, else a
+  fuzzy score >= 0.7 in both directions). Migrate (a row) and a confirmed
+  Migrate all write the library backup first, then use `migrateEntry`.
