@@ -8,9 +8,14 @@ import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ranking.dart';
 
 /// The publish a snapshot belongs to: the run id, else (runs before the
-/// meta node) the newest probe time; null when there is neither.
-String? publishIdOf(List<SourceHealthRecord> records, SourceHealthMeta? meta) =>
-    meta?.runId ?? lastEvaluated(records)?.toUtc().toIso8601String();
+/// meta node) the newest probe time; null when there is neither. Records
+/// carrying `defaultScore` come from a run that also wrote meta, so a null
+/// [meta] there means "not read yet": null, as `ScoredHealthFeed` reads it.
+String? publishIdOf(List<SourceHealthRecord> records, SourceHealthMeta? meta) {
+  if (meta != null) return meta.runId;
+  if (records.any((r) => r.defaultScore != null)) return null;
+  return lastEvaluated(records)?.toUtc().toIso8601String();
+}
 
 /// The installs [keep] needs, one group of records per install: records
 /// with `pkg` whose package is not in [packages] (grouped by package: one

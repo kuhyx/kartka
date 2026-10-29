@@ -60,6 +60,32 @@ void main() {
     rig.reconciler.dispose();
   });
 
+  test('records judged by a profiled run wait for their meta, so a start '
+      'never re-runs a reconciled publish', () async {
+    final rig = ReconcileRig();
+    await rig.reconciler.reconcile([keepRecord('x')], '2026-W44');
+    final again = ReconcileRig(suwayomi: rig.suwayomi, kv: rig.kv);
+    final feed = ControlledFeed();
+    await again.reconciler.start(feed);
+    final published = SourceHealthRecord(
+      id: 'suwayomi:1',
+      name: 'One',
+      pkg: 'pkg.a',
+      verdict: keepRecord('x').verdict,
+      probedAt: DateTime.utc(2026, 10, 25, 12),
+      defaultScore: 0.95,
+    );
+    // The meta poll has not answered yet.
+    feed.meta.add(null);
+    feed.controller.add([published]);
+    await settle();
+    expect(rig.suwayomi.calls, ['list']);
+    feed.meta.add(const SourceHealthMeta(runId: '2026-W44'));
+    await settle();
+    expect(rig.suwayomi.calls, ['list'], reason: 'W44 is reconciled already');
+    again.reconciler.dispose();
+  });
+
   test('nothing to key by (no meta, no probe times) means no run', () async {
     final rig = ReconcileRig();
     final feed = ControlledFeed();

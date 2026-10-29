@@ -84,6 +84,19 @@ void main() {
     expect(byTitle(again)['One Piece']!.targetChapters, isNull);
   });
 
+  test('with no Suwayomi source listed at all (server down) its entries '
+      'are not called missing', () async {
+    await b.world.add('Down', sourceId: 'suwayomi:7');
+    final c = b.controller();
+    await c.load();
+    expect(byTitle(c).containsKey('Down'), isFalse);
+
+    b.installed = [...b.installed, ScriptedSource('suwayomi:8')];
+    final listed = b.controller();
+    await listed.load();
+    expect(byTitle(listed)['Down']!.reason, 'its source is not installed');
+  });
+
   test('migrate moves one entry after a backup; migrate all moves the rest '
       'with the existing migrator', () async {
     final c = b.controller();

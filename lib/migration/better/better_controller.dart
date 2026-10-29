@@ -10,6 +10,8 @@ import 'package:kartka/migration/migrator.dart';
 
 export 'package:kartka/migration/better/better_row.dart';
 
+const _suwayomi = 'suwayomi:';
+
 /// Where the screen is.
 enum BetterPhase {
   /// Finding the entries to move and searching their targets.
@@ -70,11 +72,16 @@ class BetterSourcesController extends ChangeNotifier {
     final flagOf = _inputs.flagOf ?? (_) => null;
     final byId = {for (final r in records) r.id: r};
     final targets = keepTargets(records, installed, flagOf: flagOf);
+    // No Suwayomi source at all means the server did not answer (its list
+    // reads empty then), not that every one of them was uninstalled.
+    final server = installed.keys.any((id) => id.startsWith(_suwayomi));
+    bool listed(String id) =>
+        installed.containsKey(id) || (!server && id.startsWith(_suwayomi));
     rows = [
       for (final e in await firstValue(_deps.library.watch()))
         if (moveReason(
               record: byId[e.sourceId],
-              installed: installed.containsKey(e.sourceId),
+              installed: listed(e.sourceId),
               flag: flagOf(e.sourceId),
             )
             case final why?)
