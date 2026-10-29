@@ -5,9 +5,12 @@ import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
+import 'package:kartka/browse/state/chapter_sort_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
+import 'package:kartka/browse/state/store_chapter_update_checker.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/repositories/repositories.dart';
+import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/platform/browser_engine.dart';
 
@@ -20,7 +23,8 @@ class BrowseDeps {
   /// Creates the dependency set. Optional ports degrade gracefully: no
   /// [health] → name order and no badges; no [downloads] → no download
   /// buttons; no [downloadService] → no cancel / delete buttons; no
-  /// [coverLoader] → placeholder covers.
+  /// [coverLoader] → placeholder covers; no [updates] → a checker over
+  /// [chapters]; no [chapterSort] → an unsaved "Unread first" choice.
   new({
     required this.sources,
     required this.languages,
@@ -34,8 +38,12 @@ class BrowseDeps {
     this.coverLoader,
     this.browser = const UnavailableBrowser(),
     this.diagnostics,
+    ChapterUpdateChecker? updates,
+    ChapterSortStore? chapterSort,
     DateTime Function()? clock,
-  }) : clock = clock ?? DateTime.now;
+  }) : clock = clock ?? DateTime.now,
+       updates = updates ?? StoreChapterUpdateChecker(chapters),
+       chapterSort = chapterSort ?? ChapterSortStore(null);
 
   /// Live source list.
   final SourceRegistry sources;
@@ -74,6 +82,12 @@ class BrowseDeps {
   /// The shared diagnostics log (docs §7): failed detail refreshes land
   /// here. Null in tests that do not check it.
   final DiagnosticsLog? diagnostics;
+
+  /// The shared "new chapters?" checker (also a registry service).
+  final ChapterUpdateChecker updates;
+
+  /// The global "Unread first" chapter sort.
+  final ChapterSortStore chapterSort;
 
   /// Clock for `addedAt` / `updatedAt` (injected in tests).
   final DateTime Function() clock;

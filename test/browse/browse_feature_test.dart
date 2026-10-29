@@ -7,6 +7,7 @@ import 'package:kartka/browse/browse_feature.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
+import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/platform/http_client.dart';
@@ -111,6 +112,18 @@ void main() {
     final port = reg.maybe<BrowseResolverPort>()!;
     expect(await port.numberOf(key, '/c/3'), 3);
     expect(await counts.watch(key).first, 3);
+  });
+
+  test('supplies the shared ChapterUpdateChecker', () async {
+    final reg = _registry();
+    final key = mangaKeyOf('mangadex', '/m/1');
+    final checker = reg.maybe<ChapterUpdateChecker>()!;
+    final first = await checker.check(key) as UpdateFound;
+    expect(first.firstCheck, isTrue);
+    expect(first.chapters, hasLength(3));
+    final again = await checker.check(key) as UpdateFound;
+    expect(again.added, isEmpty);
+    expect(again.firstCheck, isFalse);
   });
 
   testWidgets('without the library feature the tab fails loudly', (t) async {

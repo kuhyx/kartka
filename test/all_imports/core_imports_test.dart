@@ -27,6 +27,7 @@ import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/core/source/challenge.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
+import 'package:kartka/core/updates/chapter_update_checker.dart';
 
 void main() {
   test('every lib/core file loads', () {});

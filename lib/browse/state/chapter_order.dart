@@ -29,3 +29,10 @@ List<ChapterInfo> unreadOf(List<ChapterInfo> order, Set<String> read) => [
   for (final c in order)
     if (!read.contains(c.url)) c,
 ];
+
+/// [shown] with its unread chapters moved to the top ("Unread first"): a
+/// stable partition, so both halves keep the order they were shown in.
+List<ChapterInfo> unreadFirst(List<ChapterInfo> shown, Set<String> read) => [
+  ...shown.where((c) => !read.contains(c.url)),
+  ...shown.where((c) => read.contains(c.url)),
+];

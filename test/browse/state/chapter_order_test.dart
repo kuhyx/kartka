@@ -47,4 +47,10 @@ void main() {
     final order = [ch('a', 1), ch('b', 2), ch('c', 3)];
     expect(unreadOf(order, {'b'}).map((c) => c.url), ['a', 'c']);
   });
+
+  test('unreadFirst moves unread chapters up, both halves in order', () {
+    final shown = [ch('c', 3), ch('b', 2), ch('a', 1)];
+    expect(unreadFirst(shown, {'c'}).map((c) => c.url), ['b', 'a', 'c']);
+    expect(unreadFirst(shown, const {}).map((c) => c.url), ['c', 'b', 'a']);
+  });
 }

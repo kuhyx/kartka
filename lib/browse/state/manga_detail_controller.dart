@@ -8,6 +8,7 @@ import 'package:kartka/browse/state/refresh_outcome.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/core/updates/chapter_update_checker.dart';
 
 /// No registered source has the route's source id (not installed, server
 /// unreachable, or an id kartka has no source for, e.g. `sy-builtin:*`).
@@ -82,26 +83,37 @@ class MangaDetailController extends ChangeNotifier {
     _notify();
   }
 
-  /// [load] again, reporting what changed against the chapters shown
-  /// before it (none are new when no list was shown, e.g. after a failed
-  /// first load). A failure is logged to the diagnostics log as
-  /// `details.refresh` with the source id only: no URL, no query string.
+  /// Re-fetches the chapter list through the shared checker
+  /// (`BrowseDeps.updates`), which diffs it against the stored list and
+  /// persists it; details stay as loaded. With nothing shown yet (a failed
+  /// first load) it runs [load] instead and reports nothing new. A failure
+  /// is logged to the diagnostics log as `details.refresh` with the source
+  /// id only: no URL, no query string.
   Future<RefreshOutcome> refresh() async {
-    final shown = details != null;
-    final before = {for (final c in chapters) c.url};
-    await load();
-    final failure = error;
-    if (failure == null) {
-      return RefreshSucceeded([
-        for (final c in chapters)
-          if (shown && !before.contains(c.url)) c,
-      ]);
+    if (details == null) {
+      await load();
+      final failure = error;
+      return failure == null
+          ? const RefreshSucceeded([])
+          : await _failed(failure, null);
     }
+    switch (await _deps.updates.check(key)) {
+      case UpdateFound(:final chapters, :final added):
+        this.chapters = readingOrder(chapters);
+        _notify();
+        return RefreshSucceeded(added);
+      case UpdateFailed(:final error, :final stack):
+        return await _failed(error, stack);
+    }
+  }
+
+  Future<RefreshOutcome> _failed(Object failure, StackTrace? stack) async {
     await _deps.diagnostics?.append(
       DiagnosticEntry.failure(
         at: _deps.clock(),
         kind: 'details.refresh',
         error: stripUrls('$failure'),
+        stack: stack,
         sourceId: sourceId,
       ),
     );

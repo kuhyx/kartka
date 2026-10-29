@@ -11,6 +11,7 @@ import 'package:kartka/browse/ports/browse_unread_counts.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
+import 'package:kartka/browse/state/chapter_sort_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/ui/browse_tab.dart';
 import 'package:kartka/browse/ui/global_search_screen.dart';
@@ -19,6 +20,7 @@ import 'package:kartka/browse/ui/source_screen.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
+import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
@@ -27,7 +29,8 @@ import 'package:kartka/platform/page_image.dart';
 import 'package:kartka/tracking/common/chapter_url_resolver.dart';
 
 /// The browse part: Browse tab, source/search/detail routes, and the
-/// unread-count + chapter-url ports other parts consume.
+/// unread-count, chapter-url and [ChapterUpdateChecker] ports other parts
+/// consume.
 KartkaFeature browseFeature(KartkaEnv env) {
   final runtime = BrowseRuntime(env);
   return KartkaFeature(
@@ -59,7 +62,11 @@ KartkaFeature browseFeature(KartkaEnv env) {
         ),
       ),
     ],
-    services: [_LazyUnreadCounts(runtime), BrowseResolverPort(runtime)],
+    services: [
+      _LazyUnreadCounts(runtime),
+      BrowseResolverPort(runtime),
+      _LazyUpdateChecker(runtime),
+    ],
   );
 }
 
@@ -112,6 +119,10 @@ class BrowseRuntime {
     coverLoader: (url) => _covers.load(PageRef(index: 0, imageUrl: url)),
     browser: _env.platform.browser,
     diagnostics: DiagnosticsLog.of(_env.platform.diagnostics),
+    chapterSort: () {
+      final kv = syncedKv(_env);
+      return ChapterSortStore(kv, reloadOn: kv.remoteChanges);
+    }(),
   );
 
   /// The unread-count port implementation.
@@ -131,6 +142,15 @@ class _LazyUnreadCounts implements UnreadCounts {
 
   @override
   Stream<int?> watch(String key) => _runtime.unreadCounts.watch(key);
+}
+
+class _LazyUpdateChecker implements ChapterUpdateChecker {
+  const new(this._runtime);
+
+  final BrowseRuntime _runtime;
+
+  @override
+  Future<UpdateResult> check(MangaKey key) => _runtime.deps.updates.check(key);
 }
 
 /// Tracking's chapter-url port, resolved lazily through [BrowseRuntime].

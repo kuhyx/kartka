@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
@@ -9,6 +10,8 @@ import 'package:kartka/core/models/models.dart';
 
 /// One chapter row: opens the reader; explicit buttons (focus stops, no
 /// long-press) toggle the read mark and download, cancel or delete it.
+/// Unread rows are at full brightness behind an accent dot; read rows are
+/// dimmed to the muted text colour.
 class ChapterTile extends StatelessWidget {
   /// Creates the row.
   const new({
@@ -35,6 +38,7 @@ class ChapterTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
+    final dimmed = TextStyle(color: muted);
     final subtitle = [
       ?chapter.scanlator,
       if (chapter.uploadedAt case final d?)
@@ -42,8 +46,26 @@ class ChapterTile extends StatelessWidget {
     ].join(' · ');
     return ListTile(
       key: ValueKey('chapter-${chapter.url}'),
-      title: Text(chapter.name, style: read ? TextStyle(color: muted) : null),
-      subtitle: subtitle.isEmpty ? null : Text(subtitle),
+      minLeadingWidth: AppSpacing.sm,
+      leading: read
+          ? const SizedBox(width: AppSpacing.sm)
+          : SizedBox.square(
+              key: ValueKey('unread-dot-${chapter.url}'),
+              dimension: AppSpacing.sm,
+              child: const DecoratedBox(
+                decoration: BoxDecoration(
+                  color: AppPalette.accent,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+      title: Text(
+        chapter.name,
+        style: read ? dimmed : TextStyle(color: theme.colorScheme.onSurface),
+      ),
+      subtitle: subtitle.isEmpty
+          ? null
+          : Text(subtitle, style: read ? dimmed : null),
       onTap: () => unawaited(
         context.push(
           readRoute(controller.sourceId, controller.mangaUrl, chapter.url),

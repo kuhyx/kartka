@@ -77,6 +77,19 @@ void main() {
     },
   );
 
+  test(
+    'opening the detail screen pulls remote progress via the slot',
+    () async {
+      final fake = FakeTracker(id: 'mangaupdates')..remote['1'] = 4;
+      final r = _registry(extra: [fake, FakeResolver()]);
+      await r.maybe<TrackerBindingSink>()!.bind(_k, 'mangaupdates', '1');
+      r.maybe<MangaDetailSlot>()!.opened(_k);
+      await pumpEvents();
+      final progress = r.maybe<LibraryRepositories>()!.progress;
+      expect((await progress.watch(_k).first)!.chapterNumber, 4);
+    },
+  );
+
   testWidgets('the detail slot renders the track button', (tester) async {
     final slot = _registry().maybe<MangaDetailSlot>()!;
     await tester.pumpWidget(
