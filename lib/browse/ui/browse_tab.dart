@@ -7,6 +7,7 @@ import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/language_filter.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
+import 'package:kartka/browse/state/shared_health_lookup.dart';
 import 'package:kartka/browse/ui/language_picker.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
@@ -22,13 +23,25 @@ const Map<SourceOrigin, String> originLabels = {
 /// The Browse tab: a global search field, then the sources of the selected
 /// languages, one section per language in selection order, each grouped by
 /// origin and ordered by source-health rank (name order without it).
-class BrowseTab extends StatelessWidget {
+class BrowseTab extends StatefulWidget {
   /// Creates the tab.
   const new({super.key});
 
   @override
+  State<BrowseTab> createState() => _BrowseTabState();
+}
+
+class _BrowseTabState extends State<BrowseTab> {
+  // Subscribed once per mount: a stream built in build() resubscribed on
+  // every sources emission, re-reading the source_health tree each time.
+  late final BrowseDeps _deps = BrowseScope.of(context);
+  late final Stream<List<MangaSource>> _sources = _deps.sources.watch();
+  late final Stream<Map<String, SourceHealthSummary>>? _ranks = _deps.health
+      ?.watch();
+
+  @override
   Widget build(BuildContext context) {
-    final deps = BrowseScope.of(context);
+    final deps = _deps;
     final health = deps.health;
     return Scaffold(
       appBar: AppBar(
@@ -46,12 +59,15 @@ class BrowseTab extends StatelessWidget {
         ],
       ),
       body: StreamBuilder<List<MangaSource>>(
-        stream: deps.sources.watch(),
+        stream: _sources,
         initialData: deps.sources.current,
         builder: (context, sources) =>
             StreamBuilder<Map<String, SourceHealthSummary>>(
-              stream: health?.watch(),
-              initialData: const {},
+              stream: _ranks,
+              initialData: switch (health) {
+                SharedHealthLookup(:final latest?) => latest,
+                _ => const {},
+              },
               builder: (context, ranks) => ValueListenableBuilder(
                 valueListenable: deps.languages,
                 builder: (context, selected, _) => _SourceList(

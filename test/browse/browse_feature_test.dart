@@ -5,6 +5,7 @@ import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/browse/browse_feature.dart';
 import 'package:kartka/browse/browse_routes.dart';
+import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
@@ -21,6 +22,7 @@ KartkaRegistry _registry({
   bool withLibrary = true,
   FakeDownloadService? downloads,
   MemoryKeyValueStore? store,
+  SourceHealthLookup? health,
 }) {
   final kv = store ?? MemoryKeyValueStore();
   final http = FakeKartkaHttp(
@@ -33,6 +35,7 @@ KartkaRegistry _registry({
         StaticSourceProvider([FakeSource('mangadex', name: 'MangaDex')]),
         if (withLibrary) LibraryRepositories(kv, decorators: () => const []),
         ?downloads,
+        ?health,
       ],
     ),
     browseFeature,
@@ -63,6 +66,16 @@ void main() {
   testWidgets('tab lists registered sources', (t) async {
     await _pumpApp(t, _registry(), '/');
     expect(find.text('MangaDex'), findsOneWidget);
+  });
+
+  testWidgets('a registered health lookup ranks the tab, shared', (t) async {
+    const ranks = {
+      'mangadex': SourceHealthSummary(rank: 4, verdict: HealthVerdict.keep),
+    };
+    await _pumpApp(t, _registry(health: const FakeHealth(ranks)), '/');
+    expect(find.text('EN · #4'), findsOneWidget);
+    await t.pumpWidget(const SizedBox());
+    await t.pump(const Duration(minutes: 2)); // The shared linger timer.
   });
 
   testWidgets('the tab reads browse.languages from the platform kv', (t) async {

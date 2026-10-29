@@ -21,6 +21,7 @@ import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/state/paged_controller.dart';
 import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/browse/state/refresh_outcome.dart';
+import 'package:kartka/browse/state/shared_health_lookup.dart';
 import 'package:kartka/browse/ui/browse_tab.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/browse/ui/chapter_download_button.dart';

@@ -12,6 +12,7 @@ import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
+import 'package:kartka/browse/state/shared_health_lookup.dart';
 import 'package:kartka/browse/ui/browse_tab.dart';
 import 'package:kartka/browse/ui/global_search_screen.dart';
 import 'package:kartka/browse/ui/manga_detail_screen.dart';
@@ -98,6 +99,13 @@ class BrowseRuntime {
     imageHeaders: _env.registry.all<ImageHeaders>(),
   );
 
+  // One health subscription for every Browse mount (see SharedHealthLookup).
+  late final SourceHealthLookup? _health = switch (_env.registry
+      .maybe<SourceHealthLookup>()) {
+    final inner? => SharedHealthLookup(inner),
+    null => null,
+  };
+
   /// Dependencies of every browse screen.
   late final BrowseDeps deps = BrowseDeps(
     sources: sources,
@@ -107,7 +115,7 @@ class BrowseRuntime {
     progress: _repos.progress,
     downloads: _env.registry.maybe<DownloadRepository>(),
     downloadService: _env.registry.maybe<DownloadService>(),
-    health: _env.registry.maybe<SourceHealthLookup>(),
+    health: _health,
     detailSlots: _env.registry.all<MangaDetailSlot>(),
     coverLoader: (url) => _covers.load(PageRef(index: 0, imageUrl: url)),
     browser: _env.platform.browser,
