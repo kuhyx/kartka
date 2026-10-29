@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/download_repository.dart';
 import 'package:kartka/downloads/downloads_snapshot.dart';
 import 'package:kartka/downloads/engine/download_engine.dart';
+import 'package:kartka/downloads/engine/keyed_changes.dart';
 import 'package:kartka/downloads/engine/watch_value.dart';
 import 'package:kartka/downloads/keys.dart';
 import 'package:kartka/downloads/queue/download_index.dart';
@@ -52,8 +54,12 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
   late final Future<void> _ready = _load();
   late DownloadQueue _queue;
   late DownloadIndex _index;
-  final _changes = StreamController<void>.broadcast(sync: true);
+  final _changes = KeyedChanges();
   final Map<String, _Run> _running = {};
+
+  /// Watcher reads run so far (the fan-out tests bound it).
+  @visibleForTesting
+  int watcherReads = 0;
 
   Future<void> _load() async {
     _queue = DownloadQueue.decode(await kv.get(queueKvKey));
@@ -75,19 +81,20 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
       chapter: chapter,
       enqueuedAt: _now(),
     );
-    if (_queue.add(task)) await _changed();
+    if (_queue.add(task)) await _changed(key);
   }
 
   @override
   Stream<DownloadState> watch(MangaKey key, String chapterUrl) =>
-      _watch(() => _stateOf(key, chapterUrl)).distinct();
+      _watch(_changes.of(key), () => _stateOf(key, chapterUrl)).distinct();
 
   @override
   Stream<bool> hasDownloads(MangaKey key) =>
-      _watch(() => _index.chapters(key).isNotEmpty).distinct();
+      _watch(_changes.of(key), () => _index.hasChapters(key)).distinct();
 
   /// Queue, pause flag and offline index, re-emitted on every change.
   Stream<DownloadsSnapshot> watchAll() => _watch(
+    _changes.all,
     () => DownloadsSnapshot(
       paused: _queue.paused,
       queue: _queue.tasks,
@@ -126,7 +133,7 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
   Future<void> retry(MangaKey key, String chapterUrl) async {
     await _ready;
     final task = _queue.byId(taskId(key, chapterUrl));
-    if (task != null && _queue.add(task)) await _changed();
+    if (task != null && _queue.add(task)) await _changed(key);
   }
 
   /// Drops a chapter from the queue and deletes its partial pages.
@@ -138,7 +145,7 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
       run.cancelled = true; // the runner removes it once the page stops
     } else if (_queue.remove(id) != null) {
       await _deleteBlobs(key, chapterUrl);
-      await _changed();
+      await _changed(key);
     }
   }
 
@@ -147,7 +154,7 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
     await _ready;
     if (_index.removeChapter(key, chapterUrl) == null) return;
     await _deleteBlobs(key, chapterUrl);
-    await _changed();
+    await _changed(key);
   }
 
   /// Deletes every offline chapter of [key] and cancels its queued ones.
@@ -159,23 +166,19 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
     for (final c in _index.removeManga(key)) {
       await _deleteBlobs(key, c.chapterUrl);
     }
-    await _changed();
+    await _changed(key);
   }
 
-  DownloadState _stateOf(MangaKey key, String chapterUrl) {
-    final record = _index.chapter(key, chapterUrl);
-    if (record != null) {
-      return DownloadState(
-        status: DownloadStatus.done,
-        pagesDone: record.pageCount,
-        pagesTotal: record.pageCount,
-      );
-    }
-    return _queue.byId(taskId(key, chapterUrl))?.state ?? DownloadState.none;
-  }
+  DownloadState _stateOf(MangaKey key, String chapterUrl) =>
+      _index.chapter(key, chapterUrl)?.doneState ??
+      _queue.byId(taskId(key, chapterUrl))?.state ??
+      DownloadState.none;
 
-  Stream<T> _watch<T>(T Function() read) =>
-      watchValue(_ready, _changes.stream, read);
+  Stream<T> _watch<T>(Stream<void> changes, T Function() read) =>
+      watchValue(_ready, changes, () {
+        watcherReads++;
+        return read();
+      });
 
   Future<void> _setPaused({required bool paused}) async {
     await _ready;
@@ -183,9 +186,10 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
     await _changed();
   }
 
-  /// Persists, notifies and lets the queue advance.
-  Future<void> _changed() async {
-    _changes.add(null);
+  /// Persists, notifies and lets the queue advance. [key] is the manga that
+  /// changed; null means the change touches all of them (pause, resume).
+  Future<void> _changed([MangaKey? key]) async {
+    key == null ? _changes.notifyAll() : _changes.notify(key);
     _pump();
     await kv.set(queueKvKey, _queue.encode());
     await kv.set(indexKvKey, _index.encode());
@@ -208,7 +212,7 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
     final run = _running[task.id] = _Run();
     void update(DownloadState s) {
       _queue.update(task.id, s);
-      _changes.add(null);
+      _changes.notify(task.mangaKey);
     }
 
     void restate(DownloadStatus status, [String? error]) =>
@@ -236,7 +240,7 @@ class DownloadService implements DownloadRepository, DownloadedLookup {
       await _deleteBlobs(task.mangaKey, task.chapter.url);
     }
     _running.remove(task.id);
-    await _changed();
+    await _changed(task.mangaKey);
   }
 }
 

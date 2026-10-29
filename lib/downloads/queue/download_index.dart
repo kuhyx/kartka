@@ -35,6 +35,13 @@ class OfflineChapter {
   /// Number of page blobs (indexes `0..pageCount-1`).
   final int pageCount;
 
+  /// This chapter's state in the queue's terms: done, every page stored.
+  DownloadState get doneState => DownloadState(
+    status: DownloadStatus.done,
+    pagesDone: pageCount,
+    pagesTotal: pageCount,
+  );
+
   /// Sum of the page blob sizes.
   final int bytes;
 
@@ -94,6 +101,9 @@ class DownloadIndex {
 
   /// Manga with at least one offline chapter.
   List<MangaKey> get mangaKeys => List.unmodifiable(_byManga.keys);
+
+  /// Whether [key] has at least one offline chapter (no list is built).
+  bool hasChapters(MangaKey key) => _byManga.containsKey(key);
 
   /// Offline chapters of [key] in download order.
   List<OfflineChapter> chapters(MangaKey key) =>
