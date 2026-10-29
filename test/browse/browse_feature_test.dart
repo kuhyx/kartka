@@ -10,6 +10,7 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
+import 'package:kartka/platform/cover_cache.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/tracking/common/chapter_url_resolver.dart';
@@ -23,6 +24,7 @@ KartkaRegistry _registry({
   FakeDownloadService? downloads,
   MemoryKeyValueStore? store,
   SourceHealthLookup? health,
+  CoverCache? covers,
 }) {
   final kv = store ?? MemoryKeyValueStore();
   final http = FakeKartkaHttp(
@@ -36,6 +38,7 @@ KartkaRegistry _registry({
         if (withLibrary) LibraryRepositories(kv, decorators: () => const []),
         ?downloads,
         ?health,
+        ?covers,
       ],
     ),
     browseFeature,
@@ -89,6 +92,18 @@ void main() {
     await _pumpApp(t, _registry(), mangaRoute('mangadex', '/m/1?x=1'));
     expect(find.text('Detail title'), findsOneWidget);
     expect(find.byType(Image), findsWidgets);
+  });
+
+  testWidgets('covers come from the shared (library) cover cache', (t) async {
+    final urls = <String>[];
+    final covers = CoverCache(
+      load: (url) async {
+        urls.add(url);
+        return onePixelPng;
+      },
+    );
+    await _pumpApp(t, _registry(covers: covers), mangaRoute('mangadex', '/m'));
+    expect(urls, ['https://img.test/cover.jpg']);
   });
 
   testWidgets('a registered DownloadService reaches the chapter rows', (
