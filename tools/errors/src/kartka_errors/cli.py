@@ -13,12 +13,14 @@ Exit codes: 0 done, 1 RTDB failure or unknown signature, 3 no session.
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import datetime as dt
+import fcntl
 import os
 from pathlib import Path
 import sys
 from typing import cast
-lazy from collections.abc import Callable
+lazy from collections.abc import Callable, Iterator
 
 from kartka_errors.render import render, write_todo
 from kartka_errors.rtdb import NoSessionError, Rtdb, RtdbError, open_rtdb
@@ -94,6 +96,19 @@ def _delete(rtdb: Rtdb, paths: list[str]) -> None:
         rtdb.patch(ERRORS_PATH, dict.fromkeys(paths[i : i + DELETE_CHUNK]))
 
 
+@contextmanager
+def _locked(state_path: Path) -> Iterator[None]:
+    """Hold an exclusive lock beside ``state_path`` (released on close).
+
+    The timer's ingest spends seconds on the network between load and save;
+    a ``resolve`` saved in that window would otherwise be overwritten.
+    """
+    state_path.parent.mkdir(parents=True, exist_ok=True)
+    with (state_path.parent / f"{state_path.name}.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        yield
+
+
 def main(
     argv: list[str] | None = None,
     *,
@@ -103,6 +118,16 @@ def main(
     """Run one command; see the module docstring."""
     args = _parser().parse_args(argv)
     state_path: Path = args.state or _default_state()
+    with _locked(state_path):
+        return _run(args, state_path, open_rtdb, now)
+
+
+def _run(
+    args: argparse.Namespace,
+    state_path: Path,
+    open_rtdb: Callable[[], Rtdb],
+    now: Callable[[], str],
+) -> int:
     state = load_state(state_path)
     stamp = now()
     read: list[str] = []

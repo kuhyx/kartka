@@ -12,6 +12,10 @@ future Claude session can paste to fix them. Builds on the diagnostics log
 | `uncaught.flutter`, `uncaught.async` | `installErrorReporting` (`lib/app/error_hooks.dart`, from `main`): chains `FlutterError.onError` and `PlatformDispatcher.onError`, skips `silent` details. No `runZonedGuarded` (zone mismatch after `ensureInitialized`). |
 | `ui.snackbar` | `ReportingScaffoldMessenger`, mounted in `MaterialApp.builder` (`lib/app/app.dart`), so it is the nearest messenger of every route. An error is a snackbar with the danger hue (design_system `showError`) or failure text (`failed`, `Exception`, `unavailable`, ...). |
 | `reader.open` | `ReaderSession.open` (the reader's Retry screen). |
+| `reader.page` | `ReaderSession.image` (a page's Retry); background prefetch stays quiet. |
+| `downloads.failed` | `DownloadService.onFailure` (the queue's Retry), wired by `downloadsFeature`. |
+| `plugins.repo` | `PluginManager.onRepoError` (the per-repo error list on More → Plugins). |
+| `health.read` | `ReportingHealthFeed`, around the Sources tab's feed only (not the badges). |
 | `details.load`, `details.refresh` | `MangaDetailController.load` / `refresh`. |
 | `browse.page` | `PagedController.onError`, wired by `SourceScreen` (the grid's Retry). |
 | `suwayomi.extensions` | `ExtensionsScreen._load` (its Retry screen). |
@@ -63,6 +67,10 @@ race with an upload). `--keep` skips the delete.
   without line numbers (else the route, else the kind).
 - **Resolve**: `tools/errors/run.sh resolve <signature>` after the fix is
   committed. A report newer than the fix reopens it.
+- **Lock**: every command holds `state.json.lock` (flock) around
+  load-modify-save, so a `resolve` during the timer's ingest is not lost.
+- **First run**: a device's first upload is its whole existing log
+  (up to 2000 entries), so the first TODO file can list old, fixed errors.
 - **Timer**: `tools/errors/systemd/install.sh` installs
   `kartka-errors.{service,timer}` (user units, every 15 min, Persistent).
   `--verify-only`, `--uninstall`. Offline test:
