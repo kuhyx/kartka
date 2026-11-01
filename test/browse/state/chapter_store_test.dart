@@ -3,6 +3,7 @@ import 'package:kartka/browse/ports/browse_chapter_url_resolver.dart';
 import 'package:kartka/browse/ports/browse_unread_counts.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 
 import '../fakes.dart';
@@ -28,10 +29,14 @@ void main() {
     expect(store.cached(key), hasLength(3));
   });
 
-  test('unknown source throws StateError', () {
+  test('unknown source throws UnknownSourceError (a StateError)', () {
     expect(
       storeWith().load(mangaKeyOf('nope', '/x')),
-      throwsA(isA<StateError>()),
+      throwsA(
+        isA<UnknownSourceError>()
+            .having((e) => e.sourceId, 'sourceId', 'nope')
+            .having((e) => e, 'is StateError', isA<StateError>()),
+      ),
     );
   });
 

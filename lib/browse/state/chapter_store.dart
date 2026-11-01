@@ -7,6 +7,7 @@ import 'package:kartka/browse/state/chapter_list_decoder.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/platform/key_value_store.dart';
 
 /// Finds the source for a source id (normally `SourceRegistry.byId`).
@@ -52,8 +53,8 @@ class ChapterStore {
   List<ChapterInfo>? cached(MangaKey key) => _cache[key];
 
   /// Chapters of [key]: the cache unless [refresh] or nothing is cached, in
-  /// which case they are fetched and cached. Throws [StateError] when the
-  /// key's source is not registered.
+  /// which case they are fetched and cached. Throws [UnknownSourceError] when
+  /// the key's source is not registered.
   Future<List<ChapterInfo>> load(MangaKey key, {bool refresh = false}) async {
     if (!refresh) {
       final hit = _cache[key] ?? await _restore(key);
@@ -61,7 +62,7 @@ class ChapterStore {
     }
     final (sourceId, url) = splitMangaKey(key);
     final source = _lookup(sourceId);
-    if (source == null) throw StateError('Unknown source $sourceId');
+    if (source == null) throw UnknownSourceError(sourceId);
     // The prior list, from the kv copy too: after a restart the cache is
     // empty, and a cold refresh must still be diffed, not baselined.
     final before = _onAdded == null ? null : await stored(key);

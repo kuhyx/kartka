@@ -92,12 +92,14 @@ class UpdateProgress {
 @immutable
 class UpdateSummary {
   /// [newChapters] across [manga]; [failed] manga could not be checked,
-  /// [notChecked] were skipped because their server was unreachable.
+  /// [notChecked] were skipped because their server was unreachable and
+  /// [unavailable] because their source is not installed.
   const new({
     this.newChapters = 0,
     this.manga = 0,
     this.failed = 0,
     this.notChecked = 0,
+    this.unavailable = 0,
   });
 
   /// New chapters found.
@@ -112,6 +114,9 @@ class UpdateSummary {
   /// Manga not checked because the network or their server was down.
   final int notChecked;
 
+  /// Manga skipped because no installed source owns them.
+  final int unavailable;
+
   /// The snackbar line.
   String get message => [
     if (newChapters == 0)
@@ -120,5 +125,6 @@ class UpdateSummary {
       '$newChapters new chapter${newChapters == 1 ? '' : 's'} in $manga manga',
     if (failed > 0) '$failed failed',
     if (notChecked > 0) 'offline: $notChecked not checked',
+    if (unavailable > 0) '$unavailable from sources not installed',
   ].join(' · ');
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
@@ -95,6 +96,38 @@ void main() {
     expect(entries.map((e) => e.kind), everyElement('updates.check'));
     // Each failure carries the time it happened, not the end of the run.
     expect(entries.map((e) => e.at).toSet(), hasLength(2));
+  });
+
+  test('a source that is not installed is skipped and logged once', () async {
+    final log = DiagnosticsLog(MemoryBlobStore());
+    final gone = [
+      for (var i = 0; i < 4; i++) mangaKeyOf('sy-builtin:6901', '/g$i'),
+    ];
+    final fine = mangaKeyOf('mangadex', '/ok');
+    final tried = <MangaKey>[];
+    final runner = UpdateRunner(
+      libraryKeys: () async => [...gone, fine],
+      check: (k) async {
+        tried.add(k);
+        final id = splitMangaKey(k).$1;
+        return id == 'mangadex'
+            ? _found(k)
+            : UpdateFailed(k, UnknownSourceError(id));
+      },
+      diagnostics: log,
+      delay: (_) => fail('no retry for a missing source'),
+    );
+    final summary = await runner.updateAll();
+    expect(tried.where(gone.contains), hasLength(1));
+    expect(summary.failed, 0);
+    expect(summary.unavailable, 4);
+    expect(
+      summary.message,
+      'No new chapters \u00b7 4 from sources not installed',
+    );
+    final entries = await log.entries();
+    expect(entries.map((e) => e.kind), ['updates.unavailable']);
+    expect(entries.single.sourceId, 'sy-builtin:6901');
   });
 
   test('a server that cannot be resolved stops its checks once', () async {

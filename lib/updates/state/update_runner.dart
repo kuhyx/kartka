@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:kartka/browse/state/refresh_outcome.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/library/data/lww.dart';
 import 'package:kartka/library/ports.dart';
@@ -18,6 +19,11 @@ final class _NotChecked {
   const new();
 }
 
+/// The error of a check skipped because its source is not installed.
+final class _Unavailable {
+  const new();
+}
+
 /// The one shared "update all" run ([LibraryUpdater]).
 ///
 /// Checks every library manga through [check] (4 at a time, 1 per source,
@@ -29,7 +35,9 @@ final class _NotChecked {
 /// times, waiting [backoff], then twice that. When a server still cannot be
 /// reached (`isOfflineError`), its remaining manga are not checked: one
 /// `updates.offline` entry per server, counted as `notChecked`, not
-/// `failed`. New chapters reach the updates feed
+/// `failed`. A source nothing is registered for (`UnknownSourceError`) is
+/// the same, once per source: one `updates.unavailable` entry, its manga
+/// counted as `unavailable`. New chapters reach the updates feed
 /// through `ChapterAdditionSink`, not from here, so a run writes each
 /// chapter once.
 class UpdateRunner extends ChangeNotifier implements LibraryUpdater {
@@ -84,7 +92,7 @@ class UpdateRunner extends ChangeNotifier implements LibraryUpdater {
         (key) => _guarded(key, run),
         onResult: (result, done) {
           _publish(UpdateProgress(done, keys.length));
-          if (result is UpdateFailed && result.error is! _NotChecked) {
+          if (result is UpdateFailed && !_isSkip(result.error)) {
             run.logs.add(_log('updates.check', result.error, result, null));
           }
         },
@@ -100,11 +108,21 @@ class UpdateRunner extends ChangeNotifier implements LibraryUpdater {
   /// checked, and one that finds it down marks it.
   Future<UpdateResult> _guarded(MangaKey key, _Run run) async {
     final host = updateHostOf(splitMangaKey(key).$1);
+    final sourceId = splitMangaKey(key).$1;
     for (var attempt = 0; ; attempt++) {
       if (run.down.containsKey(host)) {
         return UpdateFailed(key, const _NotChecked());
       }
+      if (run.missing.contains(sourceId)) {
+        return UpdateFailed(key, const _Unavailable());
+      }
       final result = await check(key);
+      if (result is UpdateFailed && result.error is UnknownSourceError) {
+        if (run.missing.add(sourceId)) {
+          run.logs.add(_log('updates.unavailable', result.error, result, null));
+        }
+        return UpdateFailed(key, const _Unavailable());
+      }
       if (result is! UpdateFailed || !isTransientNetworkError(result.error)) {
         return result;
       }
@@ -132,6 +150,9 @@ class UpdateRunner extends ChangeNotifier implements LibraryUpdater {
     ),
   );
 
+  static bool _isSkip(Object error) =>
+      error is _NotChecked || error is _Unavailable;
+
   void _publish(UpdateProgress? p) {
     if (p == _progress) return;
     _progress = p;
@@ -142,6 +163,7 @@ class UpdateRunner extends ChangeNotifier implements LibraryUpdater {
     var chapters = 0;
     var manga = 0;
     var failed = 0;
+    var unavailable = 0;
     final skipped = <String, int>{};
     for (final r in results) {
       switch (r) {
@@ -151,6 +173,8 @@ class UpdateRunner extends ChangeNotifier implements LibraryUpdater {
         case UpdateFailed(error: _NotChecked()):
           final host = updateHostOf(splitMangaKey(r.key).$1);
           skipped[host] = (skipped[host] ?? 0) + 1;
+        case UpdateFailed(error: _Unavailable()):
+          unavailable++;
         case UpdateFailed():
           failed++;
       }
@@ -167,6 +191,7 @@ class UpdateRunner extends ChangeNotifier implements LibraryUpdater {
       manga: manga,
       failed: failed,
       notChecked: skipped.values.fold(0, (a, b) => a + b),
+      unavailable: unavailable,
     );
   }
 }
@@ -175,6 +200,9 @@ class UpdateRunner extends ChangeNotifier implements LibraryUpdater {
 class _Run {
   /// Servers found unreachable, with the first error that showed it.
   final down = <String, Object>{};
+
+  /// Source ids found not installed (each logged once).
+  final missing = <String>{};
 
   /// Diagnostics writes in flight, awaited before the summary.
   final logs = <Future<void>>[];
