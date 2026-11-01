@@ -81,19 +81,22 @@ class _LibraryScreenState extends State<LibraryScreen> {
     if (changes != null) await _c.setCategories(changes);
   }
 
-  /// The selected tab: 0 is "All", then one per category in order.
+  /// Tabs before the categories: 1 while "Default" shows, else 0.
+  int get _lead => _c.hasDefaultTab ? 1 : 0;
+
+  /// The selected tab: "Default" (when shown), then the categories.
   int get _tabIndex {
-    final tab = _c.query.categoryId;
+    final tab = _c.tab;
     if (tab == null) return 0;
-    return _c.categories.indexWhere((c) => c.id == tab) + 1;
+    return _c.categories.indexWhere((c) => c.id == tab) + _lead;
   }
 
-  void _selectTab(int i) => _c.query = i == 0
+  void _selectTab(int i) => _c.query = i < _lead
       ? _c.query.copyWith(clearCategory: true)
-      : _c.query.copyWith(categoryId: _c.categories[i - 1].id);
+      : _c.query.copyWith(categoryId: _c.categories[i - _lead].id);
 
   void _step(int step) {
-    final count = _c.categories.length + 1;
+    final count = _c.categories.length + _lead;
     final next = wrapIndex(_tabIndex, step, count);
     if (next != _tabIndex) _selectTab(next);
   }
@@ -102,7 +105,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final cats = _c.categories;
     if (cats.isEmpty) return null;
     return CategoryTabs(
-      labels: ['All', for (final c in cats) c.name],
+      labels: [if (_lead == 1) 'Default', for (final c in cats) c.name],
       index: _tabIndex,
       onSelect: _selectTab,
     );

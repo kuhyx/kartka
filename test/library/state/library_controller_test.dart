@@ -125,16 +125,34 @@ void main() {
     await cats.setMembership(a, 'x', true);
     await pumpEventQueue();
     c
-      ..startSelecting()
-      ..selectAllVisible();
+      ..toggle(a)
+      ..toggle(b);
     expect(c.selectionMembership(), {'x': null, 'y': false});
     await c.setCategories({'x': true, 'y': false});
     await pumpEventQueue();
-    expect(c.selectionMembership(), {'x': true, 'y': false});
+    expect(c.selecting, isFalse);
     expect(c.items.every((i) => i.categoryIds.contains('x')), isTrue);
+    c
+      ..toggle(a)
+      ..toggle(b);
+    expect(c.selectionMembership(), {'x': true, 'y': false});
     await c.setCategories({'x': false});
     await pumpEventQueue();
-    expect(c.selectionMembership(), {'x': false, 'y': false});
+    expect(c.items.every((i) => i.categoryIds.isEmpty), isTrue);
+  });
+
+  test('Default hides when empty; deleted categories do not count', () async {
+    final cats = f.deps.repos.categories;
+    expect((c.hasDefaultTab, c.tab), (true, null));
+    await cats.upsert(Category(id: 'x', name: 'X', order: 0, updatedAt: t0));
+    await cats.setMembership(a, 'x', true);
+    await cats.setMembership(b, 'gone', true);
+    await pumpEventQueue();
+    expect([for (final i in c.visible) i.key], [b]);
+    await cats.setMembership(b, 'x', true);
+    await pumpEventQueue();
+    expect((c.hasDefaultTab, c.tab, c.query.categoryId), (false, 'x', null));
+    expect(c.visible, hasLength(2));
   });
 
   test('source availability: unknown until every provider emitted', () async {

@@ -33,7 +33,7 @@ void main() {
     _item('a', title: 'Berserk', added: 3, lastRead: 1, unread: 4),
     _item('b', title: 'akira', added: 1, unread: 0, downloaded: true),
     _item('c', title: 'Cowboy', added: 2, lastRead: 5, tracked: true),
-    _item('d', title: 'Dorohedoro', categories: {'x'}, unread: 9),
+    _item('d', title: 'Dorohedoro', unread: 9),
   ];
 
   test('default sorts by title, case-insensitive', () {
@@ -87,10 +87,26 @@ void main() {
     expect(applyQuery(items, const LibraryQuery(search: '   ')), hasLength(4));
   });
 
-  test('category tab keeps only members; null tab keeps all', () {
-    expect(_keys(applyQuery(items, const LibraryQuery(categoryId: 'x'))), [
-      'd',
+  test('category tab keeps members; null tab keeps the uncategorised', () {
+    final sorted = [
+      _item('m', categories: {'x'}),
+      _item('u'),
+    ];
+    expect(_keys(applyQuery(sorted, const LibraryQuery(categoryId: 'x'))), [
+      'm',
     ]);
+    expect(_keys(applyQuery(sorted, const LibraryQuery())), ['u']);
+  });
+
+  test('a search spans every tab', () {
+    final sorted = [
+      _item('m', title: 'Monster', categories: {'x'}),
+      _item('u', title: 'Mushishi'),
+    ];
+    for (final tab in [null, 'x', 'y']) {
+      final q = LibraryQuery(categoryId: tab, search: 'm');
+      expect(_keys(applyQuery(sorted, q)), ['m', 'u']);
+    }
   });
 
   test('copyWith replaces only given fields and can clear the category', () {

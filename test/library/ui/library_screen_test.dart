@@ -9,7 +9,8 @@ import 'harness.dart';
 const _a = 'mangadex|/manga/aaa';
 const _b = 'mangadex|/manga/bbb';
 
-Future<Fakes> _seed() async {
+/// Both entries start in "Default"; [reading] puts Berserk in "Reading".
+Future<Fakes> _seed({bool reading = false}) async {
   final f = Fakes();
   final lib = f.deps.repos.library;
   await lib.upsert(entry('/manga/aaa', title: 'Akira', addedDays: 1));
@@ -17,7 +18,7 @@ Future<Fakes> _seed() async {
   await f.deps.repos.categories.upsert(
     Category(id: 'x', name: 'Reading', order: 0, updatedAt: t0),
   );
-  await f.deps.repos.categories.setMembership(_b, 'x', true);
+  if (reading) await f.deps.repos.categories.setMembership(_b, 'x', true);
   return f;
 }
 
@@ -53,14 +54,16 @@ void main() {
   });
 
   testWidgets('category tabs filter the grid', (tester) async {
-    await pumpLibrary(tester, (await _seed()).deps);
+    await pumpLibrary(tester, (await _seed(reading: true)).deps);
+    expect(find.text('Berserk'), findsNothing);
     await tester.tap(find.text('Reading'));
     await tester.pumpAndSettle();
     expect(find.text('Akira'), findsNothing);
     expect(find.text('Berserk'), findsOneWidget);
-    await tester.tap(find.text('All'));
+    await tester.tap(find.text('Default'));
     await tester.pumpAndSettle();
     expect(find.text('Akira'), findsOneWidget);
+    expect(find.text('Berserk'), findsNothing);
   });
 
   testWidgets('tap opens the detail route with the url as one segment', (
@@ -176,6 +179,11 @@ void main() {
       () => f.deps.repos.categories.watchMembership().first,
     ))!;
     expect(m[_a], {'x'});
+    // Akira left "Default": the selection ends so nothing hidden stays picked.
+    expect(find.text('Akira'), findsNothing);
+    expect(find.text('Library'), findsOneWidget);
+    await tester.longPress(find.text('Berserk'));
+    await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Set categories'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));

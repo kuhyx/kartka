@@ -45,7 +45,7 @@ class LibraryQuery {
   /// Keep only entries bound to a tracker.
   final bool trackedOnly;
 
-  /// Category tab; `null` is the "All" tab.
+  /// Category tab; `null` is the "Default" tab (entries in no category).
   final String? categoryId;
 
   /// Title search text.
@@ -71,10 +71,14 @@ class LibraryQuery {
     search: search ?? this.search,
   );
 
-  /// Whether [item] passes the tab, every filter and the search.
+  /// Whether [item] passes the tab, every filter and the search. A search
+  /// spans every tab, so no manga is unreachable from any tab.
   bool matches(LibraryItem item) {
     final needle = search.trim().toLowerCase();
-    return (categoryId == null || item.categoryIds.contains(categoryId)) &&
+    final inTab = categoryId == null
+        ? item.categoryIds.isEmpty
+        : item.categoryIds.contains(categoryId);
+    return (needle.isNotEmpty || inTab) &&
         (!unreadOnly || item.unreadCount > 0) &&
         (!downloadedOnly || item.downloaded) &&
         (!trackedOnly || item.tracked) &&

@@ -45,6 +45,7 @@ class LibraryController extends ChangeNotifier {
   Map<MangaKey, LibraryEntry> _entries = {};
   Map<MangaKey, Set<String>> _membership = {};
   List<Category> _categories = const [];
+  Set<String> _liveIds = const {};
   LibraryQuery _query = const LibraryQuery();
   final Set<MangaKey> _selected = {};
   bool _selecting = false;
@@ -57,8 +58,19 @@ class LibraryController extends ChangeNotifier {
   /// Whether the library has been read once.
   bool get loaded => _loaded;
 
-  /// Live categories by order: the tabs after "All".
+  /// Live categories by order: the tabs after "Default".
   List<Category> get categories => _categories;
+
+  /// Whether "Default" shows: pre-load, no categories, or an uncategorised one.
+  bool get hasDefaultTab =>
+      !_loaded ||
+      _categories.isEmpty ||
+      items.any((i) => i.categoryIds.isEmpty);
+
+  /// The tab on screen: the query's, but a hidden "Default" falls through
+  /// to the first category (the query keeps `null`, so it comes back).
+  String? get tab =>
+      _query.categoryId ?? (hasDefaultTab ? null : _categories.first.id);
 
   /// Current tab, filters, search and sort.
   LibraryQuery get query => _query;
@@ -73,8 +85,9 @@ class LibraryController extends ChangeNotifier {
       _items ??= List.unmodifiable([for (final e in _entries.values) _item(e)]);
 
   /// [items] after [query]; recomputed only after a change, not per read.
-  List<LibraryItem> get visible =>
-      _visible ??= List.unmodifiable(applyQuery(items, _query));
+  List<LibraryItem> get visible => _visible ??= List.unmodifiable(
+    applyQuery(items, tab == null ? _query : _query.copyWith(categoryId: tab)),
+  );
 
   /// Stream-driven changes (4 fact streams per entry, the repositories,
   /// source availability): the cached lists are dropped at once, and one
@@ -122,6 +135,7 @@ class LibraryController extends ChangeNotifier {
 
   void _onCategories(List<Category> categories) {
     _categories = categories;
+    _liveIds = {for (final c in categories) c.id};
     final tab = _query.categoryId;
     if (tab != null && !categories.any((c) => c.id == tab)) {
       _query = _query.copyWith(clearCategory: true);
@@ -142,7 +156,8 @@ class LibraryController extends ChangeNotifier {
       unread: f.unread,
       downloaded: f.downloaded,
       tracked: f.tracked,
-      categoryIds: _membership[e.key] ?? const {},
+      // Memberships of deleted categories would hide it from "Default".
+      categoryIds: (_membership[e.key] ?? const {}).intersection(_liveIds),
       sourceAvailable: _sources?.isAvailable(e.sourceId) ?? true,
     );
   }
@@ -210,9 +225,12 @@ class LibraryController extends ChangeNotifier {
     return hits.length == _selected.length ? true : null;
   }
 
-  /// Applies [changes] (category id to member) to every selected entry.
+  /// Applies [changes] (category id to member) to every selected entry,
+  /// then ends the selection: moved entries may have left the tab.
   Future<void> setCategories(Map<String, bool> changes) async {
-    for (final key in _selected.toList()) {
+    final keys = _selected.toList();
+    clearSelection();
+    for (final key in keys) {
       for (final MapEntry(key: id, value: member) in changes.entries) {
         await deps.repos.categories.setMembership(key, id, member);
       }

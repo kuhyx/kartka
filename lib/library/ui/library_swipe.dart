@@ -1,10 +1,29 @@
 import 'package:flutter/material.dart';
 
-/// Fling speed (logical px/s) that switches a tab regardless of distance.
-const double _flingVelocity = 300;
+/// Fling speed (logical px/s) that lets a shorter swipe switch a tab.
+const double _flingVelocity = 1000;
 
-/// Drag distance (logical px) that switches a tab even when released slowly.
-const double _dragDistance = 80;
+/// A fling must still travel this share of the width (clamped to px), so a
+/// quick touch never switches: ~100 px on a phone.
+const double _flingShare = 0.25;
+const double _flingMin = 48;
+const double _flingMax = 160;
+
+/// A slow drag must travel this share of the width (clamped to px).
+const double _dragShare = 0.4;
+const double _dragMin = 80;
+const double _dragMax = 240;
+
+/// Whether a horizontal swipe of [dx] px released at [velocity] px/s over
+/// a [width] px wide area switches the tab.
+bool swipeSwitches(double dx, double velocity, double width) {
+  final distance = dx.abs();
+  final fling =
+      velocity.abs() >= _flingVelocity &&
+      velocity.sign == dx.sign &&
+      distance >= (width * _flingShare).clamp(_flingMin, _flingMax);
+  return fling || distance >= (width * _dragShare).clamp(_dragMin, _dragMax);
+}
 
 /// The tab [step] (+1 right, -1 left) away from [index] among [count]
 /// tabs, wrapping at both ends. With fewer than two tabs it stays put.
@@ -35,12 +54,12 @@ class _CategorySwipeState extends State<CategorySwipe> {
   double _dx = 0;
 
   void _end(DragEndDetails d) {
-    final v = d.primaryVelocity ?? 0;
-    final signal = v.abs() >= _flingVelocity
-        ? v
-        : (_dx.abs() >= _dragDistance ? _dx : 0.0);
+    final dx = _dx;
     _dx = 0;
-    if (signal != 0) widget.onStep(signal < 0 ? 1 : -1);
+    final width = context.size?.width ?? 0;
+    if (swipeSwitches(dx, d.primaryVelocity ?? 0, width)) {
+      widget.onStep(dx < 0 ? 1 : -1);
+    }
   }
 
   @override
@@ -57,7 +76,7 @@ class _CategorySwipeState extends State<CategorySwipe> {
 /// the same indicator. Owns its [TabController] and replaces it only when
 /// the number of tabs changes.
 class CategoryTabs extends StatefulWidget implements PreferredSizeWidget {
-  /// Creates the bar over [labels] (the first is "All").
+  /// Creates the bar over [labels] (the first is "Default" when shown).
   const new({
     required this.labels,
     required this.index,

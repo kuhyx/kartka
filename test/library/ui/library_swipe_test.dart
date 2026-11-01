@@ -8,13 +8,15 @@ import 'harness.dart';
 
 const _a = 'mangadex|/manga/aaa';
 const _b = 'mangadex|/manga/bbb';
+const _c = 'mangadex|/manga/ccc';
 
-/// Akira is in "1", Berserk in "8"; "All" shows both.
+/// Akira is in "1", Berserk in "8"; Claymore is uncategorised ("Default").
 Future<Fakes> _seed({bool categories = true}) async {
   final f = Fakes();
   final lib = f.deps.repos.library;
   await lib.upsert(entry('/manga/aaa', title: 'Akira', addedDays: 1));
   await lib.upsert(entry('/manga/bbb', title: 'Berserk'));
+  await lib.upsert(entry('/manga/ccc', title: 'Claymore', addedDays: 2));
   if (!categories) return f;
   final cats = f.deps.repos.categories;
   await cats.upsert(Category(id: 'one', name: '1', order: 0, updatedAt: t0));
@@ -28,13 +30,18 @@ int _tabIndex(WidgetTester tester) =>
     tester.widget<TabBar>(find.byType(TabBar)).controller!.index;
 
 Future<void> _fling(WidgetTester tester, double dx) async {
-  await tester.fling(find.byType(CategorySwipe), Offset(dx, 0), 1000);
+  await tester.fling(find.byType(CategorySwipe), Offset(dx, 0), 2000);
   await tester.pumpAndSettle();
 }
 
-void _shows({required bool akira, required bool berserk}) {
+void _shows({
+  required bool akira,
+  required bool berserk,
+  bool claymore = false,
+}) {
   expect(find.text('Akira'), akira ? findsOneWidget : findsNothing);
   expect(find.text('Berserk'), berserk ? findsOneWidget : findsNothing);
+  expect(find.text('Claymore'), claymore ? findsOneWidget : findsNothing);
 }
 
 void main() {
@@ -53,17 +60,17 @@ void main() {
     _shows(akira: true, berserk: false);
   });
 
-  testWidgets('fling left on the last tab wraps to All', (tester) async {
+  testWidgets('fling left on the last tab wraps to Default', (tester) async {
     await pumpLibrary(tester, (await _seed()).deps);
     await tester.tap(find.text('8'));
     await tester.pumpAndSettle();
     expect(_tabIndex(tester), 2);
     await _fling(tester, -300);
     expect(_tabIndex(tester), 0);
-    _shows(akira: true, berserk: true);
+    _shows(akira: false, berserk: false, claymore: true);
   });
 
-  testWidgets('fling right on All wraps to the last tab', (tester) async {
+  testWidgets('fling right on Default wraps to the last tab', (tester) async {
     await pumpLibrary(tester, (await _seed()).deps);
     await _fling(tester, 300);
     expect(_tabIndex(tester), 2);
@@ -77,7 +84,7 @@ void main() {
     final at = tester.getCenter(find.byType(CategorySwipe));
     final g = await tester.startGesture(at);
     for (var i = 0; i < 10; i++) {
-      await g.moveBy(const Offset(-12, 0));
+      await g.moveBy(const Offset(-30, 0));
       await tester.pump(const Duration(milliseconds: 200));
     }
     await g.up();
@@ -85,19 +92,50 @@ void main() {
     expect(_tabIndex(tester), 1);
     await tester.timedDrag(
       find.byType(CategorySwipe),
-      const Offset(-30, 0),
+      const Offset(-150, 0),
       const Duration(seconds: 2),
     );
     await tester.pumpAndSettle();
     expect(_tabIndex(tester), 1);
   });
 
+  testWidgets('a short fast flick does not switch', (tester) async {
+    await pumpLibrary(tester, (await _seed()).deps);
+    for (final dx in [-30.0, 30.0, -100.0]) {
+      await tester.fling(find.byType(CategorySwipe), Offset(dx, 0), 3000);
+      await tester.pumpAndSettle();
+      expect(_tabIndex(tester), 0);
+    }
+  });
+
+  testWidgets('a manga given a category leaves Default; empty Default hides', (
+    tester,
+  ) async {
+    final f = await _seed();
+    await pumpLibrary(tester, f.deps);
+    expect(find.text('Default'), findsOneWidget);
+    expect(find.text('All'), findsNothing);
+    _shows(akira: false, berserk: false, claymore: true);
+    await f.deps.repos.categories.setMembership(_c, 'one', true);
+    await tester.pumpAndSettle();
+    expect(find.text('Default'), findsNothing);
+    expect(_tabIndex(tester), 0);
+    _shows(akira: true, berserk: false, claymore: true);
+    await _fling(tester, -300);
+    expect(_tabIndex(tester), 1);
+    _shows(akira: false, berserk: true);
+    await f.deps.repos.categories.setMembership(_a, 'one', false);
+    await tester.pumpAndSettle();
+    expect(find.text('Default'), findsOneWidget);
+    expect(_tabIndex(tester), 2);
+  });
+
   testWidgets('vertical drag does not change the tab', (tester) async {
     await pumpLibrary(tester, (await _seed()).deps);
-    await tester.fling(find.byType(CategorySwipe), const Offset(0, -300), 1000);
+    await tester.fling(find.byType(CategorySwipe), const Offset(0, -300), 2000);
     await tester.pumpAndSettle();
     expect(_tabIndex(tester), 0);
-    _shows(akira: true, berserk: true);
+    _shows(akira: false, berserk: false, claymore: true);
   });
 
   testWidgets('tabs follow when a category is added', (tester) async {
@@ -117,6 +155,6 @@ void main() {
     expect(find.byType(TabBar), findsNothing);
     await _fling(tester, -300);
     await _fling(tester, 300);
-    _shows(akira: true, berserk: true);
+    _shows(akira: true, berserk: true, claymore: true);
   });
 }
