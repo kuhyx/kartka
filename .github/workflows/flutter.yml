@@ -24,6 +24,17 @@ jobs:
 
       - run: flutter pub get
 
+      # Ubuntu 24.04 restricts unprivileged user namespaces, so chrome's
+      # sandbox cannot start and the headless-engine tests fail with "did not
+      # open its DevTools port". CI only: the app never passes this flag.
+      - name: Chrome for the headless engine tests
+        run: |
+          shim="$RUNNER_TEMP/chrome-nosandbox"
+          printf '#!/bin/sh\nexec google-chrome --no-sandbox "$@"\n' > "$shim"
+          chmod +x "$shim"
+          echo "KARTKA_ENGINE_BROWSER=$shim" >> "$GITHUB_ENV"
+          google-chrome --version
+
       - name: Format
         run: dart format --set-exit-if-changed lib test desktop
 
@@ -52,6 +63,17 @@ jobs:
           cache: true
 
       - run: dart pub get
+
+      # Ubuntu 24.04 restricts unprivileged user namespaces, so chrome's
+      # sandbox cannot start and the headless-engine tests fail with "did not
+      # open its DevTools port". CI only: the app never passes this flag.
+      - name: Chrome for the headless engine tests
+        run: |
+          shim="$RUNNER_TEMP/chrome-nosandbox"
+          printf '#!/bin/sh\nexec google-chrome --no-sandbox "$@"\n' > "$shim"
+          chmod +x "$shim"
+          echo "KARTKA_ENGINE_BROWSER=$shim" >> "$GITHUB_ENV"
+          google-chrome --version
 
       - name: Analyze
         run: dart analyze --fatal-infos
