@@ -11,8 +11,42 @@ import 'package:kartka/platform/io/secure_key_value_store.dart';
 
 void main() {
   late Directory dir;
-  setUp(() => dir = Directory.systemTemp.createTempSync('kartka_io'));
-  tearDown(() => dir.deleteSync(recursive: true));
+  late List<FileKeyValueStore> stores;
+
+  /// A store that teardown flushes: a write the store scheduled itself (its
+  /// timer, or one still running in the writer isolate) must not land in
+  /// [dir] while the directory is being deleted.
+  FileKeyValueStore open(
+    Directory at, {
+    File? legacy,
+    Duration window = const Duration(milliseconds: 250),
+  }) {
+    final kv = FileKeyValueStore(at, legacy: legacy, window: window);
+    stores.add(kv);
+    return kv;
+  }
+
+  /// Completes once a save the store started by itself (its window timer, or
+  /// the app leaving the foreground) is on disk. `pending` clears when that
+  /// save starts and `flush` then waits for it: no fixed sleep, because the
+  /// writer isolate takes as long as the machine makes it.
+  Future<void> saved(FileKeyValueStore kv) async {
+    while (kv.pending) {
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+    }
+    await kv.flush();
+  }
+
+  setUp(() {
+    dir = Directory.systemTemp.createTempSync('kartka_io');
+    stores = [];
+  });
+  tearDown(() async {
+    for (final kv in stores) {
+      await kv.flush();
+    }
+    dir.deleteSync(recursive: true);
+  });
 
   test('FileBlobStore keeps blobs as files under its root', () async {
     final store = FileBlobStore(Directory('${dir.path}/blobs'));
@@ -33,7 +67,7 @@ void main() {
 
   test('FileKeyValueStore persists across instances, atomically', () async {
     final file = Directory('${dir.path}/sub/kv');
-    final kv = FileKeyValueStore(file);
+    final kv = open(file);
     expect(await kv.get('a'), isNull);
     await kv.set('a.x', '1');
     await kv.set('a.y', 'ż');
@@ -49,16 +83,13 @@ void main() {
 
   test('FileKeyValueStore coalesces sets into one deferred write', () async {
     final file = Directory('${dir.path}/kv');
-    final kv = FileKeyValueStore(
-      file,
-      window: const Duration(milliseconds: 20),
-    );
+    final kv = open(file, window: const Duration(milliseconds: 20));
     for (var i = 0; i < 100; i++) {
       await kv.set('k$i', '$i');
     }
     expect(file.existsSync(), isFalse, reason: 'no write per set');
     expect(await kv.get('k99'), '99', reason: 'reads see the cache');
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await saved(kv);
     expect(await FileKeyValueStore(file).entries(), hasLength(100));
     await kv.remove('k0');
     await kv.flush();
@@ -69,7 +100,7 @@ void main() {
     final legacy = File('${dir.path}/kv.json')
       ..writeAsStringSync('{"old":"1"}');
     final file = Directory('${dir.path}/kv');
-    final kv = FileKeyValueStore(file, legacy: legacy);
+    final kv = open(file, legacy: legacy);
     await Future.wait([kv.set('a', '1'), kv.get('x'), kv.set('b', '2')]);
     await kv.flush();
     expect(await FileKeyValueStore(file).entries(), {
@@ -81,7 +112,7 @@ void main() {
 
   testWidgets('FileKeyValueStore is on disk once the app is paused', (t) async {
     final file = Directory('${dir.path}/kv');
-    final kv = FileKeyValueStore(file, window: const Duration(hours: 1));
+    final kv = open(file, window: const Duration(hours: 1));
     final listener = flushOnBackground(kv.flush);
     addTearDown(listener.dispose);
     await t.runAsync(() async {
@@ -90,7 +121,7 @@ void main() {
         ..handleAppLifecycleStateChanged(AppLifecycleState.inactive)
         ..handleAppLifecycleStateChanged(AppLifecycleState.hidden)
         ..handleAppLifecycleStateChanged(AppLifecycleState.paused);
-      await Future<void>.delayed(const Duration(milliseconds: 200));
+      await saved(kv);
       expect(await FileKeyValueStore(file).get('progress'), '42');
     });
   });
