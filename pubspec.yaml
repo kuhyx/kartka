@@ -38,7 +38,7 @@ dependencies:
   design_system:
     git:
       url: https://github.com/kuhyx/utils
-      ref: design_system-v0.2.1
+      ref: design_system-v0.3.0
       path: design_system
   # CBZ / folder import (FilePicker seam); web and Android implementations.
   file_picker: 13.3.1
@@ -71,7 +71,7 @@ dependencies:
   sync_settings_ui:
     git:
       url: https://github.com/kuhyx/utils
-      ref: sync_settings_ui-v0.4.3
+      ref: sync_settings_ui-v0.5.2
       path: sync_settings_ui
   url_launcher: 6.3.3
   wakelock_plus: 1.8.2
