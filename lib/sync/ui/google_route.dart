@@ -18,7 +18,7 @@ import 'package:kartka/sync/ui/gis_button.dart' as gis;
 
 /// A Google sign-in flow.
 enum GoogleRoute {
-  /// The `google_sign_in` plugin's OS account picker (Android).
+  /// The `google_account_token` plugin's OS account chooser (Android).
   plugin,
 
   /// The Google Identity Services button in a dialog (web / desktop).

@@ -24,6 +24,11 @@ BackupData decodeTachibk(Uint8List bytes) {
     final raw = gzipped
         ? Uint8List.fromList(const GZipDecoder().decodeBytes(bytes))
         : bytes;
+    // archive >= 4.6 returns an empty result for a truncated gzip stream
+    // instead of throwing, which would read as a valid empty backup.
+    if (gzipped && raw.isEmpty) {
+      throw const BackupFormatException('empty or truncated gzip stream');
+    }
     return _readBackup(ProtoReader(raw));
   } on BackupFormatException {
     rethrow;

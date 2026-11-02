@@ -122,7 +122,9 @@ void main() {
   testWidgets('connecting with a password reaches the sync opener', (t) async {
     installFakeSecureStorage();
     SharedPreferences.setMockInitialValues({});
-    await t.pumpWidget(MaterialApp(home: buildAccountSettingsScreen()));
+    await t.pumpWidget(
+      MaterialApp(home: buildAccountSettingsScreen(route: GoogleRoute.none)),
+    );
     await t.pumpAndSettle();
     await t.enterText(
       find.widgetWithText(TextField, 'Sync account email'),

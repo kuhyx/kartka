@@ -63,7 +63,9 @@ ScannedChapter scanArchive(String path, Uint8List bytes) {
 }
 
 ScannedChapter _scan(String path, Uint8List bytes) {
-  final archive = ZipDecoder().decodeBytes(bytes);
+  // verify: archive >= 4.6 no longer throws on a truncated or garbled entry,
+  // so check the CRCs to keep rejecting corrupt files.
+  final archive = ZipDecoder().decodeBytes(bytes, verify: true);
   final entries = {
     for (final f in archive.files)
       if (f.isFile && !isJunkPath(f.name)) normalizePath(f.name): f,

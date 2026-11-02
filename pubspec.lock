@@ -21,10 +21,10 @@ packages:
     dependency: transitive
     description:
       name: android_file_picker
-      sha256: e94229cc41c4bb5fb6a2254146340a8b650664c99b5c93b9001f66c3375d0060
+      sha256: "03d3dd3cb578ab26b1e528aeea27bf6b976942f5a24e3da82d270369b8e161a8"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.2"
   app_links:
     dependency: "direct main"
     description:
@@ -61,10 +61,10 @@ packages:
     dependency: "direct main"
     description:
       name: archive
-      sha256: "0d58d1fa1fddf6588251ccf2819f3fb3b6d0452c1b2813ac7413a05592bfbefe"
+      sha256: de5ac590b8155e4e676088d714bd41ea620449a6adc0f7950c5073874b287ddb
       url: "https://pub.dev"
     source: hosted
-    version: "4.5.2"
+    version: "4.6.0"
   args:
     dependency: transitive
     description:
@@ -165,20 +165,20 @@ packages:
     dependency: "direct main"
     description:
       path: crdt_sync_dart
-      ref: "crdt_sync_dart-v0.11.2"
-      resolved-ref: "1b5515fd8b1192207896c409212483aeb09704ea"
+      ref: "crdt_sync_dart-v0.11.3"
+      resolved-ref: a2e7334dfec5131170a084510d70361d53dc40bc
       url: "https://github.com/kuhyx/utils"
     source: git
-    version: "0.11.2"
+    version: "0.11.3"
   crdt_sync_flutter:
     dependency: "direct main"
     description:
       path: crdt_sync_flutter
-      ref: "crdt_sync_flutter-v0.3.4"
-      resolved-ref: a4c7d29595bb9cf75f06877545249ed77d5560a9
+      ref: "crdt_sync_flutter-v0.4.0"
+      resolved-ref: "0f332c905790e872defde3076ef0331b5c0dd1ea"
       url: "https://github.com/kuhyx/utils"
     source: git
-    version: "0.3.4"
+    version: "0.4.0"
   cross_file:
     dependency: transitive
     description:
@@ -191,10 +191,10 @@ packages:
     dependency: "direct main"
     description:
       name: crypto
-      sha256: c8ea0233063ba03258fbcf2ca4d6dadfefe14f02fab57702265467a19f27fadf
+      sha256: e3626ae6270383c9e3a549f34c9e4cd26c09ae6a9adaab2bf4737a00340efdc4
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.7"
+    version: "3.0.8"
   cryptography:
     dependency: "direct main"
     description:
@@ -264,18 +264,18 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: f201f3cbbb38ea5cd4e6896549662690f445a66261484f8ad697351c1ca25581
+      sha256: "02f2945a7f29535c735f6b283c3c5553810566d3052d730429aec78fe9d06592"
       url: "https://pub.dev"
     source: hosted
-    version: "13.2.0"
+    version: "13.3.1"
   file_picker_darwin:
     dependency: transitive
     description:
       name: file_picker_darwin
-      sha256: bd172f8ddec522f9bd9a26365545320f130a6ab7839eb2a634051fab4ced7eb7
+      sha256: b845af092ca7a3cff0e768029f835157d371a8341750f4158a7ad358143b0e54
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.4"
+    version: "2.4.1"
   file_picker_linux:
     dependency: transitive
     description:
@@ -420,10 +420,19 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "07089be6dc124eb9596a51b5e359c657f30a59929287f11b126c2cd13eaaece0"
+      sha256: f1c2d3c2b0b2096b435d7af033dd4e586fa31f51d988c5985e64495cd926d872
       url: "https://pub.dev"
     source: hosted
-    version: "18.1.1"
+    version: "18.1.2"
+  google_account_token:
+    dependency: transitive
+    description:
+      path: google_account_token
+      ref: "google_account_token-v0.1.0"
+      resolved-ref: db70ba204d124c6eadf9b8808cd3d3b3e70363d1
+      url: "https://github.com/kuhyx/utils"
+    source: git
+    version: "0.1.0"
   google_identity_services_web:
     dependency: transitive
     description:
@@ -432,32 +441,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.3+1"
-  google_sign_in:
-    dependency: "direct main"
-    description:
-      name: google_sign_in
-      sha256: "521031b65853b4409b8213c0387d57edaad7e2a949ce6dea0d8b2afc9cb29763"
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.2.0"
-  google_sign_in_android:
-    dependency: transitive
-    description:
-      name: google_sign_in_android
-      sha256: "312e74b3e839896ff30ed98310da4cc24dbfa19ad060b1612f7718d5afa66480"
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.2.18"
-  google_sign_in_ios:
-    dependency: transitive
-    description:
-      name: google_sign_in_ios
-      sha256: b8efb315c778390f1b1c4fc14d74c42784dd9ee0c1d0c26b13f30b46826319ad
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.3.8"
   google_sign_in_platform_interface:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: google_sign_in_platform_interface
       sha256: "7f59208c42b415a3cca203571128d6f84f885fead2d5b53eb65a9e27f2965bb5"
@@ -508,10 +493,10 @@ packages:
     dependency: "direct main"
     description:
       name: idb_shim
-      sha256: "4f32cd03ce97e2996b57cea03b2d098f5153ac55435a27cf2c89716db571728d"
+      sha256: "923c92ef88569de4ec1b257b6a6d10360dc3407179f61d0c73329701a7d7b12e"
       url: "https://pub.dev"
     source: hosted
-    version: "2.10.1+1"
+    version: "2.11.1"
   image:
     dependency: transitive
     description:
@@ -968,11 +953,11 @@ packages:
     dependency: "direct main"
     description:
       path: sync_settings_ui
-      ref: "sync_settings_ui-v0.4.2"
-      resolved-ref: a4c7d29595bb9cf75f06877545249ed77d5560a9
+      ref: "sync_settings_ui-v0.4.3"
+      resolved-ref: def48e346bac0afee242fc99e45e5242361f7f61
       url: "https://github.com/kuhyx/utils"
     source: git
-    version: "0.4.2"
+    version: "0.4.3"
   synchronized:
     dependency: transitive
     description:
