@@ -1,9 +1,10 @@
 # Copyright (c) 2026 Krzysztof Rudnicki
-"""Render the open signatures as ``TODO-fixme.md``: a prompt, then the bugs.
+"""Render the open signatures as ``fixme.md``: a prompt, then the bugs.
 
-The file is a task file (md-file-conventions), so it starts with the
-``REMOVE ME AFTER FINISH`` marker and is deleted as soon as nothing is
-open. It is gitignored and regenerated on every ingest: never edit it.
+The file lives in ``~/.local/state/kartka-errors/`` (outside any repo, so no
+``TODO*.md`` lands in one). It starts with the ``REMOVE ME AFTER FINISH``
+marker and is deleted as soon as nothing is open. It is regenerated on every
+ingest: never edit it.
 """
 
 from __future__ import annotations
@@ -100,6 +101,7 @@ def render(state: State, now: str) -> str | None:
 def write_todo(out: Path, text: str | None) -> str:
     """Write ``text`` to ``out``, or delete ``out`` when it is None."""
     if text is not None:
+        out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(text)
         return "wrote"
     if out.exists():

@@ -1,7 +1,7 @@
 [project]
 name = "kartka-errors"
 version = "0.1.0"
-description = "Collects Kartka's error reports from RTDB into TODO-fixme.md"
+description = "Collects Kartka's error reports from RTDB into fixme.md"
 requires-python = ">=3.15"
 dependencies = [
     "crdt-sync @ git+https://github.com/kuhyx/utils@crdt-sync-v0.9.2#subdirectory=crdt-sync",

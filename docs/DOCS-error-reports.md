@@ -1,7 +1,7 @@
-# Kartka — error reports (app → RTDB → `TODO-fixme.md`)
+# Kartka — error reports (app → RTDB → `fixme.md`)
 
 Every error a user sees, and every exception that escapes, is reported to
-the PC automatically and lands in `~/src/kartka/TODO-fixme.md`, a prompt a
+the PC automatically and lands in `~/.local/state/kartka-errors/fixme.md`, a prompt a
 future Claude session can paste to fix them. Builds on the diagnostics log
 (`DOCS-contracts.md` §7).
 
@@ -57,7 +57,7 @@ the log (which rewrites its file on every append).
 (`~/.config/kartka-source-eval/firebase_auth.json`; exit 3 names the seed
 command when it is missing), reads `/kartka/errors`, merges every report
 into `~/.local/state/kartka-errors/state.json`, saves it, rewrites
-`TODO-fixme.md` (gitignored; deleted when nothing is open), then deletes
+`fixme.md` (outside the repo; deleted when nothing is open), then deletes
 exactly the `device/id` paths it read (never the whole node, which would
 race with an upload). `--keep` skips the delete.
 

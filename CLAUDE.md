@@ -46,7 +46,7 @@ test directory at a time for that reason. Wrapper package:
   with `--sync-credentials`, the agent instance; contracts-runtime §17).
 - Browser engine + "Open in WebView": `docs/DOCS-contracts-webview.md`.
 - Error reports (every error shown or escaped → RTDB `/kartka/errors` →
-  `TODO-fixme.md` via `tools/errors`): `docs/DOCS-error-reports.md`.
+  `~/.local/state/kartka-errors/fixme.md` via `tools/errors`): `docs/DOCS-error-reports.md`.
 - Feature dirs (`lib/sources`, `lib/library`, `lib/reader`, ...) belong to
   their parts; foundation never imports them.
 

@@ -55,7 +55,7 @@ def test_caps_the_sections_and_says_how_many_more() -> None:
 
 
 def test_write_todo_creates_and_deletes(tmp_path: Path) -> None:
-    out = tmp_path / "TODO-fixme.md"
+    out = tmp_path / "fixme.md"
     assert write_todo(out, "x\n") == "wrote"
     assert out.read_text() == "x\n"
     assert write_todo(out, None) == "removed"

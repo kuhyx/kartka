@@ -2,7 +2,7 @@
 # install.sh -- the Kartka error collector's systemd *user* units.
 #
 # Installs, into ~/.config/systemd/user:
-#   kartka-errors.service  one ingest: /kartka/errors -> ~/src/kartka/TODO-fixme.md
+#   kartka-errors.service  one ingest: /kartka/errors -> ~/.local/state/kartka-errors/fixme.md
 #   kartka-errors.timer    every 15 minutes (Persistent: catches up after sleep)
 # The units run tools/errors/run.sh from ~/src/kartka, so the repo must be
 # checked out there. Needs uv and the kartka-source-eval sign-in session

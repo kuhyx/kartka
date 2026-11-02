@@ -3,7 +3,7 @@
 
 ``ingest`` reads ``/kartka/errors``, merges every report into the local
 state (saved before anything is deleted, so a crash loses nothing),
-rewrites the TODO file, then deletes exactly the entries it read, one
+rewrites the fixme report, then deletes exactly the entries it read, one
 ``device/id`` path at a time (never the whole node: that would race with
 a device uploading right now). ``--keep`` skips the delete.
 
@@ -44,9 +44,19 @@ def _say(message: str, *, err: bool = False) -> None:
     (sys.stderr if err else sys.stdout).write(f"{message}\n")
 
 
-def _default_state() -> Path:
+def _state_dir() -> Path:
+    """``~/.local/state/kartka-errors`` (``$XDG_STATE_HOME`` aware), at call time."""
     base = os.environ.get("XDG_STATE_HOME") or str(Path.home() / ".local" / "state")
-    return Path(base) / "kartka-errors" / "state.json"
+    return Path(base) / "kartka-errors"
+
+
+def _default_state() -> Path:
+    return _state_dir() / "state.json"
+
+
+def _default_out() -> Path:
+    """The report lives beside the state, never inside a repo (no TODO*.md there)."""
+    return _state_dir() / "fixme.md"
 
 
 def _utc_now() -> str:
@@ -56,13 +66,15 @@ def _utc_now() -> str:
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="kartka-errors", description=__doc__)
     sub = parser.add_subparsers(dest="cmd", required=True)
-    ingest = sub.add_parser("ingest", help="read RTDB, update the TODO file")
+    ingest = sub.add_parser("ingest", help="read RTDB, update the fixme report")
     ingest.add_argument("--keep", action="store_true", help="do not delete from RTDB")
     res = sub.add_parser("resolve", help="mark signatures fixed")
     res.add_argument("signatures", nargs="+", help="signature ids (or prefixes)")
-    sub.add_parser("render", help="rewrite the TODO file from the state only")
+    sub.add_parser("render", help="rewrite the fixme report from the state only")
     for p in (ingest, res, sub.choices["render"]):
-        p.add_argument("--out", type=Path, default=Path("TODO-fixme.md"))
+        p.add_argument(
+            "--out", type=Path, default=None, help="default: state dir/fixme.md"
+        )
         p.add_argument("--state", type=Path, default=None)
     return parser
 
@@ -118,6 +130,7 @@ def main(
     """Run one command; see the module docstring."""
     args = _parser().parse_args(argv)
     state_path: Path = args.state or _default_state()
+    args.out = args.out or _default_out()
     with _locked(state_path):
         return _run(args, state_path, open_rtdb, now)
 

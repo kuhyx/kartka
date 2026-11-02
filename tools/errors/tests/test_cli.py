@@ -33,7 +33,7 @@ ENTRY = {
 
 
 def run(tmp_path: Path, rtdb: FakeRtdb | None, *args: str) -> tuple[int, Path]:
-    out = tmp_path / "TODO-fixme.md"
+    out = tmp_path / "fixme.md"
 
     def factory() -> FakeRtdb:
         if rtdb is None:
@@ -65,7 +65,7 @@ def test_keep_leaves_rtdb_alone_and_a_rerun_counts_nothing_twice(
     assert run(tmp_path, db, "ingest", "--keep")[0] == 0
     assert run(tmp_path, db, "ingest", "--keep")[0] == 0
     assert db.patches == []
-    assert "count: 1" in (tmp_path / "TODO-fixme.md").read_text()
+    assert "count: 1" in (tmp_path / "fixme.md").read_text()
 
 
 def test_deletes_in_chunks(tmp_path: Path) -> None:
@@ -79,7 +79,7 @@ def test_deletes_in_chunks(tmp_path: Path) -> None:
 
 
 def test_empty_rtdb_and_nothing_open_removes_the_file(tmp_path: Path) -> None:
-    (tmp_path / "TODO-fixme.md").write_text("stale")
+    (tmp_path / "fixme.md").write_text("stale")
     code, out = run(tmp_path, FakeRtdb(None), "ingest")
     assert code == 0
     assert not out.exists()
@@ -89,19 +89,19 @@ def test_resolve_closes_a_signature_and_rerenders(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     run(tmp_path, FakeRtdb({"d": {"1": ENTRY}}), "ingest")
-    text = (tmp_path / "TODO-fixme.md").read_text()
+    text = (tmp_path / "fixme.md").read_text()
     sig = text.split("signature: `")[1].split("`")[0]
     assert run(tmp_path, None, "resolve", sig)[0] == 0
-    assert not (tmp_path / "TODO-fixme.md").exists()
+    assert not (tmp_path / "fixme.md").exists()
     assert run(tmp_path, None, "resolve", "nope")[0] == 1
     assert "no open signature" in capsys.readouterr().err
 
 
 def test_render_needs_no_rtdb(tmp_path: Path) -> None:
     run(tmp_path, FakeRtdb({"d": {"1": ENTRY}}), "ingest", "--keep")
-    (tmp_path / "TODO-fixme.md").unlink()
+    (tmp_path / "fixme.md").unlink()
     assert run(tmp_path, None, "render")[0] == 0
-    assert (tmp_path / "TODO-fixme.md").exists()
+    assert (tmp_path / "fixme.md").exists()
 
 
 def test_no_session_names_the_seed_command(
@@ -132,10 +132,10 @@ def test_a_failed_delete_is_reported_and_the_state_kept(
 
     assert run(tmp_path, NoDelete({"d": {"1": ENTRY}}), "ingest")[0] == 1
     assert "retried next run" in capsys.readouterr().err
-    assert (tmp_path / "TODO-fixme.md").exists()
+    assert (tmp_path / "fixme.md").exists()
     db = FakeRtdb({"d": {"1": ENTRY}})
     assert run(tmp_path, db, "ingest")[0] == 0
-    assert "count: 1" in (tmp_path / "TODO-fixme.md").read_text()
+    assert "count: 1" in (tmp_path / "fixme.md").read_text()
     assert db.patches
 
 
@@ -159,3 +159,22 @@ def test_defaults_follow_xdg_and_utc(
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path))
     assert cli.main(["render"], open_rtdb=lambda: FakeRtdb(None)) == 0
+
+
+def test_default_out_is_outside_the_repo(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """No --out: the report lands in ~/.local/state/kartka-errors/fixme.md."""
+    home = tmp_path / "home"
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.delenv("XDG_STATE_HOME", raising=False)
+    monkeypatch.chdir(tmp_path)
+    code = main(
+        ["ingest", "--state", str(tmp_path / "state.json")],
+        open_rtdb=lambda: FakeRtdb({"phone": {"e1": ENTRY}}),  # type: ignore[arg-type,return-value]
+        now=lambda: "2026-10-29T12:00:00Z",
+    )
+    expected = home / ".local" / "state" / "kartka-errors" / "fixme.md"
+    assert code == 0
+    assert "count: 1" in expected.read_text()
+    assert not (tmp_path / "fixme.md").exists()

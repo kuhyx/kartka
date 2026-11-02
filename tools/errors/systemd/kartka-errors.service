@@ -1,5 +1,5 @@
 [Unit]
-Description=Kartka: collect error reports from RTDB into TODO-fixme.md
+Description=Kartka: collect error reports from RTDB into fixme.md
 After=network-online.target
 Wants=network-online.target
 

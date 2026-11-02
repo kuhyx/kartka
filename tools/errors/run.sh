@@ -1,12 +1,12 @@
 #!/bin/bash
 # ============================================================================
 # run.sh -- kartka-errors from this checkout's own venv, at the repo root
-# (so TODO-fixme.md lands there).
+# (the report goes to ~/.local/state/kartka-errors/fixme.md).
 #
 #   tools/errors/run.sh ingest               what the timer runs every 15 min
 #   tools/errors/run.sh ingest --keep        read only, leave RTDB as it is
 #   tools/errors/run.sh resolve <signature>  mark a fixed error resolved
-#   tools/errors/run.sh render               rewrite TODO-fixme.md offline
+#   tools/errors/run.sh render               rewrite fixme.md offline
 # ============================================================================
 
 set -euo pipefail
