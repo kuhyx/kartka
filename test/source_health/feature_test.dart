@@ -16,6 +16,12 @@ KartkaRegistry registryWith(List<Object> syncServices) =>
     ]);
 
 Future<void> pumpSourcesTab(WidgetTester tester, KartkaRegistry r) async {
+  // Tall enough for the header (which grows with the stale banner once the
+  // fixture is over a week old) plus a card; the lazy list builds no more.
+  tester.view
+    ..devicePixelRatio = 1
+    ..physicalSize = const Size(800, 2400);
+  addTearDown(tester.view.reset);
   await tester.pumpWidget(
     MaterialApp(
       theme: buildDarkTheme(),
