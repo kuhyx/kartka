@@ -4,6 +4,11 @@
 /// the consumer's directory; its owner registers a real implementation in
 /// `KartkaFeature.services` and the screen picks it up with
 /// `registry.maybe<T>()`, falling back to the no-op default below.
+///
+/// The `const new();` lines are `coverage:ignore-line`: every use is a
+/// compile-time constant, so whether the VM ever runs the constructor (and
+/// reports it) varies from run to run, which failed the 100 % gate with
+/// the tests green.
 library;
 
 import 'package:flutter/foundation.dart';
@@ -30,7 +35,7 @@ abstract interface class TrackedLookup {
 /// Default [UnreadCounts]: no badge.
 class NoUnreadCounts implements UnreadCounts {
   /// Creates the no-op port.
-  const new();
+  const new(); // coverage:ignore-line
 
   @override
   Stream<int?> watch(MangaKey key) => Stream.value(null);
@@ -39,7 +44,7 @@ class NoUnreadCounts implements UnreadCounts {
 /// Default [DownloadedLookup]: nothing downloaded.
 class NoDownloadedLookup implements DownloadedLookup {
   /// Creates the no-op port.
-  const new();
+  const new(); // coverage:ignore-line
 
   @override
   Stream<bool> hasDownloads(MangaKey key) => Stream.value(false);
@@ -48,7 +53,7 @@ class NoDownloadedLookup implements DownloadedLookup {
 /// Default [TrackedLookup]: nothing tracked.
 class NoTrackedLookup implements TrackedLookup {
   /// Creates the no-op port.
-  const new();
+  const new(); // coverage:ignore-line
 
   @override
   Stream<bool> isTracked(MangaKey key) => Stream.value(false);
