@@ -24,7 +24,7 @@ On the Pixel 6a (`23181JEGR08034`) AND the desktop Chrome-app build:
 
 ## Stack
 
-- Flutter **3.47.8** pinned in `.fvmrc`, Dart from that SDK. Exact pins in
+- Flutter **3.47.9** pinned in `.fvmrc`, Dart from that SDK. Exact pins in
   `pubspec.yaml`, newest stable, lockfile committed, dependency-freshness gate.
 - Targets: Android + web. "Desktop" = web build in a Chrome `--app` window served
   by a local Dart wrapper (pattern + traps: skill `flutter-desktop-to-chrome`).

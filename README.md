@@ -14,7 +14,7 @@ Chrome app window, served by a local wrapper). "Kartka" is Polish for a page.
 ./run.sh android    # release APK, adb install -r, launch
 ```
 
-Needs `fvm` (Flutter 3.47.8 is pinned in `.fvmrc`; `run.sh` installs both
+Needs `fvm` (Flutter 3.47.9 is pinned in `.fvmrc`; `run.sh` installs both
 when missing) and a Chrome-family browser (`KARTKA_BROWSER` overrides the
 lookup). OAuth client ids, when you have them, go in
 `~/.config/kartka/oauth.json` and are passed as `--dart-define-from-file`.
