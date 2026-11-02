@@ -105,7 +105,9 @@ void main() {
     fakeAsync((async) {
       // Futures must be born in the fake zone to run on its clock.
       log = DiagnosticsLog(MemoryBlobStore());
-      kv = MemoryKeyValueStore();
+      kv = MemoryKeyValueStore({
+        ErrorUploader.sinceKey: '2000-01-01T00:00:00Z',
+      });
       db = InMemoryRtdb();
       transport = db;
       unawaited(log.append(_entry('a')));
@@ -132,7 +134,9 @@ void main() {
     fakeAsync((async) {
       // Futures must be born in the fake zone to run on its clock.
       log = DiagnosticsLog(MemoryBlobStore());
-      kv = MemoryKeyValueStore();
+      kv = MemoryKeyValueStore({
+        ErrorUploader.sinceKey: '2000-01-01T00:00:00Z',
+      });
       db = InMemoryRtdb();
       transport = db;
       final up = make()..start();
