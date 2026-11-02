@@ -127,15 +127,46 @@ class QuickJsEngine implements JsEngine {
   @visibleForTesting
   void debugInjectError(Object error) => _errors!.sendPort.send(error);
 
+  /// Test hook: whether the last [dispose] saw the isolate exit by itself
+  /// (false: it had to be killed; null: it was never asked to exit).
+  @visibleForTesting
+  bool? debugExitedCleanly;
+
+  /// Frees the runtime inside its own isolate and lets that isolate exit by
+  /// itself. Killing an isolate that still owns a live native runtime left
+  /// QuickJS state behind, and the test shell crashed intermittently. A
+  /// plugin spinning in native code cannot answer, so after [_exitGrace]
+  /// the isolate is killed as before.
   @override
   Future<void> dispose() async {
-    _isolate?.kill(priority: Isolate.immediate);
+    final isolate = _isolate;
+    final tx = _tx;
     _isolate = null;
+    _tx = null;
+    if (isolate != null) {
+      final exited = ReceivePort();
+      isolate.addOnExitListener(exited.sendPort, response: _exited);
+      if (tx != null) {
+        tx.send(['dispose']);
+        // A spinning plugin never answers: the grace timer ends the wait.
+        final guard = Timer(_exitGrace, () => exited.sendPort.send(_timedOut));
+        debugExitedCleanly = await exited.first == _exited;
+        guard.cancel();
+      }
+      exited.close();
+      isolate.kill(priority: Isolate.immediate);
+    }
     _rx?.close();
     _errors?.close();
-    _tx = null;
   }
 }
+
+/// How long [QuickJsEngine.dispose] waits for the isolate to free its
+/// runtime and exit before killing it.
+const Duration _exitGrace = Duration(seconds: 1);
+
+const String _exited = 'exited';
+const String _timedOut = 'timed out';
 
 void _isolateMain(SendPort out) {
   final commands = ReceivePort();
@@ -144,7 +175,13 @@ void _isolateMain(SendPort out) {
   commands.listen((m) async {
     final cmd = m! as List<Object?>;
     try {
-      if (cmd[0] == 'start') {
+      if (cmd[0] == 'dispose') {
+        try {
+          await engine.dispose();
+        } finally {
+          commands.close();
+        }
+      } else if (cmd[0] == 'start') {
         await engine.start(
           cmd[1]! as String,
           (json) => out.send(['msg', json]),

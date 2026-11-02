@@ -118,7 +118,11 @@ void main() {
         'function popular(p) { return {items: []}; }',
         origin: 'test',
       );
-      await pumpEventQueue();
+      // The old engine, started by the failing call, is disposed before the
+      // new list is emitted, and its isolate needs real time to exit.
+      while (identical(emissions.last.single, first)) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
       final second = emissions.last.single;
       expect(identical(first, second), false);
       expect((await second.popular(1)).items, isEmpty);

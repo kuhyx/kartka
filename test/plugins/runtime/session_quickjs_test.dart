@@ -86,6 +86,22 @@ function popular(p) {
     await e.dispose();
   });
 
+  test(
+    'dispose frees the runtime and the isolate exits without a kill',
+    () async {
+      final e = QuickJsEngine();
+      await e.start('function popular() {}', (_) {});
+      final sw = Stopwatch()..start();
+      await e.dispose();
+      // The kill fallback waits a full second; a clean exit is far quicker.
+      expect(sw.elapsedMilliseconds, lessThan(900));
+    },
+  );
+
+  test('disposing an engine that never started is a no-op', () async {
+    await QuickJsEngine().dispose();
+  });
+
   test('the inline engine starts, posts and disposes', () async {
     final seen = <String>[];
     final e = InlineQuickJsEngine();
