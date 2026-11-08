@@ -44,12 +44,22 @@ class FirebaseRestWriter implements RtdbWriter {
 /// Reads and writes `/kartka` on the RTDB at `databaseUrl`.
 class FirebaseTransport implements RtdbTransport {
   /// Creates a transport; [databaseUrl] is the regional RTDB host.
-  new({required this.writer, required this.http, required String databaseUrl})
-    : _base = Uri.parse(
-        databaseUrl.endsWith('/')
-            ? databaseUrl.substring(0, databaseUrl.length - 1)
-            : databaseUrl,
-      );
+  ///
+  /// [namespace] (default: the `SYNC_NAMESPACE` dart-define, as in
+  /// crdt_sync) is empty for production or `sandbox/<slot>`; reads then live
+  /// under `/<namespace>/`, matching the writes crdt_sync's client prefixes.
+  /// Anything else throws (fail closed).
+  new({
+    required this.writer,
+    required this.http,
+    required String databaseUrl,
+    String? namespace,
+  }) : _namespace = checkSyncNamespace(namespace ?? syncNamespace),
+       _base = Uri.parse(
+         databaseUrl.endsWith('/')
+             ? databaseUrl.substring(0, databaseUrl.length - 1)
+             : databaseUrl,
+       );
 
   /// Token source and writer.
   final RtdbWriter writer;
@@ -58,10 +68,12 @@ class FirebaseTransport implements RtdbTransport {
   final KartkaHttp http;
 
   final Uri _base;
+  final String _namespace;
 
   @override
   Future<Object?> get(String path) async {
     final segments = [
+      ..._namespace.split('/').where((s) => s.isNotEmpty),
       kKartkaRoot,
       ...path.split('/').where((s) => s.isNotEmpty),
     ];
