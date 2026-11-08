@@ -30,6 +30,10 @@ ceiling (the runner still prints errors); `scripts/coverage.sh` runs one
 test directory at a time for that reason. Wrapper package:
 `cd desktop && fvm dart test` / `fvm dart analyze --fatal-infos`.
 
+Gate (each call < 60 s): commit, then `scripts/check_gate_stamp.sh step <id>`
+for each id of `... full --list`; the last one stamps HEAD. Test shards:
+`scripts/test_shards.txt` (every test file in one; `check_test_shards.sh`).
+
 ## Layout
 
 - `lib/core/` pure Dart: models (§1, §8), `MangaSource`, `SourceProvider`,

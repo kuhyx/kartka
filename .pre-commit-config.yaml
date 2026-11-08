@@ -3,8 +3,10 @@
 # a tracked file could drop an uncommitted edit. Every gate is a thin shim
 # over the shared implementation in ~/src/utils, so repos cannot drift.
 # Install: pre-commit install
+# Unlisted `stages` mean commit only: the manual and pre-push hooks below say so.
+default_stages: [pre-commit]
 fail_fast: true
-default_install_hook_types: [pre-commit, post-commit, post-merge, post-rewrite]
+default_install_hook_types: [pre-commit, pre-push, post-commit, post-merge, post-rewrite]
 repos:
   - repo: local
     hooks:
@@ -60,3 +62,96 @@ repos:
         language: system
         pass_filenames: false
         files: ^(CLAUDE\.md|AGENTS\.md|scripts/test_changed\.sh)$|(^|/)(AndroidManifest\.xml|build\.gradle(\.kts)?|strings\.xml|pubspec\.yaml|repo-contract\.toml|[^/]+\.desktop|assets/icon/[^/]+\.png)$
+
+      # Every test file lives in exactly one gate shard (scripts/test_shards.txt).
+      - id: test-shards-cover
+        name: every test file is in a gate shard
+        entry: scripts/check_test_shards.sh
+        language: system
+        pass_filenames: false
+        files: ^(test/.*_test\.dart|scripts/test_shards\.txt)$
+
+      # The only pre-push hook: finish_auto.sh (or the manual steps below, via
+      # `scripts/check_gate_stamp.sh step <id>`, one per call) stamps HEAD's
+      # tree; a tree without that receipt cannot leave the machine. CI runs
+      # the same suites on every push.
+      - id: gate-stamp
+        name: pushed tree passed the local gate (stamp check)
+        entry: scripts/check_gate_stamp.sh check
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+      # Manual stage = the gate, split so each call stays under the 60 s cap.
+      # `scripts/check_gate_stamp.sh full --list` prints the order.
+      - id: gate-static
+        name: gate (analyze + format)
+        entry: scripts/gate_static.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [manual]
+      - id: gate-test-s1
+        name: gate (tests, shard s1)
+        entry: scripts/test_shard.sh s1
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+      - id: gate-test-s2
+        name: gate (tests, shard s2)
+        entry: scripts/test_shard.sh s2
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+      - id: gate-test-s3
+        name: gate (tests, shard s3)
+        entry: scripts/test_shard.sh s3
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+      - id: gate-test-s4
+        name: gate (tests, shard s4)
+        entry: scripts/test_shard.sh s4
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+      - id: gate-test-s5
+        name: gate (tests, shard s5)
+        entry: scripts/test_shard.sh s5
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+      - id: gate-test-s6
+        name: gate (tests, shard s6)
+        entry: scripts/test_shard.sh s6
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+      - id: gate-test-s7
+        name: gate (tests, shard s7)
+        entry: scripts/test_shard.sh s7
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+      - id: gate-desktop
+        name: gate (desktop wrapper analyze + tests)
+        entry: scripts/gate_desktop.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [manual]
