@@ -32,7 +32,10 @@ test directory at a time for that reason. Wrapper package:
 
 Gate (each call < 60 s): commit, then `scripts/check_gate_stamp.sh step <id>`
 for each id of `... full --list`; the last one stamps HEAD. Test shards:
-`scripts/test_shards.txt` (every test file in one; `check_test_shards.sh`).
+`scripts/test_shards.txt` (8 shards, every test file in one;
+`check_test_shards.sh`). Every gate call runs at <= 4G / 20 % CPU (capped.sh's
+ceiling) and < 45 s: shards use `flutter test -j 2` (peak ~1.9 GiB; the default
+4 workers OOM at 4G). `check_shard_limits.sh` guards both; rebalance by time.
 
 ## Layout
 

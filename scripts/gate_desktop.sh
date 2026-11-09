@@ -11,7 +11,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../desktop"
 readonly CAPPED="${HOME}/.claude/scripts/capped.sh"
 pre=()
 if [[ -x "${CAPPED}" && -z "${CI:-}" ]]; then pre=("${CAPPED}"); fi
-export CAP_MEM="${CAP_MEM:-4G}" CAP_CPU_PCT="${CAP_CPU_PCT:-40}"
+export CAP_MEM="${CAP_MEM:-4G}" CAP_CPU_PCT="${CAP_CPU_PCT:-20}"
 
 "${pre[@]}" fvm dart analyze --fatal-infos
 "${pre[@]}" fvm dart test --reporter=compact

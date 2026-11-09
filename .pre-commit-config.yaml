@@ -71,6 +71,14 @@ repos:
         pass_filenames: false
         files: ^(test/.*_test\.dart|scripts/test_shards\.txt)$
 
+      # Gate scripts default to the 4 GiB / 20 % ceiling; one step per shard.
+      - id: shard-limits
+        name: gate fits 4G / 20 % and every shard has a step
+        entry: scripts/check_shard_limits.sh
+        language: system
+        pass_filenames: false
+        files: ^(scripts/(test_shard|gate_static|gate_desktop)\.sh|scripts/test_shards\.txt|\.pre-commit-config\.yaml)$
+
       # The only pre-push hook: finish_auto.sh (or the manual steps below, via
       # `scripts/check_gate_stamp.sh step <id>`, one per call) stamps HEAD's
       # tree; a tree without that receipt cannot leave the machine. CI runs
@@ -143,6 +151,14 @@ repos:
       - id: gate-test-s7
         name: gate (tests, shard s7)
         entry: scripts/test_shard.sh s7
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+      - id: gate-test-s8
+        name: gate (tests, shard s8)
+        entry: scripts/test_shard.sh s8
         language: system
         pass_filenames: false
         always_run: true

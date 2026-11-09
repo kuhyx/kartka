@@ -1,10 +1,12 @@
-# Gate shards: `<id> <dir-or-glob>...`. Each must finish well under 60 s
-# (measured 8-25 s at CAP_CPU_PCT=40). Every test file in exactly one shard:
-# scripts/check_test_shards.sh enforces it, so a new test dir must be added.
-s1 test/browse test/downloads test/migration
-s2 test/library test/tracking test/updates
-s3 test/plugins test/platform
-s4 test/reader test/backup_import test/perf
-s5 test/source_health test/core
-s6 test/sources test/app test/all_imports_test.dart
-s7 test/sync test/all_imports
+# Gate shards: `<id> <dir-or-glob>...`. Each must finish < 45 s wall (measured
+# 27-29 s at 4 GiB / 20 % CPU with `-j 2`; the 60 s call cap leaves margin).
+# Every test file in exactly one shard: scripts/check_test_shards.sh enforces
+# it, so a new test dir must be added. Rebalance by measured time, not count.
+s1 test/source_health test/all_imports_test.dart
+s2 test/reader test/backup_import
+s3 test/browse test/updates test/perf
+s4 test/plugins test/platform
+s5 test/sources test/core
+s6 test/sync test/app
+s7 test/migration test/library
+s8 test/downloads test/tracking test/all_imports
