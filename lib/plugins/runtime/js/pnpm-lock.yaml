@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       node-html-parser:
-        specifier: 9.0.6
-        version: 9.0.6
+        specifier: 9.0.7
+        version: 9.0.7
     devDependencies:
       esbuild:
         specifier: 0.28.2
@@ -210,8 +210,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  node-html-parser@9.0.6:
-    resolution: {integrity: sha512-q3ETJ2gU+VlERyYbiJ5JQ6+mMVV1Bc6mZQ7MdJ30moq+h3oN0kQGj3rWDORaSX1SOLSkPbY/bN+sBzDlliVOBA==}
+  node-html-parser@9.0.7:
+    resolution: {integrity: sha512-0Io6nKYNN2e+QSoJFxU991Z8kX4H2Ogy3l14Ow0XxR2Wonk9l5qBonx1dYO97UyVfYJ1U9H0WHZOIZW6q5KPrA==}
 
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
@@ -359,7 +359,7 @@ snapshots:
       '@esbuild/win32-ia32': 0.28.2
       '@esbuild/win32-x64': 0.28.2
 
-  node-html-parser@9.0.6:
+  node-html-parser@9.0.7:
     dependencies:
       css-select: 5.2.2
       entities: 8.1.0
