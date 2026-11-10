@@ -21,13 +21,13 @@ dependencies:
   crdt_sync:
     git:
       url: https://github.com/kuhyx/utils
-      ref: crdt_sync_dart-v0.12.0
+      ref: crdt_sync_dart-v0.12.1
       path: crdt_sync_dart
   # Keystore session, per-install device id and openSync for sync.
   crdt_sync_flutter:
     git:
       url: https://github.com/kuhyx/utils
-      ref: crdt_sync_flutter-v0.5.0
+      ref: crdt_sync_flutter-v0.5.1
       path: crdt_sync_flutter
   # SHA-1 for mangaKeyHash (RTDB-safe keys, DOCS-contracts §4).
   crypto: 3.0.8
@@ -48,7 +48,7 @@ dependencies:
   # Credentials in the Android Keystore (KartkaPlatform.secrets on io).
   flutter_secure_storage: 11.2.0
   # Router (DOCS-contracts §10); lib/app/routes.dart builds and parses paths.
-  go_router: 18.1.3
+  go_router: 18.1.4
   # Google sign-in for the sync account. The web half renders the GIS button
   # (lib/sync/ui/gis_button_web.dart); Android goes through crdt_sync_flutter
   # and its google_account_token plugin (AccountManager).
@@ -63,7 +63,7 @@ dependencies:
   # test/platform/import_boundaries_test.dart); sources go through KartkaHttp.
   http: 1.6.0
   # IndexedDB on web (KeyValueStore); the in-memory backend keeps tests fast.
-  idb_shim: 2.11.2
+  idb_shim: 2.11.3
   path: 1.9.1
   path_provider: 2.1.6
   scrollable_positioned_list: 0.3.8
@@ -71,7 +71,7 @@ dependencies:
   sync_settings_ui:
     git:
       url: https://github.com/kuhyx/utils
-      ref: sync_settings_ui-v0.6.1
+      ref: sync_settings_ui-v0.6.2
       path: sync_settings_ui
   url_launcher: 6.3.3
   wakelock_plus: 1.8.2

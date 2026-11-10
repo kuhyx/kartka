@@ -1,0 +1,12 @@
+# Dependencies held below latest stable in this repo, and why. `transitive:`
+# entries are predicates: they clear themselves when the blocker moves, so
+# they carry no `expires`.
+
+exceptions:
+  - ecosystem: pub
+    package: file_picker
+    pinned: "13.3.2"
+    reason: >-
+      sync_settings_ui pulls in data_transfer_flutter 0.2.1, which pins
+      file_picker 13.3.2, so 13.3.3 does not resolve.
+    blocked_by: "transitive:data_transfer_flutter@0.2.1"
