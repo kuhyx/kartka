@@ -128,18 +128,20 @@ extension KartkaAnys on Any {
   );
 
   /// [ReadingProgress]es.
-  Generator<ReadingProgress> get readingProgress => combine5(
+  Generator<ReadingProgress> get readingProgress => combine6(
     text,
     text,
     chapterNumber,
     intInRange(0, 300),
     instant,
-    (key, url, number, page, at) => ReadingProgress(
+    intInRange(1, 300).nullable,
+    (key, url, number, page, at, count) => ReadingProgress(
       key: key,
       chapterUrl: url,
       chapterNumber: number,
       page: page,
       readAt: at,
+      pageCount: count,
     ),
   );
 

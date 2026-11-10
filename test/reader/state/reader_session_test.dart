@@ -129,6 +129,7 @@ void main() {
       expect(f.progress.recorded.single.page, 2);
       expect(f.progress.recorded.single.chapterNumber, 2);
       expect(f.progress.recorded.single.chapterUrl, '/c/2');
+      expect(f.progress.recorded.single.pageCount, 5);
       s.onItem(6);
       async.flushMicrotasks();
       expect(s.page, 4);

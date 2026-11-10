@@ -87,7 +87,8 @@ void main() {
       ),
     );
     await tick();
-    expect(counts, [null, 3, 2, 0]);
+    // Ch. 3 is only opened: Ch. 2 is read through, Ch. 3 still counts.
+    expect(counts, [null, 3, 2, 1]);
     await sub.cancel();
   });
 

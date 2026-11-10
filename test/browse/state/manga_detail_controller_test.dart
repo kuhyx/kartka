@@ -173,13 +173,14 @@ void main() {
     await progress.record(
       ReadingProgress(
         key: c.key,
-        chapterUrl: '/c/2',
-        chapterNumber: 2,
+        chapterUrl: '/c/3',
+        chapterNumber: 3,
         page: 0,
         readAt: when,
       ),
     );
-    // Progress reads /c/2; /c/1 stays unread because of its tombstone.
+    // Progress past /c/2 reads it; /c/1 stays unread because of its
+    // tombstone; /c/3 is only opened, so it is not read yet.
     expect(readUrls(c.chapters, await c.readMarks().first), {'/c/2'});
   });
 

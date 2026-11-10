@@ -37,11 +37,11 @@ void main() {
     }
   });
 
-  Glados(any.marks).test('unmarked: read iff numbered and <= progress', (m) {
+  Glados(any.marks).test('unmarked: read iff numbered and < progress', (m) {
     for (final c in chapters) {
       if (m.marks.containsKey(c.url)) continue;
       final p = m.progressNumber;
-      final expected = c.number != null && p != null && c.number! <= p;
+      final expected = c.number != null && p != null && c.number! < p;
       expect(isChapterRead(c, m), expected);
     }
   });
@@ -61,5 +61,33 @@ void main() {
     expect(a, b);
     expect(a.hashCode, b.hashCode);
     expect(a == ReadMarks.none, isFalse);
+  });
+
+  test('pagesRead: only the unmarked chapter being read', () {
+    const c = ChapterInfo(url: '/c', name: 'c', number: 2);
+    final at = ReadingProgress(
+      key: 'k',
+      chapterUrl: '/c',
+      chapterNumber: 2,
+      page: 29,
+      readAt: DateTime.utc(2026),
+      pageCount: 30,
+    );
+    ReadMarks m(Map<String, bool> marks, ReadingProgress p) =>
+        ReadMarks(marks: marks, progressNumber: 2, progress: p);
+    expect(pagesRead(c, m({}, at)), '30/30');
+    // Marked unread after finishing: a "30/30" on an unread row is noise.
+    expect(pagesRead(c, m({'/c': false}, at)), isNull);
+    expect(pagesRead(c, m({'/c': true}, at)), isNull);
+    final unknown = ReadingProgress(
+      key: 'k',
+      chapterUrl: '/c',
+      chapterNumber: 2,
+      page: 3,
+      readAt: DateTime.utc(2026),
+    );
+    expect(pagesRead(c, m({}, unknown)), isNull);
+    const other = ChapterInfo(url: '/d', name: 'd', number: 1);
+    expect(pagesRead(other, m({}, at)), isNull);
   });
 }

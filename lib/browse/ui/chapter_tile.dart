@@ -19,6 +19,7 @@ class ChapterTile extends StatelessWidget {
     required this.chapter,
     required this.read,
     required this.canDownload,
+    this.pages,
     super.key,
   });
 
@@ -31,6 +32,9 @@ class ChapterTile extends StatelessWidget {
   /// Whether the chapter is read.
   final bool read;
 
+  /// Pages read of the chapter being read (`"12/30"`), else null.
+  final String? pages;
+
   /// Whether a downloads part is registered.
   final bool canDownload;
 
@@ -40,6 +44,7 @@ class ChapterTile extends StatelessWidget {
     final muted = theme.colorScheme.onSurfaceVariant;
     final dimmed = TextStyle(color: muted);
     final subtitle = [
+      ?pages,
       ?chapter.scanlator,
       if (chapter.uploadedAt case final d?)
         d.toLocal().toIso8601String().substring(0, 10),

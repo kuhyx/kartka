@@ -68,7 +68,7 @@ the concrete path, to every `ScreenObserver` service, once per change.
 | `library/<mangaKeyHash>` | `{key, title, coverUrl, sourceId, addedAt, removed}` | LWW per field |
 | `categories/<id>` | `{name, order, removed}` | LWW per field |
 | `membership/<mangaKeyHash>/<categoryId>` | `bool` | LWW |
-| `progress/<mangaKeyHash>` | `{chapterNumber, chapterUrl, page, readAt}` | max(chapterNumber, page); never decreases |
+| `progress/<mangaKeyHash>` | `{chapterNumber, chapterUrl, page, readAt, pageCount?}` | max(chapterNumber, page); never decreases |
 | `trackers/<mangaKeyHash>/<service>` | `{remoteId, lastPushedChapter}` | max |
 | `source_health/<sourceIdHash>` | §5 record, written by the evaluator only | evaluator wins |
 | `source_health_meta` | §5 run meta (counts, verdicts, skipped candidates), evaluator only | evaluator wins |

@@ -143,5 +143,9 @@ ReadingProgress? progressFromNode(Node n) {
     chapterNumber: number.toDouble(),
     page: page.toInt(),
     readAt: readAt,
+    pageCount: switch (n['pageCount']) {
+      final num c => c.toInt(),
+      _ => null,
+    },
   );
 }

@@ -100,7 +100,14 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
                 : ContinueFab(controller: c, progress: _progress, read: read),
             body: details == null
                 ? DetailStatus(c)
-                : _list(context, c, details, read, unread: sort.value),
+                : _list(
+                    context,
+                    c,
+                    details,
+                    snap.data!,
+                    read,
+                    unread: sort.value,
+                  ),
           );
         },
       ),
@@ -111,6 +118,7 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
     BuildContext context,
     MangaDetailController c,
     MangaDetails details,
+    ReadMarks marks,
     Set<String> read, {
     required bool unread,
   }) {
@@ -140,6 +148,7 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
               controller: c,
               chapter: shown[i],
               read: read.contains(shown[i].url),
+              pages: pagesRead(shown[i], marks),
               canDownload: canDownload,
             ),
           ),

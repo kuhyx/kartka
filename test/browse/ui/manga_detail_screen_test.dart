@@ -118,6 +118,24 @@ void main() {
     expect(find.text('reader:/c/2'), findsOneWidget);
   });
 
+  testWidgets('the progress chapter stays unread with pages read', (t) async {
+    final h = await _open(t);
+    await h.progress.record(
+      ReadingProgress(
+        key: _key,
+        chapterUrl: '/c/2',
+        chapterNumber: 2,
+        page: 4,
+        readAt: DateTime.utc(2026),
+        pageCount: 30,
+      ),
+    );
+    await t.pumpAndSettle();
+    expect(find.byKey(const ValueKey('unread-dot-/c/2')), findsOneWidget);
+    expect(find.byKey(const ValueKey('unread-dot-/c/1')), findsNothing);
+    expect(find.textContaining('5/30'), findsOneWidget);
+  });
+
   testWidgets('tapping a chapter opens the reader', (t) async {
     await _open(t);
     await t.tap(find.text('Ch. 3'));

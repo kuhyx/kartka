@@ -70,7 +70,7 @@ extension _Advance on ReaderSession {
         recorder: ProgressRecorder(
           pageCount: loaded.pages.length,
           landing: landing,
-          record: (p) => _record(url, p),
+          record: (p) => _record(url, p, loaded.pages.length),
           markRead: () async => await deps.progress?.markRead(key, url),
         ),
       ),
@@ -80,7 +80,7 @@ extension _Advance on ReaderSession {
 
   /// Looks the chapter up at write time: a chapter list fetched again
   /// after a failure supplies the number the first one could not.
-  Future<void> _record(String url, int page) async {
+  Future<void> _record(String url, int page, int pageCount) async {
     final n = neighboursOf(_chapters, url);
     final number = progressNumber(n.current, n.position);
     // Unknown chapter number (offline): only markRead may land.
@@ -92,6 +92,7 @@ extension _Advance on ReaderSession {
         chapterNumber: number,
         page: page,
         readAt: deps.now(),
+        pageCount: pageCount,
       ),
     );
   }

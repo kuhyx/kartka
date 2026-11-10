@@ -92,6 +92,9 @@ void main() {
       'readAt': '2026-10-24T00:00:00.000Z',
     };
     expect(progressFromNode(ok)!.chapterNumber, 3.0);
+    expect(progressFromNode(ok)!.pageCount, isNull);
+    expect(progressFromNode({...ok, 'pageCount': 30})!.pageCount, 30);
+    expect(progressFromNode({...ok, 'pageCount': 'x'})!.pageCount, isNull);
     expect(progressFromNode({...ok, 'readAt': 'never'}), isNull);
     expect(progressFromNode({...ok, 'page': 'x'}), isNull);
   });
