@@ -5,6 +5,7 @@ import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/ui/page_slider.dart';
 import 'package:kartka/reader/ui/webtoon_reader_view.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../support/fakes.dart';
 import 'reader_harness.dart';
 
@@ -75,12 +76,17 @@ void main() {
     tester.widget<PageSlider>(find.byType(PageSlider)).onChanged(3);
     await h.settle(tester);
     expect(find.text('4 / 4'), findsOneWidget);
-    await tester.tap(find.byTooltip('Next chapter'));
-    await tester.tap(find.byTooltip('Previous chapter'));
+    // Word-free: no control paints a tooltip, the Show menu default included.
+    expect(
+      find.byWidgetPredicate((w) => w is Tooltip && w.message != ''),
+      findsNothing,
+    );
+    await tester.tap(spokenIcon('Next chapter'));
+    await tester.tap(spokenIcon('Previous chapter'));
     expect(h.opened, ['/c/3', '/c/1']);
-    await tester.tap(find.byTooltip('Back'));
+    await tester.tap(spokenIcon('Back'));
     expect(h.exits, 1);
-    await tester.tap(find.byTooltip('Fullscreen'));
+    await tester.tap(spokenIcon('Fullscreen'));
     expect(h.system.fullscreen, [true]);
   });
 
@@ -88,9 +94,9 @@ void main() {
     await ltr(tester);
     await tester.tapAt(const Offset(400, 300));
     await h.settle(tester);
-    await tester.tap(find.byTooltip('Reading mode'));
+    await tester.tap(spokenIcon('Reading mode'));
     await h.settle(tester);
-    await tester.tap(find.text(ReaderMode.webtoon.label).last);
+    await tester.tap(spokenIcon(ReaderMode.webtoon.label).last);
     await h.settle(tester);
     expect(find.byType(WebtoonReaderView), findsOneWidget);
     expect(await h.prefs.modeFor('fake|/m/1'), ReaderMode.webtoon);
@@ -102,10 +108,11 @@ void main() {
     h = ReaderHarness(source: FakeSource(chapterList: harnessChapters));
     await h.pump(tester);
     expect(find.textContaining('no pages'), findsOneWidget);
-    await tester.tap(find.text('Retry'));
+    expect(spokenIcon('Could not open the chapter.'), findsOneWidget);
+    await tester.tap(spokenIcon('Retry'));
     await h.settle(tester);
     expect(h.source.pageCalls, ['/c/2', '/c/2']);
-    await tester.tap(find.text('Back'));
+    await tester.tap(spokenIcon('Back'));
     expect(h.exits, 1);
   });
 
@@ -113,9 +120,9 @@ void main() {
     await ltr(tester);
     await tester.tapAt(const Offset(400, 300));
     await h.settle(tester);
-    await tester.tap(find.byTooltip('Reader settings'));
+    await tester.tap(spokenIcon('Reader settings'));
     await h.settle(tester);
-    await tester.tap(find.text('Invert tap zones'));
+    await tester.tap(spokenIcon('Invert tap zones'));
     await h.settle(tester);
     expect((await h.prefs.settings()).invertTaps, isTrue);
   });

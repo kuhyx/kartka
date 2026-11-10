@@ -25,6 +25,7 @@ void main() {
 
     test('every mode has a label', () {
       expect(ReaderMode.values.map((m) => m.label).toSet(), hasLength(4));
+      expect(ReaderMode.values.map((m) => m.icon).toSet(), hasLength(4));
     });
   });
 }

@@ -34,9 +34,10 @@ void main() {
   }
 
   Future<void> choose(WidgetTester tester, String option) async {
-    await tester.tap(find.text('Import local files'));
+    await tester.tap(find.byType(ListTile));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(option));
+    expect(find.bySemanticsLabel('Import local files'), findsOneWidget);
+    await tester.tap(find.bySemanticsLabel(option));
     await tester.pumpAndSettle();
   }
 
@@ -50,7 +51,7 @@ void main() {
     await pump(t);
     await choose(t, 'CBZ / ZIP archives');
     expect(picker.lastExtensions, ['cbz', 'zip']);
-    expect(find.text('Imported 1 chapter into 1 manga'), findsOneWidget);
+    expect(find.bySemanticsLabel(_oneChapter), findsOneWidget);
     expect((await library.load()).manga.single.title, 'Saga');
   });
 
@@ -61,7 +62,7 @@ void main() {
     await pump(t);
     await choose(t, 'Folder of images');
     expect(picker.lastExtensions, isNull);
-    expect(find.text('Imported 1 chapter into 1 manga'), findsOneWidget);
+    expect(find.bySemanticsLabel(_oneChapter), findsOneWidget);
   });
 
   testWidgets('cancelled pick does nothing', (t) async {
@@ -72,7 +73,7 @@ void main() {
 
   testWidgets('dismissing the chooser does nothing', (t) async {
     await pump(t);
-    await t.tap(find.text('Import local files'));
+    await t.tap(find.byType(ListTile));
     await t.pumpAndSettle();
     await t.sendKeyEvent(LogicalKeyboardKey.escape);
     await t.pumpAndSettle();
@@ -88,14 +89,16 @@ void main() {
     );
     await pump(t);
     await choose(t, 'CBZ / ZIP archives');
-    expect(find.textContaining('1 failed'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('1 failed')), findsOneWidget);
+    expect(find.byIcon(Icons.error_outline), findsOneWidget);
+    expect(find.text('0'), findsNWidgets(2)); // No chapters, no manga.
   });
 
   testWidgets('storage failure shows an error and re-enables', (t) async {
     picker = FakeFilePicker(files: [picked('saga.cbz', cbz)]);
     await pump(t, blobs: _FullBlobs());
     await choose(t, 'CBZ / ZIP archives');
-    expect(find.textContaining('Import failed'), findsOneWidget);
+    expect(find.textContaining('disk full'), findsOneWidget);
     final tile = t.widget<ListTile>(find.byType(ListTile));
     expect(tile.enabled, isTrue);
   });
@@ -106,18 +109,20 @@ void main() {
       files: [PickedFile(name: 'saga.cbz', read: () => gate.future)],
     );
     await pump(t);
-    await t.tap(find.text('Import local files'));
+    await t.tap(find.byType(ListTile));
     await t.pumpAndSettle();
-    await t.tap(find.text('CBZ / ZIP archives'));
+    await t.tap(find.bySemanticsLabel('CBZ / ZIP archives'));
     await t.pump();
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     expect(t.widget<ListTile>(find.byType(ListTile)).enabled, isFalse);
     gate.complete(cbz);
     await t.pumpAndSettle();
     expect(find.byType(CircularProgressIndicator), findsNothing);
-    expect(find.text('Imported 1 chapter into 1 manga'), findsOneWidget);
+    expect(find.bySemanticsLabel(_oneChapter), findsOneWidget);
   });
 }
+
+const _oneChapter = 'Imported 1 chapter into 1 manga';
 
 class _FullBlobs extends MemoryBlobStore {
   @override

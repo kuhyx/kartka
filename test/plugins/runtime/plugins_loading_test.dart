@@ -50,13 +50,15 @@ void main() {
       ),
     );
     await t.pump();
-    expect(find.text('Add a repository URL to find plugins.'), findsNothing);
-    expect(find.text('No plugins installed.'), findsNothing);
-    expect(find.text('Loading plugins…'), findsOneWidget);
+    const noRepos = 'Add a repository URL to find plugins.';
+    const noneInstalled = 'No plugins installed.';
+    expect(find.bySemanticsLabel(noRepos), findsNothing);
+    expect(find.bySemanticsLabel(noneInstalled), findsNothing);
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
     kv.open.complete();
     await t.pumpAndSettle();
-    expect(find.text('Loading plugins…'), findsNothing);
-    expect(find.text('Add a repository URL to find plugins.'), findsOneWidget);
-    expect(find.text('No plugins installed.'), findsOneWidget);
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    expect(find.bySemanticsLabel(noRepos), findsOneWidget);
+    expect(find.bySemanticsLabel(noneInstalled), findsOneWidget);
   });
 }

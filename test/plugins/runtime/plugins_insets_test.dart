@@ -25,12 +25,12 @@ void main() {
     );
     await t.pumpAndSettle();
     for (final row in [
-      find.text('Repositories'),
+      find.byIcon(Icons.link).first,
       find.byType(TextField),
       find.text(repo),
-      find.text('Available'),
+      find.byIcon(Icons.cloud_download_outlined),
       find.text('Demo Site'),
-      find.text('Installed'),
+      find.byIcon(Icons.check_circle_outline),
     ]) {
       expect(
         t.getTopLeft(row).dx,

@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/models/category.dart';
+import 'package:kartka/core/ui/confirm_mark.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/state/category_actions.dart';
 import 'package:kartka/library/state/library_deps.dart';
 import 'package:kartka/library/ui/name_dialog.dart';
@@ -27,20 +28,29 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   List<Category> _current = const [];
 
   Future<void> _add() async {
-    final name = await askName(context, title: 'New category');
+    final name = await askName(
+      context,
+      icon: Icons.new_label_outlined,
+      semanticLabel: 'New category',
+    );
     if (name != null) await _actions.create(name, _current);
   }
 
   Future<void> _rename(Category c) async {
-    final name = await askName(context, title: 'Rename', initial: c.name);
+    final name = await askName(
+      context,
+      icon: Icons.edit_outlined,
+      semanticLabel: 'Rename',
+      initial: c.name,
+    );
     if (name != null) await _actions.rename(c, name);
   }
 
   Future<void> _delete(Category c) async {
-    final ok = await confirmDestructive(
+    final ok = await confirmMark(
       context,
-      title: 'Delete "${c.name}"?',
-      message: 'Manga in it stay in your library.',
+      icon: Icons.label_off_outlined,
+      semanticLabel: 'Delete "${c.name}"?',
     );
     if (ok) await _actions.delete(c);
   }
@@ -50,11 +60,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text('Categories'),
+      title: const Icon(Icons.label, semanticLabel: 'Categories'),
       actions: [
         IconButton(
-          tooltip: 'Add category',
-          icon: const Icon(Icons.add),
+          icon: const Icon(Icons.add, semanticLabel: 'Add category'),
           onPressed: () => unawaited(_add()),
         ),
       ],
@@ -64,10 +73,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       builder: (context, snap) {
         final cats = _current = snap.data ?? const [];
         if (cats.isEmpty) {
-          return const EmptyState(
+          return const EmptyMark(
             icon: Icons.label_outline,
-            title: 'No categories yet',
-            message: 'Add one to sort your library into tabs.',
+            semanticLabel: 'No categories yet',
           );
         }
         return ReorderableListView.builder(
@@ -121,23 +129,19 @@ class _Row extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          tooltip: 'Move up',
-          icon: const Icon(Icons.arrow_upward),
+          icon: const Icon(Icons.arrow_upward, semanticLabel: 'Move up'),
           onPressed: index == 0 ? null : onUp,
         ),
         IconButton(
-          tooltip: 'Move down',
-          icon: const Icon(Icons.arrow_downward),
+          icon: const Icon(Icons.arrow_downward, semanticLabel: 'Move down'),
           onPressed: last ? null : onDown,
         ),
         IconButton(
-          tooltip: 'Rename',
-          icon: const Icon(Icons.edit_outlined),
+          icon: const Icon(Icons.edit_outlined, semanticLabel: 'Rename'),
           onPressed: onRename,
         ),
         IconButton(
-          tooltip: 'Delete',
-          icon: const Icon(Icons.delete_outline),
+          icon: const Icon(Icons.delete_outline, semanticLabel: 'Delete'),
           onPressed: onDelete,
         ),
       ],

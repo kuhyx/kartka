@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/reader/ui/reader_page_image.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../support/fakes.dart';
 
 void main() {
@@ -52,7 +53,9 @@ void main() {
     failing.completeError(StateError('offline'));
     await tester.pump();
     expect(find.textContaining('offline'), findsOneWidget);
-    await tester.tap(find.text('Retry'));
+    expect(spokenIcon('Page failed'), findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
+    await tester.tap(spokenIcon('Retry'));
     expect(retried, 1);
   });
 
@@ -62,7 +65,7 @@ void main() {
       await tester.runAsync(() => Future<void>.delayed(Duration.zero));
       await tester.pump();
     }
-    expect(find.text('Retry'), findsOneWidget);
+    expect(spokenIcon('Retry'), findsOneWidget);
   });
 
   testWidgets('bytes already loaded show on the first frame', (tester) async {

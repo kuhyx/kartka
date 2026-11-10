@@ -123,18 +123,18 @@ void main() {
       ],
     );
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
-    await tester.tap(find.text('Import SY backup'));
+    await tester.tap(find.bySemanticsLabel('Import SY backup'));
     await tester.pumpAndSettle();
     expect(find.byType(ImportScreen), findsOneWidget);
     expect(router.state.uri.toString(), importSyBackupRoute);
 
     // The default planner runs in an isolate, so give it real time.
-    await tester.tap(find.text('Choose backup file'));
+    await tester.tap(find.bySemanticsLabel('Choose backup file'));
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(seconds: 2)),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Source unavailable'), findsOneWidget);
+    expect(find.bySemanticsLabel('Source unavailable'), findsOneWidget);
     expect(find.text('AllManga (4709139914729853090)'), findsOneWidget);
   });
 

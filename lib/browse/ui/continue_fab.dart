@@ -35,15 +35,14 @@ class ContinueFab extends StatelessWidget {
       final target =
           snap.data?.chapterUrl ?? firstUnread(controller.chapters, read)?.url;
       if (target == null) return const SizedBox.shrink();
-      return FloatingActionButton.extended(
+      return FloatingActionButton(
         key: const ValueKey('continue'),
-        icon: const Icon(Icons.play_arrow),
-        label: const Text('Continue'),
         onPressed: () => unawaited(
           context.push(
             readRoute(controller.sourceId, controller.mangaUrl, target),
           ),
         ),
+        child: const Icon(Icons.play_arrow, semanticLabel: 'Continue'),
       );
     },
   );

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/models/manga_key.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/tracking/common/track_binding.dart';
 import 'package:kartka/tracking/common/tracking_service.dart';
 import 'package:kartka/tracking/common/ui/tracker_section.dart';
@@ -41,9 +42,7 @@ class _TrackButtonState extends State<TrackButton> {
     stream: _bindings,
     builder: (context, snap) {
       final tracked = snap.data?.isNotEmpty ?? false;
-      return OutlinedButton.icon(
-        icon: Icon(tracked ? Icons.check : Icons.sync),
-        label: Text(tracked ? 'Tracking' : 'Track'),
+      return OutlinedButton(
         onPressed: () => unawaited(
           showTrackSheet(
             context,
@@ -51,6 +50,11 @@ class _TrackButtonState extends State<TrackButton> {
             mangaKey: widget.mangaKey,
             title: widget.title,
           ),
+        ),
+        child: Icon(
+          tracked ? Icons.check : Icons.sync,
+          color: tracked ? Theme.of(context).colorScheme.primary : null,
+          semanticLabel: tracked ? 'Tracking' : 'Track',
         ),
       );
     },
@@ -71,9 +75,11 @@ Future<void> showTrackSheet(
       shrinkWrap: true,
       padding: const EdgeInsets.all(AppSpacing.md),
       children: [
-        Text('Tracking', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: AppSpacing.sm),
-        if (service.trackers.isEmpty) const Text('No trackers installed'),
+        if (service.trackers.isEmpty)
+          const EmptyMark(
+            icon: Icons.extension_off_outlined,
+            semanticLabel: 'No trackers installed',
+          ),
         for (final t in service.trackers)
           TrackerSection(
             service: service,

@@ -10,6 +10,7 @@ import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/challenge.dart';
 import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 
 /// One source: Popular / Latest / Search tabs, each an infinite grid.
 class SourceScreen extends StatelessWidget {
@@ -33,10 +34,9 @@ class SourceScreen extends StatelessWidget {
         if (source == null) {
           return Scaffold(
             appBar: AppBar(),
-            body: const EmptyState(
+            body: const EmptyMark(
               icon: Icons.cloud_off_outlined,
-              title: 'Source unavailable',
-              message: 'It is not installed or its server is unreachable.',
+              semanticLabel: 'Source unavailable',
             ),
           );
         }
@@ -126,8 +126,10 @@ class _SourceTabsState extends State<_SourceTabs> {
           actions: [
             if (widget.source case final WebViewTarget site)
               IconButton(
-                tooltip: 'Open in WebView',
-                icon: const Icon(Icons.open_in_browser),
+                icon: const Icon(
+                  Icons.open_in_browser,
+                  semanticLabel: 'Open in WebView',
+                ),
                 onPressed: () => unawaited(
                   openInWebView(
                     context,
@@ -139,9 +141,19 @@ class _SourceTabsState extends State<_SourceTabs> {
           ],
           bottom: const TabBar(
             tabs: [
-              Tab(text: 'Popular'),
-              Tab(text: 'Latest'),
-              Tab(text: 'Search'),
+              Tab(
+                icon: Icon(
+                  Icons.local_fire_department,
+                  semanticLabel: 'Popular',
+                ),
+              ),
+              Tab(
+                icon: Icon(
+                  Icons.new_releases_outlined,
+                  semanticLabel: 'Latest',
+                ),
+              ),
+              Tab(icon: Icon(Icons.search, semanticLabel: 'Search')),
             ],
           ),
         ),
@@ -158,8 +170,10 @@ class _SourceTabsState extends State<_SourceTabs> {
                     controller: _queryField,
                     textInputAction: TextInputAction.search,
                     decoration: const InputDecoration(
-                      labelText: 'Search this source',
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        semanticLabel: 'Search this source',
+                      ),
                     ),
                     onSubmitted: _submit,
                   ),

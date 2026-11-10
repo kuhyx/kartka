@@ -2,6 +2,8 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 
+const _tap = Size.square(48);
+
 /// What the user asked to do with one extension.
 enum ExtensionAction {
   /// Install from the store.
@@ -36,16 +38,35 @@ class ExtensionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final e = extension;
-    final details = [
-      e.lang,
-      'v${e.versionName}',
-      if (e.hasUpdate) 'update available',
-      if (e.isObsolete) 'obsolete',
-    ].join(' · ');
+    final colors = Theme.of(context).colorScheme;
+    // Language code and version are content; the update / obsolete flags
+    // are glyphs after them.
     return ListTile(
       leading: CircleAvatar(child: Text(e.name.characters.first)),
       title: Text(e.name),
-      subtitle: Text(details),
+      subtitle: Row(
+        children: [
+          Flexible(child: Text('${e.lang} · v${e.versionName}')),
+          if (e.hasUpdate) ...[
+            const SizedBox(width: AppSpacing.xs),
+            Icon(
+              Icons.new_releases_outlined,
+              size: 16,
+              color: colors.primary,
+              semanticLabel: 'update available',
+            ),
+          ],
+          if (e.isObsolete) ...[
+            const SizedBox(width: AppSpacing.xs),
+            Icon(
+              Icons.warning_amber,
+              size: 16,
+              color: colors.error,
+              semanticLabel: 'obsolete',
+            ),
+          ],
+        ],
+      ),
       trailing: busy
           ? const SizedBox.square(
               dimension: AppSpacing.lg,
@@ -55,19 +76,25 @@ class ExtensionTile extends StatelessWidget {
               spacing: AppSpacing.sm,
               children: [
                 if (!e.isInstalled)
-                  FilledButton(
+                  IconButton.filled(
+                    style: IconButton.styleFrom(minimumSize: _tap),
                     onPressed: () => onAction(ExtensionAction.install),
-                    child: const Text('Install'),
+                    icon: const Icon(Icons.download, semanticLabel: 'Install'),
                   ),
                 if (e.isInstalled && e.hasUpdate)
-                  FilledButton(
+                  IconButton.filled(
+                    style: IconButton.styleFrom(minimumSize: _tap),
                     onPressed: () => onAction(ExtensionAction.update),
-                    child: const Text('Update'),
+                    icon: const Icon(Icons.upgrade, semanticLabel: 'Update'),
                   ),
                 if (e.isInstalled)
-                  OutlinedButton(
+                  IconButton.outlined(
+                    style: IconButton.styleFrom(minimumSize: _tap),
                     onPressed: () => onAction(ExtensionAction.uninstall),
-                    child: const Text('Uninstall'),
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      semanticLabel: 'Uninstall',
+                    ),
                   ),
               ],
             ),

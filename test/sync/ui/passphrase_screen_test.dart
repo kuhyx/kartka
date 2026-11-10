@@ -25,18 +25,26 @@ Future<FakeAccountController> _pump(
   return fake;
 }
 
-Finder _field(String label) => find.widgetWithText(TextField, label);
+Finder _field(String spoken) => find.byKey(Key('passphrase-$spoken'));
 
-FilledButton _save(WidgetTester t) =>
-    t.widget<FilledButton>(find.widgetWithText(FilledButton, 'Save'));
+IconButton _save(WidgetTester t) =>
+    t.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.check));
+
+/// The spoken labels of the red lock glyphs, one per sync problem.
+List<String?> _problems(WidgetTester t) => t
+    .widgetList<Icon>(find.byIcon(Icons.lock_outline))
+    .map((i) => i.semanticLabel)
+    .toList();
 
 void main() {
   testWidgets('no passphrase: Set asks twice, saves only a match', (t) async {
     final fake = await _pump(t);
-    expect(find.text('Sync passphrase'), findsOneWidget);
-    expect(find.textContaining('Not set'), findsOneWidget);
-    await t.tap(find.widgetWithText(TextButton, 'Set'));
+    final key = t.widget<Icon>(find.byIcon(Icons.key_outlined));
+    expect(key.semanticLabel, 'Sync passphrase');
+    expect(find.byIcon(Icons.lock_open), findsOneWidget, reason: 'not set');
+    await t.tap(find.bySemanticsLabel('Set passphrase'));
     await t.pumpAndSettle();
+    expect(find.bySemanticsLabel('Set sync passphrase'), findsOneWidget);
     expect(_save(t).onPressed, isNull, reason: 'empty');
     await t.enterText(_field('Passphrase'), 'correct horse');
     await t.enterText(_field('Repeat passphrase'), 'correct hors');
@@ -44,19 +52,20 @@ void main() {
     expect(_save(t).onPressed, isNull, reason: 'mismatch');
     await t.enterText(_field('Repeat passphrase'), 'correct horse');
     await t.pump();
-    await t.tap(find.widgetWithText(FilledButton, 'Save'));
+    await t.tap(find.bySemanticsLabel('Save'));
     await t.pumpAndSettle();
     expect(fake.passphrases, ['correct horse']);
-    expect(find.text('Set on this device'), findsOneWidget);
-    expect(find.widgetWithText(TextButton, 'Change'), findsOneWidget);
+    expect(find.byIcon(Icons.lock_open), findsNothing);
+    expect(find.byIcon(Icons.lock), findsOneWidget, reason: 'set');
+    expect(find.bySemanticsLabel('Change'), findsOneWidget);
   });
 
   testWidgets('cancelling the dialog changes nothing', (t) async {
     final fake = await _pump(t, passphrase: true);
-    await t.tap(find.widgetWithText(TextButton, 'Change'));
+    await t.tap(find.bySemanticsLabel('Change'));
     await t.pumpAndSettle();
-    expect(find.text('Change sync passphrase'), findsOneWidget);
-    await t.tap(find.text('Cancel'));
+    expect(find.bySemanticsLabel('Change sync passphrase'), findsOneWidget);
+    await t.tap(find.bySemanticsLabel('Cancel'));
     await t.pumpAndSettle();
     expect(fake.passphrases, isEmpty);
     expect(find.byType(AlertDialog), findsNothing);
@@ -66,17 +75,18 @@ void main() {
     t,
   ) async {
     final fake = await _pump(t, problems: _problem);
-    expect(find.text('Set sync passphrase'), findsOneWidget);
-    await t.tap(find.text('Cancel'));
+    expect(find.bySemanticsLabel('Set sync passphrase'), findsOneWidget);
+    await t.tap(find.bySemanticsLabel('Cancel'));
     await t.pumpAndSettle();
-    expect(find.text(_problem.values.single), findsOneWidget);
+    expect(_problems(t), [_problem.values.single]);
+    expect(find.text(_problem.values.single), findsNothing);
     fake.emitProblems({..._problem, 'suwayomi.username': 'x'});
     await t.pumpAndSettle();
     expect(find.byType(AlertDialog), findsNothing, reason: 'only once');
-    expect(find.text('x'), findsOneWidget);
+    expect(_problems(t), [_problem.values.single, 'x']);
     fake.emitProblems(const {});
     await t.pumpAndSettle();
-    expect(find.text('x'), findsNothing);
+    expect(_problems(t), isEmpty);
   });
 
   testWidgets('with a passphrase set, problems show without a prompt', (
@@ -84,6 +94,6 @@ void main() {
   ) async {
     await _pump(t, passphrase: true, problems: _problem);
     expect(find.byType(AlertDialog), findsNothing);
-    expect(find.text(_problem.values.single), findsOneWidget);
+    expect(_problems(t), [_problem.values.single]);
   });
 }

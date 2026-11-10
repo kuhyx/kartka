@@ -45,27 +45,31 @@ class _ChapterDownloadButtonState extends State<ChapterDownloadButton> {
     final manage = c.canManageDownloads;
     return switch (state.status) {
       DownloadStatus.none || DownloadStatus.failed => IconButton(
-        tooltip: state.status == DownloadStatus.failed
-            ? 'Download failed: retry'
-            : 'Download',
         icon: Icon(
           state.status == DownloadStatus.failed
               ? Icons.error_outline
               : Icons.download_outlined,
+          semanticLabel: state.status == DownloadStatus.failed
+              ? 'Download failed: retry'
+              : 'Download',
         ),
         onPressed: () => unawaited(c.download([chapter])),
       ),
       DownloadStatus.queued ||
       DownloadStatus.downloading when manage => IconButton(
-        tooltip: 'Cancel download',
-        icon: const Icon(Icons.cancel_outlined),
+        icon: const Icon(
+          Icons.cancel_outlined,
+          semanticLabel: 'Cancel download',
+        ),
         onPressed: () => unawaited(c.cancelDownload(chapter)),
       ),
       DownloadStatus.queued ||
       DownloadStatus.downloading => const _Status('Queued', Icons.downloading),
       DownloadStatus.done when manage => IconButton(
-        tooltip: 'Delete download',
-        icon: const Icon(Icons.delete_outline),
+        icon: const Icon(
+          Icons.delete_outline,
+          semanticLabel: 'Delete download',
+        ),
         onPressed: () => unawaited(c.deleteDownload(chapter)),
       ),
       DownloadStatus.done => const _Status('Downloaded', Icons.download_done),
@@ -73,7 +77,7 @@ class _ChapterDownloadButtonState extends State<ChapterDownloadButton> {
   }
 }
 
-/// A non-interactive state icon with a tooltip, sized like an IconButton.
+/// A non-interactive state icon, spoken as [label], sized like an IconButton.
 class _Status extends StatelessWidget {
   const new(this.label, this.icon);
 
@@ -81,11 +85,12 @@ class _Status extends StatelessWidget {
   final IconData icon;
 
   @override
-  Widget build(BuildContext context) => Tooltip(
-    message: label,
-    child: SizedBox.square(
-      dimension: kMinInteractiveDimension,
-      child: Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant),
+  Widget build(BuildContext context) => SizedBox.square(
+    dimension: kMinInteractiveDimension,
+    child: Icon(
+      icon,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+      semanticLabel: label,
     ),
   );
 }

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ui/sources_tab.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../fixtures.dart';
 import 'harness.dart';
 
@@ -25,7 +26,7 @@ void main() {
     await tester.pumpWidget(host(SourcesTab(feed: feed)));
     feed.controller.add(const []);
     await tester.pump();
-    expect(find.text('No source health yet'), findsOne);
+    expect(spokenIcon('No source health yet'), findsOne);
   });
 
   testWidgets('read errors are shown, not hidden', (tester) async {
@@ -33,7 +34,7 @@ void main() {
     await tester.pumpWidget(host(SourcesTab(feed: feed)));
     feed.controller.addError(StateError('offline'));
     await tester.pump();
-    expect(find.text("Couldn't read source health"), findsOne);
+    expect(spokenIcon("Couldn't read source health"), findsOne);
     expect(find.textContaining('offline'), findsOne);
   });
 
@@ -59,8 +60,8 @@ void main() {
         SourceHealthRecord.fromJson(m..remove('probedAt'))!,
     ]);
     await tester.pump();
-    expect(find.text('Never evaluated'), findsOne);
-    expect(find.textContaining('older than 8 days'), findsOne);
+    expect(spokenIcon('Never evaluated'), findsOne);
+    expect(spokenContaining('older than 8 days'), findsOne);
   });
 
   testWidgets('subset link to a source outside the ranking is disabled', (
@@ -78,7 +79,7 @@ void main() {
     await tester.pump();
     final link = tester.widget<TextButton>(
       find.ancestor(
-        of: find.text('Subset of gone (95 %)'),
+        of: find.text('gone (95 %)'),
         matching: find.byWidgetPredicate((w) => w is TextButton),
       ),
     );

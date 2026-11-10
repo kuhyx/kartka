@@ -47,7 +47,11 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Finder field(String label) => find.widgetWithText(TextField, label);
+  Finder field(String label) => find.widgetWithIcon(TextField, switch (label) {
+    'Server URL' => Icons.link,
+    'Username' => Icons.person_outline,
+    _ => Icons.key,
+  });
 
   testWidgets('loads stored settings into the fields', (tester) async {
     await store.save(fixtureSettings);
@@ -73,33 +77,36 @@ void main() {
         password: 'p',
       ),
     );
-    expect(find.text('Saved'), findsOneWidget);
+    expect(find.bySemanticsLabel('Saved'), findsOneWidget);
+    expect(find.text('Saved'), findsNothing);
   });
 
   testWidgets('tests the typed values without saving them', (tester) async {
     await pump(tester);
     await tester.enterText(field('Server URL'), 'http://h');
-    await tester.tap(find.text('Test connection'));
+    await tester.tap(find.bySemanticsLabel('Test connection'));
     await tester.pumpAndSettle();
     expect(tested.single.serverUrl, 'http://h');
-    expect(find.text('Connected: Suwayomi-Server v2.4.2366'), findsOneWidget);
+    expect(find.text('Suwayomi-Server v2.4.2366'), findsOneWidget);
+    expect(find.bySemanticsLabel('Connected'), findsOneWidget);
     expect((await store.load()).isConfigured, isFalse);
   });
 
   testWidgets('shows why the connection failed', (tester) async {
     await pump(tester, test: (_) async => throw const SuwayomiAuthException());
-    await tester.tap(find.text('Test connection'));
+    await tester.tap(find.bySemanticsLabel('Test connection'));
     await tester.pumpAndSettle();
-    expect(find.text('Failed: wrong username or password'), findsOneWidget);
+    expect(find.text('wrong username or password'), findsOneWidget);
+    expect(find.bySemanticsLabel('Failed'), findsOneWidget);
     await pump(tester, test: (_) async => throw StateError('offline'));
-    await tester.tap(find.text('Test connection'));
+    await tester.tap(find.bySemanticsLabel('Test connection'));
     await tester.pumpAndSettle();
-    expect(find.textContaining('Failed: Bad state: offline'), findsOneWidget);
+    expect(find.textContaining('Bad state: offline'), findsOneWidget);
   });
 
   testWidgets('opens the extensions screen', (tester) async {
     await pump(tester);
-    await tester.tap(find.text('Extensions'));
+    await tester.tap(find.bySemanticsLabel('Extensions'));
     expect(opened, 1);
   });
 

@@ -7,11 +7,12 @@ import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/source_card.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../browser_engine_flag_test.dart' show allManga;
 import '../fixtures.dart';
 import 'harness.dart';
 
-const chipText = 'Needs browser engine';
+final Finder chip = find.byType(BrowserEngineChip);
 
 void main() {
   testWidgets('compact badge shows the chip only when flagged', (tester) async {
@@ -29,9 +30,9 @@ void main() {
         ),
       ),
     );
-    expect(find.text(chipText), findsOne);
-    expect(find.text('#2 Keep'), findsOne);
-    expect(find.text('#1 Keep'), findsOne);
+    expect(chip, findsOne);
+    expect(find.text('#2'), findsOne);
+    expect(find.text('#1'), findsOne);
   });
 
   testWidgets('the chip is a warning-coloured pill with a spoken label', (
@@ -76,7 +77,7 @@ void main() {
       ),
     )!;
     await tester.pumpWidget(host(badge));
-    expect(find.text(chipText), findsOne);
+    expect(chip, findsOne);
   });
 
   testWidgets('Sources row shows the chip; unflagged rows do not', (
@@ -97,8 +98,8 @@ void main() {
         ),
       ),
     );
-    expect(find.text(chipText), findsOne);
-    expect(find.text('Cut'), findsNothing);
+    expect(chip, findsOne);
+    expect(find.byIcon(Icons.cancel_outlined), findsNothing);
   });
 
   testWidgets('detail page shows the chip and a one-line explanation', (
@@ -114,9 +115,8 @@ void main() {
         ),
       ),
     );
-    expect(find.text(chipText), findsOne);
-    expect(find.textContaining('needs a browser engine'), findsWidgets);
-    expect(find.textContaining('flagged, not cut'), findsOne);
+    expect(chip, findsOne);
+    expect(spokenContaining('needs a browser engine'), findsWidgets);
   });
 
   testWidgets('detail page of an unflagged source has no chip', (tester) async {
@@ -127,7 +127,6 @@ void main() {
         SourceDetailPage(record: r, all: [r], now: DateTime.utc(2026, 10, 25)),
       ),
     );
-    expect(find.text(chipText), findsNothing);
-    expect(find.textContaining('flagged, not cut'), findsNothing);
+    expect(chip, findsNothing);
   });
 }

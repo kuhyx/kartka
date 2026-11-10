@@ -38,39 +38,45 @@ class _PassphraseDialogState extends State<PassphraseDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: Text('${widget.change ? 'Change' : 'Set'} sync passphrase'),
+    title: Icon(
+      widget.change ? Icons.edit_outlined : Icons.key_outlined,
+      size: 48,
+      semanticLabel: '${widget.change ? 'Change' : 'Set'} sync passphrase',
+    ),
     content: Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Use the same passphrase on every device. It never leaves this '
-          'device and encrypts the synced Suwayomi login.',
-        ),
-        const SizedBox(height: AppSpacing.md),
-        _field(_first, 'Passphrase'),
+        _field(_first, Icons.key_outlined, 'Passphrase'),
         const SizedBox(height: AppSpacing.sm),
-        _field(_second, 'Repeat passphrase'),
+        _field(_second, Icons.repeat, 'Repeat passphrase'),
       ],
     ),
     actions: [
-      TextButton(
+      IconButton(
+        style: IconButton.styleFrom(minimumSize: _button),
         onPressed: () => Navigator.of(context).pop(),
-        child: const Text('Cancel'),
+        icon: const Icon(Icons.close, semanticLabel: 'Cancel'),
       ),
-      FilledButton(
+      IconButton.filled(
+        style: IconButton.styleFrom(minimumSize: _button),
         onPressed: _valid ? () => Navigator.of(context).pop(_first.text) : null,
-        child: const Text('Save'),
+        icon: const Icon(Icons.check, semanticLabel: 'Save'),
       ),
     ],
   );
 
-  Widget _field(TextEditingController c, String label) => TextField(
-    controller: c,
-    obscureText: true,
-    autocorrect: false,
-    enableSuggestions: false,
-    decoration: InputDecoration(labelText: label),
-    onChanged: (_) => setState(() {}),
-  );
+  static const _button = Size.square(48);
+
+  Widget _field(TextEditingController c, IconData icon, String spoken) =>
+      TextField(
+        key: Key('passphrase-$spoken'),
+        controller: c,
+        obscureText: true,
+        autocorrect: false,
+        enableSuggestions: false,
+        decoration: InputDecoration(
+          prefixIcon: Icon(icon, semanticLabel: spoken),
+        ),
+        onChanged: (_) => setState(() {}),
+      );
 }

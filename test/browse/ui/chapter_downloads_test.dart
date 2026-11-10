@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/core/models/models.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../fake_download_service.dart';
 import 'harness.dart';
 
@@ -33,17 +34,17 @@ void main() {
         pagesTotal: 10,
       );
     await _open(t, service: s);
-    expect(_in('/c/3', find.byTooltip('Cancel download')), findsOneWidget);
-    expect(_in('/c/2', find.byTooltip('Cancel download')), findsOneWidget);
-    expect(_in('/c/1', find.byTooltip('Download')), findsOneWidget);
-    await t.tap(_in('/c/2', find.byTooltip('Cancel download')));
+    expect(_in('/c/3', spokenIcon('Cancel download')), findsOneWidget);
+    expect(_in('/c/2', spokenIcon('Cancel download')), findsOneWidget);
+    expect(_in('/c/1', spokenIcon('Download')), findsOneWidget);
+    await t.tap(_in('/c/2', spokenIcon('Cancel download')));
     await t.pumpAndSettle();
     expect(s.calls, ['cancel:/c/2']);
-    expect(_in('/c/2', find.byTooltip('Download')), findsOneWidget);
-    await t.tap(_in('/c/2', find.byTooltip('Download')));
+    expect(_in('/c/2', spokenIcon('Download')), findsOneWidget);
+    await t.tap(_in('/c/2', spokenIcon('Download')));
     await t.pumpAndSettle();
     expect(s.calls.last, 'enqueue:/c/2');
-    expect(_in('/c/2', find.byTooltip('Cancel download')), findsOneWidget);
+    expect(_in('/c/2', spokenIcon('Cancel download')), findsOneWidget);
   });
 
   testWidgets('downloaded: delete', (t) async {
@@ -54,12 +55,12 @@ void main() {
         pagesTotal: 5,
       );
     await _open(t, service: s);
-    expect(find.byTooltip('Delete download'), findsOneWidget);
-    await t.tap(find.byTooltip('Delete download'));
+    expect(spokenIcon('Delete download'), findsOneWidget);
+    await t.tap(spokenIcon('Delete download'));
     await t.pumpAndSettle();
     expect(s.calls, ['delete:/c/1']);
-    expect(find.byTooltip('Delete download'), findsNothing);
-    expect(_in('/c/1', find.byTooltip('Download')), findsOneWidget);
+    expect(spokenIcon('Delete download'), findsNothing);
+    expect(_in('/c/1', spokenIcon('Download')), findsOneWidget);
   });
 
   testWidgets('failed: download again', (t) async {
@@ -69,7 +70,7 @@ void main() {
         error: 'boom',
       );
     await _open(t, service: s);
-    await t.tap(_in('/c/1', find.byTooltip('Download failed: retry')));
+    await t.tap(_in('/c/1', spokenIcon('Download failed: retry')));
     await t.pumpAndSettle();
     expect(s.calls, ['enqueue:/c/1']);
   });
@@ -80,10 +81,10 @@ void main() {
     t.view.physicalSize = const Size(1200, 2400);
     addTearDown(t.view.resetPhysicalSize);
     await h.pump(t, const SizedBox(), at: mangaRoute('mangadex', _url));
-    expect(find.byTooltip('Cancel download'), findsNothing);
-    expect(find.byTooltip('Delete download'), findsNothing);
-    expect(_in('/c/3', find.byTooltip('Download')), findsNothing);
-    expect(_in('/c/3', find.byTooltip('Queued')), findsOneWidget);
-    expect(_in('/c/2', find.byTooltip('Download')), findsOneWidget);
+    expect(spokenIcon('Cancel download'), findsNothing);
+    expect(spokenIcon('Delete download'), findsNothing);
+    expect(_in('/c/3', spokenIcon('Download')), findsNothing);
+    expect(_in('/c/3', spokenIcon('Queued')), findsOneWidget);
+    expect(_in('/c/2', spokenIcon('Download')), findsOneWidget);
   });
 }

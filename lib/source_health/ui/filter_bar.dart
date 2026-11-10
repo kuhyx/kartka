@@ -2,6 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/source_health/ranking.dart';
 import 'package:kartka/source_health/reason_filter.dart';
+import 'package:kartka/source_health/ui/health_icons.dart';
 
 /// Reason chips (any selected reason matches) and the minimum-score slider.
 class FilterBar extends StatelessWidget {
@@ -24,7 +25,8 @@ class FilterBar extends StatelessWidget {
       children: [
         for (final r in HealthReason.values)
           FilterChip(
-            label: Text(r.label),
+            key: Key('reason-${r.name}'),
+            label: Icon(reasonIcon(r), semanticLabel: r.label),
             selected: query.reasons.contains(r),
             onSelected: (on) => onChanged(
               query.copyWith(
@@ -37,7 +39,11 @@ class FilterBar extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Min score $min'),
+            IconValue(
+              Icons.filter_alt_outlined,
+              min,
+              semanticLabel: 'Min score',
+            ),
             Slider(
               key: const Key('min-score'),
               value: query.minScore,

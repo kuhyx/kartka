@@ -36,7 +36,8 @@ Map<String, int> pluginLanguageCounts(Iterable<AvailablePlugin> plugins) {
 
 String _plugins(int n) => n == 1 ? '1 plugin' : '$n plugins';
 
-/// "Languages: …" chip; opens a checklist that reports every change.
+/// Language-filter chip (the picked names); opens a checklist that reports
+/// every change.
 class PluginLanguagesChip extends StatelessWidget {
   /// Creates the chip.
   const new({
@@ -64,8 +65,10 @@ class PluginLanguagesChip extends StatelessWidget {
         alignment: Alignment.centerLeft,
         child: ActionChip(
           key: const Key('plugin-languages'),
-          avatar: const Icon(Icons.translate),
-          label: Text('Languages: ${names.isEmpty ? 'none' : names}'),
+          avatar: const Icon(Icons.translate, semanticLabel: 'Languages'),
+          label: names.isEmpty
+              ? const Icon(Icons.block, size: 18, semanticLabel: 'none')
+              : Text(names),
           onPressed: () => unawaited(
             showDialog<void>(
               context: context,
@@ -106,7 +109,7 @@ class _LanguagesDialogState extends State<_LanguagesDialog> {
     final rest = widget.counts.keys.where((l) => !_selected.contains(l));
     final langs = [..._selected, ...rest.toList()..sort()];
     return AlertDialog(
-      title: const Text('Languages'),
+      title: const Icon(Icons.translate, size: 32, semanticLabel: 'Languages'),
       content: SizedBox(
         width: double.maxFinite,
         child: ListView(
@@ -116,23 +119,25 @@ class _LanguagesDialogState extends State<_LanguagesDialog> {
               CheckboxListTile(
                 value: _selected.contains(l),
                 title: Text(languageLabel(l)),
-                subtitle: Text(_plugins(widget.counts[l] ?? 0)),
+                subtitle: Text('${widget.counts[l] ?? 0}'),
                 onChanged: (_) => _toggle(l),
               ),
           ],
         ),
       ),
       actions: [
-        TextButton(
+        IconButton(
+          style: IconButton.styleFrom(minimumSize: const Size.square(48)),
+          icon: const Icon(Icons.check, semanticLabel: 'Done'),
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Done'),
         ),
       ],
     );
   }
 }
 
-/// Text for an Available list whose [hidden] offers are all filtered out.
+/// Spoken label for an Available list whose [hidden] offers are all
+/// filtered out.
 String hiddenByLanguageMessage(int hidden) =>
     '${_plugins(hidden)} ${hidden == 1 ? 'is' : 'are'} in other languages. '
     'Pick more in Languages.';

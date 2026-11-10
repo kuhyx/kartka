@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/source_health/feed/fixture_feed.dart';
+import 'package:kartka/source_health/reason_filter.dart';
 import 'package:kartka/source_health/ui/sources_tab.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../fixtures.dart';
 import 'harness.dart';
 
@@ -32,7 +35,9 @@ Future<void> setMinScore(WidgetTester tester, double v) async {
 }
 
 String counts(WidgetTester tester) =>
-    tester.widget<Text>(find.byKey(const Key('counts'))).data!;
+    tester.widget<SpokenLabel>(find.byKey(const Key('counts'))).semanticLabel;
+
+Finder _reason(HealthReason r) => find.byKey(Key('reason-${r.name}'));
 
 void main() {
   testWidgets('fuzzy search narrows and ranks; clearing restores', (
@@ -47,10 +52,10 @@ void main() {
     expect(counts(tester), endsWith('showing 2'));
     await typeSearch(tester, 'CLOUDFLARE');
     expect(cardOrder(tester, _ids), ['plugin:comick']);
-    await tester.tap(find.byTooltip('Clear search'));
+    await tester.tap(spokenIcon('Clear search'));
     await tester.pumpAndSettle();
     expect(cardOrder(tester, _ids), hasLength(6));
-    expect(find.byTooltip('Clear search'), findsNothing);
+    expect(spokenIcon('Clear search'), findsNothing);
     expect(counts(tester), endsWith('showing 6'));
   });
 
@@ -62,34 +67,35 @@ void main() {
     expect(cardOrder(tester, _ids), ['suwayomi:2499283573021220255']);
     await typeSearch(tester, 'zzzz');
     expect(cardOrder(tester, _ids), isEmpty);
-    expect(find.text('No sources match these filters.'), findsOne);
+    expect(spokenIcon('No match'), findsOne);
   });
 
   testWidgets('reason chips: any selected reason, ANDed with verdicts', (
     tester,
   ) async {
     await pumpTab(tester);
-    await tester.tap(find.widgetWithText(FilterChip, 'Low coverage'));
+    await tester.tap(_reason(HealthReason.coverage));
     await tester.pumpAndSettle();
     expect(cardOrder(tester, _ids), ['suwayomi:1111', 'plugin:comick']);
-    await tester.tap(find.widgetWithText(FilterChip, 'Subset'));
+    await tester.tap(_reason(HealthReason.subset));
     await tester.pumpAndSettle();
     expect(cardOrder(tester, _ids), hasLength(3));
-    await tester.tap(find.widgetWithText(FilterChip, 'Low coverage'));
+    await tester.tap(_reason(HealthReason.coverage));
     await tester.pump();
-    await tester.tap(find.widgetWithText(FilterChip, 'Subset'));
+    await tester.tap(_reason(HealthReason.subset));
     await tester.pumpAndSettle();
     expect(cardOrder(tester, _ids), hasLength(6));
     for (final label in ['Blocking', 'Low uptime', 'Browser engine']) {
-      expect(find.widgetWithText(FilterChip, label), findsOne);
+      expect(spokenIcon(label), findsOne);
     }
   });
 
   testWidgets('minimum score slider combines with search', (tester) async {
     await pumpTab(tester);
-    expect(find.text('Min score 0.00'), findsOne);
+    expect(spokenIcon('Min score'), findsOne);
+    expect(find.text('0.00'), findsOne);
     await setMinScore(tester, 0.85);
-    expect(find.text('Min score 0.85'), findsOne);
+    expect(find.text('0.85'), findsWidgets);
     expect(cardOrder(tester, _ids), ['mangadex', 'local']);
     await typeSearch(tester, 'local');
     expect(cardOrder(tester, _ids), ['local']);

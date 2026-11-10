@@ -67,31 +67,37 @@ class _DetailMenuState extends State<DetailMenu> {
         if (first != null)
           MenuItemButton(
             key: const ValueKey('read'),
-            leadingIcon: const Icon(Icons.menu_book_outlined),
+            leadingIcon: const Icon(
+              Icons.menu_book_outlined,
+              semanticLabel: 'Read',
+            ),
             onPressed: () => unawaited(
               context.push(readRoute(c.sourceId, c.mangaUrl, first.url)),
             ),
-            child: const Text('Read'),
           ),
         MenuItemButton(
           key: const ValueKey('library'),
           leadingIcon: Icon(
             _inLibrary ? Icons.favorite : Icons.favorite_border,
+            semanticLabel: _inLibrary ? 'In library' : 'Add to library',
           ),
           onPressed: () => unawaited(c.setInLibrary(add: !_inLibrary)),
-          child: Text(_inLibrary ? 'In library' : 'Add to library'),
         ),
         if (deps.downloads != null) ...[
           MenuItemButton(
-            leadingIcon: const Icon(Icons.download_outlined),
+            leadingIcon: const Icon(
+              Icons.download_outlined,
+              semanticLabel: 'Download all',
+            ),
             onPressed: () => unawaited(c.download(c.chapters)),
-            child: const Text('Download all'),
           ),
           MenuItemButton(
-            leadingIcon: const Icon(Icons.download_outlined),
+            leadingIcon: const Icon(
+              Icons.download_outlined,
+              semanticLabel: 'Download unread',
+            ),
             onPressed: () =>
                 unawaited(c.download(unreadOf(c.chapters, widget.read))),
-            child: const Text('Download unread'),
           ),
         ],
         CheckboxMenuButton(
@@ -99,7 +105,7 @@ class _DetailMenuState extends State<DetailMenu> {
           value: deps.chapterSort.value,
           onChanged: (on) =>
               unawaited(deps.chapterSort.set(unreadFirst: on ?? false)),
-          child: const Text('Unread first'),
+          child: const Icon(Icons.low_priority, semanticLabel: 'Unread first'),
         ),
         // A slot is an arbitrary widget, not a menu item: close the menu
         // once it is tapped, as a menu item would.
@@ -110,8 +116,7 @@ class _DetailMenuState extends State<DetailMenu> {
           ),
       ],
       builder: (context, menu, _) => IconButton(
-        tooltip: 'More',
-        icon: const Icon(Icons.more_vert),
+        icon: const Icon(Icons.more_vert, semanticLabel: 'More'),
         onPressed: () => menu.isOpen ? menu.close() : menu.open(),
       ),
     );

@@ -6,7 +6,7 @@ import 'package:kartka/source_health/model/source_health_record.dart';
 import 'fixtures.dart';
 
 Map<String, MetricExplanation> byTitle(SourceHealthRecord r) => {
-  for (final e in explainMetrics(r)) e.title: e,
+  for (final e in explainMetrics(r)) e.semanticLabel: e,
 };
 
 void main() {
@@ -37,14 +37,14 @@ void main() {
     );
     for (final x in e.values) {
       expect(x.meaning, isNotEmpty);
-      expect(x.value, isNotEmpty);
+      expect(x.value.isNotEmpty || x.origins != null, isTrue);
     }
     expect(e['Uptime']!.status, MetricStatus.pass);
     expect(e['Blocking']!.status, MetricStatus.pass);
     expect(e['Coverage']!.status, MetricStatus.pass);
     expect(e['Subset of another source']!.status, MetricStatus.pass);
     expect(e['Latency']!.status, MetricStatus.info);
-    expect(e['Available as']!.value, 'native · JS plugin · Suwayomi');
+    expect(e['Available as']!.origins, ['native', 'plugin', 'suwayomi']);
   });
 
   test('failing metrics are marked fail', () {

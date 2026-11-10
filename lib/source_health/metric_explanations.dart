@@ -5,6 +5,7 @@ library;
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/metric_text.dart';
+import 'package:kartka/source_health/metric_values.dart';
 import 'package:kartka/source_health/model/metrics.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/scoring/profile.dart';
@@ -31,22 +32,27 @@ enum MetricStatus {
   unknown,
 }
 
-/// One metric, explained.
+/// One metric, explained. Only [value] (numbers) and [origins] are painted;
+/// the name, [meaning] and [threshold] are spoken (textgate).
 class MetricExplanation {
   /// Creates an explanation.
   const new({
-    required this.title,
+    required this.semanticLabel,
     required this.value,
     required this.meaning,
     required this.threshold,
     required this.status,
+    this.origins,
   });
 
-  /// Metric name.
-  final String title;
+  /// Metric name (a `metricIcons` key), spoken only.
+  final String semanticLabel;
 
-  /// This source's value, formatted.
+  /// This source's value, formatted without words.
   final String value;
+
+  /// For "Available as": the origins that can read the site, else null.
+  final List<String>? origins;
 
   /// What is measured, in plain words.
   final String meaning;
@@ -59,11 +65,12 @@ class MetricExplanation {
 
   /// This explanation with a [MetricStatus.warn] status.
   MetricExplanation warning() => MetricExplanation(
-    title: title,
+    semanticLabel: semanticLabel,
     value: value,
     meaning: meaning,
     threshold: threshold,
     status: MetricStatus.warn,
+    origins: origins,
   );
 }
 
@@ -90,8 +97,8 @@ List<MetricExplanation> _explainMetrics(
   ScoreWeights w,
 ) => [
   MetricExplanation(
-    title: 'Uptime',
-    value: uptimeText(r.uptime),
+    semanticLabel: 'Uptime',
+    value: uptimeValue(r.uptime),
     meaning:
         'Share of uptime probes (${HealthThresholds.probesPerDay} a day over '
         'the last ${HealthThresholds.uptimeWindowDays} days) that got a '
@@ -103,7 +110,7 @@ List<MetricExplanation> _explainMetrics(
     status: _uptime(r.uptime),
   ),
   MetricExplanation(
-    title: 'Latency',
+    semanticLabel: 'Latency',
     value: latencyText(r.latency),
     meaning:
         'How long the source takes to answer: the median (p50) and the '
@@ -115,8 +122,8 @@ List<MetricExplanation> _explainMetrics(
     status: _info(r.latency),
   ),
   MetricExplanation(
-    title: 'Blocking',
-    value: blockingText(r.blocking),
+    semanticLabel: 'Blocking',
+    value: blockingValue(r.blocking),
     meaning:
         'Share of requests answered with a Cloudflare challenge, a '
         'captcha, 403 Forbidden or 429 Too Many Requests, or by an '
@@ -134,8 +141,8 @@ List<MetricExplanation> _explainMetrics(
         : _below(r.blocking?.challengeRate, HealthThresholds.maxChallengeRate),
   ),
   MetricExplanation(
-    title: 'Coverage',
-    value: coverageText(r.coverage),
+    semanticLabel: 'Coverage',
+    value: coverageValue(r.coverage),
     meaning:
         'How many reference titles (your library backup plus the AniList '
         'top 500) the source has. The score counts a title only with at '
@@ -147,8 +154,8 @@ List<MetricExplanation> _explainMetrics(
     status: _atLeast(r.coverage?.ratio, HealthThresholds.minCoverageRatio),
   ),
   MetricExplanation(
-    title: 'Chapter completeness',
-    value: completenessText(r.completeness),
+    semanticLabel: 'Chapter completeness',
+    value: completenessValue(r.completeness),
     meaning:
         "Chapters on the source compared with AniList's chapter count, "
         'median over sampled titles, capped at 100 %.',
@@ -156,10 +163,10 @@ List<MetricExplanation> _explainMetrics(
     status: _info(r.completeness),
   ),
   MetricExplanation(
-    title: 'Image quality',
+    semanticLabel: 'Image quality',
     value: r.imageQuality == null
         ? notMeasured
-        : '${imageWidthText(r.imageQuality)} wide, JPEG '
+        : '${imageWidthText(r.imageQuality)} · '
               '${jpegQualityText(r.imageQuality)}',
     meaning:
         'Median page width and estimated JPEG quality over sampled '
@@ -170,11 +177,10 @@ List<MetricExplanation> _explainMetrics(
     status: _info(r.imageQuality),
   ),
   MetricExplanation(
-    title: 'Subset of another source',
+    semanticLabel: 'Subset of another source',
     value: r.subsetOf == null
-        ? (r.coverage == null ? notMeasured : 'no')
-        : '${pctOrDash(r.subsetOf!.overlap)} overlap with '
-              '${r.subsetOf!.sourceId}',
+        ? (r.coverage == null ? notMeasured : '✕')
+        : '${pctOrDash(r.subsetOf!.overlap)} · ${r.subsetOf!.sourceId}',
     meaning:
         'Whether a higher-ranked source with images at least as good '
         'already has most of these titles.',
@@ -187,8 +193,9 @@ List<MetricExplanation> _explainMetrics(
         : (r.coverage == null ? MetricStatus.unknown : MetricStatus.pass),
   ),
   MetricExplanation(
-    title: 'Available as',
-    value: availabilityText(r.availability),
+    semanticLabel: 'Available as',
+    value: availableOrigins(r.availability) == null ? notMeasured : '',
+    origins: availableOrigins(r.availability),
     meaning:
         'Which ways of reading this site exist: a native Kartka source, '
         'a converted Mangayomi JS plugin, or a Keiyoushi extension through '
@@ -198,8 +205,8 @@ List<MetricExplanation> _explainMetrics(
   ),
   if (r.pagesLoad != null)
     MetricExplanation(
-      title: 'Pages load',
-      value: pagesLoadText(r.pagesLoad),
+      semanticLabel: 'Pages load',
+      value: pagesLoadValue(r.pagesLoad),
       meaning:
           'Share of sampled chapter pages whose images actually downloaded.',
       threshold: 'Multiplies the weighted score (see the score breakdown).',

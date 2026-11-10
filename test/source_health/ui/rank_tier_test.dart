@@ -1,6 +1,7 @@
 // Rank tiers (decision 2026-10-29): a source that needs a browser engine or
 // hits a challenge ranks below every source without it, both lowest, without
 // changing its score or verdict; the detail page says why.
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/source_health/metric_explanations.dart';
@@ -10,6 +11,7 @@ import 'package:kartka/source_health/scoring/judge.dart';
 import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
 
+import '../../helpers/spoken_icon.dart';
 import 'harness.dart';
 
 SourceHealthRecord rec(
@@ -73,7 +75,7 @@ void main() {
       host(SourceDetailPage(record: r, all: [r], now: DateTime.utc(2026, 10))),
     );
     expect(
-      find.textContaining(
+      spokenContaining(
         'Ranked lowest: it needs a browser engine and hits a challenge, so '
         'it ranks below every source with only one of these or neither. '
         'The rank only: score and verdict are unchanged.',
@@ -91,7 +93,7 @@ void main() {
       host(SourceDetailPage(record: r, all: [r], now: DateTime.utc(2026, 10))),
     );
     expect(
-      find.textContaining(
+      spokenContaining(
         'Ranked low: it needs a browser engine, so it ranks below every '
         'source that does not.',
       ),
@@ -101,7 +103,7 @@ void main() {
 
   test('the Blocking explanation names the rank penalty', () {
     final blocking = explainMetrics(rec('a'))
-        .firstWhere((e) => e.title == 'Blocking');
+        .firstWhere((e) => e.semanticLabel == 'Blocking');
     expect(
       blocking.threshold,
       contains(
@@ -117,7 +119,7 @@ void main() {
     await tester.pumpWidget(
       host(SourceDetailPage(record: r, all: [r], now: DateTime.utc(2026, 10))),
     );
-    expect(find.textContaining('Ranked low'), findsNothing);
-    expect(find.textContaining('The score ranks sources'), findsOne);
+    expect(spokenContaining('Ranked low'), findsNothing);
+    expect(find.byKey(const Key('recomputed')), findsOne);
   });
 }

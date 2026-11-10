@@ -28,7 +28,7 @@ MangaSummary _m(String title) =>
 
 void main() {
   group('moveReason', () {
-    String? reason(
+    MoveReason? reason(
       SourceHealthRecord? r, {
       bool installed = true,
       String? flag,
@@ -41,19 +41,14 @@ void main() {
     });
 
     test('names why the source should be left', () {
-      expect(reason(_r('a'), installed: false), 'its source is not installed');
-      expect(reason(null, installed: false), 'its source is not installed');
-      expect(reason(_r('a'), flag: 'x'), 'its source failed its test');
-      expect(reason(_r('a', unreachable: true)), 'its source is unreachable');
-      expect(reason(_r('a', verdict: HealthVerdict.cut)), 'its source is cut');
-      expect(
-        reason(_r('a', cutReasons: ['blocking'])),
-        'its source hits a challenge',
-      );
-      expect(
-        reason(_r('a', flags: [reprobeOnlyFlag])),
-        'its source is unreachable',
-      );
+      expect(reason(_r('a'), installed: false), MoveReason.notInstalled);
+      expect(reason(null, installed: false), MoveReason.notInstalled);
+      expect(reason(_r('a'), flag: 'x'), MoveReason.failedTest);
+      expect(reason(_r('a', unreachable: true)), MoveReason.unreachable);
+      expect(reason(_r('a', verdict: HealthVerdict.cut)), MoveReason.cut);
+      expect(reason(_r('a', cutReasons: ['blocking'])), MoveReason.challenge);
+      expect(reason(_r('a', flags: [reprobeOnlyFlag])), MoveReason.unreachable);
+      expect(MoveReason.cut.label, 'its source is cut');
     });
   });
 

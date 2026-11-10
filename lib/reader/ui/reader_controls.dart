@@ -71,29 +71,36 @@ class ReaderControls extends StatelessWidget {
             child: Row(
               children: [
                 IconButton(
-                  tooltip: 'Back',
-                  icon: const Icon(Icons.arrow_back),
+                  icon: const Icon(Icons.arrow_back, semanticLabel: 'Back'),
                   onPressed: onBack,
                 ),
                 Expanded(child: _title(context)),
                 PopupMenuButton<ReaderMode>(
-                  tooltip: 'Reading mode',
-                  icon: const Icon(Icons.chrome_reader_mode_outlined),
+                  // Empty: the default "Show menu" tooltip paints words.
+                  tooltip: '',
+                  icon: Icon(mode.icon, semanticLabel: 'Reading mode'),
                   initialValue: mode,
                   onSelected: onMode,
                   itemBuilder: (context) => [
                     for (final m in ReaderMode.values)
-                      PopupMenuItem(value: m, child: Text(m.label)),
+                      PopupMenuItem(
+                        value: m,
+                        child: Icon(m.icon, semanticLabel: m.label),
+                      ),
                   ],
                 ),
                 IconButton(
-                  tooltip: 'Fullscreen',
-                  icon: const Icon(Icons.fullscreen),
+                  icon: const Icon(
+                    Icons.fullscreen,
+                    semanticLabel: 'Fullscreen',
+                  ),
                   onPressed: onFullscreen,
                 ),
                 IconButton(
-                  tooltip: 'Reader settings',
-                  icon: const Icon(Icons.tune),
+                  icon: const Icon(
+                    Icons.tune,
+                    semanticLabel: 'Reader settings',
+                  ),
                   onPressed: onSettings,
                 ),
               ],
@@ -110,8 +117,10 @@ class ReaderControls extends StatelessWidget {
               child: Row(
                 children: [
                   IconButton(
-                    tooltip: 'Previous chapter',
-                    icon: const Icon(Icons.skip_previous),
+                    icon: const Icon(
+                      Icons.skip_previous,
+                      semanticLabel: 'Previous chapter',
+                    ),
                     onPressed: onPreviousChapter,
                   ),
                   Expanded(
@@ -123,8 +132,10 @@ class ReaderControls extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    tooltip: 'Next chapter',
-                    icon: const Icon(Icons.skip_next),
+                    icon: const Icon(
+                      Icons.skip_next,
+                      semanticLabel: 'Next chapter',
+                    ),
                     onPressed: onNextChapter,
                   ),
                 ],
@@ -138,17 +149,18 @@ class ReaderControls extends StatelessWidget {
 
   Widget _title(BuildContext context) {
     final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+    return Row(
+      spacing: AppSpacing.xs,
       children: [
-        Text(title, style: theme.textTheme.titleMedium, maxLines: 1),
+        Flexible(
+          child: Text(title, style: theme.textTheme.titleMedium, maxLines: 1),
+        ),
         if (offline)
-          Text(
-            'Downloaded',
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+          Icon(
+            Icons.download_done,
+            size: 18,
+            color: theme.colorScheme.onSurfaceVariant,
+            semanticLabel: 'Downloaded',
           ),
       ],
     );

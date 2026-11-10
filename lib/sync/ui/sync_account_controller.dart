@@ -124,11 +124,9 @@ Widget buildAccountSettingsScreen({
                   fetchGoogleIdToken(context, google, sources: sources),
             )
           : null,
+      // No unavailable reason (textgate: no painted sentence); without one
+      // the shared screen simply omits the Google button.
       googleAvailable: offered,
-      googleUnavailableReason: offered
-          ? null
-          : 'Google sign-in is not available on this platform; use email '
-                'and password.',
     ),
   );
 }

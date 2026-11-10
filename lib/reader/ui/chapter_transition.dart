@@ -53,33 +53,57 @@ class ChapterTransition extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (failure != null) ...[
-              Text(
-                'Could not open ${target ?? 'the next chapter'}',
-                style: theme.textTheme.titleLarge,
+              Icon(
+                Icons.error_outline,
+                size: 48,
+                color: theme.colorScheme.error,
+                semanticLabel: 'Could not open',
               ),
+              if (target != null)
+                Text(target, style: theme.textTheme.titleLarge),
               const SizedBox(height: AppSpacing.sm),
               Text(failure, textAlign: TextAlign.center),
               const SizedBox(height: AppSpacing.lg),
-              FilledButton(onPressed: onRetry, child: const Text('Retry')),
-            ] else if (target != null || loading) ...[
-              const CircularProgressIndicator(),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                target == null
-                    ? 'Looking for the next chapter'
-                    : '${forward ? 'Next' : 'Previous'}: $target',
-                style: muted,
+              IconButton.filled(
+                style: IconButton.styleFrom(minimumSize: const Size.square(48)),
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh, semanticLabel: 'Retry'),
               ),
-            ] else if (forward) ...[
-              Text('No more chapters', style: theme.textTheme.titleLarge),
-              const SizedBox(height: AppSpacing.xs),
-              Text(currentName, style: muted),
+            ] else if (target != null || loading) ...[
+              CircularProgressIndicator(
+                semanticsLabel: target == null
+                    ? 'Looking for the next chapter'
+                    : null,
+              ),
+              if (target != null) ...[
+                const SizedBox(height: AppSpacing.md),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: AppSpacing.xs,
+                  children: [
+                    Icon(
+                      forward ? Icons.skip_next : Icons.skip_previous,
+                      color: muted?.color,
+                      semanticLabel: forward ? 'Next' : 'Previous',
+                    ),
+                    Flexible(child: Text(target, style: muted)),
+                  ],
+                ),
+              ],
             ] else ...[
-              Text('Start of', style: muted),
+              Icon(
+                forward ? Icons.last_page : Icons.first_page,
+                size: 48,
+                color: muted?.color,
+                semanticLabel: forward
+                    ? 'No more chapters'
+                    : 'Start of, no previous chapter',
+              ),
               const SizedBox(height: AppSpacing.xs),
-              Text(currentName, style: theme.textTheme.titleLarge),
-              const SizedBox(height: AppSpacing.lg),
-              const Text('No previous chapter'),
+              Text(
+                currentName,
+                style: forward ? muted : theme.textTheme.titleLarge,
+              ),
             ],
           ],
         ),

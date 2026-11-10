@@ -7,6 +7,7 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/ui/chapter_transition.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../support/fakes.dart';
 import 'reader_harness.dart';
 
@@ -56,7 +57,14 @@ void main() {
   Future<void> loadsIntoPageOne(WidgetTester tester) async {
     expect(find.byType(ChapterTransition), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    expect(find.text('Next: Ch. 3'), findsOneWidget);
+    expect(spokenIcon('Next'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(ChapterTransition),
+        matching: find.text('Ch. 3'),
+      ),
+      findsOneWidget,
+    );
     expect(h.progress.markedRead, ['/c/2']);
     source.gate.complete(fakePages('/c/3', 2));
     await h.settle(tester);
@@ -111,9 +119,15 @@ void main() {
     );
     await open(tester, ReaderMode.pagedLtr);
     await press(tester, LogicalKeyboardKey.arrowRight, 4);
-    expect(find.text('No more chapters'), findsOneWidget);
+    expect(spokenIcon('No more chapters'), findsOneWidget);
     expect(find.text('Finished'), findsNothing);
-    expect(find.byType(FilledButton), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(ChapterTransition),
+        matching: find.byType(IconButton),
+      ),
+      findsNothing,
+    );
   });
 
   testWidgets('an unknown chapter list is retried, then read on', (
@@ -123,10 +137,10 @@ void main() {
     h = ReaderHarness(source: flaky);
     await open(tester, ReaderMode.pagedLtr);
     await press(tester, LogicalKeyboardKey.arrowRight, 4);
-    expect(find.text('Could not open the next chapter'), findsOneWidget);
+    expect(spokenIcon('Could not open'), findsOneWidget);
     expect(find.textContaining('<redacted>'), findsOneWidget);
     flaky.failures = 0;
-    await tester.tap(find.text('Retry'));
+    await tester.tap(spokenIcon('Retry'));
     await h.settle(tester);
     expect(find.byType(ChapterTransition), findsNothing);
     expect(find.widgetWithText(SnackBar, 'Ch. 3'), findsOneWidget);

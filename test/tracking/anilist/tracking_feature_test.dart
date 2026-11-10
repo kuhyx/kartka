@@ -111,6 +111,6 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byType(TrackButton), findsOneWidget);
-    expect(find.text('Track'), findsOneWidget);
+    expect(find.bySemanticsLabel('Track'), findsOneWidget);
   });
 }

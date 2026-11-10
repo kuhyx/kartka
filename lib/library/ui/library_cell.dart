@@ -84,12 +84,10 @@ class _LibraryCellState extends State<LibraryCell> {
                       const Positioned(
                         bottom: AppSpacing.xs,
                         right: AppSpacing.xs,
-                        child: Tooltip(
-                          message: 'Source unavailable',
-                          child: Icon(
-                            Icons.cloud_off,
-                            color: AppPalette.warning,
-                          ),
+                        child: Icon(
+                          Icons.cloud_off,
+                          color: AppPalette.warning,
+                          semanticLabel: 'Source unavailable',
                         ),
                       ),
                     if (widget.selected)

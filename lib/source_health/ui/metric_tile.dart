@@ -1,26 +1,33 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/metric_explanations.dart';
 import 'package:kartka/source_health/model/metrics.dart';
 import 'package:kartka/source_health/score_breakdown.dart';
 import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
+import 'package:kartka/source_health/ui/health_icons.dart';
 
-/// The status word and fill of a [MetricStatus]; neutral states are unfilled.
-(String, Color?) metricStatusStyle(BuildContext context, MetricStatus s) {
+/// The glyph, spoken word and fill of a [MetricStatus]; neutral states are
+/// unfilled.
+(IconData, String, Color?) metricStatusStyle(
+  BuildContext context,
+  MetricStatus s,
+) {
   final c = statusColors(context);
   return switch (s) {
-    MetricStatus.pass => ('Passes', c.success),
-    MetricStatus.fail => ('Lowers score', c.danger),
-    MetricStatus.warn => ('Warns', c.warning),
-    MetricStatus.pending => ('Accruing', c.warning),
-    MetricStatus.info => ('Info', null),
-    MetricStatus.unknown => ('Not measured', null),
+    MetricStatus.pass => (Icons.check, 'Passes', c.success),
+    MetricStatus.fail => (Icons.trending_down, 'Lowers score', c.danger),
+    MetricStatus.warn => (Icons.warning_amber_rounded, 'Warns', c.warning),
+    MetricStatus.pending => (Icons.hourglass_empty, 'Accruing', c.warning),
+    MetricStatus.info => (Icons.info_outline, 'Info', null),
+    MetricStatus.unknown => (Icons.remove, 'Not measured', null),
   };
 }
 
-/// One metric on the detail page: value, status, meaning and threshold.
+/// One metric on the detail page: its glyph, value and status pill. The
+/// name, meaning and threshold are spoken only.
 class MetricTile extends StatelessWidget {
   /// Creates a tile for [explanation].
   const new(this.explanation, {super.key});
@@ -32,27 +39,29 @@ class MetricTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final e = explanation;
     final theme = Theme.of(context);
-    final muted = TextStyle(color: theme.colorScheme.onSurfaceVariant);
-    final (word, fill) = metricStatusStyle(context, e.status);
+    final (icon, word, fill) = metricStatusStyle(context, e.status);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.xs,
-        children: [
-          Row(
-            spacing: AppSpacing.sm,
-            children: [
-              Expanded(
-                child: Text(e.title, style: theme.textTheme.titleMedium),
+      child: SpokenLabel(
+        semanticLabel:
+            '${e.semanticLabel}: ${e.value}. ${e.meaning} ${e.threshold}',
+        child: Row(
+          spacing: AppSpacing.sm,
+          children: [
+            Icon(metricIcon(e.semanticLabel), color: theme.colorScheme.primary),
+            Expanded(
+              child: Wrap(
+                spacing: AppSpacing.xs,
+                children: [
+                  if (e.value.isNotEmpty) Text(e.value),
+                  for (final o in e.origins ?? const <String>[])
+                    Icon(originIcon(o), key: Key('origin-$o')),
+                ],
               ),
-              StatusPill(text: word, fill: fill),
-            ],
-          ),
-          Text(e.value),
-          Text(e.meaning, style: muted),
-          Text(e.threshold, style: muted),
-        ],
+            ),
+            StatusPill(icon: icon, semanticLabel: word, fill: fill),
+          ],
+        ),
       ),
     );
   }
@@ -86,36 +95,24 @@ class ScoreTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
     final sum = parts.fold<double>(0, (s, p) => s + (p.points ?? 0));
-    final ratio = profile.pagesLoadMultiplier ? pagesLoad?.ratio : null;
-    final recomputed = switch ((
-      profile.pagesLoadMultiplier ? pagesLoad : null,
-      ratio,
-    )) {
-      (null, _) => sum.toStringAsFixed(2),
-      (_, null) =>
-        '${sum.toStringAsFixed(2)} (pages load not measured, not applied)',
+    final applied = profile.pagesLoadMultiplier ? pagesLoad : null;
+    final ratio = applied?.ratio;
+    final recomputed = switch ((applied, ratio)) {
+      (null, _) || (_, null) => sum.toStringAsFixed(2),
       (_, final x?) =>
         '${sum.toStringAsFixed(2)} × ${pct(x)} = '
             '${(sum * x).toStringAsFixed(2)}',
     };
-    TableRow row(List<String> cells, {bool header = false}) => TableRow(
-      children: [
-        for (final c in cells)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-            child: Text(
-              c,
-              style: header
-                  ? TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontSize: AppTextSize.label,
-                    )
-                  : null,
-            ),
-          ),
-      ],
+    Widget cell(Widget child) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+      child: child,
     );
+    Widget head(IconData icon, String label) =>
+        cell(Icon(icon, color: muted, semanticLabel: label));
+    TableRow row(Widget first, List<String> cells) =>
+        TableRow(children: [cell(first), for (final c in cells) cell(Text(c))]);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: AppSpacing.sm,
@@ -123,33 +120,52 @@ class ScoreTable extends StatelessWidget {
         Table(
           columnWidths: const {0: FlexColumnWidth(2)},
           children: [
-            row(['Metric', 'Weight', 'Value', 'Points'], header: true),
+            TableRow(
+              children: [
+                head(Icons.category_outlined, 'Metric'),
+                head(Icons.balance, 'Weight'),
+                head(Icons.straighten, 'Value'),
+                head(Icons.functions, 'Points'),
+              ],
+            ),
             for (final p in parts)
-              row([
-                p.label,
+              row(Icon(metricIcon(p.label), semanticLabel: p.label), [
                 pct(p.weight),
                 pctOrDash(p.normalized),
                 p.points?.toStringAsFixed(3) ?? notMeasured,
               ]),
-            if (pagesLoad != null && profile.pagesLoadMultiplier)
-              row([
-                'Pages load (multiplier)',
-                '×',
-                pctOrDash(ratio),
-                if (ratio == null)
-                  notMeasured
-                else
-                  '× ${ratio.toStringAsFixed(2)}',
-              ]),
+            if (applied != null)
+              row(
+                Icon(
+                  metricIcon('Pages load'),
+                  semanticLabel: 'Pages load (multiplier)',
+                ),
+                [
+                  '×',
+                  pctOrDash(ratio),
+                  if (ratio == null)
+                    notMeasured
+                  else
+                    '× ${ratio.toStringAsFixed(2)}',
+                ],
+              ),
           ],
         ),
-        Text(
-          'Recomputed from the metrics under the ${profile.name} scoring '
-          'profile: $recomputed. The score ranks sources that share a rank '
-          'tier; ${profile.keepScore.toStringAsFixed(2)} or more keeps a '
-          'source${profile.cuts.isEmpty ? '' : _unlessCut}.',
+        IconValue(
+          Icons.functions,
+          '$recomputed · ≥ ${profile.keepScore.toStringAsFixed(2)}',
+          semanticLabel:
+              'Recomputed under the ${profile.name} profile; '
+              '${profile.keepScore.toStringAsFixed(2)} or more keeps a '
+              'source${profile.cuts.isEmpty ? '' : _unlessCut}',
+          key: const Key('recomputed'),
         ),
-        if (_rankLine() case final line?) Text(line),
+        if (_rankLine() case final line?)
+          Icon(
+            Icons.low_priority,
+            color: statusColors(context).warning,
+            semanticLabel: line,
+          ),
       ],
     );
   }

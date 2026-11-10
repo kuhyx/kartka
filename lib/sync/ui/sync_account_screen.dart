@@ -72,51 +72,90 @@ class _SyncAccountScreenState extends State<SyncAccountScreen> {
   Widget build(BuildContext context) {
     final signedOut = _status.phase == SyncPhase.signedOut;
     final busy = _status.phase == SyncPhase.syncing;
-    final error = Theme.of(context).colorScheme.error;
+    final scheme = Theme.of(context).colorScheme;
+    final stamp = syncStamp(_status.lastSync);
+    final message = _status.message;
     return Scaffold(
-      appBar: AppBar(title: const Text('Sync')),
+      appBar: AppBar(
+        title: const Icon(Icons.cloud_sync_outlined, semanticLabel: 'Sync'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [
           ListTile(
-            leading: Icon(_icon(_status.phase)),
-            title: Text(statusLabel(_status)),
-            subtitle: Text(lastSyncLabel(_status.lastSync)),
+            leading: Icon(
+              _icon(_status.phase),
+              color: _status.phase == SyncPhase.error ? scheme.error : null,
+              semanticLabel: statusLabel(_status),
+            ),
+            // The server's own error words stay; nothing else is painted.
+            title: _status.phase == SyncPhase.error && message != null
+                ? Text(message, style: TextStyle(color: scheme.error))
+                : null,
+            subtitle: Row(
+              children: [
+                Icon(
+                  Icons.history,
+                  size: 16,
+                  semanticLabel: lastSyncLabel(_status.lastSync),
+                ),
+                if (stamp != null) ...[
+                  const SizedBox(width: AppSpacing.xs),
+                  Text(stamp),
+                ],
+              ],
+            ),
           ),
           const SizedBox(height: AppSpacing.md),
-          FilledButton.icon(
+          FilledButton(
             onPressed: signedOut || busy
                 ? null
                 : () => unawaited(widget.controller.syncNow()),
-            icon: const Icon(Icons.sync),
-            label: const Text('Sync now'),
+            child: const Icon(Icons.sync, semanticLabel: 'Sync now'),
           ),
           const SizedBox(height: AppSpacing.sm),
-          OutlinedButton.icon(
+          OutlinedButton(
             onPressed: () =>
                 unawaited(widget.controller.manageAccount(context)),
-            icon: const Icon(Icons.account_circle_outlined),
-            label: Text(signedOut ? 'Sign in' : 'Account (sign out)'),
+            child: Icon(
+              signedOut ? Icons.login : Icons.account_circle_outlined,
+              semanticLabel: signedOut ? 'Sign in' : 'Account (sign out)',
+            ),
           ),
           const SizedBox(height: AppSpacing.md),
           ListTile(
-            leading: const Icon(Icons.key_outlined),
-            title: const Text('Sync passphrase'),
-            subtitle: Text(
-              _hasPassphrase
-                  ? 'Set on this device'
-                  : 'Not set: the Suwayomi login syncs only under a '
-                        'passphrase or a password sign-in',
+            leading: const Icon(
+              Icons.key_outlined,
+              semanticLabel: 'Sync passphrase',
             ),
-            trailing: TextButton(
+            title: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Icon(
+                _hasPassphrase ? Icons.lock : Icons.lock_open,
+                color: _hasPassphrase ? scheme.primary : scheme.error,
+                semanticLabel: _hasPassphrase ? 'Set' : 'Not set',
+              ),
+            ),
+            trailing: IconButton(
+              style: IconButton.styleFrom(minimumSize: const Size.square(48)),
               onPressed: () => unawaited(_askPassphrase()),
-              child: Text(_hasPassphrase ? 'Change' : 'Set'),
+              icon: Icon(
+                _hasPassphrase ? Icons.edit_outlined : Icons.add,
+                semanticLabel: _hasPassphrase ? 'Change' : 'Set passphrase',
+              ),
             ),
           ),
-          for (final problem in _problems.values)
-            ListTile(
-              leading: Icon(Icons.lock_outline, color: error),
-              title: Text(problem, style: TextStyle(color: error)),
+          if (_problems.isNotEmpty)
+            Wrap(
+              spacing: AppSpacing.sm,
+              children: [
+                for (final problem in _problems.values)
+                  Icon(
+                    Icons.lock_outline,
+                    color: scheme.error,
+                    semanticLabel: problem,
+                  ),
+              ],
             ),
         ],
       ),
@@ -131,19 +170,22 @@ class _SyncAccountScreenState extends State<SyncAccountScreen> {
   };
 }
 
-/// One-line status text.
+/// The status, spoken only (the phase icon paints it).
 String statusLabel(SyncStatus s) => switch (s.phase) {
-  SyncPhase.signedOut => 'Not signed in: this device only keeps local data',
+  SyncPhase.signedOut => 'Not signed in',
   SyncPhase.idle => 'Signed in, up to date',
-  SyncPhase.syncing => 'Syncing…',
-  SyncPhase.error => 'Sync failed: ${s.message ?? 'unknown error'}',
+  SyncPhase.syncing => 'Syncing',
+  SyncPhase.error => 'Sync failed',
 };
 
-/// "Last sync" text in local time, minute precision.
-String lastSyncLabel(DateTime? at) {
-  if (at == null) return 'Last sync: never';
+/// The last sync in local time, minute precision; null when never.
+String? syncStamp(DateTime? at) {
+  if (at == null) return null;
   final t = at.toLocal();
   String two(int n) => n.toString().padLeft(2, '0');
-  return 'Last sync: ${t.year}-${two(t.month)}-${two(t.day)} '
+  return '${t.year}-${two(t.month)}-${two(t.day)} '
       '${two(t.hour)}:${two(t.minute)}';
 }
+
+/// "Last sync", spoken only beside the painted [syncStamp].
+String lastSyncLabel(DateTime? at) => 'Last sync: ${syncStamp(at) ?? 'never'}';

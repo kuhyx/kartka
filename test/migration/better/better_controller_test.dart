@@ -42,7 +42,7 @@ void main() {
     expect(rows['One Piece']!.exact, isTrue);
     expect(rows['One Piece']!.currentChapters, 2);
     expect(rows['One Piece']!.targetChapters, 3);
-    expect(rows['One Piece']!.reason, 'its source is cut');
+    expect(rows['One Piece']!.reason.label, 'its source is cut');
     // Best has only a different series: the next keep source has it.
     expect(rows['Berserk']!.target?.source.ref.id, 'good');
     expect(rows['Vagabond']!.match, isNull);
@@ -65,7 +65,7 @@ void main() {
     final c = b.controller();
     await c.load();
     final rows = byTitle(c);
-    expect(rows['Healthy']!.reason, 'its source failed its test');
+    expect(rows['Healthy']!.reason.label, 'its source failed its test');
     expect(rows['One Piece']!.target?.source.ref.id, 'good');
     expect(b.fine.searched, isEmpty, reason: 'a flagged source is no target');
   });
@@ -76,7 +76,7 @@ void main() {
     final c = b.controller();
     await c.load();
     final rows = byTitle(c);
-    expect(rows['One Piece']!.reason, 'its source is not installed');
+    expect(rows['One Piece']!.reason.label, 'its source is not installed');
     expect(rows['One Piece']!.currentChapters, isNull);
     b.best.chaptersError = StateError('gone');
     final again = b.controller();
@@ -94,7 +94,10 @@ void main() {
     b.installed = [...b.installed, ScriptedSource('suwayomi:8')];
     final listed = b.controller();
     await listed.load();
-    expect(byTitle(listed)['Down']!.reason, 'its source is not installed');
+    expect(
+      byTitle(listed)['Down']!.reason.label,
+      'its source is not installed',
+    );
   });
 
   test('sources nothing can install (an SY built-in, a removed extension: '
@@ -105,8 +108,8 @@ void main() {
     final c = b.controller();
     await c.load();
     final rows = byTitle(c);
-    expect(rows['Gallery']!.reason, 'its source is not installed');
-    expect(rows['Batoto']!.reason, 'its source is not installed');
+    expect(rows['Gallery']!.reason.label, 'its source is not installed');
+    expect(rows['Batoto']!.reason.label, 'its source is not installed');
   });
 
   test('migrate moves one entry after a backup; migrate all moves the rest '

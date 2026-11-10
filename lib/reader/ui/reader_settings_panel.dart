@@ -22,34 +22,53 @@ class ReaderSettingsPanel extends StatelessWidget {
     padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
     children: [
       ListTile(
-        title: const Text('Default reading mode'),
+        leading: const Icon(
+          Icons.chrome_reader_mode_outlined,
+          semanticLabel: 'Default reading mode',
+        ),
         trailing: DropdownButton<ReaderMode>(
           value: settings.defaultMode,
           onChanged: (m) => onChanged(settings.copyWith(defaultMode: m)),
           items: [
             for (final m in ReaderMode.values)
-              DropdownMenuItem(value: m, child: Text(m.label)),
+              DropdownMenuItem(
+                value: m,
+                child: Icon(m.icon, semanticLabel: m.label),
+              ),
           ],
         ),
       ),
       ListTile(
-        title: const Text('Tap zones'),
+        leading: const Icon(
+          Icons.touch_app_outlined,
+          semanticLabel: 'Tap zones',
+        ),
         trailing: DropdownButton<TapZoneLayout>(
           value: settings.tapLayout,
           onChanged: (l) => onChanged(settings.copyWith(tapLayout: l)),
           items: [
             for (final l in TapZoneLayout.values)
-              DropdownMenuItem(value: l, child: Text(l.label)),
+              DropdownMenuItem(
+                value: l,
+                child: Icon(l.icon, semanticLabel: l.label),
+              ),
           ],
         ),
       ),
       SwitchListTile(
-        title: const Text('Invert tap zones'),
+        secondary: const Icon(
+          Icons.swap_horiz,
+          semanticLabel: 'Invert tap zones',
+        ),
         value: settings.invertTaps,
         onChanged: (v) => onChanged(settings.copyWith(invertTaps: v)),
       ),
       ListTile(
-        title: Text('Prefetch ${settings.prefetchAhead} pages ahead'),
+        leading: const Icon(
+          Icons.downloading,
+          semanticLabel: 'Prefetch pages ahead',
+        ),
+        title: Text('${settings.prefetchAhead}'),
         subtitle: Slider(
           value: settings.prefetchAhead.toDouble(),
           max: ReaderSettings.maxPrefetch.toDouble(),

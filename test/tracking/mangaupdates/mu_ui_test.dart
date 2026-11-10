@@ -17,6 +17,17 @@ import 'mu_fakes.dart';
 
 Widget _app(Widget child) => MaterialApp(home: Scaffold(body: child));
 
+/// The spoken login state of the settings tile's person glyph.
+String? _who(WidgetTester t) => t
+    .widget<Icon>(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Icon &&
+            (w.icon == Icons.person || w.icon == Icons.person_off_outlined),
+      ),
+    )
+    .semanticLabel;
+
 Future<void> _type(WidgetTester t, String user, String pass) async {
   await t.enterText(find.byKey(const Key('mu-username')), user);
   await t.enterText(find.byKey(const Key('mu-password')), pass);
@@ -29,10 +40,20 @@ void main() {
       await t.pumpWidget(
         _app(MuLoginForm(login: (_, _) async => calls++, onDone: () {})),
       );
-      await t.tap(find.text('Log in'));
+      await t.tap(find.bySemanticsLabel('Log in'));
       await t.pump();
-      expect(find.text('Enter your username and password.'), findsOneWidget);
+      expect(
+        find.bySemanticsLabel('Enter your username and password.'),
+        findsOneWidget,
+      );
+      expect(find.text('Enter your username and password.'), findsNothing);
       expect(calls, 0);
+      // Filling both in clears the mark once the login goes through.
+      await _type(t, 'a', 'b');
+      await t.tap(find.bySemanticsLabel('Log in'));
+      await t.pump();
+      expect(find.byIcon(Icons.error_outline), findsNothing);
+      expect(calls, 1);
     });
 
     testWidgets('Enter in password submits trimmed username', (t) async {
@@ -64,10 +85,10 @@ void main() {
         ),
       );
       await _type(t, 'a', 'b');
-      await t.tap(find.text('Log in'));
+      await t.tap(find.bySemanticsLabel('Log in'));
       await t.pump();
       expect(find.text('Invalid username or password'), findsOneWidget);
-      expect(find.text('Log in'), findsOneWidget);
+      expect(find.bySemanticsLabel('Log in'), findsOneWidget);
     });
   });
 
@@ -90,14 +111,15 @@ void main() {
       build();
       await t.pumpWidget(_app(MuSettingsTile(tracker: tracker)));
       await t.pumpAndSettle();
-      expect(find.text('Not logged in'), findsOneWidget);
+      expect(_who(t), 'Not logged in');
       await t.tap(find.text('MangaUpdates'));
       await t.pumpAndSettle();
       await _type(t, 'kuhy', 'pw');
-      await t.tap(find.text('Log in'));
+      await t.tap(find.bySemanticsLabel('Log in'));
       await t.pumpAndSettle();
       expect(find.byType(MuLoginForm), findsNothing);
-      expect(find.text('Logged in as kuhy'), findsOneWidget);
+      expect(_who(t), 'Logged in');
+      expect(find.text('kuhy'), findsOneWidget);
     });
 
     testWidgets('Escape closes the sheet without logging in', (t) async {
@@ -109,7 +131,7 @@ void main() {
       await t.sendKeyEvent(LogicalKeyboardKey.escape);
       await t.pumpAndSettle();
       expect(find.byType(MuLoginForm), findsNothing);
-      expect(find.text('Not logged in'), findsOneWidget);
+      expect(_who(t), 'Not logged in');
     });
 
     testWidgets('logs out after confirming; cancel keeps it', (t) async {
@@ -118,17 +140,18 @@ void main() {
       handler = (_) => fx('logout_ok.json');
       await t.pumpWidget(_app(MuSettingsTile(tracker: tracker)));
       await t.pumpAndSettle();
-      expect(find.text('Logged in as kuhy'), findsOneWidget);
+      expect(find.text('kuhy'), findsOneWidget);
       await t.tap(find.text('MangaUpdates'));
       await t.pumpAndSettle();
-      await t.tap(find.text('Cancel'));
+      expect(find.bySemanticsLabel('Log out of MangaUpdates?'), findsOneWidget);
+      await t.tap(find.bySemanticsLabel('Cancel'));
       await t.pumpAndSettle();
-      expect(find.text('Logged in as kuhy'), findsOneWidget);
+      expect(find.text('kuhy'), findsOneWidget);
       await t.tap(find.text('MangaUpdates'));
       await t.pumpAndSettle();
-      await t.tap(find.text('Log out'));
+      await t.tap(find.bySemanticsLabel('Log out'));
       await t.pumpAndSettle();
-      expect(find.text('Not logged in'), findsOneWidget);
+      expect(_who(t), 'Not logged in');
       expect(await store.read(), isNull);
     });
   });
@@ -159,14 +182,14 @@ void main() {
       ),
     );
     await t.pumpAndSettle();
-    await t.tap(find.text('Log in to MangaUpdates'));
+    await t.tap(find.bySemanticsLabel('Log in to MangaUpdates').first);
     await t.pumpAndSettle();
     expect(find.byType(MuLoginForm), findsOneWidget);
     await _type(t, 'kuhy', 'pw');
-    await t.tap(find.text('Log in'));
+    await t.tap(find.bySemanticsLabel('Log in'));
     await t.pumpAndSettle();
     expect(find.byType(MuLoginForm), findsNothing);
-    expect(find.text('Log out'), findsOneWidget);
+    expect(find.bySemanticsLabel('Log out'), findsOneWidget);
   });
 
   testWidgets('showMuLoginSheet returns false when dismissed', (t) async {

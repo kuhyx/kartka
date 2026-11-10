@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kartka/app/app.dart';
 import 'package:kartka/app/registry.dart';
 import 'package:kartka/app/screen_observer.dart';
+import 'package:kartka/app/shell.dart';
 
 import '../helpers/fake_platform.dart';
 
@@ -51,9 +52,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('back'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('More'));
+    await tester.tap(find.byIcon(tabInfo[KartkaTab.more]!.icon));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('More')); // same screen again: no report
+    await tester.tap(
+      find.byIcon(tabInfo[KartkaTab.more]!.icon),
+    ); // same screen again: no report
     await tester.pumpAndSettle();
     expect(seen.patterns, ['/library', '/probe/:id', '/library', '/more']);
 

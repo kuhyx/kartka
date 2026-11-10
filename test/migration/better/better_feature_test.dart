@@ -98,7 +98,7 @@ void main() {
     final r = await _registry();
     final tiles = r.settingsTiles;
     await _pump(t, r, (c) => Column(children: [for (final b in tiles) b(c)]));
-    await t.tap(find.text('Migrate to better sources'));
+    await t.tap(find.byIcon(Icons.auto_fix_high));
     await _settle(t);
     expect(find.byType(BetterSourcesScreen), findsOne);
     expect(find.text('Old Site → Best Site'), findsOne);

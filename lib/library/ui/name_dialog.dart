@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 
 /// Asks for a name; Enter saves, Escape or Cancel returns `null`.
+///
+/// The dialog is headed by [icon]; [semanticLabel] is its old worded title,
+/// spoken only.
 Future<String?> askName(
   BuildContext context, {
-  required String title,
+  required IconData icon,
+  required String semanticLabel,
   String initial = '',
 }) => showDialog<String>(
   context: context,
-  builder: (_) => _NameDialog(title, initial),
+  builder: (_) => _NameDialog(icon, semanticLabel, initial),
 );
 
 class _NameDialog extends StatefulWidget {
-  const new(this.title, this.initial);
+  const new(this.icon, this.semanticLabel, this.initial);
 
-  final String title;
+  final IconData icon;
+  final String semanticLabel;
   final String initial;
 
   @override
@@ -33,19 +38,26 @@ class _NameDialogState extends State<_NameDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: Text(widget.title),
+    title: Icon(widget.icon, size: 48, semanticLabel: widget.semanticLabel),
     content: TextField(
       controller: _text,
       autofocus: true,
-      decoration: const InputDecoration(labelText: 'Name'),
+      decoration: const InputDecoration(
+        prefixIcon: Icon(Icons.label_outline, semanticLabel: 'Name'),
+      ),
       onSubmitted: (_) => _save(),
     ),
     actions: [
-      TextButton(
+      IconButton(
+        style: IconButton.styleFrom(minimumSize: const Size.square(48)),
         onPressed: () => Navigator.pop(context),
-        child: const Text('Cancel'),
+        icon: const Icon(Icons.close, semanticLabel: 'Cancel'),
       ),
-      FilledButton(onPressed: _save, child: const Text('Save')),
+      IconButton.filled(
+        style: IconButton.styleFrom(minimumSize: const Size.square(48)),
+        onPressed: _save,
+        icon: const Icon(Icons.check, semanticLabel: 'Save'),
+      ),
     ],
   );
 }

@@ -5,6 +5,7 @@ import 'package:kartka/app/routes.dart';
 import 'package:kartka/browse/state/chapter_sort_store.dart';
 import 'package:kartka/core/models/models.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../fakes.dart';
 import 'harness.dart';
 
@@ -52,7 +53,8 @@ void main() {
   testWidgets('header is collapsed: tap shows tags and description', (t) async {
     await _open(t);
     expect(find.text('Detail title'), findsOneWidget);
-    expect(find.text('Author A · ongoing'), findsOneWidget);
+    expect(find.text('Author A'), findsOneWidget);
+    expect(spokenIcon('ongoing'), findsOneWidget);
     expect(find.text('A long description.'), findsNothing);
     expect(find.text('Action'), findsNothing);
     await t.tap(find.byKey(const ValueKey('detail-header')));
@@ -77,7 +79,10 @@ void main() {
     final h = await _open(t);
     final fab = find.byKey(const ValueKey('continue'));
     expect(find.byType(FloatingActionButton), findsOneWidget);
-    expect(find.descendant(of: fab, matching: find.text('Continue')), findsOne);
+    expect(
+      find.descendant(of: fab, matching: spokenIcon('Continue')),
+      findsOne,
+    );
     await t.tap(fab); // No progress: the first unread chapter.
     await t.pumpAndSettle();
     expect(find.text('reader:/c/1'), findsOneWidget);
@@ -103,8 +108,8 @@ void main() {
 
   testWidgets('the overflow menu holds every other action', (t) async {
     await _open(t);
-    expect(find.text('Add to library'), findsNothing);
-    await t.tap(find.byTooltip('More'));
+    expect(spokenIcon('Add to library'), findsNothing);
+    await t.tap(spokenIcon('More'));
     await t.pumpAndSettle();
     for (final label in [
       'Read',
@@ -112,19 +117,19 @@ void main() {
       'Download all',
       'Download unread',
       'Unread first',
-      'slot:$_key',
     ]) {
-      expect(find.text(label), findsOneWidget, reason: label);
+      expect(spokenIcon(label), findsOneWidget, reason: label);
     }
-    await t.tap(find.byTooltip('More')); // Toggles closed.
+    expect(find.text('slot:$_key'), findsOneWidget);
+    await t.tap(spokenIcon('More')); // Toggles closed.
     await t.pumpAndSettle();
-    expect(find.text('Add to library'), findsNothing);
+    expect(spokenIcon('Add to library'), findsNothing);
     // A slot is no menu item, yet tapping it closes the menu too.
-    await t.tap(find.byTooltip('More'));
+    await t.tap(spokenIcon('More'));
     await t.pumpAndSettle();
     await t.tap(find.text('slot:$_key'));
     await t.pumpAndSettle();
-    expect(find.text('Add to library'), findsNothing);
+    expect(spokenIcon('Add to library'), findsNothing);
   });
 
   testWidgets('unread: full brightness + accent dot; read: dimmed', (t) async {
@@ -151,9 +156,9 @@ void main() {
     await h.progress.markRead(_key, '/c/3');
     await t.pumpAndSettle();
     expect(_order(t, ['Ch. 1', 'Ch. 2', 'Ch. 3']), ['Ch. 3', 'Ch. 2', 'Ch. 1']);
-    await t.tap(find.byTooltip('More'));
+    await t.tap(spokenIcon('More'));
     await t.pumpAndSettle();
-    await t.tap(find.text('Unread first'));
+    await t.tap(spokenIcon('Unread first'));
     await t.pumpAndSettle();
     expect(_order(t, ['Ch. 1', 'Ch. 2', 'Ch. 3']), ['Ch. 2', 'Ch. 1', 'Ch. 3']);
     expect(await h.sortKv.get(ChapterSortStore.storageKey), 'true');
@@ -163,9 +168,9 @@ void main() {
     await h.progress.markRead(mangaKeyOf('mangadex', '/m/2'), '/c/3');
     await t.pumpAndSettle();
     expect(_order(t, ['Ch. 1', 'Ch. 2', 'Ch. 3']), ['Ch. 2', 'Ch. 1', 'Ch. 3']);
-    await t.tap(find.byTooltip('More'));
+    await t.tap(spokenIcon('More'));
     await t.pumpAndSettle();
-    await t.tap(find.text('Unread first'));
+    await t.tap(spokenIcon('Unread first'));
     await t.pumpAndSettle();
     expect(await h.sortKv.get(ChapterSortStore.storageKey), 'false');
   });

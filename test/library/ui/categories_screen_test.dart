@@ -24,43 +24,45 @@ void main() {
   testWidgets('create, rename, reorder by buttons, delete', (tester) async {
     final f = Fakes();
     await _open(tester, f);
-    expect(find.text('No categories yet'), findsOneWidget);
+    expect(find.bySemanticsLabel('No categories yet'), findsOneWidget);
     for (final name in ['A', 'B']) {
-      await tester.tap(find.byTooltip('Add category'));
+      await tester.tap(find.bySemanticsLabel('Add category'));
       await tester.pumpAndSettle();
+      expect(find.bySemanticsLabel('New category'), findsOneWidget);
       await tester.enterText(find.byType(TextField), name);
-      await tester.tap(find.text('Save'));
+      await tester.tap(find.bySemanticsLabel('Save'));
       await tester.pumpAndSettle();
     }
     expect(await _names(tester, f), ['A', 'B']);
 
-    await tester.tap(find.byTooltip('Move down').first);
+    await tester.tap(find.bySemanticsLabel('Move down').first);
     await tester.pumpAndSettle();
     expect(await _names(tester, f), ['B', 'A']);
-    await tester.tap(find.byTooltip('Move up').last);
+    await tester.tap(find.bySemanticsLabel('Move up').last);
     await tester.pumpAndSettle();
     expect(await _names(tester, f), ['A', 'B']);
 
-    await tester.tap(find.byTooltip('Rename').first);
+    await tester.tap(find.bySemanticsLabel('Rename').first);
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Z');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
     expect(await _names(tester, f), ['Z', 'B']);
 
-    await tester.tap(find.byTooltip('Rename').first);
+    await tester.tap(find.bySemanticsLabel('Rename').first);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Cancel'));
+    await tester.tap(find.bySemanticsLabel('Cancel'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Delete').first);
+    await tester.tap(find.bySemanticsLabel('Delete').first);
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(TextButton, 'Delete'));
+    expect(find.bySemanticsLabel('Delete "Z"?'), findsOneWidget);
+    await tester.tap(find.bySemanticsLabel('Delete').last);
     await tester.pumpAndSettle();
     expect(await _names(tester, f), ['B']);
-    await tester.tap(find.byTooltip('Delete').first);
+    await tester.tap(find.bySemanticsLabel('Delete').first);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Cancel'));
+    await tester.tap(find.bySemanticsLabel('Cancel'));
     await tester.pumpAndSettle();
     expect(await _names(tester, f), ['B']);
   });

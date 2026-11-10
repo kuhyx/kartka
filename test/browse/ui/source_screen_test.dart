@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/ui/source_screen.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../fakes.dart';
 import 'harness.dart';
 
@@ -36,10 +37,10 @@ void main() {
     final src = FakeSource('mangadex', pageCount: 1);
     final h = Harness(sources: [src]);
     await h.pump(t, const SizedBox(), at: sourceRoute('mangadex'));
-    await t.tap(find.text('Latest'));
+    await t.tap(spokenIcon('Latest'));
     await t.pumpAndSettle();
     expect(src.calls, contains('latest:1'));
-    await t.tap(find.text('Search'));
+    await t.tap(spokenIcon('Search'));
     await t.pumpAndSettle();
     await t.enterText(find.byKey(const ValueKey('source-search')), ' ');
     await t.testTextInput.receiveAction(TextInputAction.search);
@@ -67,13 +68,14 @@ void main() {
       ..failWith = StateError('x');
     final h = Harness(sources: [src]);
     await h.pump(t, const SizedBox(), at: sourceRoute('mangadex'));
-    expect(find.textContaining('Could not load'), findsOneWidget);
+    expect(spokenIcon('Could not load'), findsOneWidget);
+    expect(find.text('Bad state: x'), findsOneWidget);
     final logged = (await t.runAsync(h.diagnostics.entries))!.single;
     expect(logged.kind, 'browse.page');
     expect(logged.sourceId, 'mangadex');
     expect(logged.error, 'Bad state: x');
     src.failWith = null;
-    await t.tap(find.text('Retry'));
+    await t.tap(spokenIcon('Retry'));
     await t.pumpAndSettle();
     expect(find.text('Title 0'), findsOneWidget);
   });
@@ -82,13 +84,13 @@ void main() {
     final src = FakeSource('mangadex', pageCount: 1, perPage: 0);
     final h = Harness(sources: [src]);
     await h.pump(t, const SizedBox(), at: sourceRoute('mangadex'));
-    expect(find.text('Nothing here'), findsOneWidget);
+    expect(spokenIcon('Nothing here'), findsOneWidget);
   });
 
   testWidgets('unknown source shows unavailable', (t) async {
     final h = Harness();
     await h.pump(t, const SourceScreen('plugin:gone'));
-    expect(find.text('Source unavailable'), findsOneWidget);
+    expect(spokenIcon('Source unavailable'), findsOneWidget);
   });
 
   testWidgets('tapping a tile opens the detail route', (t) async {

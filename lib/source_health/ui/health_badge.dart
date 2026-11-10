@@ -1,7 +1,8 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
-import 'package:kartka/source_health/labels.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
+import 'package:kartka/source_health/ui/health_icons.dart';
 
 /// The status fill for a verdict: keep = success, cut = danger,
 /// pending = warning.
@@ -19,14 +20,27 @@ AppStatusColors statusColors(BuildContext context) =>
     Theme.of(context).extension<AppStatusColors>() ??
     const AppStatusColors.standard();
 
-/// A small label: [text] in `on-fill` on a filled [fill], or muted text in
-/// an outline when [fill] is null (for neutral states, which have no fill).
+/// A small pill: [icon] (plus an optional number [text]) in `on-fill` on a
+/// filled [fill], or muted in an outline when [fill] is null (for neutral
+/// states, which have no fill). It paints no words: [semanticLabel] names it.
 class StatusPill extends StatelessWidget {
   /// Creates a pill.
-  const new({required this.text, this.fill, super.key});
+  const new({
+    required this.icon,
+    required this.semanticLabel,
+    this.text,
+    this.fill,
+    super.key,
+  });
 
-  /// Label.
-  final String text;
+  /// The glyph naming the state.
+  final IconData icon;
+
+  /// A number shown after the glyph (`#3`), or null.
+  final String? text;
+
+  /// What a screen reader says for the pill.
+  final String semanticLabel;
 
   /// Background; null draws an outlined, neutral pill.
   final Color? fill;
@@ -35,26 +49,39 @@ class StatusPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final filled = fill;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: filled,
-        border: filled == null ? Border.all(color: scheme.outline) : null,
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: AppSpacing.xs,
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: filled == null
-                ? scheme.onSurfaceVariant
-                : statusColors(context).onStatus,
-            fontSize: AppTextSize.caption,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 1.2,
+    final fg = filled == null
+        ? scheme.onSurfaceVariant
+        : statusColors(context).onStatus;
+    return SpokenLabel(
+      semanticLabel: semanticLabel,
+      child: ExcludeSemantics(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: filled,
+            border: filled == null ? Border.all(color: scheme.outline) : null,
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.xs,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: AppSpacing.xs,
+              children: [
+                Icon(icon, size: AppTextSize.body, color: fg),
+                if (text case final t?)
+                  Text(
+                    t,
+                    style: TextStyle(
+                      color: fg,
+                      fontSize: AppTextSize.caption,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -68,14 +95,14 @@ class BrowserEngineChip extends StatelessWidget {
   /// Creates the chip.
   const new({super.key});
 
-  /// The visible label.
-  static const label = 'Needs browser engine';
+  /// The spoken label.
+  static const label = 'Warning: needs a browser engine';
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    label: 'Warning: needs a browser engine',
-    excludeSemantics: true,
-    child: StatusPill(text: label, fill: statusColors(context).warning),
+  Widget build(BuildContext context) => StatusPill(
+    icon: Icons.web_outlined,
+    semanticLabel: label,
+    fill: statusColors(context).warning,
   );
 }
 
@@ -85,19 +112,20 @@ class ReprobeChip extends StatelessWidget {
   /// Creates the chip.
   const new({super.key});
 
-  /// The visible label.
-  static const label = 'Re-probed only';
+  /// The spoken label.
+  static const label = 'Only re-probed this run: still unreachable';
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    label: 'Only re-probed this run: still unreachable',
-    excludeSemantics: true,
-    child: StatusPill(text: label, fill: statusColors(context).warning),
+  Widget build(BuildContext context) => StatusPill(
+    icon: Icons.replay,
+    semanticLabel: label,
+    fill: statusColors(context).warning,
   );
 }
 
-/// Compact source-health badge for source lists: `#3 Cut`, with the
-/// [BrowserEngineChip] under it when [needsBrowserEngine].
+/// Compact source-health badge for source lists: `#3` and the verdict
+/// glyph on its colour, with the [BrowserEngineChip] under it when
+/// [needsBrowserEngine].
 class HealthBadge extends StatelessWidget {
   /// Creates a badge; [rank] is omitted when the source is unranked.
   const new({
@@ -118,15 +146,12 @@ class HealthBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = verdictLabel(verdict);
     final ranked = rank == null ? '' : 'rank $rank, ';
-    final pill = Semantics(
-      label: 'Source health: $ranked${verdict.name}',
-      excludeSemantics: true,
-      child: StatusPill(
-        text: rank == null ? label : '#$rank $label',
-        fill: verdictFill(context, verdict),
-      ),
+    final pill = StatusPill(
+      icon: verdictIcon(verdict),
+      text: rank == null ? null : '#$rank',
+      semanticLabel: 'Source health: $ranked${verdict.name}',
+      fill: verdictFill(context, verdict),
     );
     if (!needsBrowserEngine) return pill;
     return Column(
@@ -136,28 +161,4 @@ class HealthBadge extends StatelessWidget {
       children: [pill, const BrowserEngineChip()],
     );
   }
-}
-
-/// One reason a kept source was warned about: a warning icon, then [text].
-class WarningLine extends StatelessWidget {
-  /// Creates the line.
-  const new(this.text, {super.key});
-
-  /// The reason in words.
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    spacing: AppSpacing.xs,
-    children: [
-      Icon(
-        Icons.warning_amber_rounded,
-        size: AppTextSize.body,
-        color: statusColors(context).warning,
-        semanticLabel: 'Warning',
-      ),
-      Expanded(child: Text(text)),
-    ],
-  );
 }

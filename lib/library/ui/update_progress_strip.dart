@@ -2,7 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/library/ports.dart';
 
-/// A thin bar and "Checking 12/87" while [updater] runs; nothing when idle.
+/// A thin bar and "12/87" while [updater] runs; nothing when idle.
 class UpdateProgressStrip extends StatelessWidget {
   /// Shows [updater]'s progress.
   const new(this.updater, {super.key});
@@ -28,7 +28,11 @@ class UpdateProgressStrip extends StatelessWidget {
               horizontal: AppSpacing.md,
               vertical: AppSpacing.xs,
             ),
-            child: Text(p.label, style: Theme.of(context).textTheme.bodySmall),
+            child: Text(
+              '${p.done}/${p.total}',
+              semanticsLabel: p.label,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ),
         ],
       );

@@ -1,7 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kartka/source_health/cut_reasons.dart';
+import 'package:kartka/core/ui/section_mark.dart';
 import 'package:kartka/source_health/install/source_action_button.dart';
 import 'package:kartka/source_health/install/source_installs.dart';
 import 'package:kartka/source_health/labels.dart';
@@ -12,7 +12,10 @@ import 'package:kartka/source_health/score_breakdown.dart';
 import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/ui/freshness_banner.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
+import 'package:kartka/source_health/ui/health_icons.dart';
 import 'package:kartka/source_health/ui/metric_tile.dart';
+import 'package:kartka/source_health/ui/reason_marks.dart';
+import 'package:kartka/source_health/ui/source_line_mark.dart';
 
 /// One source's evaluation: verdict, cut reasons, every metric with what it
 /// means and its threshold, and the score breakdown. Escape goes back.
@@ -58,11 +61,7 @@ class SourceDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final r = record;
-    final muted = TextStyle(
-      color: Theme.of(context).colorScheme.onSurfaceVariant,
-    );
     final subset = r.subsetOf == null ? null : _find(r.subsetOf!.sourceId);
-    final warn = keptDespiteReasons(r);
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.escape): () =>
@@ -80,11 +79,20 @@ class SourceDetailPage extends StatelessWidget {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   HealthBadge(verdict: r.verdict, rank: r.rank),
-                  Text(_scoreLine()),
+                  IconValue(
+                    profile.isDefault ? Icons.insights_outlined : Icons.tune,
+                    scoreText(record.score),
+                    semanticLabel: _scoreLine(),
+                    key: const Key('score-line'),
+                  ),
+                  DefaultScoreMark(r),
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),
-              Text(sourceLine(r, withId: true), style: muted),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: SourceLineMark(r, withId: true),
+              ),
               const SizedBox(height: AppSpacing.sm),
               if (installs case final i?) ...[
                 Align(
@@ -94,47 +102,32 @@ class SourceDetailPage extends StatelessWidget {
                 const SizedBox(height: AppSpacing.sm),
               ],
               FreshnessBanner(at: r.probedAt, now: now),
-              if (r.needsBrowserEngine) ...[
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: BrowserEngineChip(),
+              if (r.needsBrowserEngine || r.reprobedOnly)
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  children: [
+                    if (r.needsBrowserEngine) const BrowserEngineChip(),
+                    if (r.reprobedOnly) const ReprobeChip(),
+                  ],
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                const Text(
-                  'Its extension needs a browser engine Kartka does not ship, '
-                  'so some requests fail; flagged, not cut.',
+              if (r.cutReasons.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                  child: ReasonMarks(
+                    r,
+                    nameOf: (id) => _find(id)?.name,
+                    keepScore: profile.keepScore,
+                  ),
                 ),
-              ],
-              if (r.reprobedOnly) ...[
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: ReprobeChip(),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                const Text(
-                  'Cut by the last run as unreachable or blocking; this run '
-                  'sent it one reachability request, which failed, so it '
-                  'was not measured again.',
-                ),
-              ],
-              if (r.cutReasons.isNotEmpty) ...[
-                SectionHeader(
-                  warn
-                      ? keptDespiteHeading(profile.keepScore)
-                      : lowScoreHeading,
-                ),
-                for (final why in explainCutReasons(
-                  r,
-                  nameOf: (id) => _find(id)?.name,
-                ))
-                  if (warn) WarningLine(why) else Text(why),
-              ],
               if (subset != null)
                 Align(
                   alignment: Alignment.centerLeft,
                   child: TextButton.icon(
                     icon: const Icon(Icons.call_split),
-                    label: Text('Open ${subset.name}'),
+                    label: Text(
+                      subset.name,
+                      semanticsLabel: 'Open ${subset.name}',
+                    ),
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute<void>(
                         builder: (_) => SourceDetailPage(
@@ -148,10 +141,16 @@ class SourceDetailPage extends StatelessWidget {
                     ),
                   ),
                 ),
-              const SectionHeader('Metrics'),
+              const SectionMark(
+                Icons.analytics_outlined,
+                semanticLabel: 'Metrics',
+              ),
               for (final e in explainMetrics(r, profile: profile))
                 MetricTile(e),
-              const SectionHeader('Score breakdown'),
+              const SectionMark(
+                Icons.functions,
+                semanticLabel: 'Score breakdown',
+              ),
               ScoreTable(
                 scoreBreakdown(r, profile),
                 pagesLoad: r.pagesLoad,

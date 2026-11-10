@@ -4,8 +4,11 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kartka/core/redact.dart';
+import 'package:kartka/core/ui/snack_mark.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_exceptions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_settings.dart';
+
+const _tap = Size.square(48);
 
 /// Server URL and basic-auth credentials, with a connection test.
 class SuwayomiSettingsScreen extends StatefulWidget {
@@ -39,7 +42,9 @@ class _SettingsState extends State<SuwayomiSettingsScreen> {
   final _url = TextEditingController();
   final _user = TextEditingController();
   final _pass = TextEditingController();
-  String? _status;
+
+  /// Last connection test: success, and the server's name or the error.
+  ({bool ok, String detail})? _status;
   bool _testing = false;
 
   @override
@@ -72,18 +77,20 @@ class _SettingsState extends State<SuwayomiSettingsScreen> {
 
   Future<void> _save() async {
     await widget.store.save(_typed);
-    if (mounted) showToast(context, 'Saved');
+    if (mounted) {
+      showMark(context, const Icon(Icons.check, semanticLabel: 'Saved'));
+    }
   }
 
   Future<void> _test() async {
     setState(() => _testing = true);
-    String status;
+    ({bool ok, String detail}) status;
     try {
-      status = 'Connected: ${await widget.testConnection(_typed)}';
+      status = (ok: true, detail: await widget.testConnection(_typed));
     } on SuwayomiException catch (e) {
-      status = 'Failed: ${e.message}';
+      status = (ok: false, detail: e.message);
     } on Object catch (e) {
-      status = 'Failed: $e';
+      status = (ok: false, detail: '$e');
     }
     if (mounted) {
       setState(() {
@@ -93,9 +100,27 @@ class _SettingsState extends State<SuwayomiSettingsScreen> {
     }
   }
 
+  /// The test result: a green tick or a red mark, then the server's name or
+  /// its error (both content).
+  Widget _statusRow(({bool ok, String detail}) s) {
+    final colors = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Icon(
+          s.ok ? Icons.check_circle : Icons.error_outline,
+          color: s.ok ? colors.primary : colors.error,
+          semanticLabel: s.ok ? 'Connected' : 'Failed',
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(child: Text(redactUrlQueries(s.detail))),
+      ],
+    );
+  }
+
   Widget _field(
     TextEditingController c,
-    String label, {
+    IconData icon,
+    String semanticLabel, {
     bool secret = false,
     TextInputType? keyboard,
     bool last = false,
@@ -108,7 +133,9 @@ class _SettingsState extends State<SuwayomiSettingsScreen> {
       keyboardType: keyboard,
       textInputAction: last ? TextInputAction.done : TextInputAction.next,
       onSubmitted: last ? (_) => _save() : null,
-      decoration: InputDecoration(labelText: label),
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, semanticLabel: semanticLabel),
+      ),
     ),
   );
 
@@ -121,7 +148,12 @@ class _SettingsState extends State<SuwayomiSettingsScreen> {
     child: Focus(
       autofocus: true,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Suwayomi server')),
+        appBar: AppBar(
+          title: const Icon(
+            Icons.dns_outlined,
+            semanticLabel: 'Suwayomi server',
+          ),
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Center(
@@ -150,21 +182,44 @@ class _SettingsState extends State<SuwayomiSettingsScreen> {
                       ],
                     ),
                   ),
-                  _field(_url, 'Server URL', keyboard: TextInputType.url),
-                  _field(_user, 'Username'),
-                  _field(_pass, 'Password', secret: true, last: true),
+                  _field(
+                    _url,
+                    Icons.link,
+                    'Server URL',
+                    keyboard: TextInputType.url,
+                  ),
+                  _field(_user, Icons.person_outline, 'Username'),
+                  _field(
+                    _pass,
+                    Icons.key,
+                    'Password',
+                    secret: true,
+                    last: true,
+                  ),
                   Wrap(
                     spacing: AppSpacing.sm,
                     runSpacing: AppSpacing.sm,
                     children: [
-                      FilledButton(onPressed: _save, child: const Text('Save')),
-                      OutlinedButton(
-                        onPressed: _testing ? null : _test,
-                        child: const Text('Test connection'),
+                      IconButton.filled(
+                        style: IconButton.styleFrom(minimumSize: _tap),
+                        onPressed: _save,
+                        icon: const Icon(Icons.save, semanticLabel: 'Save'),
                       ),
-                      TextButton(
+                      IconButton.outlined(
+                        style: IconButton.styleFrom(minimumSize: _tap),
+                        onPressed: _testing ? null : _test,
+                        icon: const Icon(
+                          Icons.network_check,
+                          semanticLabel: 'Test connection',
+                        ),
+                      ),
+                      IconButton(
+                        style: IconButton.styleFrom(minimumSize: _tap),
                         onPressed: widget.onOpenExtensions,
-                        child: const Text('Extensions'),
+                        icon: const Icon(
+                          Icons.extension,
+                          semanticLabel: 'Extensions',
+                        ),
                       ),
                     ],
                   ),
@@ -173,7 +228,7 @@ class _SettingsState extends State<SuwayomiSettingsScreen> {
                       padding: const EdgeInsets.only(top: AppSpacing.md),
                       child: _testing
                           ? const LinearProgressIndicator()
-                          : Text(redactUrlQueries(_status!)),
+                          : _statusRow(_status!),
                     ),
                 ],
               ),

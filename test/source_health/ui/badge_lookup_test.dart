@@ -75,9 +75,11 @@ void main() {
         ),
       ),
     );
-    expect(find.text('#1 Keep'), findsOne);
-    expect(find.text('#7 Cut'), findsOne);
-    expect(find.text('Pending'), findsOne);
+    expect(find.text('#1'), findsOne);
+    expect(find.text('#7'), findsOne);
+    expect(find.byIcon(Icons.check_circle_outline), findsOne);
+    expect(find.byIcon(Icons.cancel_outlined), findsOne);
+    expect(find.byIcon(Icons.hourglass_empty), findsOne);
     expect(find.bySemanticsLabel('Source health: rank 1, keep'), findsOne);
     expect(find.bySemanticsLabel('Source health: pending'), findsOne);
     handle.dispose();

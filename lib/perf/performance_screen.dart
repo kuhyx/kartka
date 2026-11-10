@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/perf/frame_stats.dart';
 import 'package:kartka/perf/jank_tracker.dart';
 
@@ -29,17 +30,19 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text('Performance'),
+      title: const Icon(Icons.speed, semanticLabel: 'Performance'),
       actions: [
-        TextButton(onPressed: _reset, child: const Text('Reset')),
+        IconButton(
+          onPressed: _reset,
+          icon: const Icon(Icons.restart_alt, semanticLabel: 'Reset'),
+        ),
         const SizedBox(width: AppSpacing.sm),
       ],
     ),
     body: _rows.isEmpty
-        ? const EmptyState(
+        ? const EmptyMark(
             icon: Icons.speed,
-            title: 'No frames measured yet',
-            message: 'Use the app; each screen shows up here.',
+            semanticLabel: 'No frames measured yet',
           )
         : ListView(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
@@ -57,21 +60,68 @@ class _PerfTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final pct = (s.jankShare * 100).round();
     String ms(int micros) => '${PerfSummary.ms(micros)} ms';
+    final percentiles =
+        '${ms(s.p50Micros)} / ${ms(s.p90Micros)} / ${ms(s.p99Micros)}';
     return ListTile(
       title: Text(s.screen),
-      subtitle: Text(
-        '${s.janky} of ${s.frames} frames janky ($pct %) · '
-        'p50 ${ms(s.p50Micros)} · p90 ${ms(s.p90Micros)} · '
-        'p99 ${ms(s.p99Micros)} · worst ${ms(s.worstMicros)} · '
-        'budget ${ms(s.budgetMicros)}${_stalls(s, ms)}',
+      subtitle: Wrap(
+        spacing: AppSpacing.md,
+        runSpacing: AppSpacing.xs,
+        children: [
+          _Figure(
+            Icons.warning_amber,
+            '${s.janky}/${s.frames} ($pct %)',
+            '${s.janky} of ${s.frames} frames janky ($pct %)',
+          ),
+          _Figure(Icons.timer_outlined, percentiles, 'p50 / p90 / p99'),
+          _Figure(
+            Icons.trending_up,
+            ms(s.worstMicros),
+            'worst ${ms(s.worstMicros)}',
+          ),
+          _Figure(
+            Icons.flag_outlined,
+            ms(s.budgetMicros),
+            'budget ${ms(s.budgetMicros)}',
+          ),
+          if (s.stalls > 0)
+            _Figure(
+              Icons.hourglass_bottom,
+              '${s.stalls} (${ms(s.worstStallMicros)})',
+              _stalls(s, ms),
+            ),
+        ],
       ),
     );
   }
 }
 
-/// " · N stalls (worst X ms)", or nothing without stalls.
+/// One figure: a glyph and a number, spoken as [spoken].
+class _Figure extends StatelessWidget {
+  const new(this.icon, this.value, this.spoken);
+
+  final IconData icon;
+  final String value;
+  final String spoken;
+
+  @override
+  Widget build(BuildContext context) => SpokenLabel(
+    semanticLabel: spoken,
+    child: ExcludeSemantics(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16),
+          const SizedBox(width: AppSpacing.xs),
+          Text(value),
+        ],
+      ),
+    ),
+  );
+}
+
+/// "N stalls (worst X ms)" for a screen with at least one stall.
 String _stalls(PerfSummary s, String Function(int) ms) => switch (s.stalls) {
-  0 => '',
-  1 => ' · 1 stall (worst ${ms(s.worstStallMicros)})',
-  final n => ' · $n stalls (worst ${ms(s.worstStallMicros)})',
+  1 => '1 stall (worst ${ms(s.worstStallMicros)})',
+  final n => '$n stalls (worst ${ms(s.worstStallMicros)})',
 };

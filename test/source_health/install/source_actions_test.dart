@@ -12,6 +12,7 @@ import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../../plugins/runtime/support.dart' as plugin_support;
 import '../../sources/suwayomi/fakes.dart';
 import 'harness.dart';
@@ -162,12 +163,15 @@ void main() {
     await tester.tap(installOf(record.id));
     await tester.pump();
     await tester.pump();
-    final snack = tester.widget<SnackBar>(find.byType(SnackBar));
-    final shown = (snack.content as Text).data!;
+    final snack = find.byType(SnackBar);
     expect(
-      shown,
-      'Install failed: SuwayomiException: extension download failed: <url>',
+      find.descendant(of: snack, matching: spokenIcon('Install failed')),
+      findsOne,
     );
+    final shown = tester
+        .widget<Text>(find.descendant(of: snack, matching: find.byType(Text)))
+        .data!;
+    expect(shown, 'SuwayomiException: extension download failed: <url>');
     expect(shown, isNot(contains('http')));
     expect(shown, isNot(contains('s3cret')));
     expect(installOf(record.id), findsOne);

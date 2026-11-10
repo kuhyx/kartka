@@ -101,15 +101,15 @@ void main() {
     final db = InMemoryRtdb();
     final f = syncFeatureWith(_runtime(db));
     await t.pumpWidget(_app(f));
-    await t.tap(find.text('Sync'));
+    await t.tap(find.byIcon(Icons.cloud_sync_outlined));
     await t.pumpAndSettle();
     expect(find.byType(SyncAccountScreen), findsOneWidget);
     await t.runAsync(() async {
-      await t.tap(find.text('Sync now'));
+      await t.tap(find.bySemanticsLabel('Sync now'));
       await Future<void>.delayed(const Duration(milliseconds: 20));
     });
     await t.pump();
-    expect(find.text('Signed in, up to date'), findsOneWidget);
+    expect(find.byIcon(Icons.cloud_done_outlined), findsOneWidget);
     expect(db.reads, greaterThan(0));
   });
 
@@ -121,13 +121,15 @@ void main() {
       _runtime(InMemoryRtdb(), deviceId: pending.future),
     );
     await t.pumpWidget(_app(f));
-    await t.tap(find.text('Sync'));
+    await t.tap(find.byIcon(Icons.cloud_sync_outlined));
     await t.pump();
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     pending.completeError(StateError('no prefs'));
     await t.pump();
     await t.pump();
-    expect(find.textContaining('Sync could not start'), findsOneWidget);
+    expect(find.bySemanticsLabel('Sync could not start'), findsOneWidget);
+    expect(find.textContaining('no prefs'), findsOneWidget);
+    expect(find.textContaining('Sync could not start'), findsNothing);
   });
 
   testWidgets('Account opens sign-in and resyncs when it closes', (t) async {
@@ -136,7 +138,7 @@ void main() {
     final db = InMemoryRtdb();
     final f = syncFeatureWith(_runtime(db));
     await t.pumpWidget(_app(f));
-    await t.tap(find.text('Sync'));
+    await t.tap(find.byIcon(Icons.cloud_sync_outlined));
     await t.pumpAndSettle();
     await t.tap(find.byIcon(Icons.account_circle_outlined));
     await t.pumpAndSettle();

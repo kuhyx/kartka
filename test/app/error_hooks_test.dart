@@ -9,6 +9,7 @@ import 'package:kartka/app/app.dart';
 import 'package:kartka/app/error_hooks.dart';
 import 'package:kartka/app/registry.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 
 import '../helpers/fake_platform.dart';
@@ -135,12 +136,32 @@ void main() {
           ScaffoldMessenger.of(c)
               .showSnackBar(const SnackBar(content: Text('Chapter 12'))),
     );
+    // Word-free snackbars: the glyph's spoken label is the message.
+    await show(
+      (c) => ScaffoldMessenger.of(c).showSnackBar(
+        const SnackBar(
+          content: Icon(Icons.error, semanticLabel: 'Sync failed: 401'),
+        ),
+      ),
+    );
+    await show(
+      (c) => ScaffoldMessenger.of(c).showSnackBar(
+        const SnackBar(
+          content: SpokenLabel(
+            semanticLabel: 'Download failed: timeout',
+            child: Icon(Icons.error),
+          ),
+        ),
+      ),
+    );
     final entries = await tester.runAsync(
       () => DiagnosticsLog.of(platform.diagnostics).entries(),
     );
     expect(entries!.map((e) => e.error), [
       'FormatException: repo URL must be http(s): x',
       'Install failed: HTTP 500',
+      'Sync failed: 401',
+      'Download failed: timeout',
     ]);
     expect(entries.every((e) => e.kind == 'ui.snackbar'), isTrue);
     expect(entries.first.route, '/probe/:id');

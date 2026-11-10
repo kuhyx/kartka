@@ -60,7 +60,7 @@ const reprobedJson = <String, Object?>{
   'verdict': 'cut',
 };
 
-const chipText = 'Re-probed only';
+final Finder chip = find.byType(ReprobeChip);
 
 void main() {
   group('model', () {
@@ -103,7 +103,7 @@ void main() {
           ),
         ),
       );
-      expect(find.text(chipText), findsOne);
+      expect(chip, findsOne);
     });
 
     testWidgets('the chip has a spoken label', (tester) async {
@@ -116,7 +116,7 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('the detail page explains the single request', (tester) async {
+    testWidgets('the detail page shows the chip', (tester) async {
       tallSurface(tester);
       final r = SourceHealthRecord.fromJson(reprobedJson)!;
       await tester.pumpWidget(
@@ -124,8 +124,7 @@ void main() {
           SourceDetailPage(record: r, all: [r], now: DateTime.utc(2026, 11, 2)),
         ),
       );
-      expect(find.text(chipText), findsOne);
-      expect(find.textContaining('one reachability request'), findsOne);
+      expect(chip, findsOne);
     });
   });
 }

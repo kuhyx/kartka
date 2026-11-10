@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/app.dart';
 import 'package:kartka/app/registry.dart';
+import 'package:kartka/app/shell.dart';
 
 import '../helpers/fake_platform.dart';
 
@@ -38,10 +39,10 @@ Future<void> _pump(WidgetTester tester, Size size) async {
 
 Future<void> _expectBelowStatusBar(
   WidgetTester tester,
-  String tab,
+  KartkaTab tab,
   String content,
 ) async {
-  await tester.tap(find.text(tab));
+  await tester.tap(find.byIcon(tabInfo[tab]!.icon));
   await tester.pumpAndSettle();
   expect(
     tester.getTopLeft(find.text(content)).dy,
@@ -57,11 +58,11 @@ void main() {
   ]) {
     testWidgets('$name: every tab starts below the status bar', (t) async {
       await _pump(t, size);
-      await _expectBelowStatusBar(t, 'Library', 'library top');
-      await _expectBelowStatusBar(t, 'Updates', 'updates top');
-      await _expectBelowStatusBar(t, 'Browse', 'browse top');
-      await _expectBelowStatusBar(t, 'Sources', 'sources top');
-      await _expectBelowStatusBar(t, 'More', 'more top');
+      await _expectBelowStatusBar(t, KartkaTab.library, 'library top');
+      await _expectBelowStatusBar(t, KartkaTab.updates, 'updates top');
+      await _expectBelowStatusBar(t, KartkaTab.browse, 'browse top');
+      await _expectBelowStatusBar(t, KartkaTab.sources, 'sources top');
+      await _expectBelowStatusBar(t, KartkaTab.more, 'more top');
     });
   }
 

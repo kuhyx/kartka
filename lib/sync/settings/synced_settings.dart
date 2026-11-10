@@ -99,7 +99,7 @@ class SyncedSettings implements SettingsSync {
     }
     final password = await passphrase.key();
     if (password == null) {
-      _problem(key, '${setting.label} not synced: $_setPassphrase');
+      _problem(key, '${setting.semanticLabel} not synced: $_setPassphrase');
       return null;
     }
     _problem(key, null);
@@ -181,7 +181,7 @@ class SyncedSettings implements SettingsSync {
         final why = password == null
             ? ': set the sync passphrase in More → Sync'
             : '';
-        _problem(key, "Couldn't decrypt synced ${setting.label}$why");
+        _problem(key, "Couldn't decrypt synced ${setting.semanticLabel}$why");
         return;
       }
     }

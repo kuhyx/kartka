@@ -1,10 +1,12 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/ui/section_mark.dart';
 import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/reason_filter.dart';
 import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/scoring/profile_store.dart';
 import 'package:kartka/source_health/thresholds.dart';
+import 'package:kartka/source_health/ui/health_icons.dart';
 
 const _weightLabels = [
   'Coverage (with complete chapters)',
@@ -26,37 +28,53 @@ class ScoringPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Scoring')),
+    appBar: AppBar(title: const Icon(Icons.tune, semanticLabel: 'Scoring')),
     body: ValueListenableBuilder<ScoringProfile>(
       valueListenable: store.profile,
       builder: (context, p, _) => ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [
-          Text(
-            p.isDefault
-                ? 'Using the evaluator defaults.'
-                : 'Using a custom profile (synced to every device and the '
-                      'evaluator).',
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Icon(
+              p.isDefault ? Icons.insights_outlined : Icons.sync,
+              key: const Key('profile-name'),
+              semanticLabel: p.isDefault
+                  ? 'Using the evaluator defaults'
+                  : 'Using a custom profile, synced',
+            ),
           ),
-          const SectionHeader('Score weights'),
-          const Text(
-            'A weight of 0 turns a part off. Weights are rescaled to add up '
-            'to 100 %, and at least one must stay above 0.',
+          const SectionMark(
+            Icons.balance,
+            semanticLabel:
+                'Score weights. A weight of 0 turns a part off; weights are '
+                'rescaled to add up to 100 %.',
           ),
           for (final (i, label) in _weightLabels.indexed)
             _WeightRow(index: i, label: label, profile: p, store: store),
-          const SectionHeader('Pages load'),
+          const SectionMark(
+            Icons.auto_stories_outlined,
+            semanticLabel: 'Pages load',
+          ),
           SwitchListTile(
             key: const Key('pages-multiplier'),
-            title: const Text('Pages load multiplies the score'),
-            subtitle: const Text(
-              'A source whose pages never load then scores 0.',
+            title: const Icon(
+              Icons.calculate_outlined,
+              semanticLabel:
+                  'Pages load multiplies the score: a source whose pages '
+                  'never load then scores 0.',
             ),
             value: p.pagesLoadMultiplier,
             onChanged: (on) => store.save(p.copyWith(pagesLoadMultiplier: on)),
           ),
-          const SectionHeader('Keep bar'),
-          Text('Keep at score ≥ ${p.keepScore.toStringAsFixed(2)}'),
+          const SectionMark(
+            Icons.check_circle_outline,
+            semanticLabel: 'Keep bar',
+          ),
+          Text(
+            '≥ ${p.keepScore.toStringAsFixed(2)}',
+            semanticsLabel: 'Keep at score ≥ ${p.keepScore.toStringAsFixed(2)}',
+          ),
           Slider(
             key: const Key('keep-score'),
             value: p.keepScore,
@@ -65,16 +83,23 @@ class ScoringPage extends StatelessWidget {
             onChanged: (v) => store.preview(p.copyWith(keepScore: v)),
             onChangeEnd: (_) => store.save(store.profile.value),
           ),
-          const SectionHeader('Cut switches'),
-          const Text(
-            'A switch cuts every source its reason applies to, whatever its '
-            'score. All off: the score alone decides.',
+          const SectionMark(
+            Icons.content_cut,
+            semanticLabel:
+                'Cut switches. A switch cuts every source its reason applies '
+                'to, whatever its score.',
           ),
           for (final reason in kCutWireNames.keys)
             SwitchListTile(
               key: Key('cut-${kCutWireNames[reason]}'),
-              title: Text('Cut: ${reason.label}'),
-              subtitle: Text(_cutExplanations[reason]!),
+              title: Align(
+                alignment: Alignment.centerLeft,
+                child: Icon(
+                  reasonIcon(reason),
+                  semanticLabel:
+                      'Cut: ${reason.label}. ${_cutExplanations[reason]}',
+                ),
+              ),
               value: p.cuts.contains(reason),
               onChanged: (on) => store.save(
                 p.copyWith(
@@ -85,10 +110,13 @@ class ScoringPage extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Align(
             alignment: Alignment.centerLeft,
-            child: FilledButton.tonalIcon(
+            child: IconButton.filledTonal(
               key: const Key('reset-scoring'),
-              icon: const Icon(Icons.restart_alt),
-              label: const Text('Reset to evaluator defaults'),
+              style: IconButton.styleFrom(minimumSize: const Size.square(48)),
+              icon: const Icon(
+                Icons.restart_alt,
+                semanticLabel: 'Reset to evaluator defaults',
+              ),
               onPressed: p.isDefault ? null : store.reset,
             ),
           ),
@@ -134,11 +162,10 @@ class _WeightRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(child: Text(label)),
-            Text('${pct(share)} of the score'),
-          ],
+        IconValue(
+          metricIcon(label),
+          pct(share),
+          semanticLabel: '$label: share of the score',
         ),
         Row(
           children: [
@@ -159,8 +186,9 @@ class _WeightRow extends StatelessWidget {
                 onChangeEnd: (_) => store.save(store.profile.value),
               ),
             ),
-            TextButton(
+            IconButton(
               key: Key('only-$index'),
+              icon: const Icon(Icons.filter_1, semanticLabel: 'Only this'),
               onPressed: () => store.save(
                 profile.copyWith(
                   weights: ScoreWeights.fromValues([
@@ -169,7 +197,6 @@ class _WeightRow extends StatelessWidget {
                   ]),
                 ),
               ),
-              child: const Text('Only this'),
             ),
           ],
         ),

@@ -1,5 +1,9 @@
 part of 'reader_screen.dart';
 
+final ButtonStyle _square = IconButton.styleFrom(
+  minimumSize: const Size.square(48),
+);
+
 /// The reader body: the mode's view, its slots, the overlay and errors.
 extension on _ReaderScreenState {
   Widget _reader() {
@@ -109,19 +113,28 @@ extension on _ReaderScreenState {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            redactUrlQueries(_session.error ?? 'Could not open the chapter.'),
+          Icon(
+            Icons.error_outline,
+            size: 48,
+            color: Theme.of(context).colorScheme.error,
+            semanticLabel: 'Could not open the chapter.',
           ),
+          if (_session.error case final e?) Text(redactUrlQueries(e)),
           const SizedBox(height: AppSpacing.md),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              OutlinedButton(
+              IconButton.outlined(
+                style: _square,
                 onPressed: widget.onExit,
-                child: const Text('Back'),
+                icon: const Icon(Icons.arrow_back, semanticLabel: 'Back'),
               ),
               const SizedBox(width: AppSpacing.sm),
-              FilledButton(onPressed: _retryOpen, child: const Text('Retry')),
+              IconButton.filled(
+                style: _square,
+                onPressed: _retryOpen,
+                icon: const Icon(Icons.refresh, semanticLabel: 'Retry'),
+              ),
             ],
           ),
         ],

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/tracking/common/tracker.dart';
 
 /// Search field plus results; picking a hit binds it. `Enter` searches.
@@ -66,13 +67,18 @@ class _TrackSearchState extends State<TrackSearch> {
                 controller: _query,
                 textInputAction: TextInputAction.search,
                 onSubmitted: (_) => unawaited(_search()),
-                decoration: const InputDecoration(labelText: 'Search title'),
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.menu_book_outlined,
+                    semanticLabel: 'Search title',
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
             IconButton(
-              tooltip: 'Search',
-              icon: const Icon(Icons.search),
+              style: IconButton.styleFrom(minimumSize: const Size.square(48)),
+              icon: const Icon(Icons.search, semanticLabel: 'Search'),
               onPressed: _busy ? null : () => unawaited(_search()),
             ),
           ],
@@ -81,14 +87,27 @@ class _TrackSearchState extends State<TrackSearch> {
         if (hits != null && hits.isEmpty)
           const Padding(
             padding: EdgeInsets.all(AppSpacing.sm),
-            child: Text('No matches'),
+            child: EmptyMark(
+              icon: Icons.search_off,
+              semanticLabel: 'No matches',
+            ),
           ),
         for (final hit in hits ?? const <TrackSearchResult>[])
           ListTile(
             title: Text(hit.title),
             subtitle: hit.chapters == null
                 ? null
-                : Text('${hit.chapters} chapters'),
+                : Row(
+                    children: [
+                      const Icon(
+                        Icons.layers_outlined,
+                        size: 16,
+                        semanticLabel: 'chapters',
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Text('${hit.chapters}'),
+                    ],
+                  ),
             onTap: () => unawaited(widget.onPick(hit)),
           ),
       ],

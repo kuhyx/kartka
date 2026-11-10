@@ -109,7 +109,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp.router(theme: buildDarkTheme(), routerConfig: router),
     );
-    await tester.tap(find.text('Suwayomi server'));
+    await tester.tap(find.byIcon(Icons.dns_outlined));
     await tester.pumpAndSettle();
     expect(find.text(_url), findsOneWidget);
     expect(
@@ -117,10 +117,10 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('not mine'), findsNothing);
-    await tester.tap(find.text('Test connection'));
+    await tester.tap(find.bySemanticsLabel('Test connection'));
     await tester.pumpAndSettle();
-    expect(find.text('Connected: Suwayomi-Server v2.4.2366'), findsOneWidget);
-    await tester.tap(find.text('Extensions'));
+    expect(find.text('Suwayomi-Server v2.4.2366'), findsOneWidget);
+    await tester.tap(find.bySemanticsLabel('Extensions'));
     await tester.pumpAndSettle();
     expect(find.byType(ExtensionsScreen), findsOneWidget);
     expect(find.text('MangaDex'), findsOneWidget);

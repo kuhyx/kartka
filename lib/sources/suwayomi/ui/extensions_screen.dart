@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/redact.dart';
+import 'package:kartka/core/ui/confirm_mark.dart';
+import 'package:kartka/core/ui/section_mark.dart';
+import 'package:kartka/core/ui/snack_mark.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_exceptions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 import 'package:kartka/sources/suwayomi/ui/extension_tile.dart';
@@ -56,10 +60,10 @@ class _ExtensionsState extends State<ExtensionsScreen> {
 
   Future<void> _run(SuwayomiExtension e, ExtensionAction action) async {
     if (action == ExtensionAction.uninstall &&
-        !await confirmDestructive(
+        !await confirmMark(
           context,
-          title: 'Uninstall ${e.name}?',
-          message: 'Its sources disappear from Browse until reinstalled.',
+          icon: Icons.extension_off,
+          semanticLabel: 'Uninstall ${e.name}? Its sources leave Browse.',
           confirmLabel: 'Uninstall',
         )) {
       return;
@@ -79,12 +83,26 @@ class _ExtensionsState extends State<ExtensionsScreen> {
             if (x.pkgName == e.pkgName) updated else x,
         ]);
       });
-      final verb = switch (action) {
-        ExtensionAction.install => 'Installed',
-        ExtensionAction.update => 'Updated',
-        ExtensionAction.uninstall => 'Uninstalled',
+      final (icon, verb) = switch (action) {
+        ExtensionAction.install => (Icons.download_done, 'Installed'),
+        ExtensionAction.update => (Icons.published_with_changes, 'Updated'),
+        ExtensionAction.uninstall => (Icons.delete_forever, 'Uninstalled'),
       };
-      showToast(context, '$verb ${e.name}');
+      showMark(
+        context,
+        SpokenLabel(
+          semanticLabel: '$verb ${e.name}',
+          child: ExcludeSemantics(
+            child: Row(
+              children: [
+                Icon(icon),
+                const SizedBox(width: AppSpacing.sm),
+                Flexible(child: Text(e.name)),
+              ],
+            ),
+          ),
+        ),
+      );
     } on Object catch (err) {
       if (mounted) showError(context, '${e.name}: ${_describe(err)}');
     } finally {
@@ -111,10 +129,16 @@ class _ExtensionsState extends State<ExtensionsScreen> {
     );
     return [
       if (installed.isNotEmpty)
-        const SectionHeader('Installed', padding: SectionHeader.defaultPadding),
+        const SectionMark(
+          Icons.check_circle_outline,
+          semanticLabel: 'Installed',
+        ),
       ...installed.map(tile),
       if (available.isNotEmpty)
-        const SectionHeader('Available', padding: SectionHeader.defaultPadding),
+        const SectionMark(
+          Icons.cloud_download_outlined,
+          semanticLabel: 'Available',
+        ),
       ...available.map(tile),
     ];
   }
@@ -124,13 +148,21 @@ class _ExtensionsState extends State<ExtensionsScreen> {
       return ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [
-          EmptyState(
+          const EmptyMark(
             icon: Icons.cloud_off,
-            title: "Can't list extensions",
-            message: _error!,
+            semanticLabel: "Can't list extensions",
+          ),
+          // The server's own error is content: it stays readable.
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Text(_error!, textAlign: TextAlign.center),
           ),
           Center(
-            child: FilledButton(onPressed: _load, child: const Text('Retry')),
+            child: IconButton.filled(
+              style: IconButton.styleFrom(minimumSize: const Size.square(48)),
+              onPressed: _load,
+              icon: const Icon(Icons.refresh, semanticLabel: 'Retry'),
+            ),
           ),
         ],
       );
@@ -138,12 +170,11 @@ class _ExtensionsState extends State<ExtensionsScreen> {
     final items = _items;
     if (items == null) return const Center(child: CircularProgressIndicator());
     if (items.isEmpty) {
-      return const EmptyState(
+      return const EmptyMark(
         icon: Icons.extension_off,
-        title: 'No extensions',
-        message:
-            'The server has no extension store. Add one (e.g. Keiyoushi) '
-            "in the server's settings, then come back.",
+        semanticLabel:
+            'No extensions. The server has no extension store; add one '
+            "(e.g. Keiyoushi) in the server's settings, then come back.",
       );
     }
     final rows = _rows(items);
@@ -153,8 +184,10 @@ class _ExtensionsState extends State<ExtensionsScreen> {
           padding: const EdgeInsets.all(AppSpacing.md),
           child: TextField(
             decoration: const InputDecoration(
-              labelText: 'Filter by name or language',
-              prefixIcon: Icon(Icons.search),
+              prefixIcon: Icon(
+                Icons.search,
+                semanticLabel: 'Filter by name or language',
+              ),
             ),
             onChanged: (v) => setState(() => _filter = v),
           ),
@@ -178,7 +211,9 @@ class _ExtensionsState extends State<ExtensionsScreen> {
     child: Focus(
       autofocus: true,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Extensions')),
+        appBar: AppBar(
+          title: const Icon(Icons.extension, semanticLabel: 'Extensions'),
+        ),
         body: _body(),
       ),
     ),

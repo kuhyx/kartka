@@ -3,10 +3,14 @@ import 'dart:async';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
+import 'package:kartka/core/ui/confirm_mark.dart';
+import 'package:kartka/core/ui/section_mark.dart';
 import 'package:kartka/plugins/runtime/plugin_languages.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
 import 'package:kartka/plugins/runtime/plugins_sections.dart';
+
+const _tap = Size.square(48);
 
 /// More > Plugins: repos, what they offer, and what is installed.
 class PluginsScreen extends StatefulWidget {
@@ -83,10 +87,10 @@ class _PluginsScreenState extends State<PluginsScreen> {
   }
 
   Future<void> _uninstall(InstalledPlugin p) async {
-    final ok = await confirmDestructive(
+    final ok = await confirmMark(
       context,
-      title: 'Uninstall ${p.manifest.name}?',
-      message: 'Its settings are removed too.',
+      icon: Icons.extension_off,
+      semanticLabel: 'Uninstall ${p.manifest.name}?',
       confirmLabel: 'Uninstall',
     );
     if (ok) await _guarded(p.manifest.id, () => _m.uninstall(p.manifest.id));
@@ -97,21 +101,18 @@ class _PluginsScreenState extends State<PluginsScreen> {
     final shown = shownPlugins(_available.plugins, _langs);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Plugins'),
+        title: const Icon(Icons.extension_outlined, semanticLabel: 'Plugins'),
         actions: [
           IconButton(
-            tooltip: 'Refresh',
-            icon: const Icon(Icons.refresh),
+            style: IconButton.styleFrom(minimumSize: _tap),
+            icon: const Icon(Icons.refresh, semanticLabel: 'Refresh'),
             onPressed: _loading ? null : _refresh,
           ),
         ],
       ),
       body: ListView(
         children: [
-          const SectionHeader(
-            'Repositories',
-            padding: SectionHeader.defaultPadding,
-          ),
+          const SectionMark(Icons.link, semanticLabel: 'Repositories'),
           AddRepoRow(
             controller: _url,
             busy: _busy.contains('repo'),
@@ -121,14 +122,17 @@ class _PluginsScreenState extends State<PluginsScreen> {
             ListTile(
               title: Text(r, overflow: TextOverflow.ellipsis),
               trailing: IconButton(
-                tooltip: 'Remove repository',
-                icon: const Icon(Icons.delete_outline),
+                style: IconButton.styleFrom(minimumSize: _tap),
+                icon: const Icon(
+                  Icons.delete_outline,
+                  semanticLabel: 'Remove repository',
+                ),
                 onPressed: () => _guarded('repo', () => _m.removeRepo(r)),
               ),
             ),
-          const SectionHeader(
-            'Available',
-            padding: SectionHeader.defaultPadding,
+          const SectionMark(
+            Icons.cloud_download_outlined,
+            semanticLabel: 'Available',
           ),
           if (_available.plugins.isNotEmpty)
             PluginLanguagesChip(
@@ -136,13 +140,10 @@ class _PluginsScreenState extends State<PluginsScreen> {
               counts: pluginLanguageCounts(_available.plugins),
               onChanged: _setLanguages,
             ),
-          if (_loading) const LinearProgressIndicator(),
-          if (!_loaded)
-            const Padding(
-              padding: EdgeInsets.all(AppSpacing.md),
-              child: Text('Loading plugins…'),
-            )
-          else
+          // Before the first load the bar is the whole loading state.
+          if (_loading)
+            const LinearProgressIndicator(semanticsLabel: 'Loading plugins…'),
+          if (_loaded)
             AvailableList(
               result: AvailableResult(shown, _available.errors),
               hidden: _available.plugins.length - shown.length,
@@ -150,9 +151,9 @@ class _PluginsScreenState extends State<PluginsScreen> {
               busy: _busy,
               onInstall: (e) => _guarded(e.manifest.id, () => _m.install(e)),
             ),
-          const SectionHeader(
-            'Installed',
-            padding: SectionHeader.defaultPadding,
+          const SectionMark(
+            Icons.check_circle_outline,
+            semanticLabel: 'Installed',
           ),
           if (_loaded)
             InstalledList(manager: _m, busy: _busy, onUninstall: _uninstall),

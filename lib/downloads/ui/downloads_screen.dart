@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/ui/section_mark.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/downloads/downloads_snapshot.dart';
 import 'package:kartka/downloads/ui/format.dart';
@@ -60,7 +62,10 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
         final data = snap.data;
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Downloads'),
+            title: const Icon(
+              Icons.download_outlined,
+              semanticLabel: 'Downloads',
+            ),
             actions: [if (data != null) _pauseButton(data.paused)],
           ),
           body: data == null
@@ -87,8 +92,10 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
   }
 
   Widget _pauseButton(bool paused) => IconButton(
-    icon: Icon(paused ? Icons.play_arrow : Icons.pause),
-    tooltip: paused ? 'Resume downloads' : 'Pause downloads',
+    icon: Icon(
+      paused ? Icons.play_arrow : Icons.pause,
+      semanticLabel: paused ? 'Resume downloads' : 'Pause downloads',
+    ),
     onPressed: () =>
         unawaited(paused ? widget.service.resume() : widget.service.pause()),
   );
@@ -99,31 +106,32 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     Map<MangaKey, String> titles,
   ) {
     final s = widget.service;
-    final theme = Theme.of(context);
-    const pad = EdgeInsets.fromLTRB(
-      AppSpacing.md,
-      AppSpacing.lg,
-      AppSpacing.md,
-      AppSpacing.sm,
-    );
+    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
+    final used = formatBytes(data.index.totalBytes);
     return ListView(
       children: [
         Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
-          child: Text(
-            'Storage used: ${formatBytes(data.index.totalBytes)}',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+          child: SpokenLabel(
+            semanticLabel: 'Storage used: $used',
+            child: ExcludeSemantics(
+              child: Row(
+                children: [
+                  Icon(Icons.storage, size: 16, color: muted),
+                  const SizedBox(width: AppSpacing.xs),
+                  Text(used, style: TextStyle(color: muted)),
+                ],
+              ),
             ),
           ),
         ),
         if (data.queue.isEmpty && data.index.mangaKeys.isEmpty)
-          const EmptyState(
+          const EmptyMark(
             icon: Icons.download_outlined,
-            title: 'No downloads',
-            message: 'Chapters you download appear here.',
+            semanticLabel: 'No downloads',
           ),
-        if (data.queue.isNotEmpty) const SectionHeader('Queue', padding: pad),
+        if (data.queue.isNotEmpty)
+          const SectionMark(Icons.queue, semanticLabel: 'Queue'),
         for (final t in data.queue)
           QueueTile(
             task: t,
@@ -133,7 +141,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
             onRetry: () => unawaited(s.retry(t.mangaKey, t.chapter.url)),
           ),
         if (data.index.mangaKeys.isNotEmpty)
-          const SectionHeader('Downloaded', padding: pad),
+          const SectionMark(Icons.download_done, semanticLabel: 'Downloaded'),
         for (final key in data.index.mangaKeys)
           OfflineMangaTile(
             title: _label(key, titles),

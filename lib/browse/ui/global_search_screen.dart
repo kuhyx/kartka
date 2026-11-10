@@ -8,6 +8,7 @@ import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/global_search_controller.dart';
 import 'package:kartka/browse/ui/manga_grid.dart';
 import 'package:kartka/core/redact.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 
 /// Searches every source at once; one row of hits per source, each row
 /// filling in as its source answers.
@@ -57,7 +58,9 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
           controller: _field,
           autofocus: widget.query.isEmpty,
           textInputAction: TextInputAction.search,
-          decoration: const InputDecoration(hintText: 'Search all sources'),
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.search, semanticLabel: 'Search all sources'),
+          ),
           onSubmitted: (q) => unawaited(search.search(q)),
         ),
       ),
@@ -92,15 +95,27 @@ class _SourceRow extends StatelessWidget {
     } else if (state.error != null) {
       body = Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        child: Text(
-          redactUrlQueries('Failed: ${state.error}'),
-          style: TextStyle(color: theme.colorScheme.error),
+        child: Row(
+          children: [
+            Icon(
+              Icons.error_outline,
+              color: theme.colorScheme.error,
+              semanticLabel: 'Failed',
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                redactUrlQueries('${state.error}'),
+                style: TextStyle(color: theme.colorScheme.error),
+              ),
+            ),
+          ],
         ),
       );
     } else if (state.items.isEmpty) {
-      body = const Padding(
-        padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        child: Text('No results'),
+      body = const EmptyMark(
+        icon: Icons.search_off,
+        semanticLabel: 'No results',
       );
     } else {
       body = SizedBox(

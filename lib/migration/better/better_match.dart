@@ -13,23 +13,46 @@ import 'package:kartka/source_health/fuzzy_match.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/score_breakdown.dart';
 
+/// Why an entry's source should be left; [label] is spoken, never painted.
+enum MoveReason {
+  /// The source is not installed.
+  notInstalled('its source is not installed'),
+
+  /// The source failed its auto-install test.
+  failedTest('its source failed its test'),
+
+  /// The source is unreachable (or only re-probed).
+  unreachable('its source is unreachable'),
+
+  /// The scored feed cut the source.
+  cut('its source is cut'),
+
+  /// The source hits a challenge page.
+  challenge('its source hits a challenge');
+
+  new(this.label);
+
+  /// The reason in words, for screen readers.
+  final String label;
+}
+
 /// Why an entry on a source should move, or null when the source is fine:
 /// not installed, failing its auto-install [flag], unreachable (or only
 /// re-probed), cut, or hitting a challenge. A source without a [record]
 /// (local files, legacy ids that are installed) stays.
-String? moveReason({
+MoveReason? moveReason({
   required SourceHealthRecord? record,
   required bool installed,
   String? flag,
 }) {
-  if (!installed) return 'its source is not installed';
-  if (flag != null) return 'its source failed its test';
+  if (!installed) return MoveReason.notInstalled;
+  if (flag != null) return MoveReason.failedTest;
   final r = record;
   if (r == null) return null;
-  if (r.unreachable || r.reprobedOnly) return 'its source is unreachable';
-  if (r.verdict == HealthVerdict.cut) return 'its source is cut';
+  if (r.unreachable || r.reprobedOnly) return MoveReason.unreachable;
+  if (r.verdict == HealthVerdict.cut) return MoveReason.cut;
   if (rankTierReasons(r).contains('hits a challenge')) {
-    return 'its source hits a challenge';
+    return MoveReason.challenge;
   }
   return null;
 }

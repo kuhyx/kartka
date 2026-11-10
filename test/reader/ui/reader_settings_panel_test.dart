@@ -6,6 +6,8 @@ import 'package:kartka/reader/logic/tap_zones.dart';
 import 'package:kartka/reader/ui/reader_controls.dart';
 import 'package:kartka/reader/ui/reader_settings_panel.dart';
 
+import '../../helpers/spoken_icon.dart';
+
 void main() {
   testWidgets('every control reports an edited copy', (tester) async {
     final changes = <ReaderSettings>[];
@@ -19,15 +21,16 @@ void main() {
         ),
       ),
     );
-    await tester.tap(find.text(ReaderMode.pagedRtl.label));
+    expect(find.byType(Text), findsOneWidget, reason: 'only the count');
+    await tester.tap(spokenIcon(ReaderMode.pagedRtl.label));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(ReaderMode.webtoon.label).last);
+    await tester.tap(spokenIcon(ReaderMode.webtoon.label).last);
     await tester.pumpAndSettle();
     expect(changes.last.defaultMode, ReaderMode.webtoon);
 
-    await tester.tap(find.text(TapZoneLayout.thirds.label));
+    await tester.tap(spokenIcon(TapZoneLayout.thirds.label));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(TapZoneLayout.kindle.label).last);
+    await tester.tap(spokenIcon(TapZoneLayout.kindle.label).last);
     await tester.pumpAndSettle();
     expect(changes.last.tapLayout, TapZoneLayout.kindle);
 
@@ -55,6 +58,7 @@ void main() {
         ),
       ),
     );
-    expect(find.text('Downloaded'), findsOneWidget);
+    expect(spokenIcon('Downloaded'), findsOneWidget);
+    expect(find.text('Ch. 1'), findsOneWidget);
   });
 }

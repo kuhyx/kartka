@@ -86,10 +86,10 @@ void main() {
   testWidgets('the More tile opens a review of the whole library', (t) async {
     final s = await _setup();
     await _pump(t, s.feature, Builder(builder: s.feature.settingsTiles.first));
-    await t.tap(find.text('Migrate to Atsumaru'));
+    await t.tap(find.byIcon(Icons.swap_horiz));
     await t.pumpAndSettle();
     expect(find.byType(MigrationScreen), findsOneWidget);
-    expect(find.text('Exact match: One Piece'), findsOneWidget);
+    expect(find.text('One Piece'), findsNWidgets(2));
     expect(find.text('Berserk'), findsOneWidget);
   });
 
@@ -101,9 +101,9 @@ void main() {
       s.feature,
       Builder(builder: (c) => slot.build(c, _key, _details('old'))),
     );
-    await t.tap(find.text('Migrate'));
+    await t.tap(find.bySemanticsLabel('Migrate'));
     await t.pumpAndSettle();
-    expect(find.text('Exact match: One Piece'), findsOneWidget);
+    expect(find.text('One Piece'), findsNWidgets(2));
     expect(find.text('Berserk'), findsNothing);
     expect(s.atsu.searched, ['One Piece']);
   });
@@ -126,7 +126,7 @@ void main() {
         ],
       ),
     );
-    expect(find.text('Migrate'), findsNothing);
+    expect(find.byIcon(Icons.swap_horiz), findsNothing);
     slot.opened(_key); // Nothing to do when the screen opens.
   });
 }

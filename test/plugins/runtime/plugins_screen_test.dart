@@ -57,7 +57,7 @@ void main() {
 
   Future<void> addRepo(WidgetTester t, String url) async {
     await t.enterText(find.byType(TextField), url);
-    await t.tap(find.byTooltip('Add repository'));
+    await t.tap(find.bySemanticsLabel('Add repository'));
     await t.pumpAndSettle();
   }
 
@@ -82,13 +82,13 @@ void main() {
       ),
     );
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    expect(find.byTooltip('Add repository'), findsNothing);
+    expect(find.bySemanticsLabel('Add repository'), findsNothing);
   });
 
   testWidgets('empty state explains what to do', (t) async {
     await open(t);
-    expect(find.text('Add a repository URL to find plugins.'), findsOneWidget);
-    expect(find.text('No plugins installed.'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('^Add a repository')), findsOne);
+    expect(find.bySemanticsLabel('No plugins installed.'), findsOneWidget);
   });
 
   testWidgets('add repo, install, see it installed, uninstall', (t) async {
@@ -96,31 +96,32 @@ void main() {
     await addRepo(t, repo);
     expect(find.text(repo), findsOneWidget);
     expect(find.text('Demo Site'), findsOneWidget);
-    expect(find.text('Install'), findsNWidgets(2));
+    expect(find.byIcon(Icons.download), findsNWidgets(2));
 
-    await t.tap(find.text('Install').first);
+    await t.tap(find.byIcon(Icons.download).first);
     await t.pumpAndSettle();
     expect(find.text('plugin:demo · 1.0.0 · $repo'), findsOneWidget);
     expect(find.byIcon(Icons.check), findsOneWidget);
 
-    await t.tap(find.byTooltip('Uninstall Demo Site'));
+    await t.tap(find.bySemanticsLabel('Uninstall Demo Site'));
     await t.pumpAndSettle();
-    expect(find.text('Uninstall Demo Site?'), findsOneWidget);
-    await t.tap(find.text('Uninstall'));
+    expect(find.bySemanticsLabel('Uninstall Demo Site?'), findsOneWidget);
+    expect(find.text('Uninstall Demo Site?'), findsNothing);
+    await t.tap(find.bySemanticsLabel('Uninstall'));
     await t.pumpAndSettle();
-    expect(find.text('No plugins installed.'), findsOneWidget);
+    expect(find.bySemanticsLabel('No plugins installed.'), findsOneWidget);
   });
 
   testWidgets('cancelling the uninstall dialog keeps the plugin', (t) async {
     await open(t);
     await addRepo(t, repo);
-    await t.tap(find.text('Install').first);
+    await t.tap(find.byIcon(Icons.download).first);
     await t.pumpAndSettle();
-    await t.tap(find.byTooltip('Uninstall Demo Site'));
+    await t.tap(find.bySemanticsLabel('Uninstall Demo Site'));
     await t.pumpAndSettle();
-    await t.tap(find.text('Cancel'));
+    await t.tap(find.bySemanticsLabel('Cancel'));
     await t.pumpAndSettle();
-    expect(find.text('No plugins installed.'), findsNothing);
+    expect(find.bySemanticsLabel('No plugins installed.'), findsNothing);
   });
 
   testWidgets('a newer version shows Update', (t) async {
@@ -137,17 +138,17 @@ void main() {
       body: fixture('index.json').replaceFirst('"1.0.0"', '"2.0.0"'),
     );
     await open(t);
-    expect(find.text('Update'), findsOneWidget);
-    await t.tap(find.text('Update'));
+    expect(find.byIcon(Icons.upgrade), findsOneWidget);
+    await t.tap(find.byIcon(Icons.upgrade));
     await t.pumpAndSettle();
-    expect(find.text('Update'), findsNothing);
+    expect(find.byIcon(Icons.upgrade), findsNothing);
   });
 
   testWidgets('a failing repo shows its error and can be removed', (t) async {
     await PluginStore(kv).setRepos(['https://repo.test/gone.json']);
     await open(t);
     expect(find.byIcon(Icons.error_outline), findsOneWidget);
-    await t.tap(find.byTooltip('Remove repository'));
+    await t.tap(find.bySemanticsLabel('Remove repository'));
     await t.pumpAndSettle();
     expect(find.byIcon(Icons.error_outline), findsNothing);
   });
@@ -159,14 +160,14 @@ void main() {
     );
     await PluginStore(kv).setRepos(['https://repo.test/empty.json']);
     await open(t);
-    expect(find.text('These repositories offer no plugins.'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('offer no plugins')), findsOne);
   });
 
   testWidgets('install errors name the plugin in a toast', (t) async {
     await open(t);
     await addRepo(t, repo);
     http.overrides['https://repo.test/demo.js'] = (status: 200, body: 'evil()');
-    await t.tap(find.text('Install').first);
+    await t.tap(find.byIcon(Icons.download).first);
     await t.pumpAndSettle();
     expect(find.textContaining('Plugin "demo"'), findsOneWidget);
     expect(find.textContaining('sha256 mismatch'), findsOneWidget);
@@ -239,7 +240,7 @@ void main() {
       ],
     );
     await t.pumpWidget(MaterialApp.router(routerConfig: router));
-    await t.tap(find.text('Plugins'));
+    await t.tap(find.byIcon(Icons.extension_outlined));
     await t.pumpAndSettle();
     expect(find.byType(PluginsScreen), findsOneWidget);
   });

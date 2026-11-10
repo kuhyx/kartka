@@ -15,7 +15,12 @@ class ImportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Import SY backup')),
+      appBar: AppBar(
+        title: const Icon(
+          Icons.file_upload_outlined,
+          semanticLabel: 'Import SY backup',
+        ),
+      ),
       body: ListenableBuilder(
         listenable: controller,
         builder: (context, _) => ListView(
@@ -32,23 +37,15 @@ class ImportScreen extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     switch (c.phase) {
       case ImportPhase.idle:
-        return [
-          Text(
-            'Pick a TachiyomiSY backup (.tachibk). You get a summary first; '
-            'nothing is written until you confirm. Importing the same backup '
-            'again changes nothing.',
-            style: text.bodyMedium,
-          ),
-          gap,
-          _action('Choose backup file', c.pick),
-        ];
+        return [_action(Icons.folder_open, 'Choose backup file', c.pick)];
       case ImportPhase.loading:
         return [
           const LinearProgressIndicator(),
           gap,
-          Text('Reading ${c.fileName ?? 'backup'}', style: text.bodyMedium),
+          Text(c.fileName ?? '', style: text.bodyMedium),
         ];
       case ImportPhase.preview:
+        final entries = c.plan!.summary.entries;
         return [
           Text(c.fileName ?? '', style: text.titleMedium),
           ImportPreview(
@@ -57,11 +54,20 @@ class ImportScreen extends StatelessWidget {
             bindTrackers: c.bindsTrackers,
           ),
           gap,
-          _action('Import ${c.plan!.summary.entries} entries', c.runImport),
+          FilledButton.icon(
+            style: FilledButton.styleFrom(minimumSize: _minSize),
+            onPressed: c.runImport,
+            icon: const Icon(Icons.download),
+            label: Text('$entries', semanticsLabel: 'Import $entries entries'),
+          ),
           gap,
           OutlinedButton(
+            style: OutlinedButton.styleFrom(minimumSize: _minSize),
             onPressed: c.pick,
-            child: const Text('Choose another file'),
+            child: const Icon(
+              Icons.folder_open,
+              semanticLabel: 'Choose another file',
+            ),
           ),
         ];
       case ImportPhase.importing:
@@ -69,28 +75,43 @@ class ImportScreen extends StatelessWidget {
         return [
           LinearProgressIndicator(value: total == 0 ? null : done / total),
           gap,
-          Text('Imported $done of $total entries', style: text.bodyMedium),
+          Text(
+            '$done / $total',
+            style: text.bodyMedium,
+            semanticsLabel: 'Imported $done of $total entries',
+          ),
         ];
       case ImportPhase.done:
         return [
           ImportOutcome(c.result!),
           gap,
-          OutlinedButton(onPressed: c.reset, child: const Text('Done')),
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(minimumSize: _minSize),
+            onPressed: c.reset,
+            child: const Icon(Icons.check, semanticLabel: 'Done'),
+          ),
         ];
       case ImportPhase.failed:
+        // The decoder's sentence is app-written: spoken, never painted.
         return [
-          Text(
-            redactUrlQueries(c.error ?? 'Import failed'),
-            style: text.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
+          Icon(
+            Icons.error_outline,
+            size: 48,
+            color: Theme.of(context).colorScheme.error,
+            semanticLabel: redactUrlQueries(c.error ?? 'Import failed'),
           ),
           gap,
-          _action('Try again', c.reset),
+          _action(Icons.refresh, 'Try again', c.reset),
         ];
     }
   }
 
-  Widget _action(String label, VoidCallback onTap) =>
-      FilledButton(onPressed: onTap, child: Text(label));
+  static const _minSize = Size.square(48);
+
+  Widget _action(IconData icon, String spoken, VoidCallback onTap) =>
+      FilledButton(
+        style: FilledButton.styleFrom(minimumSize: _minSize),
+        onPressed: onTap,
+        child: Icon(icon, semanticLabel: spoken),
+      );
 }

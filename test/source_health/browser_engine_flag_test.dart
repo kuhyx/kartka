@@ -63,7 +63,7 @@ void main() {
     });
 
     test('Blocking metric is informational for webview-only', () {
-      final e = {for (final m in explainMetrics(allManga)) m.title: m};
+      final e = {for (final m in explainMetrics(allManga)) m.semanticLabel: m};
       expect(e['Blocking']!.status, MetricStatus.info);
       expect(e['Blocking']!.threshold, contains('browser engine'));
     });
@@ -77,7 +77,7 @@ void main() {
           kinds: ['webview', 'cloudflare'],
         ),
       );
-      final e = {for (final m in explainMetrics(mixed)) m.title: m};
+      final e = {for (final m in explainMetrics(mixed)) m.semanticLabel: m};
       expect(e['Blocking']!.status, MetricStatus.fail);
     });
   });

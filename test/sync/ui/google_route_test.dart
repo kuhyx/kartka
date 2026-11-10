@@ -115,7 +115,8 @@ void main() {
       sources: sources,
     );
     await t.pumpAndSettle();
-    await t.tap(find.text('Cancel'));
+    expect(find.bySemanticsLabel('Google sign-in'), findsOneWidget);
+    await t.tap(find.bySemanticsLabel('Cancel'));
     await t.pumpAndSettle();
     expect(await cancelled, isNull);
 

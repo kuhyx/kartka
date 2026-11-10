@@ -20,15 +20,23 @@ Future<FakeAccountController> _pump(
   return fake;
 }
 
+/// The spoken label of the [icon] glyph in the body (not the app bar).
+String? _spoken(WidgetTester t, IconData icon) => t
+    .widget<Icon>(
+      find.descendant(of: find.byType(ListView), matching: find.byIcon(icon)),
+    )
+    .semanticLabel;
+
 void main() {
   testWidgets('signed out: explains, offers sign-in, no sync', (t) async {
     final fake = await _pump(t, const SyncStatus(phase: SyncPhase.signedOut));
-    expect(find.textContaining('Not signed in'), findsOneWidget);
-    expect(find.text('Last sync: never'), findsOneWidget);
-    final syncNow = find.widgetWithText(FilledButton, 'Sync now');
+    expect(_spoken(t, Icons.cloud_off_outlined), 'Not signed in');
+    expect(_spoken(t, Icons.history), 'Last sync: never');
+    final syncNow = find.widgetWithIcon(FilledButton, Icons.sync);
     expect(t.widget<FilledButton>(syncNow).onPressed, isNull);
-    await t.tap(find.text('Sign in'));
+    await t.tap(find.bySemanticsLabel('Sign in'));
     expect(fake.manages, 1);
+    expect(find.text('Not signed in'), findsNothing, reason: 'never painted');
   });
 
   testWidgets('signed in: status, last sync and Sync now work', (t) async {
@@ -37,12 +45,13 @@ void main() {
       t,
       SyncStatus(phase: SyncPhase.idle, lastSync: at),
     );
-    expect(find.text('Signed in, up to date'), findsOneWidget);
-    expect(find.text('Last sync: 2026-10-24 09:05'), findsOneWidget);
-    await t.tap(find.text('Sync now'));
+    expect(_spoken(t, Icons.cloud_done_outlined), 'Signed in, up to date');
+    expect(find.text('2026-10-24 09:05'), findsOneWidget);
+    expect(_spoken(t, Icons.history), 'Last sync: 2026-10-24 09:05');
+    await t.tap(find.bySemanticsLabel('Sync now'));
     expect(fake.syncs, 1);
     expect(fake.refreshes, 1, reason: 'opening the screen checks status');
-    expect(find.text('Account (sign out)'), findsOneWidget);
+    expect(find.bySemanticsLabel('Account (sign out)'), findsOneWidget);
   });
 
   testWidgets('live status: syncing disables the button, errors show', (
@@ -51,15 +60,17 @@ void main() {
     final fake = await _pump(t, const SyncStatus(phase: SyncPhase.idle));
     fake.emit(const SyncStatus(phase: SyncPhase.syncing));
     await t.pump();
-    expect(find.text('Syncing…'), findsOneWidget);
-    final syncNow = find.widgetWithText(FilledButton, 'Sync now');
+    expect(_spoken(t, Icons.cloud_sync_outlined), 'Syncing');
+    final syncNow = find.widgetWithIcon(FilledButton, Icons.sync);
     expect(t.widget<FilledButton>(syncNow).onPressed, isNull);
     fake.emit(const SyncStatus(phase: SyncPhase.error, message: 'HTTP 401'));
     await t.pump();
-    expect(find.text('Sync failed: HTTP 401'), findsOneWidget);
+    expect(_spoken(t, Icons.error_outline), 'Sync failed');
+    expect(find.text('HTTP 401'), findsOneWidget, reason: 'server words stay');
     fake.emit(const SyncStatus(phase: SyncPhase.error));
     await t.pump();
-    expect(find.text('Sync failed: unknown error'), findsOneWidget);
+    expect(find.text('HTTP 401'), findsNothing);
+    expect(find.byIcon(Icons.error_outline), findsOneWidget);
     await t.pumpWidget(const SizedBox());
   });
 
@@ -108,15 +119,17 @@ void main() {
     expect(find.text('Google sign-in was cancelled.'), findsOneWidget);
   });
 
-  testWidgets('a platform with no route says why, button disabled', (t) async {
+  testWidgets('a platform with no route: no Google button, no sentence', (
+    t,
+  ) async {
     installFakeSecureStorage();
     SharedPreferences.setMockInitialValues({});
     await t.pumpWidget(
       MaterialApp(home: buildAccountSettingsScreen(route: GoogleRoute.none)),
     );
     await t.pumpAndSettle();
-    expect(googleButton(t).onPressed, isNull);
-    expect(find.textContaining('not available'), findsOneWidget);
+    expect(find.text('Sign in with Google'), findsNothing);
+    expect(find.textContaining('not available'), findsNothing);
   });
 
   testWidgets('connecting with a password reaches the sync opener', (t) async {

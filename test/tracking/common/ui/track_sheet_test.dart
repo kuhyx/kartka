@@ -43,7 +43,7 @@ void main() {
 
   Future<void> openSheet(WidgetTester tester, {String label = 'Track'}) async {
     await pumpButton(tester);
-    await tester.tap(find.text(label));
+    await tester.tap(find.bySemanticsLabel(label));
     await tester.pumpAndSettle();
   }
 
@@ -52,19 +52,22 @@ void main() {
   ) async {
     await openSheet(tester);
     expect(find.text('ANILIST'), findsOneWidget);
-    await tester.tap(find.text('Log in to ANILIST'));
+    await tester.tap(find.bySemanticsLabel('Log in to ANILIST'));
     await tester.pumpAndSettle();
     expect(find.widgetWithText(TextField, 'Yotsuba'), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'Yotsuba to!');
     await tester.testTextInput.receiveAction(TextInputAction.search);
     await tester.pumpAndSettle();
+    expect(find.text('4'), findsOneWidget, reason: 'chapter count, no word');
+    expect(find.textContaining('chapters'), findsNothing);
     await tester.tap(find.text('Yotsuba to!').last);
     await tester.pumpAndSettle();
     expect((await store.all()).single.remoteId, '1');
-    expect(find.text('Not on your list yet'), findsOneWidget);
+    final unlisted = tester.widget<Icon>(find.byIcon(Icons.playlist_add));
+    expect(unlisted.semanticLabel, 'Not on your list yet');
     Navigator.of(tester.element(find.byType(TrackerSection))).pop();
     await tester.pumpAndSettle();
-    expect(find.text('Tracking'), findsOneWidget);
+    expect(find.bySemanticsLabel('Tracking'), findsOneWidget);
   });
 
   testWidgets('search button and empty results', (tester) async {
@@ -72,9 +75,11 @@ void main() {
       ..loggedIn = true
       ..emptySearch = true;
     await openSheet(tester);
-    await tester.tap(find.byTooltip('Search'));
+    await tester.tap(find.bySemanticsLabel('Search'));
     await tester.pumpAndSettle();
-    expect(find.text('No matches'), findsOneWidget);
+    final none = tester.widget<Icon>(find.byIcon(Icons.search_off));
+    expect(none.semanticLabel, 'No matches');
+    expect(find.text('No matches'), findsNothing);
   });
 
   testWidgets('bound entry shows remote status and unbinds', (tester) async {
@@ -85,8 +90,10 @@ void main() {
       const TrackBinding(key: _k, service: 'anilist', remoteId: '9'),
     );
     await openSheet(tester, label: 'Tracking');
-    expect(find.text('CURRENT · 5 chapters'), findsOneWidget);
-    await tester.tap(find.text('Unbind'));
+    expect(find.bySemanticsLabel('CURRENT · 5 chapters'), findsOneWidget);
+    expect(find.text('CURRENT'), findsOneWidget, reason: "tracker's word");
+    expect(find.text('5'), findsOneWidget);
+    await tester.tap(find.bySemanticsLabel('Unbind'));
     await tester.pumpAndSettle();
     expect(await store.all(), isEmpty);
     expect(find.byType(TextField), findsOneWidget);
@@ -95,15 +102,15 @@ void main() {
   testWidgets('log out returns to the login button', (tester) async {
     anilist.loggedIn = true;
     await openSheet(tester);
-    await tester.tap(find.text('Log out'));
+    await tester.tap(find.bySemanticsLabel('Log out'));
     await tester.pumpAndSettle();
-    expect(find.text('Log in to ANILIST'), findsOneWidget);
+    expect(find.bySemanticsLabel('Log in to ANILIST'), findsOneWidget);
   });
 
   testWidgets('a failed login shows an error', (tester) async {
     anilist.loginError = Exception('denied');
     await openSheet(tester);
-    await tester.tap(find.text('Log in to ANILIST'));
+    await tester.tap(find.bySemanticsLabel('Log in to ANILIST'));
     await tester.pumpAndSettle();
     expect(find.textContaining('denied'), findsOneWidget);
   });
@@ -113,9 +120,47 @@ void main() {
       ..loggedIn = true
       ..searchError = Exception('offline');
     await openSheet(tester);
-    await tester.tap(find.byTooltip('Search'));
+    await tester.tap(find.bySemanticsLabel('Search'));
     await tester.pumpAndSettle();
     expect(find.textContaining('offline'), findsOneWidget);
+  });
+
+  testWidgets('a failed fetch shows the error in its own words', (
+    tester,
+  ) async {
+    anilist
+      ..loggedIn = true
+      ..fetchError = Exception('HTTP 503');
+    await store.put(
+      const TrackBinding(key: _k, service: 'anilist', remoteId: '9'),
+    );
+    await openSheet(tester, label: 'Tracking');
+    expect(find.textContaining('HTTP 503'), findsOneWidget);
+  });
+
+  testWidgets('a status row paints a score behind its glyph', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: TrackStatusRow(
+            TrackStatus(
+              remoteId: '1',
+              chaptersRead: 3,
+              totalChapters: 10,
+              status: 'CURRENT',
+              score: 8.5,
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.text('3/10'), findsOneWidget);
+    expect(find.text('8.5'), findsOneWidget);
+    expect(find.byIcon(Icons.star_outline), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('CURRENT · 3 / 10 chapters · score 8.5'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('no trackers installed', (tester) async {
@@ -125,7 +170,8 @@ void main() {
       progress: () => LocalProgressRepository(MemoryKeyValueStore()),
     );
     await openSheet(tester);
-    expect(find.text('No trackers installed'), findsOneWidget);
+    expect(find.bySemanticsLabel('No trackers installed'), findsOneWidget);
+    expect(find.text('No trackers installed'), findsNothing);
   });
 
   test('formatStatus', () {

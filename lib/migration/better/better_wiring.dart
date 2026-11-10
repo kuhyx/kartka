@@ -39,9 +39,12 @@ GoRoute betterSourcesGoRoute(
 
 /// The More tile opening [betterSourcesRoute].
 Widget betterSourcesTile(BuildContext context) => ListTile(
-  leading: const Icon(Icons.auto_fix_high),
-  title: const Text('Migrate to better sources'),
-  subtitle: const Text('Move entries off cut, blocked or missing sources'),
+  leading: const Icon(
+    Icons.auto_fix_high,
+    semanticLabel:
+        'Migrate to better sources. Move entries off cut, blocked or '
+        'missing sources',
+  ),
   onTap: () => unawaited(context.push(betterSourcesRoute)),
 );
 

@@ -22,7 +22,7 @@ void main() {
     expect(settingsSummary(MangadexSettings.defaults), 'en · Safe, Suggestive');
     expect(
       settingsSummary(MangadexSettings.defaults.copyWith(dataSaver: true)),
-      endsWith('· data saver'),
+      'en · Safe, Suggestive',
     );
     expect(parseLanguages(' EN, pt-br  pl,,en '), ['en', 'pt-br', 'pl']);
   });
@@ -30,10 +30,11 @@ void main() {
   testWidgets('tile shows the summary and opens the dialog', (tester) async {
     await pumpTile(tester);
     expect(find.text('en · Safe, Suggestive'), findsOneWidget);
+    expect(find.byIcon(Icons.data_saver_on), findsNothing);
     await tester.tap(find.byType(ListTile));
     await tester.pumpAndSettle();
-    expect(find.text('Chapter languages'), findsOneWidget);
-    await tester.tap(find.text('Cancel'));
+    expect(find.bySemanticsLabel(RegExp('Chapter languages')), findsOneWidget);
+    await tester.tap(find.bySemanticsLabel('Cancel'));
     await tester.pumpAndSettle();
     expect(find.byType(AlertDialog), findsNothing);
     expect(store.value, MangadexSettings.defaults);
@@ -51,7 +52,7 @@ void main() {
     await tester.tap(find.widgetWithText(FilterChip, 'Erotica'));
     await tester.tap(find.widgetWithText(FilterChip, 'Safe'));
     await tester.pump();
-    await tester.tap(find.text('Save'));
+    await tester.tap(find.bySemanticsLabel('Save'));
     await tester.pumpAndSettle();
     expect(store.value.languages, ['pl', 'en']);
     expect(store.value.dataSaver, isTrue);
@@ -59,7 +60,8 @@ void main() {
       ContentRating.suggestive,
       ContentRating.erotica,
     });
-    expect(find.text('pl, en · Suggestive, Erotica · data saver'), findsOne);
+    expect(find.text('pl, en · Suggestive, Erotica'), findsOne);
+    expect(find.byIcon(Icons.data_saver_on), findsOne);
   });
 
   testWidgets('the last rating cannot be deselected', (tester) async {

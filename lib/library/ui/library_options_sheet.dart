@@ -1,13 +1,15 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/ui/section_mark.dart';
 import 'package:kartka/library/state/library_controller.dart';
 import 'package:kartka/library/state/library_query.dart';
 
-const Map<LibrarySort, String> _sortLabels = {
-  LibrarySort.title: 'Title',
-  LibrarySort.lastRead: 'Last read',
-  LibrarySort.dateAdded: 'Date added',
-  LibrarySort.unread: 'Unread count',
+/// Each sort's glyph and its spoken name.
+const Map<LibrarySort, (IconData, String)> _sorts = {
+  LibrarySort.title: (Icons.sort_by_alpha, 'Title'),
+  LibrarySort.lastRead: (Icons.history, 'Last read'),
+  LibrarySort.dateAdded: (Icons.event_outlined, 'Date added'),
+  LibrarySort.unread: (Icons.numbers, 'Unread count'),
 };
 
 /// Opens the sort and filter sheet; changes apply live.
@@ -27,7 +29,6 @@ class _Sheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final q = c.query;
-    final heading = Theme.of(context).textTheme.titleSmall;
     void set(LibraryQuery next) => c.query = next;
     return SafeArea(
       child: SingleChildScrollView(
@@ -35,35 +36,48 @@ class _Sheet extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _Heading('Filter', heading),
+            const SectionMark(Icons.filter_list, semanticLabel: 'Filter'),
             CheckboxListTile(
-              title: const Text('Unread'),
+              secondary: const Icon(
+                Icons.mark_chat_unread_outlined,
+                semanticLabel: 'Unread',
+              ),
               value: q.unreadOnly,
               onChanged: (v) => set(q.copyWith(unreadOnly: v)),
             ),
             CheckboxListTile(
-              title: const Text('Downloaded'),
+              secondary: const Icon(
+                Icons.download_done,
+                semanticLabel: 'Downloaded',
+              ),
               value: q.downloadedOnly,
               onChanged: (v) => set(q.copyWith(downloadedOnly: v)),
             ),
             CheckboxListTile(
-              title: const Text('Tracked'),
+              secondary: const Icon(Icons.sync_alt, semanticLabel: 'Tracked'),
               value: q.trackedOnly,
               onChanged: (v) => set(q.copyWith(trackedOnly: v)),
             ),
-            _Heading('Sort by', heading),
+            const SectionMark(Icons.sort, semanticLabel: 'Sort by'),
             RadioGroup<LibrarySort>(
               groupValue: q.sort,
               onChanged: (s) => set(q.copyWith(sort: s)),
               child: Column(
                 children: [
-                  for (final MapEntry(:key, :value) in _sortLabels.entries)
-                    RadioListTile<LibrarySort>(title: Text(value), value: key),
+                  for (final MapEntry(:key, value: (icon, name))
+                      in _sorts.entries)
+                    RadioListTile<LibrarySort>(
+                      secondary: Icon(icon, semanticLabel: name),
+                      value: key,
+                    ),
                 ],
               ),
             ),
             SwitchListTile(
-              title: const Text('Descending'),
+              secondary: const Icon(
+                Icons.arrow_downward,
+                semanticLabel: 'Descending',
+              ),
               value: !q.ascending,
               onChanged: (v) => set(q.copyWith(ascending: !v)),
             ),
@@ -72,22 +86,4 @@ class _Sheet extends StatelessWidget {
       ),
     );
   }
-}
-
-class _Heading extends StatelessWidget {
-  const new(this.text, this.style);
-
-  final String text;
-  final TextStyle? style;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(
-      AppSpacing.md,
-      AppSpacing.sm,
-      AppSpacing.md,
-      AppSpacing.xs,
-    ),
-    child: Text(text, style: style),
-  );
 }

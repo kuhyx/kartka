@@ -76,7 +76,7 @@ class _CategorySwipeState extends State<CategorySwipe> {
 /// the same indicator. Owns its [TabController] and replaces it only when
 /// the number of tabs changes.
 class CategoryTabs extends StatefulWidget implements PreferredSizeWidget {
-  /// Creates the bar over [labels] (the first is "Default" when shown).
+  /// Creates the bar over [labels]; a null label is the "Default" tab.
   const new({
     required this.labels,
     required this.index,
@@ -84,8 +84,8 @@ class CategoryTabs extends StatefulWidget implements PreferredSizeWidget {
     super.key,
   });
 
-  /// Tab labels in order.
-  final List<String> labels;
+  /// Category names in order; null for "Default" (drawn as a glyph).
+  final List<String?> labels;
 
   /// The selected tab.
   final int index;
@@ -133,6 +133,12 @@ class _CategoryTabsState extends State<CategoryTabs>
     isScrollable: true,
     tabAlignment: TabAlignment.start,
     onTap: widget.onSelect,
-    tabs: [for (final l in widget.labels) Tab(text: l)],
+    tabs: [
+      for (final l in widget.labels)
+        if (l == null)
+          const Tab(icon: Icon(Icons.inbox, semanticLabel: 'Default'))
+        else
+          Tab(text: l),
+    ],
   );
 }

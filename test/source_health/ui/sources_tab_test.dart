@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/source_health/feed/fixture_feed.dart';
+import 'package:kartka/source_health/ranking.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
 import 'package:kartka/source_health/ui/sources_tab.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../fixtures.dart';
 import 'harness.dart';
 
@@ -24,10 +26,14 @@ Future<void> pumpTab(WidgetTester tester, {DateTime? now}) async {
   await tester.pump();
 }
 
+/// Opens [dropdown] and picks the item painted as [item] (a language code)
+/// or spoken as it (a glyph item).
 Future<void> choose(WidgetTester tester, Key dropdown, String item) async {
   await tester.tap(find.byKey(dropdown));
   await tester.pumpAndSettle();
-  await tester.tap(find.text(item).last);
+  final painted = find.text(item);
+  final target = painted.evaluate().isEmpty ? spokenIcon(item) : painted;
+  await tester.tap(target.last);
   await tester.pumpAndSettle();
 }
 
@@ -44,35 +50,53 @@ void main() {
     ]);
     for (final text in [
       '96 % (27/28)',
-      'accruing 9/28 probes',
+      '9/28',
       'p50 420 ms · p95 1.3 s',
-      '35 % (Cloudflare challenge, 429 Too Many Requests)',
+      '35 %',
       '512/650 (79 %)',
-      '97 % over 40 titles',
+      '97 % · 40',
       '1100 px',
       'q88',
-      'native · JS plugin · Suwayomi',
-      '#3 Cut',
-      'Pending',
+      '#3',
       '0.81',
     ]) {
       expect(find.text(text), findsWidgets, reason: text);
     }
-    expect(find.textContaining('Down too often: answered 22 of 28'), findsOne);
-    expect(find.textContaining('Catalogue too small: has 90 of 650'), findsOne);
-    expect(find.text('Subset of MangaDex (93 %)'), findsOne);
-    expect(find.text('Last evaluated 2026-10-24 12:00 UTC'), findsOne);
-    expect(find.textContaining('older than 8 days'), findsNothing);
+    for (final spoken in [
+      'Uptime: accruing 9/28 probes',
+      'Blocking: 35 % (Cloudflare challenge, 429 Too Many Requests)',
+      'Chapters: 97 % over 40 titles',
+      'Available as: native · JS plugin · Suwayomi',
+      'Source health: pending',
+      'Down too often: answered 22 of 28',
+      'Catalogue too small: has 90 of 650',
+      'Subset of MangaDex (93 %)',
+    ]) {
+      expect(spokenContaining(spoken), findsWidgets, reason: spoken);
+    }
+    expect(find.text('MangaDex (93 %)'), findsOne);
+    expect(find.text('2026-10-24 12:00 UTC'), findsOne);
+    expect(spokenContaining('older than 8 days'), findsNothing);
   });
 
   testWidgets('warns when results are stale', (tester) async {
     await pumpTab(tester, now: DateTime.utc(2026, 11, 10));
-    expect(find.textContaining('older than 8 days'), findsOne);
+    expect(spokenContaining('older than 8 days'), findsOne);
   });
 
-  testWidgets('sorts by any metric, best first, and reverses', (tester) async {
+  testWidgets('every sort has a glyph; sorts best first, and reverses', (
+    tester,
+  ) async {
     await pumpTab(tester);
-    await choose(tester, const Key('sort'), 'Sort: Coverage');
+    await tester.tap(find.byKey(const Key('sort')));
+    await tester.pumpAndSettle();
+    for (final s in HealthSort.values) {
+      expect(spokenIcon(s.label), findsWidgets, reason: s.label);
+    }
+    expect(find.text('p95'), findsWidgets);
+    await tester.tapAt(Offset.zero);
+    await tester.pumpAndSettle();
+    await choose(tester, const Key('sort'), 'Coverage');
     expect(cardOrder(tester, _ids).take(3), [
       'mangadex',
       'suwayomi:2499283573021220255',
@@ -86,7 +110,7 @@ void main() {
 
   testWidgets('filters by verdict, language and origin', (tester) async {
     await pumpTab(tester);
-    await tester.tap(find.widgetWithText(FilterChip, 'Cut'));
+    await tester.tap(find.byKey(const Key('verdict-cut')));
     await tester.pumpAndSettle();
     expect(cardOrder(tester, _ids), [
       'suwayomi:2499283573021220255',
@@ -97,10 +121,10 @@ void main() {
     expect(cardOrder(tester, _ids), ['plugin:comick']);
     await choose(tester, const Key('lang'), 'pl');
     expect(cardOrder(tester, _ids), isEmpty);
-    expect(find.text('No sources match these filters.'), findsOne);
+    expect(spokenIcon('No match'), findsOne);
     await choose(tester, const Key('lang'), 'All languages');
     await choose(tester, const Key('origin'), 'All origins');
-    await tester.tap(find.widgetWithText(FilterChip, 'Cut'));
+    await tester.tap(find.byKey(const Key('verdict-cut')));
     await tester.pumpAndSettle();
     expect(cardOrder(tester, _ids), hasLength(6));
   });
@@ -109,7 +133,7 @@ void main() {
     tester,
   ) async {
     await pumpTab(tester);
-    await tester.tap(find.text('Subset of MangaDex (93 %)'));
+    await tester.tap(find.text('MangaDex (93 %)'));
     await tester.pumpAndSettle();
     final page = tester.widget<SourceDetailPage>(find.byType(SourceDetailPage));
     expect(page.record.id, 'mangadex');

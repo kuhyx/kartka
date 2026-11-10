@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/downloads/auto/auto_downloader.dart';
 import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/downloads/downloads_snapshot.dart';
@@ -30,14 +32,30 @@ class _DownloadsNavTileState extends State<DownloadsNavTile> {
     stream: _snapshots,
     builder: (context, snap) {
       final data = snap.data;
+      final queued = data?.queue.length;
+      final used = data == null ? null : formatBytes(data.index.totalBytes);
       return ListTile(
-        leading: const Icon(Icons.download_outlined),
-        title: const Text('Downloads'),
-        subtitle: data == null
+        leading: const Icon(
+          Icons.download_outlined,
+          semanticLabel: 'Downloads',
+        ),
+        title: data == null
             ? null
-            : Text(
-                '${data.queue.length} queued · '
-                '${formatBytes(data.index.totalBytes)} used',
+            : SpokenLabel(
+                semanticLabel: '$queued queued · $used used',
+                child: ExcludeSemantics(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.queue, size: 16),
+                      const SizedBox(width: AppSpacing.xs),
+                      Text('$queued'),
+                      const SizedBox(width: AppSpacing.md),
+                      const Icon(Icons.storage, size: 16),
+                      const SizedBox(width: AppSpacing.xs),
+                      Text(used!),
+                    ],
+                  ),
+                ),
               ),
         onTap: widget.onOpen,
       );
@@ -78,9 +96,10 @@ class _AutoDownloadTileState extends State<AutoDownloadTile> {
 
   @override
   Widget build(BuildContext context) => SwitchListTile(
-    secondary: const Icon(Icons.downloading_outlined),
-    title: const Text('Auto-download new chapters'),
-    subtitle: const Text('Library manga, checked while the app is open'),
+    secondary: const Icon(
+      Icons.downloading_outlined,
+      semanticLabel: 'Auto-download new chapters',
+    ),
     value: _on ?? false,
     onChanged: _on == null ? null : (on) => unawaited(_set(on: on)),
   );

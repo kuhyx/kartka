@@ -18,6 +18,7 @@ import 'package:kartka/updates/updates_feature.dart';
 
 import '../browse/fakes.dart';
 import '../browse/ui/harness.dart';
+import '../helpers/spoken_icon.dart';
 
 ChapterInfo _ch(int n) =>
     ChapterInfo(url: '/c/$n', name: 'Ch. $n', number: n.toDouble());
@@ -99,9 +100,9 @@ void main() {
     expect(find.text('Ch. 4'), findsOneWidget);
 
     // The baseline moved, so update-all finds nothing new now.
-    await t.tap(find.byTooltip('Check for updates'));
+    await t.tap(spokenIcon('Check for updates'));
     await t.pumpAndSettle();
-    expect(find.text('No new chapters'), findsOneWidget);
+    expect(find.bySemanticsLabel('No new chapters'), findsOneWidget);
     expect(src.calls.where((c) => c.startsWith('chapters')), hasLength(2));
   });
 

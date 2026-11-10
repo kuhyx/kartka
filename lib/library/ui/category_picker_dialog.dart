@@ -30,7 +30,11 @@ class _PickerState extends State<_Picker> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: const Text('Set categories'),
+    title: const Icon(
+      Icons.label_outline,
+      size: 48,
+      semanticLabel: 'Set categories',
+    ),
     content: SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -48,16 +52,18 @@ class _PickerState extends State<_Picker> {
       ),
     ),
     actions: [
-      TextButton(
+      IconButton(
+        style: IconButton.styleFrom(minimumSize: const Size.square(48)),
         onPressed: () => Navigator.pop(context),
-        child: const Text('Cancel'),
+        icon: const Icon(Icons.close, semanticLabel: 'Cancel'),
       ),
-      FilledButton(
+      IconButton.filled(
+        style: IconButton.styleFrom(minimumSize: const Size.square(48)),
         onPressed: () => Navigator.pop(context, {
           for (final MapEntry(:key, :value) in _value.entries)
             if (value != null && value != widget.initial[key]) key: value,
         }),
-        child: const Text('Apply'),
+        icon: const Icon(Icons.check, semanticLabel: 'Apply'),
       ),
     ],
   );

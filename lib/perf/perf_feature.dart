@@ -26,9 +26,7 @@ KartkaFeature buildPerfFeature(JankTracker tracker) => KartkaFeature(
   ],
   settingsTiles: [
     (context) => ListTile(
-      leading: const Icon(Icons.speed),
-      title: const Text('Performance'),
-      subtitle: const Text('Slow frames per screen'),
+      leading: const Icon(Icons.speed, semanticLabel: 'Performance'),
       onTap: () => unawaited(context.push(performanceRoute)),
     ),
   ],

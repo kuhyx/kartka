@@ -61,9 +61,7 @@ KartkaFeature syncFeatureWith(
   ],
   settingsTiles: [
     (context) => ListTile(
-      leading: const Icon(Icons.cloud_sync_outlined),
-      title: const Text('Sync'),
-      subtitle: const Text('Account, status, sync now'),
+      leading: const Icon(Icons.cloud_sync_outlined, semanticLabel: 'Sync'),
       onTap: () => context.push(syncAccountRoute),
     ),
   ],
@@ -93,10 +91,23 @@ class SyncAccountRoute extends StatelessWidget {
       final engine = snap.data;
       if (engine == null) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Sync')),
+          appBar: AppBar(
+            title: const Icon(Icons.cloud_sync_outlined, semanticLabel: 'Sync'),
+          ),
           body: Center(
             child: snap.hasError
-                ? Text(redactUrlQueries('Sync could not start: ${snap.error}'))
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.cloud_off_outlined,
+                        size: 64,
+                        color: Theme.of(context).colorScheme.error,
+                        semanticLabel: 'Sync could not start',
+                      ),
+                      Text(redactUrlQueries('${snap.error}')),
+                    ],
+                  )
                 : const CircularProgressIndicator(),
           ),
         );

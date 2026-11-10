@@ -6,6 +6,7 @@ import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/source_provider.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/platform/platform.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
@@ -70,7 +71,12 @@ Widget _route(
 ) {
   final args = parseReadRoute(state.uri.toString());
   if (args == null) {
-    return const Scaffold(body: Center(child: Text('Unknown chapter link.')));
+    return const Scaffold(
+      body: EmptyMark(
+        icon: Icons.link_off,
+        semanticLabel: 'Unknown chapter link.',
+      ),
+    );
   }
   return ReaderScreen(
     key: ValueKey(state.uri.toString()),

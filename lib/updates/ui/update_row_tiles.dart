@@ -2,9 +2,17 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/updates/state/update_rows.dart';
 import 'package:kartka/updates/state/updates_deps.dart';
 import 'package:kartka/updates/ui/update_cover.dart';
+
+/// The relative day headings ([dayLabel]) are painted as glyphs, spoken as
+/// the word; any other heading is a date and stays painted.
+const Map<String, IconData> _dayIcons = {
+  'Today': Icons.today,
+  'Yesterday': Icons.history,
+};
 
 /// The widget for one [row]: a day heading, a manga heading that opens the
 /// detail page, or a chapter that opens the reader on it.
@@ -19,7 +27,17 @@ Widget updateRowTile(BuildContext context, UpdateRow row, CoverBytes? covers) {
           AppSpacing.md,
           AppSpacing.xs,
         ),
-        child: Text(label, style: theme.textTheme.titleSmall),
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: switch (_dayIcons[label]) {
+            final icon? => Icon(
+              icon,
+              color: theme.colorScheme.onSurfaceVariant,
+              semanticLabel: label,
+            ),
+            null => Text(label, style: theme.textTheme.titleSmall),
+          },
+        ),
       );
     case MangaRow(:final entry):
       return ListTile(
@@ -54,8 +72,8 @@ class _UnreadDot extends StatelessWidget {
   const new({super.key});
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    label: 'Unread',
+  Widget build(BuildContext context) => SpokenLabel(
+    semanticLabel: 'Unread',
     child: DecoratedBox(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary,

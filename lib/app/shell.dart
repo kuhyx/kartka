@@ -2,15 +2,19 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 
 /// Label and icon of each shell tab, in [KartkaTab] order (the destinations
 /// must line up with the router's branches).
-const Map<KartkaTab, ({String label, IconData icon})> tabInfo = {
-  KartkaTab.library: (label: 'Library', icon: Icons.collections_bookmark),
-  KartkaTab.updates: (label: 'Updates', icon: Icons.new_releases),
-  KartkaTab.browse: (label: 'Browse', icon: Icons.explore),
-  KartkaTab.sources: (label: 'Sources', icon: Icons.insights),
-  KartkaTab.more: (label: 'More', icon: Icons.more_horiz),
+const Map<KartkaTab, ({IconData icon, String semanticLabel})> tabInfo = {
+  KartkaTab.library: (
+    icon: Icons.collections_bookmark,
+    semanticLabel: 'Library',
+  ),
+  KartkaTab.updates: (icon: Icons.new_releases, semanticLabel: 'Updates'),
+  KartkaTab.browse: (icon: Icons.explore, semanticLabel: 'Browse'),
+  KartkaTab.sources: (icon: Icons.insights, semanticLabel: 'Sources'),
+  KartkaTab.more: (icon: Icons.more_horiz, semanticLabel: 'More'),
 };
 
 /// Width at which the bottom bar becomes a side rail (M3 "medium").
@@ -46,12 +50,13 @@ class KartkaShell extends StatelessWidget {
               NavigationRail(
                 selectedIndex: shell.currentIndex,
                 onDestinationSelected: _go,
-                labelType: NavigationRailLabelType.all,
+                // The rail keeps each label invisible, for semantics only.
+                labelType: NavigationRailLabelType.none,
                 destinations: [
                   for (final t in tabs)
                     NavigationRailDestination(
                       icon: Icon(t.icon),
-                      label: Text(t.label),
+                      label: Text(t.semanticLabel),
                     ),
                 ],
               ),
@@ -68,9 +73,15 @@ class KartkaShell extends StatelessWidget {
       bottomNavigationBar: NavigationBar(
         selectedIndex: shell.currentIndex,
         onDestinationSelected: _go,
+        // Labels stay spoken only: hidden, and no long-press tooltip.
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
         destinations: [
           for (final t in tabs)
-            NavigationDestination(icon: Icon(t.icon), label: t.label),
+            NavigationDestination(
+              icon: Icon(t.icon),
+              label: t.semanticLabel,
+              tooltip: '',
+            ),
         ],
       ),
     );
@@ -86,10 +97,9 @@ class TabPlaceholder extends StatelessWidget {
   final KartkaTab tab;
 
   @override
-  Widget build(BuildContext context) => EmptyState(
+  Widget build(BuildContext context) => EmptyMark(
     icon: tabInfo[tab]!.icon,
-    title: '${tabInfo[tab]!.label} is not built yet',
-    message: 'A feature part fills this tab through the registry.',
+    semanticLabel: '${tabInfo[tab]!.semanticLabel} is not built yet',
   );
 }
 
@@ -104,10 +114,9 @@ class MoreTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (tiles.isEmpty) {
-      return const EmptyState(
+      return const EmptyMark(
         icon: Icons.settings,
-        title: 'Nothing to configure yet',
-        message: 'Settings appear here as features land.',
+        semanticLabel: 'Nothing to configure yet',
       );
     }
     return ListView(

@@ -1,5 +1,8 @@
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/redact.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/downloads/queue/download_task.dart';
 import 'package:kartka/downloads/ui/format.dart';
 
@@ -41,7 +44,28 @@ class QueueTile extends StatelessWidget {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('$mangaTitle · ${statusLine(s, paused: paused)}'),
+          Row(
+            children: [
+              Flexible(child: Text(mangaTitle)),
+              const SizedBox(width: AppSpacing.sm),
+              SpokenLabel(
+                semanticLabel: statusLine(s, paused: paused),
+                child: ExcludeSemantics(
+                  child: Icon(
+                    queueStatusIcon(s.status, paused: paused),
+                    size: 16,
+                  ),
+                ),
+              ),
+              if (s.status == DownloadStatus.downloading && s.pagesTotal > 0)
+                Text(' ${s.pagesDone} / ${s.pagesTotal}'),
+            ],
+          ),
+          if (failed && s.error != null)
+            Text(
+              redactUrlQueries(s.error!),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
           if (!failed)
             LinearProgressIndicator(value: unknownTotal ? null : s.fraction),
         ],
@@ -51,13 +75,11 @@ class QueueTile extends StatelessWidget {
         children: [
           if (failed)
             IconButton(
-              icon: const Icon(Icons.refresh),
-              tooltip: 'Retry',
+              icon: const Icon(Icons.refresh, semanticLabel: 'Retry'),
               onPressed: onRetry,
             ),
           IconButton(
-            icon: const Icon(Icons.close),
-            tooltip: 'Cancel',
+            icon: const Icon(Icons.close, semanticLabel: 'Cancel'),
             onPressed: onCancel,
           ),
         ],
@@ -65,3 +87,13 @@ class QueueTile extends StatelessWidget {
     );
   }
 }
+
+/// The glyph for a queued chapter's status (its words are spoken only).
+IconData queueStatusIcon(DownloadStatus status, {required bool paused}) =>
+    switch (status) {
+      DownloadStatus.queued when paused => Icons.pause_circle_outline,
+      DownloadStatus.queued => Icons.schedule,
+      DownloadStatus.failed => Icons.error_outline,
+      DownloadStatus.done => Icons.download_done,
+      DownloadStatus.none || DownloadStatus.downloading => Icons.downloading,
+    };

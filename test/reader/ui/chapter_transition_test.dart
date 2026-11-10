@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/reader/ui/chapter_transition.dart';
 
+import '../../helpers/spoken_icon.dart';
+
 void main() {
   Future<void> pump(
     WidgetTester tester, {
@@ -30,12 +32,14 @@ void main() {
     tester,
   ) async {
     await pump(tester, forward: true, target: 'Ch. 6');
-    expect(find.text('Next: Ch. 6'), findsOneWidget);
+    expect(spokenIcon('Next'), findsOneWidget);
+    expect(find.text('Ch. 6'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    expect(find.byType(FilledButton), findsNothing);
+    expect(find.byType(IconButton), findsNothing);
     expect(find.text('Finished'), findsNothing);
     await pump(tester, forward: false, target: 'Ch. 4');
-    expect(find.text('Previous: Ch. 4'), findsOneWidget);
+    expect(spokenIcon('Previous'), findsOneWidget);
+    expect(find.text('Ch. 4'), findsOneWidget);
   });
 
   testWidgets('a failed neighbour explains and retries from the keyboard', (
@@ -49,7 +53,8 @@ void main() {
       error: 'Timed out after 30 s.',
       onRetry: () => retried++,
     );
-    expect(find.text('Could not open Ch. 6'), findsOneWidget);
+    expect(spokenIcon('Could not open'), findsOneWidget);
+    expect(find.text('Ch. 6'), findsOneWidget);
     expect(find.text('Timed out after 30 s.'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
@@ -62,21 +67,29 @@ void main() {
     await pump(tester, forward: true);
     expect(find.text('Finished'), findsNothing);
     expect(find.text('Ch. 5'), findsOneWidget);
-    expect(find.text('No more chapters'), findsOneWidget);
-    expect(find.byType(FilledButton), findsNothing);
+    expect(spokenIcon('No more chapters'), findsOneWidget);
+    expect(find.byType(IconButton), findsNothing);
     await pump(tester, forward: false);
-    expect(find.text('Start of'), findsOneWidget);
-    expect(find.text('No previous chapter'), findsOneWidget);
+    expect(spokenIcon('Start of, no previous chapter'), findsOneWidget);
+    expect(find.text('Ch. 5'), findsOneWidget);
   });
 
   testWidgets('an unknown next chapter still loads or fails', (tester) async {
     await pump(tester, forward: true, loading: true);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    expect(find.text('Looking for the next chapter'), findsOneWidget);
-    expect(find.text('No more chapters'), findsNothing);
+    expect(
+      find.bySemanticsLabel('Looking for the next chapter'),
+      findsOneWidget,
+    );
+    expect(spokenIcon('No more chapters'), findsNothing);
     await pump(tester, forward: true, error: 'Offline.', onRetry: () {});
-    expect(find.text('Could not open the next chapter'), findsOneWidget);
+    expect(spokenIcon('Could not open'), findsOneWidget);
+    expect(find.text('Ch. 5'), findsNothing);
     expect(find.text('Offline.'), findsOneWidget);
-    expect(find.text('Retry'), findsOneWidget);
+    expect(spokenIcon('Retry'), findsOneWidget);
+    expect(
+      tester.getSize(find.byType(IconButton)).height,
+      greaterThanOrEqualTo(48),
+    );
   });
 }

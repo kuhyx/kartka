@@ -13,6 +13,7 @@ import 'package:kartka/source_health/ui/scoring_page.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
 import 'package:kartka/source_health/ui/sources_tab.dart';
 
+import '../../helpers/spoken_icon.dart';
 import 'harness.dart';
 
 SourceHealthRecord rec(
@@ -69,7 +70,7 @@ void main() {
     tester,
   ) async {
     await pump(tester);
-    expect(find.text('Scoring · default'), findsOne);
+    expect(spokenContaining('Scoring: default'), findsOne);
     expect(cardOrder(tester, ['a', 'b']), ['a', 'b']);
 
     await tester.tap(find.byKey(const Key('open-scoring')));
@@ -81,13 +82,14 @@ void main() {
     Navigator.of(tester.element(find.byType(ScoringPage))).pop();
     await tester.pumpAndSettle();
 
-    expect(find.text('Scoring · custom'), findsOne);
+    expect(spokenContaining('Scoring: custom'), findsOne);
     expect(cardOrder(tester, ['a', 'b']), ['b', 'a']);
     // The default scores (score.py: 0.991, and .5 × (.6 × .4 + .4) + .5)
     // show next to the new.
     expect(find.byKey(const Key('default-score')), findsNWidgets(2));
-    expect(find.text('default 0.99'), findsOne);
-    expect(find.text('default 0.82'), findsOne);
+    expect(spokenIcon('default 0.99'), findsOne);
+    expect(spokenIcon('default 0.82'), findsOne);
+    expect(find.text('0.82'), findsOne);
   });
 
   test('Browse badges follow the active profile', () async {
@@ -165,18 +167,18 @@ void main() {
       ),
     );
     expect(
-      find.text('Score (custom profile) 0.40 · rank #1 · default 0.70'),
+      spokenIcon('Score (custom profile) 0.40 · rank #1 · default 0.70'),
       findsOne,
     );
-    expect(find.textContaining('custom scoring profile'), findsOne);
-    expect(find.textContaining('unless a cut switch applies'), findsOne);
-    expect(find.text('Kept on score ≥ 0.50 despite'), findsOne);
-    expect(find.text('Pages load (multiplier)'), findsNothing);
+    expect(spokenContaining('under the custom profile'), findsOne);
+    expect(spokenContaining('unless a cut switch applies'), findsOne);
+    expect(spokenIcon('Kept on score ≥ 0.50 despite'), findsOne);
+    expect(spokenIcon('Pages load (multiplier)'), findsNothing);
     expect(find.text('100 %'), findsWidgets);
   });
 
   testWidgets('the reason filter offers "Pages never load"', (tester) async {
     await pump(tester);
-    expect(find.text(HealthReason.pagesNeverLoad.label), findsOne);
+    expect(spokenIcon(HealthReason.pagesNeverLoad.label), findsOne);
   });
 }

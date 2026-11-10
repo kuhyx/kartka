@@ -1,7 +1,11 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/ui/snack_mark.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/source_health/install/source_installs.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
+import 'package:kartka/source_health/ui/health_badge.dart';
+import 'package:kartka/source_health/ui/health_icons.dart';
 
 /// Install / Installing… / Open for one source, on its card and detail page.
 /// A failed install shows a snackbar with the redacted reason.
@@ -16,10 +20,18 @@ class SourceActionButton extends StatelessWidget {
   final SourceInstalls installs;
 
   Future<void> _install(BuildContext context) async {
-    final messenger = ScaffoldMessenger.of(context);
     final error = await installs.install(record);
-    if (error == null) return;
-    messenger.showSnackBar(SnackBar(content: Text('Install failed: $error')));
+    if (error == null || !context.mounted) return;
+    showMark(
+      context,
+      IconValue(
+        Icons.error_outline,
+        error,
+        semanticLabel: 'Install failed',
+        color: statusColors(context).onStatus,
+      ),
+      error: true,
+    );
   }
 
   @override
@@ -36,10 +48,11 @@ class SourceActionButton extends StatelessWidget {
         spacing: AppSpacing.xs,
         children: [
           button,
-          Text(
-            flag,
+          Icon(
+            Icons.report_problem_outlined,
             key: ValueKey('autoinstall-flag-$id'),
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
+            color: Theme.of(context).colorScheme.error,
+            semanticLabel: flag,
           ),
         ],
       );
@@ -48,26 +61,33 @@ class SourceActionButton extends StatelessWidget {
 
   Widget _button(BuildContext context, String id) =>
       switch (installs.actionOf(record)) {
-        SourceAction.open => OutlinedButton.icon(
+        SourceAction.open => IconButton.outlined(
           key: ValueKey('open-$id'),
-          icon: const Icon(Icons.open_in_new),
-          label: const Text('Open'),
+          style: _size,
+          icon: const Icon(Icons.open_in_new, semanticLabel: 'Open'),
           onPressed: () => installs.open(context, id),
         ),
-        SourceAction.install => FilledButton.tonalIcon(
+        SourceAction.install => IconButton.filledTonal(
           key: ValueKey('install-$id'),
-          icon: const Icon(Icons.download),
-          label: const Text('Install'),
+          style: _size,
+          icon: const Icon(Icons.download, semanticLabel: 'Install'),
           onPressed: () => _install(context),
         ),
-        SourceAction.installing => FilledButton.tonalIcon(
+        SourceAction.installing => IconButton.filledTonal(
           key: ValueKey('installing-$id'),
-          icon: const SizedBox.square(
-            dimension: AppSpacing.md,
-            child: CircularProgressIndicator(strokeWidth: 2),
+          style: _size,
+          icon: const SpokenLabel(
+            semanticLabel: 'Installing',
+            child: SizedBox.square(
+              dimension: AppSpacing.md,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
           ),
-          label: const Text('Installing…'),
           onPressed: null,
         ),
       };
+
+  static final ButtonStyle _size = IconButton.styleFrom(
+    minimumSize: const Size.square(48),
+  );
 }

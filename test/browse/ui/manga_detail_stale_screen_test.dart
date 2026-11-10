@@ -7,6 +7,7 @@ import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/challenge.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../fakes.dart';
 import 'harness.dart';
 
@@ -51,7 +52,7 @@ void main() {
     );
     await t.pump();
     expect(find.text('Stored title'), findsOneWidget);
-    expect(find.text('3 chapters'), findsOneWidget);
+    expect(find.bySemanticsLabel('3 chapters'), findsOneWidget);
     expect(find.byType(LinearProgressIndicator), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     src.detailsGate!.complete();
@@ -79,7 +80,8 @@ void main() {
     );
     await h.pump(t, const SizedBox(), at: mangaRoute('sy-builtin:1', _url));
     expect(find.text('Stored title'), findsOneWidget);
-    expect(find.textContaining('Source unavailable'), findsOneWidget);
-    expect(find.text('Retry'), findsOneWidget);
+    expect(spokenIcon('Source unavailable'), findsOneWidget);
+    expect(find.text('sy-builtin:1'), findsOneWidget);
+    expect(spokenIcon('Retry'), findsOneWidget);
   });
 }

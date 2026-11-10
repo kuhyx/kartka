@@ -24,10 +24,14 @@ void main() {
   ) async {
     final u = await _pump(t);
     u.summary = const UpdateSummary(newChapters: 3, manga: 2, failed: 1);
-    await t.tap(find.byTooltip('Update library'));
+    await t.tap(find.bySemanticsLabel('Update library'));
     await t.pumpAndSettle();
     expect(u.calls, 1);
-    expect(find.text('3 new chapters in 2 manga · 1 failed'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('3 new chapters in 2 manga · 1 failed'),
+      findsOneWidget,
+    );
+    expect(find.text('3'), findsOneWidget);
   });
 
   testWidgets('pull-to-refresh on the grid runs update-all', (t) async {
@@ -35,13 +39,14 @@ void main() {
     await t.fling(find.text('Akira'), const Offset(0, 400), 1000);
     await t.pumpAndSettle();
     expect(u.calls, 1);
-    expect(find.text('No new chapters'), findsOneWidget);
+    expect(find.bySemanticsLabel('No new chapters'), findsOneWidget);
+    expect(find.byIcon(Icons.done_all), findsOneWidget);
   });
 
   testWidgets('pull works on the empty state too', (t) async {
     final u = await _pump(t, seed: false);
     await t.fling(
-      find.text('Your library is empty'),
+      find.bySemanticsLabel('Your library is empty'),
       const Offset(0, 400),
       1000,
     );
@@ -53,16 +58,17 @@ void main() {
     final u = await _pump(t);
     u.show(const UpdateProgress(3, 10));
     await t.pump();
-    expect(find.text('Checking 3/10'), findsOneWidget);
+    expect(find.text('3/10'), findsOneWidget);
+    expect(find.bySemanticsLabel('Checking 3/10'), findsOneWidget);
     u.show(null);
     await t.pump();
-    expect(find.text('Checking 3/10'), findsNothing);
+    expect(find.text('3/10'), findsNothing);
   });
 
   testWidgets('no updater: no refresh action', (t) async {
     final f = Fakes();
     await pumpLibrary(t, f.deps);
-    expect(find.byTooltip('Update library'), findsNothing);
+    expect(find.bySemanticsLabel('Update library'), findsNothing);
     expect(find.byType(RefreshIndicator), findsNothing);
   });
 }

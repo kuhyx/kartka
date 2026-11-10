@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/migration/migration_controller.dart';
+import 'package:kartka/migration/migration_outcome.dart';
 
 /// "Migrate to Atsumaru": each entry with its best match, exact matches
 /// pre-ticked. Nothing changes until the user taps Apply, which first
@@ -33,7 +35,9 @@ class _MigrationScreenState extends State<MigrationScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Migrate to Atsumaru')),
+    appBar: AppBar(
+      title: const Icon(Icons.swap_horiz, semanticLabel: 'Migrate to Atsumaru'),
+    ),
     body: ListenableBuilder(
       listenable: widget.controller,
       builder: (context, _) => _body(context, widget.controller),
@@ -42,31 +46,36 @@ class _MigrationScreenState extends State<MigrationScreen> {
 
   Widget _body(BuildContext context, MigrationController c) {
     if (c.phase == MigrationPhase.unavailable) {
-      return const EmptyState(
+      return const EmptyMark(
         icon: Icons.cloud_off_outlined,
-        title: 'Atsumaru is not available',
-        message:
-            'Install the Atsumaru extension on the Suwayomi server, then '
-            'open this again.',
+        semanticLabel:
+            'Atsumaru is not available. Install the Atsumaru extension on '
+            'the Suwayomi server, then open this again.',
       );
     }
     final busy =
         c.phase == MigrationPhase.searching ||
         c.phase == MigrationPhase.applying;
     if (c.rows.isEmpty && !busy) {
-      return const EmptyState(
+      return const EmptyMark(
         icon: Icons.done_all,
-        title: 'Nothing to migrate',
-        message: 'Every library entry is already on Atsumaru.',
+        semanticLabel:
+            'Nothing to migrate. Every library entry is already on Atsumaru.',
       );
     }
+    final done = c.phase == MigrationPhase.done;
     return Column(
       children: [
         if (busy) const LinearProgressIndicator(),
-        if (_status(c) case final status?)
+        if (done || c.phase == MigrationPhase.failed)
           Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
-            child: Text(status, style: Theme.of(context).textTheme.bodyLarge),
+            child: MigrationOutcome(
+              migrated: c.migrated,
+              failed: c.failed,
+              backupKey: c.backupKey,
+              error: done ? null : '${c.error}',
+            ),
           ),
         Expanded(
           child: ListView(children: [for (final row in c.rows) _row(c, row)]),
@@ -74,22 +83,15 @@ class _MigrationScreenState extends State<MigrationScreen> {
         if (c.phase == MigrationPhase.ready)
           Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
-            child: FilledButton(
+            child: FilledButton.icon(
               onPressed: c.canApply ? () => unawaited(c.apply()) : null,
-              child: Text('Apply (${c.rows.where((r) => r.ticked).length})'),
+              icon: const Icon(Icons.done_all, semanticLabel: 'Apply'),
+              label: Text('${c.rows.where((r) => r.ticked).length}'),
             ),
           ),
       ],
     );
   }
-
-  static String? _status(MigrationController c) => switch (c.phase) {
-    MigrationPhase.done =>
-      'Migrated ${c.migrated}${c.failed > 0 ? ', ${c.failed} failed' : ''}. '
-          'Backup saved as ${c.backupKey}',
-    MigrationPhase.failed => 'Nothing changed: the backup failed (${c.error})',
-    _ => null,
-  };
 
   /// Titles of the other rows matched to [row]'s candidate (applying both
   /// merges them into one entry).
@@ -104,10 +106,21 @@ class _MigrationScreenState extends State<MigrationScreen> {
   Widget _row(MigrationController c, MigrationRow row) {
     final candidate = row.candidate;
     final match = switch (candidate) {
-      null when !row.searched => 'Searching…',
-      null => 'No match on Atsumaru',
-      final m when row.exact => 'Exact match: ${m.title}',
-      final m => 'Best match: ${m.title}',
+      null when !row.searched => const SpokenLabel(
+        semanticLabel: 'Searching…',
+        child: RowSpinner(),
+      ),
+      null => const Icon(
+        Icons.search_off,
+        semanticLabel: 'No match on Atsumaru',
+      ),
+      final m => Row(
+        spacing: AppSpacing.xs,
+        children: [
+          matchMark(exact: row.exact, closeLabel: 'Best match'),
+          Flexible(child: Text(m.title)),
+        ],
+      ),
     };
     return CheckboxListTile(
       value: row.ticked,
@@ -115,9 +128,18 @@ class _MigrationScreenState extends State<MigrationScreen> {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(match),
+          match,
           if (_sharing(c, row) case final others when others.isNotEmpty)
-            Text('Same Atsumaru entry as ${others.join(', ')}: they merge'),
+            Row(
+              spacing: AppSpacing.xs,
+              children: [
+                const Icon(
+                  Icons.merge,
+                  semanticLabel: 'They merge: same Atsumaru entry as',
+                ),
+                Flexible(child: Text(others.join(', '))),
+              ],
+            ),
           if (row.error case final e?) Text(e),
         ],
       ),

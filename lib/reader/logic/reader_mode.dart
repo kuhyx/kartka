@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 /// How the reader lays out the pages of a chapter.
 enum ReaderMode {
@@ -19,8 +19,18 @@ enum ReaderMode {
   /// Stable id used for persistence.
   final String id;
 
-  /// Human-readable name shown in the mode picker.
+  /// Human-readable name, spoken (never painted) in the mode picker.
   final String label;
+
+  /// The glyph painted for the mode in pickers.
+  IconData get icon => switch (this) {
+    // Swipe glyphs, not arrows: an arrow beside the Back button reads as
+    // navigation.
+    pagedLtr => Icons.swipe_left,
+    pagedRtl => Icons.swipe_right,
+    verticalPaged => Icons.swipe_up,
+    webtoon => Icons.swipe_vertical,
+  };
 
   /// The mode stored under [id], or null when unknown or missing.
   static ReaderMode? fromId(String? id) {

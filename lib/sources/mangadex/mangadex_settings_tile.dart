@@ -1,17 +1,21 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/sources/mangadex/mangadex_mapper.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings_store.dart';
 
-/// One-line summary, e.g. `en, pl · Safe, Suggestive · data saver`.
+/// One-line summary, e.g. `en, pl · Safe, Suggestive`: language codes and
+/// MangaDex's own rating names. Data saver shows as an icon instead.
 String settingsSummary(MangadexSettings s) => [
   s.languages.join(', '),
   [
     for (final r in ContentRating.values)
       if (s.ratings.contains(r)) r.label,
   ].join(', '),
-  if (s.dataSaver) 'data saver',
 ].join(' · ');
+
+const _dataSaver = 'Data saver: smaller, compressed page images';
+const _tap = Size.square(48);
 
 /// Languages typed as "en, pt-br" -> `['en', 'pt-br']`.
 List<String> parseLanguages(String text) => {
@@ -32,8 +36,11 @@ class MangadexSettingsTile extends StatelessWidget {
     valueListenable: store,
     builder: (context, s, _) => ListTile(
       leading: const Icon(Icons.menu_book_outlined),
-      title: const Text('MangaDex'),
+      title: const Text(mangadexSourceName),
       subtitle: Text(settingsSummary(s)),
+      trailing: s.dataSaver
+          ? const Icon(Icons.data_saver_on, semanticLabel: _dataSaver)
+          : null,
       onTap: () => showDialog<void>(
         context: context,
         builder: (_) => MangadexSettingsDialog(store: store),
@@ -81,7 +88,7 @@ class _DialogState extends State<MangadexSettingsDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: const Text('MangaDex'),
+    title: const Text(mangadexSourceName),
     content: Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,22 +98,26 @@ class _DialogState extends State<MangadexSettingsDialog> {
           controller: _langs,
           autofocus: true,
           decoration: const InputDecoration(
-            labelText: 'Chapter languages',
-            helperText: 'Comma separated, e.g. en, pl, pt-br',
+            prefixIcon: Icon(
+              Icons.translate,
+              semanticLabel: 'Chapter languages, comma separated',
+            ),
           ),
           onSubmitted: (_) => _save(),
         ),
         const SizedBox(height: AppSpacing.md),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
-          title: const Text('Data saver'),
-          subtitle: const Text('Smaller, compressed page images'),
+          title: const Align(
+            alignment: Alignment.centerLeft,
+            child: Icon(Icons.data_saver_on, semanticLabel: _dataSaver),
+          ),
           value: _draft.dataSaver,
           onChanged: (v) =>
               setState(() => _draft = _draft.copyWith(dataSaver: v)),
         ),
         const SizedBox(height: AppSpacing.sm),
-        Text('Content rating', style: Theme.of(context).textTheme.labelLarge),
+        const Icon(Icons.shield_outlined, semanticLabel: 'Content rating'),
         const SizedBox(height: AppSpacing.sm),
         Wrap(
           spacing: AppSpacing.sm,
@@ -123,11 +134,16 @@ class _DialogState extends State<MangadexSettingsDialog> {
       ],
     ),
     actions: [
-      TextButton(
+      IconButton(
+        style: IconButton.styleFrom(minimumSize: _tap),
         onPressed: () => Navigator.of(context).pop(),
-        child: const Text('Cancel'),
+        icon: const Icon(Icons.close, semanticLabel: 'Cancel'),
       ),
-      FilledButton(onPressed: _save, child: const Text('Save')),
+      IconButton.filled(
+        style: IconButton.styleFrom(minimumSize: _tap),
+        onPressed: _save,
+        icon: const Icon(Icons.check, semanticLabel: 'Save'),
+      ),
     ],
   );
 }

@@ -1,10 +1,49 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
+import 'package:kartka/core/ui/snack_mark.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/platform/platform.dart';
 import 'package:kartka/sources/local/local_library.dart';
 
 enum _Kind { archives, folder }
+
+/// Spoken name of the folder option.
+const _folder = 'Folder of images';
+
+/// An import outcome as glyphs and counts, its sentence spoken only:
+/// chapters imported, the manga they went into, and files that failed.
+class ImportReportMark extends StatelessWidget {
+  /// Shows [report].
+  const new(this.report, {super.key});
+
+  /// The outcome shown.
+  final ImportReport report;
+
+  @override
+  Widget build(BuildContext context) => SpokenLabel(
+    semanticLabel: report.summary,
+    child: ExcludeSemantics(
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle_outline),
+          const SizedBox(width: AppSpacing.sm),
+          Text('${report.chapters}'),
+          const SizedBox(width: AppSpacing.md),
+          const Icon(Icons.collections_bookmark_outlined),
+          const SizedBox(width: AppSpacing.sm),
+          Text('${report.mangaUrls.length}'),
+          if (report.errors.isNotEmpty) ...[
+            const SizedBox(width: AppSpacing.md),
+            const Icon(Icons.error_outline),
+            const SizedBox(width: AppSpacing.sm),
+            Text('${report.errors.length}'),
+          ],
+        ],
+      ),
+    ),
+  );
+}
 
 /// "Import local files" settings tile: pick CBZ/ZIP archives or a folder of
 /// images through the platform [FilePicker] and import them into [library].
@@ -29,7 +68,11 @@ class _ImportLocalTileState extends State<ImportLocalTile> {
     final kind = await showDialog<_Kind>(
       context: context,
       builder: (context) => SimpleDialog(
-        title: const Text('Import local files'),
+        title: const Icon(
+          Icons.folder_zip_outlined,
+          size: 32,
+          semanticLabel: 'Import local files',
+        ),
         children: [
           _option(
             context,
@@ -37,12 +80,7 @@ class _ImportLocalTileState extends State<ImportLocalTile> {
             Icons.archive_outlined,
             'CBZ / ZIP archives',
           ),
-          _option(
-            context,
-            _Kind.folder,
-            Icons.folder_outlined,
-            'Folder of images',
-          ),
+          _option(context, _Kind.folder, Icons.folder_outlined, _folder),
         ],
       ),
     );
@@ -59,13 +97,14 @@ class _ImportLocalTileState extends State<ImportLocalTile> {
     try {
       final report = await widget.library.importFiles(files);
       if (!mounted) return;
-      if (report.errors.isEmpty) {
-        showToast(context, report.summary);
-      } else {
-        showError(context, report.summary);
-      }
+      showMark(
+        context,
+        ImportReportMark(report),
+        error: report.errors.isNotEmpty,
+      );
     } on Object catch (e) {
-      if (mounted) showError(context, redactUrlQueries('Import failed: $e'));
+      // The error itself is content; only the "Import failed" prefix went.
+      if (mounted) showError(context, redactUrlQueries('$e'));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -75,23 +114,18 @@ class _ImportLocalTileState extends State<ImportLocalTile> {
     BuildContext context,
     _Kind kind,
     IconData icon,
-    String label,
+    String semanticLabel,
   ) => SimpleDialogOption(
     onPressed: () => Navigator.of(context).pop(kind),
-    child: Row(
-      children: [
-        Icon(icon),
-        const SizedBox(width: AppSpacing.md),
-        Text(label),
-      ],
-    ),
+    child: Icon(icon, size: 48, semanticLabel: semanticLabel),
   );
 
   @override
   Widget build(BuildContext context) => ListTile(
-    leading: const Icon(Icons.folder_zip_outlined),
-    title: const Text('Import local files'),
-    subtitle: const Text('CBZ / ZIP archives or a folder of images'),
+    leading: const Icon(
+      Icons.folder_zip_outlined,
+      semanticLabel: 'Import local files: CBZ / ZIP archives or a folder',
+    ),
     trailing: _busy
         ? const SizedBox.square(
             dimension: AppSpacing.lg,

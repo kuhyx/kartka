@@ -8,6 +8,7 @@ import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/scoring/profile_store.dart';
 import 'package:kartka/source_health/ui/scoring_page.dart';
 
+import '../../helpers/spoken_icon.dart';
 import 'harness.dart';
 
 void main() {
@@ -39,17 +40,18 @@ void main() {
     tester,
   ) async {
     await pump(tester);
-    expect(find.text('Using the evaluator defaults.'), findsOne);
+    expect(spokenIcon('Using the evaluator defaults'), findsOne);
     for (final label in [
       'Coverage (with complete chapters)',
       'Uptime',
       'Image quality',
       'Speed (latency)',
     ]) {
-      expect(find.text(label), findsOne, reason: label);
+      expect(spokenIcon('$label: share of the score'), findsOne, reason: label);
     }
-    expect(find.text('50 % of the score'), findsOne);
-    expect(find.text('Keep at score ≥ 0.90'), findsOne);
+    expect(find.text('50 %'), findsOne);
+    expect(find.text('≥ 0.90'), findsOne);
+    expect(spokenContaining('Keep at score ≥ 0.90'), findsOne);
     expect(find.byKey(const Key('only-3')), findsOne);
     expect(find.byKey(const Key('only-4')), findsNothing);
     for (final wire in [
@@ -62,7 +64,7 @@ void main() {
       expect(find.byKey(Key('cut-$wire')), findsOne, reason: wire);
       expect(find.byKey(const Key('cut-subset')), findsNothing);
     }
-    final reset = tester.widget<FilledButton>(
+    final reset = tester.widget<IconButton>(
       find.byKey(const Key('reset-scoring')),
     );
     expect(reset.onPressed, isNull);
@@ -79,10 +81,10 @@ void main() {
     await tester.pump();
     expect(store.profile.value.weights.completeCoverage, 0);
     expect(store.profile.value.isDefault, isFalse);
-    expect(find.textContaining('custom profile'), findsOne);
+    expect(spokenIcon('Using a custom profile, synced'), findsOne);
     final json = await stored(tester);
     expect((json!['weights']! as Map)['completeCoverage'], 0);
-    expect(find.text('0 % of the score'), findsOne);
+    expect(find.text('0 %'), findsOne);
   });
 
   testWidgets('"Only this" zeroes the others; a zero weight becomes 1', (
@@ -91,7 +93,7 @@ void main() {
     await pump(tester);
     await tapKey(tester, 'only-2');
     expect(store.profile.value.weights.values, [0, 0, 0.15, 0]);
-    expect(find.text('100 % of the score'), findsOne);
+    expect(find.text('100 %'), findsOne);
     expect(
       (await stored(tester))!['weights'],
       containsPair('imageQuality', 0.15),
@@ -135,6 +137,6 @@ void main() {
     await tapKey(tester, 'reset-scoring');
     expect(store.profile.value, defaultScoringProfile);
     expect(await stored(tester), isNull);
-    expect(find.text('Keep at score ≥ 0.90'), findsOne);
+    expect(find.text('≥ 0.90'), findsOne);
   });
 }

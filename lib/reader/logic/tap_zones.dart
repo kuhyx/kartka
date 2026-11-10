@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 
 /// What a tap on the page does.
@@ -32,8 +32,16 @@ enum TapZoneLayout {
   /// Stable id used for persistence.
   final String id;
 
-  /// Human-readable name shown in settings.
+  /// Human-readable name, spoken (never painted) in settings.
   final String label;
+
+  /// The glyph painted for the layout in settings.
+  IconData get icon => switch (this) {
+    thirds => Icons.view_column_outlined,
+    lShape => Icons.border_style,
+    kindle => Icons.view_agenda_outlined,
+    disabled => Icons.do_not_touch_outlined,
+  };
 
   /// The layout stored under [id], or null when unknown.
   static TapZoneLayout? fromId(String? id) {

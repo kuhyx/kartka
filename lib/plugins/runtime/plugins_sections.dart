@@ -1,10 +1,14 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/plugins/runtime/plugin_index.dart';
 import 'package:kartka/plugins/runtime/plugin_languages.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
+
+/// Minimum tap target of an icon-only button.
+const _tap = Size.square(48);
 
 /// Text field plus button that adds a repo URL.
 class AddRepoRow extends StatelessWidget {
@@ -34,7 +38,9 @@ class AddRepoRow extends StatelessWidget {
           child: TextField(
             controller: controller,
             keyboardType: TextInputType.url,
-            decoration: const InputDecoration(labelText: 'Repository URL'),
+            decoration: const InputDecoration(
+              prefixIcon: Icon(Icons.link, semanticLabel: 'Repository URL'),
+            ),
             onSubmitted: (_) => onAdd(),
           ),
         ),
@@ -46,8 +52,8 @@ class AddRepoRow extends StatelessWidget {
           )
         else
           IconButton(
-            tooltip: 'Add repository',
-            icon: const Icon(Icons.add),
+            style: IconButton.styleFrom(minimumSize: _tap),
+            icon: const Icon(Icons.add, semanticLabel: 'Add repository'),
             onPressed: onAdd,
           ),
       ],
@@ -99,11 +105,20 @@ class AvailableList extends StatelessWidget {
         if (result.plugins.isEmpty && result.errors.isEmpty)
           Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
-            child: Text(switch ((hasRepos, hidden)) {
-              (false, _) => 'Add a repository URL to find plugins.',
-              (true, 0) => 'These repositories offer no plugins.',
-              _ => hiddenByLanguageMessage(hidden),
-            }),
+            child: switch ((hasRepos, hidden)) {
+              (false, _) => const EmptyMark(
+                icon: Icons.link_off,
+                semanticLabel: 'Add a repository URL to find plugins.',
+              ),
+              (true, 0) => const EmptyMark(
+                icon: Icons.extension_off,
+                semanticLabel: 'These repositories offer no plugins.',
+              ),
+              _ => EmptyMark(
+                icon: Icons.translate,
+                semanticLabel: hiddenByLanguageMessage(hidden),
+              ),
+            },
           ),
         for (final p in result.plugins)
           ListTile(
@@ -126,14 +141,19 @@ class AvailableList extends StatelessWidget {
       );
     }
     return switch (p.availability) {
-      PluginAvailability.installed => const Icon(Icons.check),
-      PluginAvailability.available => FilledButton(
-        onPressed: () => onInstall(p.entry),
-        child: const Text('Install'),
+      PluginAvailability.installed => const Icon(
+        Icons.check,
+        semanticLabel: 'Installed',
       ),
-      PluginAvailability.updatable => FilledButton(
+      PluginAvailability.available => IconButton.filled(
+        style: IconButton.styleFrom(minimumSize: _tap),
         onPressed: () => onInstall(p.entry),
-        child: const Text('Update'),
+        icon: const Icon(Icons.download, semanticLabel: 'Install'),
+      ),
+      PluginAvailability.updatable => IconButton.filled(
+        style: IconButton.styleFrom(minimumSize: _tap),
+        onPressed: () => onInstall(p.entry),
+        icon: const Icon(Icons.upgrade, semanticLabel: 'Update'),
       ),
     };
   }
@@ -177,7 +197,10 @@ class _InstalledListState extends State<InstalledList> {
       if (list.isEmpty) {
         return const Padding(
           padding: EdgeInsets.all(AppSpacing.md),
-          child: Text('No plugins installed.'),
+          child: EmptyMark(
+            icon: Icons.extension_off,
+            semanticLabel: 'No plugins installed.',
+          ),
         );
       }
       return Column(
@@ -191,8 +214,11 @@ class _InstalledListState extends State<InstalledList> {
                 overflow: TextOverflow.ellipsis,
               ),
               trailing: IconButton(
-                tooltip: 'Uninstall ${p.manifest.name}',
-                icon: const Icon(Icons.delete_outline),
+                style: IconButton.styleFrom(minimumSize: _tap),
+                icon: Icon(
+                  Icons.delete_outline,
+                  semanticLabel: 'Uninstall ${p.manifest.name}',
+                ),
                 onPressed: widget.busy.contains(p.manifest.id)
                     ? null
                     : () => widget.onUninstall(p),

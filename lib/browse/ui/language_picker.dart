@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:kartka/browse/language_filter.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
+import 'package:kartka/browse/ui/language_mark.dart';
 import 'package:kartka/core/models/source_ref.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 
 /// Opens the Browse language checklist over [sources].
 Future<void> showLanguagePicker(
@@ -34,11 +36,18 @@ class LanguagePickerDialog extends StatelessWidget {
     builder: (context, selected, _) {
       final langs = pickerLanguages(counts, selected);
       return AlertDialog(
-        title: const Text('Languages'),
+        title: const Icon(
+          Icons.language_outlined,
+          size: 32,
+          semanticLabel: 'Languages',
+        ),
         content: SizedBox(
           width: double.maxFinite,
           child: langs.isEmpty
-              ? const Text('No sources installed yet.')
+              ? const EmptyMark(
+                  icon: Icons.extension_off_outlined,
+                  semanticLabel: 'No sources installed yet',
+                )
               : ListView(
                   shrinkWrap: true,
                   children: [
@@ -46,17 +55,20 @@ class LanguagePickerDialog extends StatelessWidget {
                       CheckboxListTile(
                         key: ValueKey('lang-$l'),
                         value: selected.contains(l),
-                        title: Text(languageLabel(l)),
-                        subtitle: Text(_count(counts[l]!)),
+                        title: LanguageMark(l),
+                        subtitle: Text(
+                          '${counts[l]}',
+                          semanticsLabel: _count(counts[l]!),
+                        ),
                         onChanged: (_) => unawaited(store.toggle(l)),
                       ),
                   ],
                 ),
         ),
         actions: [
-          TextButton(
+          IconButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Done'),
+            icon: const Icon(Icons.check, semanticLabel: 'Done'),
           ),
         ],
       );

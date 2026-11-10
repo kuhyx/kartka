@@ -25,6 +25,7 @@ void main() {
       ),
     );
     expect(find.byType(ImportLocalTile), findsOneWidget);
-    expect(find.text('Import local files'), findsOneWidget);
+    expect(find.byIcon(Icons.folder_zip_outlined), findsOneWidget);
+    expect(find.text('Import local files'), findsNothing);
   });
 }

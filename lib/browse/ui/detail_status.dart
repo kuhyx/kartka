@@ -6,6 +6,7 @@ import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/source/challenge.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 
 /// The detail screen before details exist: a spinner while loading, else
 /// the failure (a challenge prompt, "Source unavailable", or the redacted
@@ -38,10 +39,8 @@ class DetailStatus extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            redactUrlQueries('Could not load: $error'),
-            textAlign: TextAlign.center,
-          ),
+          const Icon(Icons.error_outline, semanticLabel: 'Could not load'),
+          Text(redactUrlQueries('$error'), textAlign: TextAlign.center),
           const SizedBox(height: AppSpacing.sm),
           retry,
         ],
@@ -62,15 +61,20 @@ Widget? staleBanner(MangaDetailController c) => switch (c.error) {
   _ => null,
 };
 
-Widget _retry(MangaDetailController c) => FilledButton(
+Widget _retry(MangaDetailController c) => IconButton(
+  iconSize: 32,
   onPressed: () => unawaited(c.load()),
-  child: const Text('Retry'),
+  icon: const Icon(Icons.refresh, semanticLabel: 'Retry'),
 );
 
-Widget _unavailable(MangaDetailController c) => EmptyState(
-  icon: Icons.cloud_off_outlined,
-  title: 'Source unavailable',
-  message:
-      'No installed source provides ${c.sourceId}. Install '
-      'its plugin or check the Suwayomi server.',
+/// The source id is data (which plugin to install), so it stays painted.
+Widget _unavailable(MangaDetailController c) => Column(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    const EmptyMark(
+      icon: Icons.cloud_off_outlined,
+      semanticLabel: 'Source unavailable',
+    ),
+    Text(c.sourceId),
+  ],
 );

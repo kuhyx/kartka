@@ -4,8 +4,10 @@ import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/ranking.dart';
 import 'package:kartka/source_health/thresholds.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
+import 'package:kartka/source_health/ui/health_icons.dart';
 
-/// "Last evaluated ..." plus a warning once results pass the stale limit.
+/// A clock glyph and when the evaluator last ran, plus a warning pill once
+/// results pass the stale limit.
 class FreshnessBanner extends StatelessWidget {
   /// Creates a banner for results from [at], judged at [now].
   const new({required this.at, required this.now, super.key});
@@ -18,33 +20,26 @@ class FreshnessBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final when = at;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    final stamp = when == null ? notMeasured : instant(when);
+    return Wrap(
+      spacing: AppSpacing.sm,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Text(
-          when == null ? 'Never evaluated' : 'Last evaluated ${instant(when)}',
-          style: TextStyle(
-            color: theme.colorScheme.onSurfaceVariant,
-            fontSize: AppTextSize.label,
-          ),
+        IconValue(
+          Icons.schedule,
+          stamp,
+          semanticLabel: when == null ? 'Never evaluated' : 'Last evaluated',
+          key: const Key('evaluated-at'),
         ),
-        if (isStale(when, now)) ...[
-          const SizedBox(height: AppSpacing.xs),
-          Wrap(
-            spacing: AppSpacing.sm,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              StatusPill(text: 'Stale', fill: statusColors(context).warning),
-              Text(
-                'Results are older than '
-                '${HealthThresholds.staleAfter.inDays} days; the weekly '
-                'source evaluator may have stopped.',
-              ),
-            ],
+        if (isStale(when, now))
+          StatusPill(
+            icon: Icons.warning_amber_rounded,
+            semanticLabel:
+                'Stale: results are older than '
+                '${HealthThresholds.staleAfter.inDays} days',
+            fill: statusColors(context).warning,
           ),
-        ],
       ],
     );
   }

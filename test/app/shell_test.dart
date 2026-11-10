@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/app.dart';
 import 'package:kartka/app/registry.dart';
+import 'package:kartka/app/shell.dart';
 
 import '../helpers/fake_platform.dart';
 
@@ -18,6 +19,8 @@ KartkaFeature _library(KartkaEnv env) => KartkaFeature(
     ),
   ],
 );
+
+Finder _tab(KartkaTab t) => find.byIcon(tabInfo[t]!.icon);
 
 Future<KartkaRegistry> _pump(WidgetTester tester, Size size) async {
   tester.view.physicalSize = size;
@@ -42,16 +45,18 @@ void main() {
       ['Library', 'Updates', 'Browse', 'Sources', 'More'],
     );
     expect(find.text('my library'), findsOneWidget);
+    // Hidden labels stay spoken (the agent flows tap tabs by name).
+    expect(find.bySemanticsLabel(RegExp('^More')), findsOneWidget);
 
-    await tester.tap(find.text('Updates'));
+    await tester.tap(_tab(KartkaTab.updates));
     await tester.pumpAndSettle();
-    expect(find.text('Updates is not built yet'), findsOneWidget);
+    expect(find.bySemanticsLabel('Updates is not built yet'), findsOneWidget);
 
-    await tester.tap(find.text('Browse'));
+    await tester.tap(_tab(KartkaTab.browse));
     await tester.pumpAndSettle();
-    expect(find.text('Browse is not built yet'), findsOneWidget);
+    expect(find.bySemanticsLabel('Browse is not built yet'), findsOneWidget);
 
-    await tester.tap(find.text('More'));
+    await tester.tap(_tab(KartkaTab.more));
     await tester.pumpAndSettle();
     expect(find.text('Import backup'), findsOneWidget);
   });
@@ -60,11 +65,12 @@ void main() {
     await _pump(tester, const Size(1280, 800));
     expect(find.byType(NavigationRail), findsOneWidget);
     expect(find.byType(NavigationBar), findsNothing);
-    await tester.tap(find.text('Sources'));
+    await tester.tap(_tab(KartkaTab.sources));
     await tester.pumpAndSettle();
-    expect(find.text('Sources is not built yet'), findsOneWidget);
+    expect(find.bySemanticsLabel('Sources is not built yet'), findsOneWidget);
     final rail = tester.widget<NavigationRail>(find.byType(NavigationRail));
     expect(rail.destinations, hasLength(5));
+    expect(find.bySemanticsLabel(RegExp('^More')), findsOneWidget);
   });
 
   testWidgets('feature routes are mounted and see KartkaScope', (tester) async {
@@ -81,8 +87,8 @@ void main() {
     final registry = KartkaRegistry.build(platform, []);
     await tester.pumpWidget(KartkaApp(registry: registry, platform: platform));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('More'));
+    await tester.tap(_tab(KartkaTab.more));
     await tester.pumpAndSettle();
-    expect(find.text('Nothing to configure yet'), findsOneWidget);
+    expect(find.bySemanticsLabel('Nothing to configure yet'), findsOneWidget);
   });
 }

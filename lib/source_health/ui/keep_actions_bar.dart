@@ -1,6 +1,10 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
+import 'package:kartka/source_health/install/auto_install_state.dart';
 import 'package:kartka/source_health/install/keep_reconciler.dart';
+import 'package:kartka/source_health/ui/health_badge.dart';
+import 'package:kartka/source_health/ui/health_icons.dart';
 
 /// The Sources tab's Keep row: the auto-install's quiet one-line status
 /// (when it has one) and "Migrate to better sources" (when wired).
@@ -20,12 +24,13 @@ class KeepActionsBar extends StatelessWidget {
     if (reconciler == null) return _row(context, null);
     return ListenableBuilder(
       listenable: reconciler,
-      builder: (context, _) => _row(context, reconciler.status),
+      builder: (context, _) => _row(context, reconciler.state),
     );
   }
 
-  Widget _row(BuildContext context, String? status) {
+  Widget _row(BuildContext context, AutoInstallState? state) {
     final migrate = onMigrate;
+    final status = state?.status;
     if (status == null && migrate == null) return const SizedBox.shrink();
     return Row(
       spacing: AppSpacing.sm,
@@ -33,20 +38,42 @@ class KeepActionsBar extends StatelessWidget {
         Expanded(
           child: status == null
               ? const SizedBox.shrink()
-              : Text(
-                  status,
-                  key: const Key('autoinstall-status'),
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+              : _status(context, state!, status),
         ),
         if (migrate != null)
-          OutlinedButton.icon(
+          IconButton.outlined(
             key: const Key('migrate-better'),
-            icon: const Icon(Icons.swap_horiz),
-            label: const Text('Migrate to better sources'),
+            style: IconButton.styleFrom(minimumSize: const Size.square(48)),
+            icon: const Icon(
+              Icons.swap_horiz,
+              semanticLabel: 'Migrate to better sources',
+            ),
             onPressed: () => migrate(context),
           ),
       ],
+    );
+  }
+
+  /// Glyph + count per non-zero total, spoken as [status].
+  Widget _status(BuildContext context, AutoInstallState s, String status) {
+    final c = s.counts;
+    final danger = statusColors(context).danger;
+    return SpokenLabel(
+      key: const Key('autoinstall-status'),
+      semanticLabel: status,
+      child: ExcludeSemantics(
+        child: Wrap(
+          spacing: AppSpacing.md,
+          children: [
+            for (final (icon, n, color) in [
+              (Icons.download_done, c.installed, null),
+              (Icons.report_problem_outlined, c.tests, danger),
+              (Icons.error_outline, c.installs, danger),
+            ])
+              if (n > 0) IconValue(icon, '$n', semanticLabel: '', color: color),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -82,5 +82,7 @@ void main() {
       expect(l.label, isNotEmpty);
     }
     expect(TapZoneLayout.fromId('x'), isNull);
+    final icons = {for (final l in TapZoneLayout.values) l.icon};
+    expect(icons, hasLength(TapZoneLayout.values.length));
   });
 }

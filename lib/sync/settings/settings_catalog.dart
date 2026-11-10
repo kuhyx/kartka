@@ -6,8 +6,9 @@ library;
 import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 
-/// One synced setting: its platform store, and how the UI names it.
-typedef SyncedSetting = ({SettingsVault vault, String label});
+/// One synced setting: its platform store, and the spoken name that sync
+/// problems use (never painted: textgate).
+typedef SyncedSetting = ({SettingsVault vault, String semanticLabel});
 
 /// The auto-download toggle's store key (`autoDownloadKvKey`).
 const String kAutoDownloadSetting = 'downloads/auto_new_chapters';
@@ -16,25 +17,37 @@ const String kAutoDownloadSetting = 'downloads/auto_new_chapters';
 const Map<String, SyncedSetting> kSyncedSettings = {
   'suwayomi.serverUrl': (
     vault: SettingsVault.plain,
-    label: 'Suwayomi server URL',
+    semanticLabel: 'Suwayomi server URL',
   ),
   'suwayomi.username': (
     vault: SettingsVault.secret,
-    label: 'Suwayomi username',
+    semanticLabel: 'Suwayomi username',
   ),
   'suwayomi.password': (
     vault: SettingsVault.secret,
-    label: 'Suwayomi password',
+    semanticLabel: 'Suwayomi password',
   ),
-  'mangadex.settings': (vault: SettingsVault.plain, label: 'MangaDex settings'),
-  'reader.settings': (vault: SettingsVault.plain, label: 'Reader settings'),
-  'plugins.repos': (vault: SettingsVault.plain, label: 'Plugin repos'),
-  'browse.languages': (vault: SettingsVault.plain, label: 'Browse languages'),
-  kAutoDownloadSetting: (vault: SettingsVault.plain, label: 'Auto-download'),
+  'mangadex.settings': (
+    vault: SettingsVault.plain,
+    semanticLabel: 'MangaDex settings',
+  ),
+  'reader.settings': (
+    vault: SettingsVault.plain,
+    semanticLabel: 'Reader settings',
+  ),
+  'plugins.repos': (vault: SettingsVault.plain, semanticLabel: 'Plugin repos'),
+  'browse.languages': (
+    vault: SettingsVault.plain,
+    semanticLabel: 'Browse languages',
+  ),
+  kAutoDownloadSetting: (
+    vault: SettingsVault.plain,
+    semanticLabel: 'Auto-download',
+  ),
   // The source-health scoring profile; the evaluator reads it too.
   'sourceHealth.scoring': (
     vault: SettingsVault.plain,
-    label: 'Source scoring profile',
+    semanticLabel: 'Source scoring profile',
   ),
 };
 

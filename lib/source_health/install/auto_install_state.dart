@@ -115,15 +115,23 @@ class AutoInstallState {
   /// (empty in state stored before library sources were installed).
   final List<String> librarySources;
 
+  /// The numbers behind [status]: sources installed, failed tests and
+  /// failed installs.
+  ({int installed, int tests, int installs}) get counts {
+    final t = failures.values
+        .where((f) => f.stage == AutoInstallStage.test)
+        .length;
+    return (
+      installed: installed.length,
+      tests: t,
+      installs: failures.length - t,
+    );
+  }
+
   /// One quiet line about the last run, e.g. "Installed 5 sources, 1
   /// failed its test"; null when it installed and flagged nothing.
   String? get status {
-    final n = installed.length;
-    final tests = failures.values.where(
-      (f) => f.stage == AutoInstallStage.test,
-    );
-    final t = tests.length;
-    final installs = failures.length - t;
+    final (installed: n, tests: t, :installs) = counts;
     // The first count names the noun: "Installed 5 sources, 1 failed its
     // test", or "2 sources failed to install" when none installed.
     var named = false;

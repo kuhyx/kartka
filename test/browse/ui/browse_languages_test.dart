@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/ui/browse_tab.dart';
+import 'package:kartka/browse/ui/language_mark.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../fakes.dart';
 import 'harness.dart';
 
@@ -24,7 +26,12 @@ void main() {
     FakeSource('mangadex', name: 'MangaDex'),
   ];
 
-  double y(WidgetTester t, String text) => t.getTopLeft(find.text(text)).dy;
+  // A source name is painted; a language heading only speaks its name.
+  double y(WidgetTester t, String text) {
+    final painted = find.text(text);
+    final f = painted.evaluate().isEmpty ? spokenContaining(text) : painted;
+    return t.getTopLeft(f).dy;
+  }
 
   // Tall enough that every section is built (ListView builds lazily).
   void tall(WidgetTester t) {
@@ -35,7 +42,7 @@ void main() {
   }
 
   Future<void> openPicker(WidgetTester t) async {
-    await t.tap(find.byTooltip('Languages'));
+    await t.tap(spokenIcon('Languages'));
     await t.pumpAndSettle();
   }
 
@@ -68,25 +75,27 @@ void main() {
     );
     expect(tiles, findsNWidgets(4));
     String title(int i) =>
-        ((t.widget<CheckboxListTile>(tiles.at(i)).title!) as Text).data!;
-    expect(
-      [for (var i = 0; i < 4; i++) title(i)],
-      ['English', 'All languages', 'Japanese', 'Polish'],
+        ((t.widget<CheckboxListTile>(tiles.at(i)).title!) as LanguageMark)
+            .bucket;
+    expect([for (var i = 0; i < 4; i++) title(i)], ['en', 'all', 'ja', 'pl']);
+    Finder count(String painted, String spoken) => find.descendant(
+      of: dialog,
+      matching: find.byWidgetPredicate(
+        (w) => w is Text && w.data == painted && w.semanticsLabel == spoken,
+      ),
     );
-    expect(
-      find.descendant(of: dialog, matching: find.text('2 sources')),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(of: dialog, matching: find.text('1 source')),
-      findsNWidgets(3),
-    );
+    expect(count('2', '2 sources'), findsOneWidget);
+    expect(count('1', '1 source'), findsNWidgets(3));
 
-    await t.tap(find.descendant(of: dialog, matching: find.text('Polish')));
-    await t.tap(find.descendant(of: dialog, matching: find.text('English')));
+    expect(
+      find.descendant(of: dialog, matching: spokenIcon('All languages')),
+      findsOne,
+    );
+    await t.tap(find.descendant(of: dialog, matching: find.text('PL')));
+    await t.tap(find.descendant(of: dialog, matching: find.text('EN')));
     await t.pumpAndSettle();
-    expect(title(0), 'All languages');
-    await t.tap(find.text('Done'));
+    expect(title(0), 'all');
+    await t.tap(spokenIcon('Done'));
     await t.pumpAndSettle();
     expect(find.text('Polski'), findsOneWidget);
     expect(find.text('MangaDex'), findsNothing);
@@ -110,16 +119,16 @@ void main() {
     await store.ready;
     final h = Harness(sources: mixed(), languages: store);
     await h.pump(t, const BrowseTab());
-    expect(find.text('No sources in your languages'), findsOneWidget);
-    expect(find.text('No sources'), findsNothing);
+    expect(spokenIcon('No sources in your languages'), findsOneWidget);
+    expect(spokenIcon('No sources'), findsNothing);
   });
 
   testWidgets('the picker with no sources installed says so', (t) async {
     final h = Harness(sources: []);
     await h.pump(t, const BrowseTab());
     await openPicker(t);
-    expect(find.text('No sources installed yet.'), findsOneWidget);
-    await t.tap(find.text('Done'));
+    expect(spokenIcon('No sources installed yet'), findsOneWidget);
+    await t.tap(spokenIcon('Done'));
     await t.pumpAndSettle();
     expect(find.byType(AlertDialog), findsNothing);
   });

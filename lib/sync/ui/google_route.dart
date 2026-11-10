@@ -141,17 +141,14 @@ class _GisDialogState extends State<_GisDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: const Text('Sign in with Google'),
-    content: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Text('Choose the sync account.'),
-        const SizedBox(height: 16),
-        SizedBox(height: 48, child: widget.button),
-      ],
-    ),
+    title: const Icon(Icons.login, size: 48, semanticLabel: 'Google sign-in'),
+    content: SizedBox(height: 48, child: widget.button),
     actions: [
-      TextButton(onPressed: () => _close(null), child: const Text('Cancel')),
+      IconButton(
+        style: IconButton.styleFrom(minimumSize: const Size.square(48)),
+        onPressed: () => _close(null),
+        icon: const Icon(Icons.close, semanticLabel: 'Cancel'),
+      ),
     ],
   );
 }

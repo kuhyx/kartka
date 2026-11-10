@@ -1,5 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/ui/confirm_mark.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/downloads/queue/download_index.dart';
 import 'package:kartka/downloads/ui/format.dart';
 
@@ -29,32 +31,50 @@ class OfflineMangaTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bytes = chapters.fold(0, (sum, c) => sum + c.bytes);
-    final count = chapters.length == 1
-        ? '1 chapter'
-        : '${chapters.length} '
-              'chapters';
+    final n = chapters.length;
+    final count = n == 1 ? '1 chapter' : '$n chapters';
     return ExpansionTile(
       title: Text(title),
-      subtitle: Text('$count · ${formatBytes(bytes)}'),
+      subtitle: _Figures(
+        spoken: '$count · ${formatBytes(bytes)}',
+        icon: Icons.menu_book_outlined,
+        count: n,
+        bytes: bytes,
+      ),
       children: [
         for (final c in chapters)
           ListTile(
             title: Text(c.chapterName),
-            subtitle: Text('${c.pageCount} pages · ${formatBytes(c.bytes)}'),
+            subtitle: _Figures(
+              spoken: '${c.pageCount} pages · ${formatBytes(c.bytes)}',
+              icon: Icons.photo_library_outlined,
+              count: c.pageCount,
+              bytes: c.bytes,
+            ),
             trailing: IconButton(
-              icon: const Icon(Icons.delete_outline),
-              tooltip: 'Delete chapter',
+              icon: const Icon(
+                Icons.delete_outline,
+                semanticLabel: 'Delete chapter',
+              ),
               onPressed: () => _confirm(
                 context,
+                Icons.delete_outline,
                 'Delete ${c.chapterName}?',
                 () => onDeleteChapter(c.chapterUrl),
               ),
             ),
           ),
         ListTile(
-          leading: const Icon(Icons.delete_sweep_outlined),
-          title: const Text('Delete all chapters'),
-          onTap: () => _confirm(context, 'Delete all of $title?', onDeleteAll),
+          leading: const Icon(
+            Icons.delete_sweep_outlined,
+            semanticLabel: 'Delete all chapters',
+          ),
+          onTap: () => _confirm(
+            context,
+            Icons.delete_sweep_outlined,
+            'Delete all of $title?',
+            onDeleteAll,
+          ),
         ),
       ],
     );
@@ -62,14 +82,44 @@ class OfflineMangaTile extends StatelessWidget {
 
   Future<void> _confirm(
     BuildContext context,
-    String title,
+    IconData icon,
+    String question,
     VoidCallback action,
   ) async {
-    final ok = await confirmDestructive(
-      context,
-      title: title,
-      message: 'The pages are removed from this device.',
-    );
+    final ok = await confirmMark(context, icon: icon, semanticLabel: question);
     if (ok) action();
   }
+}
+
+/// "[count] [icon] · size", spoken as [spoken].
+class _Figures extends StatelessWidget {
+  const new({
+    required this.spoken,
+    required this.icon,
+    required this.count,
+    required this.bytes,
+  });
+
+  final String spoken;
+  final IconData icon;
+  final int count;
+  final int bytes;
+
+  @override
+  Widget build(BuildContext context) => SpokenLabel(
+    semanticLabel: spoken,
+    child: ExcludeSemantics(
+      child: Row(
+        children: [
+          Icon(icon, size: 16),
+          const SizedBox(width: AppSpacing.xs),
+          Text('$count'),
+          const SizedBox(width: AppSpacing.md),
+          const Icon(Icons.storage, size: 16),
+          const SizedBox(width: AppSpacing.xs),
+          Text(formatBytes(bytes)),
+        ],
+      ),
+    ),
+  );
 }

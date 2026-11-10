@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/source_health/labels.dart';
 import 'package:kartka/source_health/ranking.dart';
+import 'package:kartka/source_health/ui/health_icons.dart';
 
 /// Sort, direction and verdict/lang/origin filters for the ranking.
 class QueryBar extends StatelessWidget {
@@ -39,18 +40,21 @@ class QueryBar extends StatelessWidget {
         onChanged: (s) => onChanged(query.copyWith(sort: s)),
         items: [
           for (final s in HealthSort.values)
-            DropdownMenuItem(value: s, child: Text('Sort: ${s.label}')),
+            DropdownMenuItem(value: s, child: _sortMark(s)),
         ],
       ),
       IconButton(
         key: const Key('reverse'),
-        tooltip: query.reversed ? 'Worst first' : 'Best first',
-        icon: Icon(query.reversed ? Icons.arrow_upward : Icons.arrow_downward),
+        icon: Icon(
+          query.reversed ? Icons.arrow_upward : Icons.arrow_downward,
+          semanticLabel: query.reversed ? 'Worst first' : 'Best first',
+        ),
         onPressed: () => onChanged(query.copyWith(reversed: !query.reversed)),
       ),
       for (final v in HealthVerdict.values)
         FilterChip(
-          label: Text(verdictLabel(v)),
+          key: Key('verdict-${v.name}'),
+          label: Icon(verdictIcon(v), semanticLabel: verdictLabel(v)),
           selected: query.verdicts.contains(v),
           onSelected: (on) => onChanged(
             query.copyWith(
@@ -63,17 +67,17 @@ class QueryBar extends StatelessWidget {
       _facet(
         const Key('lang'),
         query.lang,
-        'All languages',
+        const Icon(Icons.language, semanticLabel: 'All languages'),
         langs,
-        (v) => v,
+        Text.new,
         (v) => onChanged(query.copyWith(lang: v, clearLang: v == null)),
       ),
       _facet(
         const Key('origin'),
         query.origin,
-        'All origins',
+        const Icon(Icons.all_inclusive, semanticLabel: 'All origins'),
         origins,
-        originLabel,
+        (o) => Icon(originIcon(o), semanticLabel: originLabel(o)),
         (v) => onChanged(query.copyWith(origin: v, clearOrigin: v == null)),
       ),
     ],
@@ -82,9 +86,9 @@ class QueryBar extends StatelessWidget {
   Widget _facet(
     Key key,
     String? value,
-    String all,
+    Widget all,
     List<String> values,
-    String Function(String) label,
+    Widget Function(String) mark,
     ValueChanged<String?> pick,
   ) => DropdownButton<String?>(
     key: key,
@@ -92,8 +96,32 @@ class QueryBar extends StatelessWidget {
     value: values.contains(value) ? value : null,
     onChanged: pick,
     items: [
-      DropdownMenuItem(child: Text(all)),
-      for (final v in values) DropdownMenuItem(value: v, child: Text(label(v))),
+      DropdownMenuItem(child: all),
+      for (final v in values) DropdownMenuItem(value: v, child: mark(v)),
     ],
+  );
+}
+
+/// A sort's glyph; the two latency sorts add their percentile (`p50`).
+Widget _sortMark(HealthSort s) {
+  final (icon, suffix) = switch (s) {
+    HealthSort.rank => (Icons.leaderboard_outlined, null),
+    HealthSort.score => (Icons.insights_outlined, null),
+    HealthSort.name => (Icons.sort_by_alpha, null),
+    HealthSort.latencyP50 => (Icons.speed, 'p50'),
+    HealthSort.latencyP95 => (Icons.speed, 'p95'),
+    HealthSort.blocking => (Icons.block, null),
+    HealthSort.uptime => (metricIcon('Uptime'), null),
+    HealthSort.coverage => (metricIcon('Coverage'), null),
+    HealthSort.completeness => (metricIcon('Chapters'), null),
+    HealthSort.imageWidth => (metricIcon('Image width'), null),
+    HealthSort.jpegQuality => (metricIcon('JPEG'), null),
+  };
+  final glyph = Icon(icon, semanticLabel: s.label);
+  if (suffix == null) return glyph;
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    spacing: AppSpacing.xs,
+    children: [glyph, Text(suffix)],
   );
 }

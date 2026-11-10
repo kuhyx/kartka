@@ -44,6 +44,14 @@ String _newChapters(List<ChapterInfo> added) {
   return '${added.length} new: ch $listed${more > 0 ? ' +$more more' : ''}';
 }
 
+/// The word-free painted form of [added]: at most [refreshListedChapters]
+/// chapter numbers, then `+N` for the rest (`101, 102 +3`).
+String newChapterNumbers(List<ChapterInfo> added) {
+  final listed = added.take(refreshListedChapters).map(_label).join(', ');
+  final more = added.length - refreshListedChapters;
+  return more > 0 ? '$listed +$more' : listed;
+}
+
 String _label(ChapterInfo c) => switch (c.number) {
   null => c.name,
   final n when n == n.truncateToDouble() => '${n.toInt()}',

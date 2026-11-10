@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/source_health/install/source_installs.dart';
 import 'package:kartka/source_health/ui/sources_tab.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../ui/harness.dart';
 import 'autoinstall_fakes.dart';
 
@@ -40,9 +41,16 @@ void main() {
 
     await tester.runAsync(() => rig.reconciler.reconcile(records, 'W1'));
     await tester.pump();
-    expect(find.text('Installed 2 sources, 1 failed its test'), findsOne);
+    expect(
+      spokenContaining('Installed 2 sources, 1 failed its test'),
+      findsOne,
+    );
+    final status = find.byKey(const Key('autoinstall-status'));
+    for (final n in ['2', '1']) {
+      expect(find.descendant(of: status, matching: find.text(n)), findsOne);
+    }
     expect(find.byKey(const ValueKey('open-suwayomi:1')), findsOne);
-    expect(find.text('Installed — test failed: no titles'), findsOne);
+    expect(spokenIcon('Installed — test failed: no titles'), findsOne);
     expect(
       find.byKey(const ValueKey('autoinstall-flag-suwayomi:2')),
       findsNothing,

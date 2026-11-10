@@ -6,12 +6,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
+import 'package:kartka/source_health/ui/health_badge.dart';
 
 /// [child] inside the app's dark theme.
 Widget host(Widget child) => MaterialApp(
   theme: buildDarkTheme(),
   home: Scaffold(body: child),
 );
+
+/// The [StatusPill]s spoken as [label].
+Finder pill(String label) =>
+    find.byWidgetPredicate((w) => w is StatusPill && w.semanticLabel == label);
 
 /// A tall test surface so every card of the list is built.
 void tallSurface(WidgetTester tester) {

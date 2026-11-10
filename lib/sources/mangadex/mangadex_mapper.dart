@@ -6,6 +6,10 @@ import 'package:kartka/sources/mangadex/mangadex_urls.dart';
 /// Source id of the native MangaDex source.
 const mangadexSourceId = 'mangadex';
 
+/// Display name of the native MangaDex source: content (a source name), so
+/// its settings tile may paint it.
+const mangadexSourceName = 'MangaDex';
+
 const Map<String, MangaStatus> _status = {
   'ongoing': MangaStatus.ongoing,
   'completed': MangaStatus.completed,

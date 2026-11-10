@@ -6,13 +6,14 @@ import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/state/read_state.dart';
-import 'package:kartka/browse/state/refresh_outcome.dart';
 import 'package:kartka/browse/ui/chapter_tile.dart';
 import 'package:kartka/browse/ui/continue_fab.dart';
 import 'package:kartka/browse/ui/detail_header.dart';
 import 'package:kartka/browse/ui/detail_menu.dart';
 import 'package:kartka/browse/ui/detail_status.dart';
+import 'package:kartka/browse/ui/refresh_mark.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 
 /// `/manga/:sourceId/:mangaUrl`: a compact header, then the chapter list
 /// (newest first, or unread first) right away; "Continue" floats, every
@@ -68,7 +69,7 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(refreshMessage(outcome))));
+      ..showSnackBar(SnackBar(content: RefreshMark(outcome)));
   }
 
   @override
@@ -87,8 +88,7 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
             appBar: AppBar(
               actions: [
                 IconButton(
-                  tooltip: 'Refresh',
-                  icon: const Icon(Icons.refresh),
+                  icon: const Icon(Icons.refresh, semanticLabel: 'Refresh'),
                   onPressed: () => unawaited(_refresh()),
                 ),
                 if (details != null)
@@ -136,9 +136,20 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-              child: Text(
-                '${c.chapters.length} chapters',
-                style: Theme.of(context).textTheme.titleSmall,
+              child: SpokenLabel(
+                semanticLabel: '${c.chapters.length} chapters',
+                child: ExcludeSemantics(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.format_list_numbered),
+                      const SizedBox(width: AppSpacing.sm),
+                      Text(
+                        '${c.chapters.length}',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),

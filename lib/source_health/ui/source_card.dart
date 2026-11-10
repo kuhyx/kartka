@@ -4,11 +4,14 @@ import 'package:kartka/source_health/cut_reasons.dart';
 import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/install/source_action_button.dart';
 import 'package:kartka/source_health/install/source_installs.dart';
-import 'package:kartka/source_health/labels.dart';
 import 'package:kartka/source_health/metric_text.dart';
+import 'package:kartka/source_health/model/quality_metrics.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
+import 'package:kartka/source_health/ui/metric_strip.dart';
+import 'package:kartka/source_health/ui/reason_marks.dart';
+import 'package:kartka/source_health/ui/source_line_mark.dart';
 
 /// Opens the detail page of the source with this id.
 typedef OpenSource = void Function(String sourceId);
@@ -67,9 +70,7 @@ class SourceCard extends StatelessWidget {
 
   Widget _body(BuildContext context, SourceHealthRecord r) {
     final theme = Theme.of(context);
-    final muted = theme.colorScheme.onSurfaceVariant;
     final subset = r.subsetOf;
-    final warn = keptDespiteReasons(r);
     return InkWell(
       borderRadius: BorderRadius.circular(AppRadius.md),
       onTap: () => onOpen(r.id),
@@ -87,89 +88,40 @@ class SourceCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(r.name, style: theme.textTheme.titleMedium),
-                      Text(
-                        sourceLine(r),
-                        style: TextStyle(
-                          color: muted,
-                          fontSize: AppTextSize.label,
-                        ),
-                      ),
+                      SourceLineMark(r),
                     ],
                   ),
                 ),
-                if (defaultScoreNote(r) case final note?)
-                  Text(
-                    note,
-                    key: const Key('default-score'),
-                    style: TextStyle(color: muted, fontSize: AppTextSize.label),
-                  ),
+                DefaultScoreMark(r),
                 Text(scoreText(r.score), style: theme.textTheme.titleMedium),
                 HealthBadge(verdict: r.verdict, rank: r.rank),
               ],
             ),
             if (r.needsBrowserEngine) const BrowserEngineChip(),
             if (r.reprobedOnly) const ReprobeChip(),
-            Wrap(
-              spacing: AppSpacing.md,
-              runSpacing: AppSpacing.xs,
-              children: [
-                _Metric('Uptime', uptimeText(r.uptime)),
-                _Metric('Latency', latencyText(r.latency)),
-                _Metric('Blocking', blockingText(r.blocking)),
-                _Metric('Coverage', coverageText(r.coverage)),
-                _Metric('Chapters', completenessText(r.completeness)),
-                _Metric('Image width', imageWidthText(r.imageQuality)),
-                _Metric('JPEG', jpegQualityText(r.imageQuality)),
-                _Metric('Available as', availabilityText(r.availability)),
-                if (r.pagesLoad != null)
-                  _Metric('Pages load', pagesLoadText(r.pagesLoad)),
-              ],
-            ),
-            if (subset != null)
-              TextButton.icon(
-                icon: const Icon(Icons.call_split),
-                // Disabled when the covering source is not in the ranking.
-                onPressed: nameOf(subset.sourceId) == null
-                    ? null
-                    : () => onOpen(subset.sourceId),
-                label: Text(
-                  'Subset of ${nameOf(subset.sourceId) ?? subset.sourceId} '
-                  '(${pctOrDash(subset.overlap)})',
-                ),
-              ),
-            if (r.cutReasons.isNotEmpty)
-              Text(
-                '${warn ? keptDespiteHeading(keepScore) : lowScoreHeading}:',
-                style: TextStyle(color: muted),
-              ),
-            for (final why in explainCutReasons(r, nameOf: nameOf))
-              if (warn) WarningLine(why) else Text(why),
+            MetricStrip(r),
+            if (subset != null) _subsetLink(subset),
+            ReasonMarks(r, nameOf: nameOf, keepScore: keepScore),
           ],
         ),
       ),
     );
   }
-}
 
-class _Metric extends StatelessWidget {
-  const new(this.label, this.value);
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        label,
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-          fontSize: AppTextSize.caption,
-          letterSpacing: 1.2,
-        ),
+  /// The covering source's name and the overlap; disabled when the
+  /// covering source is not in the ranking.
+  Widget _subsetLink(SubsetOfMetric subset) {
+    final name = nameOf(subset.sourceId) ?? subset.sourceId;
+    final overlap = pctOrDash(subset.overlap);
+    return TextButton.icon(
+      icon: const Icon(Icons.call_split),
+      onPressed: nameOf(subset.sourceId) == null
+          ? null
+          : () => onOpen(subset.sourceId),
+      label: Text(
+        '$name ($overlap)',
+        semanticsLabel: 'Subset of $name ($overlap)',
       ),
-      Text(value),
-    ],
-  );
+    );
+  }
 }

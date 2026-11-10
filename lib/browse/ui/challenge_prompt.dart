@@ -24,36 +24,30 @@ class ChallengePrompt extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.shield_outlined, size: 40),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            'This site wants a browser check',
-            style: theme.textTheme.titleMedium,
-            textAlign: TextAlign.center,
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(AppSpacing.lg),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.shield_outlined,
+          size: 40,
+          semanticLabel: 'Browser check: ${challenge.kind}',
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(challenge.url.host, textAlign: TextAlign.center),
+        const SizedBox(height: AppSpacing.md),
+        IconButton.filled(
+          iconSize: 32,
+          onPressed: () => unawaited(_open(context)),
+          icon: const Icon(
+            Icons.open_in_browser,
+            semanticLabel: 'Open in WebView',
           ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            '${challenge.url.host} showed a ${challenge.kind} page. Open '
-            'it, pass the check or log in, then Kartka loads again.',
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          FilledButton.icon(
-            onPressed: () => unawaited(_open(context)),
-            icon: const Icon(Icons.open_in_browser),
-            label: const Text('Open in WebView'),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }
 
 /// Opens [url] for kuhy: the in-app WebView page (Android) or the
@@ -66,6 +60,7 @@ Future<bool> openInWebView(
   Uri url,
 ) async {
   final messenger = ScaffoldMessenger.of(context);
+  final errorColor = Theme.of(context).colorScheme.error;
   try {
     if (browser.inApp) {
       await Navigator.of(context).push<void>(
@@ -78,15 +73,16 @@ Future<bool> openInWebView(
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          title: const Text('Finish in the browser window'),
-          content: Text(
-            'Log in or pass the check on ${url.host} in the Kartka browser '
-            'window, then press Done.',
+          title: const Icon(
+            Icons.open_in_browser,
+            size: 48,
+            semanticLabel: 'Finish in the browser window',
           ),
+          content: Text(url.host, textAlign: TextAlign.center),
           actions: [
             FilledButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Done'),
+              child: const Icon(Icons.check, semanticLabel: 'Done'),
             ),
           ],
         ),
@@ -96,7 +92,13 @@ Future<bool> openInWebView(
     return true;
   } on EngineUnavailable catch (e) {
     messenger.showSnackBar(
-      SnackBar(content: Text('Browser engine unavailable: ${e.reason}')),
+      SnackBar(
+        content: Icon(
+          Icons.error_outline,
+          color: errorColor,
+          semanticLabel: 'Browser engine unavailable: ${e.reason}',
+        ),
+      ),
     );
     return false;
   }
@@ -114,9 +116,9 @@ class _WebViewPage extends StatelessWidget {
     appBar: AppBar(
       title: Text(url.host),
       actions: [
-        TextButton(
+        IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Done'),
+          icon: const Icon(Icons.check, semanticLabel: 'Done'),
         ),
       ],
     ),

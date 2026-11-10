@@ -2,6 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/state/library_controller.dart';
 import 'package:kartka/library/ui/library_cell.dart';
 
@@ -31,15 +32,13 @@ class LibraryGrid extends StatelessWidget {
     final items = c.visible;
     if (items.isEmpty) {
       final empty = c.items.isEmpty
-          ? const EmptyState(
+          ? const EmptyMark(
               icon: Icons.collections_bookmark_outlined,
-              title: 'Your library is empty',
-              message: 'Add manga from Browse to see them here.',
+              semanticLabel: 'Your library is empty',
             )
-          : const EmptyState(
+          : const EmptyMark(
               icon: Icons.filter_alt_off_outlined,
-              title: 'No matches',
-              message: 'Change the tab, filters or search.',
+              semanticLabel: 'No matches',
             );
       if (onRefresh == null) return empty;
       // Scrollable, so the empty state can be pulled too.

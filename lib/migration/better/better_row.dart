@@ -28,8 +28,8 @@ class BetterRow {
   /// The entry to move.
   final LibraryEntry entry;
 
-  /// Why it should move (`its source is cut`).
-  final String reason;
+  /// Why it should move.
+  final MoveReason reason;
 
   /// Its current source's record; null when unknown.
   final SourceHealthRecord? current;

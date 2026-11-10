@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
 import 'package:kartka/reader/data/reader_settings.dart';
@@ -53,13 +54,23 @@ class _ReaderSettingsTileState extends State<ReaderSettingsTile> {
   Widget build(BuildContext context) {
     final s = _settings;
     return ListTile(
-      leading: const Icon(Icons.chrome_reader_mode_outlined),
-      title: const Text('Reader'),
-      subtitle: Text(
-        s == null
-            ? 'Loading'
-            : '${s.defaultMode.label}, ${s.prefetchAhead} pages prefetched',
+      leading: const Icon(
+        Icons.chrome_reader_mode_outlined,
+        semanticLabel: 'Reader',
       ),
+      title: s == null
+          ? null
+          : Row(
+              spacing: AppSpacing.sm,
+              children: [
+                Icon(s.defaultMode.icon, semanticLabel: s.defaultMode.label),
+                const Icon(
+                  Icons.downloading,
+                  semanticLabel: 'pages prefetched',
+                ),
+                Text('${s.prefetchAhead}'),
+              ],
+            ),
       onTap: s == null ? null : () => unawaited(_edit()),
     );
   }

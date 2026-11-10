@@ -66,9 +66,10 @@ KartkaFeature pluginsFeature(
     ],
     settingsTiles: [
       (context) => ListTile(
-        leading: const Icon(Icons.extension_outlined),
-        title: const Text('Plugins'),
-        subtitle: const Text('Install JS sources from a repository'),
+        leading: const Icon(
+          Icons.extension_outlined,
+          semanticLabel: 'Plugins: install JS sources from a repository',
+        ),
         onTap: () => context.push(pluginsRoute),
       ),
     ],

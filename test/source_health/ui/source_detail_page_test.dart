@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../fixtures.dart';
 import 'harness.dart';
 
@@ -52,18 +53,20 @@ void main() {
       'Subset of another source',
       'Available as',
     ]) {
-      expect(find.text(title), findsWidgets, reason: title);
+      expect(spokenContaining('$title: '), findsOne, reason: title);
     }
-    expect(find.textContaining('Low-score reason below 95 %'), findsOne);
-    expect(find.textContaining('Low-score reason below 60 %'), findsOne);
-    expect(find.text('Lowers score'), findsNWidgets(3));
-    expect(find.text('Why the score is low'), findsOne);
+    expect(spokenContaining('Low-score reason below 95 %'), findsOne);
+    expect(spokenContaining('Low-score reason below 60 %'), findsOne);
+    expect(pill('Lowers score'), findsNWidgets(3));
+    expect(spokenIcon('Why the score is low'), findsOne);
     expect(find.textContaining('cut', findRichText: true), findsNothing);
-    expect(find.textContaining('Blocks automated reading'), findsOne);
-    expect(find.text('Score breakdown'), findsOne);
-    expect(find.text('Evaluator score 0.41 · rank #5'), findsOne);
-    expect(find.text('Last evaluated 2026-10-24 12:00 UTC'), findsOne);
-    expect(find.textContaining('older than 8 days'), findsNothing);
+    expect(spokenContaining('Blocks automated reading'), findsOne);
+    expect(spokenIcon('Score breakdown'), findsOne);
+    expect(spokenIcon('Evaluator score 0.41 · rank #5'), findsOne);
+    expect(find.text('0.41'), findsOne);
+    expect(spokenIcon('Last evaluated'), findsOne);
+    expect(find.text('2026-10-24 12:00 UTC'), findsOne);
+    expect(spokenContaining('older than 8 days'), findsNothing);
   });
 
   testWidgets('pending source shows accruing state and stale warning', (
@@ -74,17 +77,18 @@ void main() {
       fixtureRecord('suwayomi:7034581279101437511'),
       now: DateTime.utc(2026, 12),
     );
-    expect(find.text('accruing 9/28 probes'), findsOne);
-    expect(find.text('Accruing'), findsOne);
-    expect(find.text('Not measured'), findsWidgets);
-    expect(find.text('Why the score is low'), findsNothing);
-    expect(find.textContaining('older than 8 days'), findsOne);
-    expect(find.text('Evaluator score — · unranked'), findsOne);
+    expect(find.text('9/28'), findsOne);
+    expect(spokenContaining('accruing 9/28 probes'), findsNothing);
+    expect(pill('Accruing'), findsOne);
+    expect(pill('Not measured'), findsWidgets);
+    expect(spokenIcon('Why the score is low'), findsNothing);
+    expect(spokenContaining('older than 8 days'), findsOne);
+    expect(spokenIcon('Evaluator score — · unranked'), findsOne);
   });
 
   testWidgets('subset link opens the covering source', (tester) async {
     await pumpDetail(tester, fixtureRecord('suwayomi:2499283573021220255'));
-    await tester.tap(find.text('Open MangaDex'));
+    await tester.tap(find.widgetWithText(TextButton, 'MangaDex'));
     await tester.pumpAndSettle();
     final pages = tester.widgetList<SourceDetailPage>(
       find.byType(SourceDetailPage, skipOffstage: false),

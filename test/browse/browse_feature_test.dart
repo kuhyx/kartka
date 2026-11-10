@@ -16,6 +16,7 @@ import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/tracking/common/chapter_url_resolver.dart';
 
+import '../helpers/spoken_icon.dart';
 import 'fake_download_service.dart';
 import 'fakes.dart';
 import 'ui/harness.dart';
@@ -86,7 +87,7 @@ void main() {
     final kv = MemoryKeyValueStore({'browse.languages': '["ko"]'});
     await _pumpApp(t, _registry(store: kv), '/');
     expect(find.text('MangaDex'), findsNothing);
-    expect(find.text('No sources in your languages'), findsOneWidget);
+    expect(spokenIcon('No sources in your languages'), findsOneWidget);
   });
 
   testWidgets('detail route decodes its params and loads covers', (t) async {
@@ -117,7 +118,7 @@ void main() {
       _registry(downloads: downloads),
       mangaRoute('mangadex', '/m/1'),
     );
-    await t.tap(find.byTooltip('Delete download'));
+    await t.tap(spokenIcon('Delete download'));
     await t.pumpAndSettle();
     expect(downloads.calls, ['delete:/c/1']);
   });
@@ -125,7 +126,7 @@ void main() {
   testWidgets('source and global search routes', (t) async {
     final reg = _registry();
     await _pumpApp(t, reg, sourceRoute('mangadex', query: 'q'));
-    expect(find.text('Popular'), findsOneWidget);
+    expect(spokenIcon('Popular'), findsOneWidget);
     await _pumpApp(t, reg, globalSearchRoute('q'));
     expect(find.text('MangaDex'), findsOneWidget);
   });

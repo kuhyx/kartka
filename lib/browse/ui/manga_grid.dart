@@ -10,6 +10,7 @@ import 'package:kartka/browse/ui/cover_image.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/source/challenge.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 
 /// One manga cover + title; opens the detail route. A focus stop, so arrow
 /// keys walk the grid and the grid scrolls to the focused tile.
@@ -101,10 +102,9 @@ class _PagedMangaGridState extends State<PagedMangaGrid> {
   Widget build(BuildContext context) {
     final c = widget.controller;
     if (c.items.isEmpty && !c.hasNext && c.error == null) {
-      return const EmptyState(
+      return const EmptyMark(
         icon: Icons.search_off,
-        title: 'Nothing here',
-        message: 'This source returned no titles.',
+        semanticLabel: 'Nothing here',
       );
     }
     return CustomScrollView(
@@ -143,12 +143,14 @@ class _Footer extends StatelessWidget {
     } else if (error != null) {
       child = Column(
         children: [
-          Text(
-            redactUrlQueries('Could not load: ${c.error}'),
-            textAlign: TextAlign.center,
-          ),
+          const Icon(Icons.error_outline, semanticLabel: 'Could not load'),
+          Text(redactUrlQueries('$error'), textAlign: TextAlign.center),
           const SizedBox(height: AppSpacing.sm),
-          FilledButton(onPressed: c.loadMore, child: const Text('Retry')),
+          IconButton(
+            iconSize: 32,
+            onPressed: c.loadMore,
+            icon: const Icon(Icons.refresh, semanticLabel: 'Retry'),
+          ),
         ],
       );
     } else if (c.hasNext) {

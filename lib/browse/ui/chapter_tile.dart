@@ -80,8 +80,10 @@ class ChapterTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            tooltip: read ? 'Mark unread' : 'Mark read',
-            icon: Icon(read ? Icons.check_circle : Icons.check_circle_outline),
+            icon: Icon(
+              read ? Icons.check_circle : Icons.check_circle_outline,
+              semanticLabel: read ? 'Mark unread' : 'Mark read',
+            ),
             color: read ? theme.colorScheme.primary : muted,
             onPressed: () =>
                 unawaited(controller.setRead(chapter, read: !read)),

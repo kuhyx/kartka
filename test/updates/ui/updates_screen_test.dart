@@ -14,6 +14,7 @@ import 'package:kartka/updates/state/updates_deps.dart';
 import 'package:kartka/updates/ui/updates_screen.dart';
 
 import '../../helpers/fake_updater.dart';
+import '../../helpers/spoken_icon.dart';
 
 ChapterInfo _ch(int n) =>
     ChapterInfo(url: '/c/$n', name: 'Ch. $n', number: n.toDouble());
@@ -91,7 +92,7 @@ Future<_H> _pump(
 void main() {
   testWidgets('feed grouped by day and manga, unread dot', (t) async {
     final h = await _pump(t);
-    expect(find.text('Today'), findsOneWidget);
+    expect(spokenIcon('Today'), findsOneWidget);
     expect(find.text('Akira'), findsOneWidget);
     expect(find.text('Ch. 4'), findsOneWidget);
     expect(find.text('Ch. 3'), findsOneWidget);
@@ -123,17 +124,13 @@ void main() {
 
   testWidgets('empty state; refresh icon and pull run update-all', (t) async {
     final h = await _pump(t, seed: false);
-    expect(find.text('No updates yet — pull to check'), findsOneWidget);
+    expect(spokenIcon('No updates yet'), findsOneWidget);
     h.updater.summary = const UpdateSummary(newChapters: 2, manga: 1);
-    await t.tap(find.byTooltip('Check for updates'));
+    await t.tap(spokenIcon('Check for updates'));
     await t.pumpAndSettle();
     expect(h.updater.calls, 1);
-    expect(find.text('2 new chapters in 1 manga'), findsOneWidget);
-    await t.fling(
-      find.text('No updates yet — pull to check'),
-      const Offset(0, 400),
-      1000,
-    );
+    expect(find.bySemanticsLabel('2 new chapters in 1 manga'), findsOne);
+    await t.fling(spokenIcon('No updates yet'), const Offset(0, 400), 1000);
     await t.pumpAndSettle();
     expect(h.updater.calls, 2);
   });
@@ -142,11 +139,11 @@ void main() {
     final h = await _pump(t);
     h.updater.show(const UpdateProgress(12, 87));
     await t.pump();
-    expect(find.text('Checking 12/87'), findsOneWidget);
+    expect(find.text('12/87'), findsOneWidget);
     expect(find.byType(LinearProgressIndicator), findsOneWidget);
     h.updater.show(null);
     await t.pump();
-    expect(find.text('Checking 12/87'), findsNothing);
+    expect(find.text('12/87'), findsNothing);
   });
 
   testWidgets('a manga removed from the library drops out of the feed', (
@@ -156,13 +153,13 @@ void main() {
     await h.repos.library.remove(_a.key);
     await t.pumpAndSettle();
     expect(find.text('Akira'), findsNothing);
-    expect(find.text('No updates yet — pull to check'), findsOneWidget);
+    expect(spokenIcon('No updates yet'), findsOneWidget);
   });
 
   testWidgets('no updater: no refresh action, no pull', (t) async {
     await _pump(t, withUpdater: false);
     expect(find.text('Ch. 4'), findsOneWidget);
-    expect(find.byTooltip('Check for updates'), findsNothing);
+    expect(spokenIcon('Check for updates'), findsNothing);
     expect(find.byType(RefreshIndicator), findsNothing);
   });
 }

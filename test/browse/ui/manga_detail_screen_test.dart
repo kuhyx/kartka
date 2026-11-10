@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/core/models/models.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../fakes.dart';
 import 'harness.dart';
 
@@ -18,7 +19,7 @@ Future<Harness> _open(WidgetTester t, {bool downloads = true}) async {
 }
 
 Future<void> _menu(WidgetTester t) async {
-  await t.tap(find.byTooltip('More'));
+  await t.tap(spokenIcon('More'));
   await t.pumpAndSettle();
 }
 
@@ -26,8 +27,9 @@ void main() {
   testWidgets('shows cover, metadata, description, slot, chapters', (t) async {
     final h = await _open(t);
     expect(find.text('Detail title'), findsOneWidget);
-    expect(find.text('Author A · ongoing'), findsOneWidget);
-    expect(find.text('3 chapters'), findsOneWidget);
+    expect(find.text('Author A'), findsOneWidget);
+    expect(spokenIcon('ongoing'), findsOneWidget);
+    expect(find.bySemanticsLabel('3 chapters'), findsOneWidget);
     expect(h.slot.opens, [_key]);
     // Newest first in the list.
     expect(
@@ -51,7 +53,7 @@ void main() {
     await t.pumpAndSettle();
     expect(h.library.entries[_key]?.title, 'Detail title');
     await _menu(t);
-    expect(find.text('In library'), findsOneWidget);
+    expect(spokenIcon('In library'), findsOneWidget);
     await t.tap(find.byKey(const ValueKey('library')));
     await t.pumpAndSettle();
     expect(h.library.entries, isEmpty);
@@ -59,36 +61,36 @@ void main() {
 
   testWidgets('mark read / unread per chapter', (t) async {
     final h = await _open(t);
-    await t.tap(find.byTooltip('Mark read').last); // Ch. 1
+    await t.tap(spokenIcon('Mark read').last); // Ch. 1
     await t.pumpAndSettle();
     expect(h.progress.marks[_key], {'/c/1': true});
-    expect(find.byTooltip('Mark unread'), findsOneWidget);
-    await t.tap(find.byTooltip('Mark unread'));
+    expect(spokenIcon('Mark unread'), findsOneWidget);
+    await t.tap(spokenIcon('Mark unread'));
     await t.pumpAndSettle();
     expect(h.progress.marks[_key], {'/c/1': false});
   });
 
   testWidgets('download one, all and unread', (t) async {
     final h = await _open(t);
-    await t.tap(find.byTooltip('Download').first); // Ch. 3
+    await t.tap(spokenIcon('Download').first); // Ch. 3
     await h.progress.markRead(_key, '/c/1');
     await t.pumpAndSettle();
     expect(h.downloads.enqueued, ['/c/3']);
     await _menu(t);
-    await t.tap(find.text('Download unread'));
+    await t.tap(spokenIcon('Download unread'));
     await t.pumpAndSettle();
     expect(h.downloads.enqueued, ['/c/3', '/c/2', '/c/3']);
     await _menu(t);
-    await t.tap(find.text('Download all'));
+    await t.tap(spokenIcon('Download all'));
     await t.pumpAndSettle();
     expect(h.downloads.enqueued, hasLength(6));
   });
 
   testWidgets('no downloads part: no download buttons', (t) async {
     await _open(t, downloads: false);
-    expect(find.byTooltip('Download'), findsNothing);
+    expect(spokenIcon('Download'), findsNothing);
     await _menu(t);
-    expect(find.text('Download all'), findsNothing);
+    expect(spokenIcon('Download all'), findsNothing);
   });
 
   testWidgets('Read opens the first unread chapter', (t) async {
@@ -147,12 +149,13 @@ void main() {
     final src = FakeSource('mangadex')..failWith = StateError('down');
     final h = Harness(sources: [src], withCovers: false);
     await h.pump(t, const SizedBox(), at: mangaRoute('mangadex', _url));
-    expect(find.textContaining('Could not load'), findsOneWidget);
+    expect(spokenIcon('Could not load'), findsOneWidget);
+    expect(find.text('Bad state: down'), findsOneWidget);
     src.failWith = null;
-    await t.tap(find.text('Retry'));
+    await t.tap(spokenIcon('Retry'));
     await t.pumpAndSettle();
     expect(find.text('Detail title'), findsOneWidget);
-    await t.tap(find.byTooltip('Refresh'));
+    await t.tap(spokenIcon('Refresh'));
     await t.pumpAndSettle();
     // Refresh re-fetches the chapter list only; details stay as loaded.
     expect(src.calls.where((c) => c.startsWith('details')), hasLength(2));
@@ -162,12 +165,12 @@ void main() {
   testWidgets('a source id with no MangaSource shows unavailable', (t) async {
     final h = Harness();
     await h.pump(t, const SizedBox(), at: mangaRoute('sy-builtin:42', _url));
-    expect(find.text('Source unavailable'), findsOneWidget);
-    expect(find.textContaining('sy-builtin:42'), findsOneWidget);
-    expect(find.textContaining('Could not load'), findsNothing);
+    expect(spokenIcon('Source unavailable'), findsOneWidget);
+    expect(find.text('sy-builtin:42'), findsOneWidget);
+    expect(spokenIcon('Could not load'), findsNothing);
     // It can appear later (e.g. a plugin installed): Retry picks it up.
     h.provider.controller.add([FakeSource('sy-builtin:42')]);
-    await t.tap(find.text('Retry'));
+    await t.tap(spokenIcon('Retry'));
     await t.pumpAndSettle();
     expect(find.text('Detail title'), findsOneWidget);
   });

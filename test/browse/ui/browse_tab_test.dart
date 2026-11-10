@@ -5,6 +5,7 @@ import 'package:kartka/browse/state/shared_health_lookup.dart';
 import 'package:kartka/browse/ui/browse_tab.dart';
 import 'package:kartka/core/models/models.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../fakes.dart';
 import 'harness.dart';
 
@@ -26,9 +27,9 @@ void main() {
     );
     await h.pump(t, const BrowseTab());
     for (final label in ['Built-in', 'Suwayomi', 'Local']) {
-      expect(find.text(label), findsOneWidget);
+      expect(find.bySemanticsLabel(label), findsOneWidget);
     }
-    expect(find.text('Plugins'), findsNothing);
+    expect(find.bySemanticsLabel('Plugins'), findsNothing);
     final beta = t.getTopLeft(find.text('Beta')).dy;
     final alpha = t.getTopLeft(find.text('Alpha')).dy;
     expect(beta, lessThan(alpha));
@@ -50,13 +51,13 @@ void main() {
   testWidgets('sources appearing at runtime show up live', (t) async {
     final h = Harness(sources: []);
     await h.pump(t, const BrowseTab());
-    expect(find.text('No sources'), findsOneWidget);
+    expect(find.bySemanticsLabel('No sources'), findsOneWidget);
     h.provider.controller.add([
       FakeSource('plugin:x', name: 'Xplug', origin: SourceOrigin.plugin),
     ]);
     await t.pumpAndSettle();
     expect(find.text('Xplug'), findsOneWidget);
-    expect(find.text('Plugins'), findsOneWidget);
+    expect(find.bySemanticsLabel('Plugins'), findsOneWidget);
   });
 
   testWidgets('tapping a source opens its screen', (t) async {
@@ -64,7 +65,7 @@ void main() {
     await h.pump(t, const BrowseTab());
     await t.tap(find.text('MangaDex'));
     await t.pumpAndSettle();
-    expect(find.text('Popular'), findsOneWidget);
+    expect(spokenIcon('Popular'), findsOneWidget);
     expect(find.text('Title 0'), findsOneWidget);
   });
 
@@ -74,7 +75,7 @@ void main() {
     await t.enterText(find.byType(TextField), '   ');
     await t.testTextInput.receiveAction(TextInputAction.search);
     await t.pumpAndSettle();
-    expect(find.text('Built-in'), findsOneWidget); // Blank: stays.
+    expect(find.bySemanticsLabel('Built-in'), findsOneWidget); // Blank: stays.
     await t.enterText(find.byType(TextField), 'berserk');
     await t.testTextInput.receiveAction(TextInputAction.search);
     await t.pumpAndSettle();

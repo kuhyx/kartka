@@ -18,6 +18,7 @@ class FakeTracker implements Tracker {
   Exception? pushError;
   Exception? loginError;
   Exception? searchError;
+  Exception? fetchError;
   bool emptySearch = false;
   Completer<void>? gate;
 
@@ -48,6 +49,8 @@ class FakeTracker implements Tracker {
   @override
   Future<TrackStatus?> fetch(String remoteId) async {
     fetches++;
+    final e = fetchError;
+    if (e != null) throw e;
     final read = remote[remoteId];
     return read == null
         ? null

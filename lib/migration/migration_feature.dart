@@ -47,9 +47,12 @@ KartkaFeature migrationFeature(KartkaEnv env) => KartkaFeature(
   ],
   settingsTiles: [
     (context) => ListTile(
-      leading: const Icon(Icons.swap_horiz),
-      title: const Text('Migrate to Atsumaru'),
-      subtitle: const Text('Move entries, progress, categories and trackers'),
+      leading: const Icon(
+        Icons.swap_horiz,
+        semanticLabel:
+            'Migrate to Atsumaru. Move entries, progress, categories '
+            'and trackers',
+      ),
       onTap: () => unawaited(context.push(migrateRoute)),
     ),
     betterSourcesTile,
@@ -111,9 +114,9 @@ class _MigrateButtonState extends State<_MigrateButton> {
   Widget build(BuildContext context) => StreamBuilder<bool>(
     stream: _saved,
     builder: (context, saved) => saved.data ?? false
-        ? OutlinedButton.icon(
-            icon: const Icon(Icons.swap_horiz),
-            label: const Text('Migrate'),
+        ? IconButton.outlined(
+            style: IconButton.styleFrom(minimumSize: const Size.square(48)),
+            icon: const Icon(Icons.swap_horiz, semanticLabel: 'Migrate'),
             onPressed: () =>
                 unawaited(context.push(migrateRouteFor([widget.mangaKey]))),
           )

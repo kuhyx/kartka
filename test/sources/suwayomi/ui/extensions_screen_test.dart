@@ -15,6 +15,10 @@ import '../fakes.dart';
 
 const _fixtures = ['extensions', 'ext_install', 'ext_update', 'ext_uninstall'];
 
+/// The section marks (glyph headers) of the two lists.
+final Finder installed = find.byIcon(Icons.check_circle_outline);
+final Finder available = find.byIcon(Icons.cloud_download_outlined);
+
 void main() {
   late int changes;
   setUp(() => changes = 0);
@@ -47,21 +51,21 @@ void main() {
 
   testWidgets('lists installed and available extensions', (tester) async {
     await pump(tester, api(fixtureHttp(_fixtures)));
-    expect(find.text('Installed'), findsOneWidget);
-    expect(find.text('Available'), findsOneWidget);
+    expect(find.bySemanticsLabel('Installed'), findsOneWidget);
+    expect(find.bySemanticsLabel('Available'), findsOneWidget);
     expect(find.text('MangaDex'), findsOneWidget);
     expect(find.text('Weeb Central'), findsOneWidget);
-    expect(find.text('Uninstall'), findsOneWidget);
-    expect(find.text('Install'), findsWidgets);
+    expect(find.bySemanticsLabel('Uninstall'), findsOneWidget);
+    expect(find.byIcon(Icons.download), findsWidgets);
   });
 
   testWidgets('section headers keep the screen gutter', (tester) async {
     await pump(tester, api(fixtureHttp(_fixtures)));
-    for (final header in ['Installed', 'Available']) {
+    for (final header in [installed, available]) {
       expect(
-        tester.getTopLeft(find.text(header)).dx,
+        tester.getTopLeft(header).dx,
         greaterThanOrEqualTo(AppSpacing.md),
-        reason: header,
+        reason: '$header',
       );
     }
   });
@@ -72,7 +76,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Weeb Central'), findsOneWidget);
     expect(find.text('MangaDex'), findsNothing);
-    expect(find.text('Installed'), findsNothing);
+    expect(installed, findsNothing);
   });
 
   testWidgets('installs and moves the extension to installed', (tester) async {
@@ -80,20 +84,22 @@ void main() {
     await pump(tester, api(http));
     await tester.enterText(find.byType(TextField), 'weeb');
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Install'));
+    await tester.tap(find.byIcon(Icons.download));
     await tester.pumpAndSettle();
     expect(changes, 1);
-    expect(find.text('Installed'), findsOneWidget);
-    expect(find.text('Uninstall'), findsOneWidget);
-    expect(find.text('Installed Weeb Central'), findsOneWidget);
+    expect(installed, findsOneWidget);
+    expect(find.bySemanticsLabel('Uninstall'), findsOneWidget);
+    expect(find.bySemanticsLabel('Installed Weeb Central'), findsOneWidget);
+    expect(find.byIcon(Icons.download_done), findsOneWidget);
   });
 
   testWidgets('uninstall asks first', (tester) async {
     await pump(tester, api(fixtureHttp(_fixtures)));
-    await tester.tap(find.text('Uninstall'));
+    await tester.tap(find.bySemanticsLabel('Uninstall'));
     await tester.pumpAndSettle();
     expect(find.byType(AlertDialog), findsOneWidget);
-    await tester.tap(find.text('Cancel'));
+    expect(find.bySemanticsLabel(RegExp('^Uninstall MangaDex')), findsOne);
+    await tester.tap(find.bySemanticsLabel('Cancel'));
     await tester.pumpAndSettle();
     expect(changes, 0);
   });
@@ -101,9 +107,9 @@ void main() {
   testWidgets('a failed action shows an error', (tester) async {
     // MangaDex uninstall has no fixture, so the fake answers 599.
     await pump(tester, api(fixtureHttp(['extensions'])));
-    await tester.tap(find.text('Uninstall'));
+    await tester.tap(find.bySemanticsLabel('Uninstall'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Uninstall').last);
+    await tester.tap(find.bySemanticsLabel('Uninstall').last);
     await tester.pumpAndSettle();
     expect(find.textContaining('HTTP 599'), findsOneWidget);
     expect(changes, 0);
@@ -118,11 +124,12 @@ void main() {
       ),
     );
     await pump(tester, api(http));
-    expect(find.text('Update'), findsOneWidget);
+    expect(find.bySemanticsLabel('Update'), findsOneWidget);
     await tester.pump(const Duration(seconds: 4)); // toast expires
     await tester.pumpAndSettle();
-    expect(find.textContaining('update available'), findsOneWidget);
-    expect(find.textContaining('obsolete'), findsOneWidget);
+    expect(find.text('en · v1'), findsOneWidget);
+    expect(find.byIcon(Icons.new_releases_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.warning_amber), findsOneWidget);
   });
 
   testWidgets('explains an empty store list', (tester) async {
@@ -131,7 +138,8 @@ void main() {
           FakeKartkaHttp.text('{"data":{"fetchExtensions":{"extensions":[]}}}'),
     );
     await pump(tester, api(http));
-    expect(find.text('No extensions'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('^No extensions')), findsOneWidget);
+    expect(find.byIcon(Icons.extension_off), findsOneWidget);
   });
 
   testWidgets('shows load errors with a retry', (tester) async {
@@ -141,14 +149,14 @@ void main() {
       api(FakeKartkaHttp(), const SuwayomiSettings()),
       log: log,
     );
-    expect(find.text("Can't list extensions"), findsOneWidget);
+    expect(find.bySemanticsLabel("Can't list extensions"), findsOneWidget);
     final logged = (await tester.runAsync(log.entries))!.single;
     expect(logged.kind, 'suwayomi.extensions');
     expect(logged.error, contains('no server URL'));
     expect(find.textContaining('no server URL'), findsOneWidget);
-    await tester.tap(find.text('Retry'));
+    await tester.tap(find.bySemanticsLabel('Retry'));
     await tester.pumpAndSettle();
-    expect(find.text('Retry'), findsOneWidget);
+    expect(find.bySemanticsLabel('Retry'), findsOneWidget);
   });
 
   testWidgets('updates and uninstalls, then Escape goes back', (tester) async {
@@ -186,21 +194,21 @@ void main() {
     );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Update').first);
+    await tester.tap(find.byIcon(Icons.upgrade).first);
     await tester.pumpAndSettle();
-    expect(find.text('Updated MangaDex'), findsOneWidget);
-    expect(find.text('Update'), findsOneWidget);
+    expect(find.bySemanticsLabel('Updated MangaDex'), findsOneWidget);
+    expect(find.byIcon(Icons.upgrade), findsOneWidget);
     await tester.tap(
       find.descendant(
         of: find.widgetWithText(ListTile, 'Weeb Central'),
-        matching: find.text('Uninstall'),
+        matching: find.byIcon(Icons.delete_outline),
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Uninstall').last);
+    await tester.tap(find.bySemanticsLabel('Uninstall').last);
     await tester.pumpAndSettle();
-    expect(find.text('Uninstalled Weeb Central'), findsOneWidget);
-    expect(find.text('Available'), findsOneWidget);
+    expect(find.bySemanticsLabel('Uninstalled Weeb Central'), findsOneWidget);
+    expect(available, findsOneWidget);
     expect(changes, 2);
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();

@@ -5,6 +5,7 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/ui/chapter_transition.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../support/fakes.dart';
 import 'reader_harness.dart';
 
@@ -89,16 +90,23 @@ void main() {
     for (var i = 0; i < 4; i++) {
       await key(tester, LogicalKeyboardKey.arrowRight);
     }
-    expect(find.text('Could not open Ch. 3'), findsOneWidget);
+    expect(spokenIcon('Could not open'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(ChapterTransition),
+        matching: find.text('Ch. 3'),
+      ),
+      findsOneWidget,
+    );
     expect(find.textContaining('https://src.test/c/3?<redacted>'), findsOne);
     expect(find.textContaining('SECRET'), findsNothing);
     final logged = await tester.runAsync(h.diagnostics.entries);
     // Once from the load on open, once from the retry on reaching the end.
     expect(logged!.map((e) => e.chapterUrl), ['/c/3', '/c/3']);
     source.fail = false;
-    await tester.tap(find.text('Retry'));
+    await tester.tap(spokenIcon('Retry'));
     await h.settle(tester);
-    expect(find.text('Could not open Ch. 3'), findsNothing);
+    expect(spokenIcon('Could not open'), findsNothing);
     expect(find.byType(SnackBar), findsOneWidget);
     await tester.pump(const Duration(seconds: 2));
   });
@@ -114,13 +122,13 @@ void main() {
     for (var i = 0; i < 4; i++) {
       await key(tester, LogicalKeyboardKey.arrowRight);
     }
-    expect(find.text('No more chapters'), findsOneWidget);
+    expect(spokenIcon('No more chapters'), findsOneWidget);
     await key(tester, LogicalKeyboardKey.arrowLeft);
     await key(tester, LogicalKeyboardKey.arrowLeft);
     for (var i = 0; i < 3; i++) {
       await key(tester, LogicalKeyboardKey.arrowLeft);
     }
-    expect(find.text('No previous chapter'), findsOneWidget);
+    expect(spokenIcon('Start of, no previous chapter'), findsOneWidget);
     expect(h.opened, isEmpty);
   });
 

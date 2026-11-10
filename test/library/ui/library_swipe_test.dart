@@ -113,12 +113,12 @@ void main() {
   ) async {
     final f = await _seed();
     await pumpLibrary(tester, f.deps);
-    expect(find.text('Default'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('^Default')), findsOneWidget);
     expect(find.text('All'), findsNothing);
     _shows(akira: false, berserk: false, claymore: true);
     await f.deps.repos.categories.setMembership(_c, 'one', true);
     await tester.pumpAndSettle();
-    expect(find.text('Default'), findsNothing);
+    expect(find.bySemanticsLabel(RegExp('^Default')), findsNothing);
     expect(_tabIndex(tester), 0);
     _shows(akira: true, berserk: false, claymore: true);
     await _fling(tester, -300);
@@ -126,7 +126,7 @@ void main() {
     _shows(akira: false, berserk: true);
     await f.deps.repos.categories.setMembership(_a, 'one', false);
     await tester.pumpAndSettle();
-    expect(find.text('Default'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('^Default')), findsOneWidget);
     expect(_tabIndex(tester), 2);
   });
 
@@ -147,7 +147,7 @@ void main() {
     await tester.pumpAndSettle();
     await _fling(tester, 300);
     expect(_tabIndex(tester), 3);
-    expect(find.text('No matches'), findsOneWidget);
+    expect(find.bySemanticsLabel('No matches'), findsOneWidget);
   });
 
   testWidgets('no categories: a swipe changes nothing', (tester) async {

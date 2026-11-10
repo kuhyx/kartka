@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/core/models/models.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../fakes.dart';
 import 'harness.dart';
 
@@ -30,9 +31,11 @@ Future<void> _pull(WidgetTester t) async {
 }
 
 Future<void> _tapRefresh(WidgetTester t) async {
-  await t.tap(find.byTooltip('Refresh'));
+  await t.tap(spokenIcon('Refresh'));
   await t.pumpAndSettle();
 }
+
+Finder _said(String label) => find.bySemanticsLabel(label);
 
 void main() {
   testWidgets('the first load shows no snackbar', (t) async {
@@ -43,7 +46,8 @@ void main() {
   testWidgets('pull-to-refresh with nothing new', (t) async {
     final (h, src) = await _open(t);
     await _pull(t);
-    expect(find.text('No new chapters'), findsOneWidget);
+    expect(_said('No new chapters'), findsOneWidget);
+    expect(find.byIcon(Icons.done_all), findsOneWidget);
     expect(src.calls.where((c) => c.startsWith('chapters')), hasLength(2));
     expect(await h.diagnostics.entries(), isEmpty);
   });
@@ -52,24 +56,27 @@ void main() {
     final (_, src) = await _open(t);
     src.chapterList = _upTo(103);
     await _pull(t);
-    expect(find.text('3 new: ch 101, 102, 103'), findsOneWidget);
-    expect(find.text('103 chapters'), findsOneWidget);
+    expect(_said('3 new: ch 101, 102, 103'), findsOneWidget);
+    expect(find.text('3 · 101, 102, 103'), findsOneWidget);
+    expect(_said('103 chapters'), findsOneWidget);
+    expect(find.text('103'), findsOneWidget);
   });
 
   testWidgets('seven new chapters list five then +2 more', (t) async {
     final (_, src) = await _open(t);
     src.chapterList = _upTo(107);
     await _pull(t);
-    expect(find.text('7 new: ch 101, 102, 103, 104, 105 +2 more'), findsOne);
+    expect(_said('7 new: ch 101, 102, 103, 104, 105 +2 more'), findsOne);
+    expect(find.text('7 · 101, 102, 103, 104, 105 +2'), findsOne);
   });
 
   testWidgets('the app-bar Refresh takes the same path', (t) async {
     final (_, src) = await _open(t);
     await _tapRefresh(t);
-    expect(find.text('No new chapters'), findsOneWidget);
+    expect(_said('No new chapters'), findsOneWidget);
     src.chapterList = _upTo(103);
     await _tapRefresh(t);
-    expect(find.text('3 new: ch 101, 102, 103'), findsOneWidget);
+    expect(_said('3 new: ch 101, 102, 103'), findsOneWidget);
   });
 
   testWidgets('a failed refresh: redacted snackbar + diagnostics', (t) async {
@@ -77,11 +84,15 @@ void main() {
     src.failWith = StateError('down https://h.test/x?auth=SECRET');
     await _pull(t);
     expect(
-      find.text('Refresh failed: Bad state: down https://h.test/x?<redacted>'),
+      _said('Refresh failed: Bad state: down https://h.test/x?<redacted>'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Bad state: down https://h.test/x?<redacted>'),
       findsOneWidget,
     );
     // The old chapters stay on screen.
-    expect(find.text('100 chapters'), findsOneWidget);
+    expect(_said('100 chapters'), findsOneWidget);
     final entries = await t.runAsync(h.diagnostics.entries);
     expect(entries, hasLength(1));
     final e = entries!.single;
@@ -98,7 +109,7 @@ void main() {
     final (h, src) = await _open(t);
     src.failWith = StateError('gone /manga/a?token=X');
     await _tapRefresh(t);
-    expect(find.textContaining('Refresh failed: '), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('^Refresh failed: ')), findsOne);
     final entries = (await t.runAsync(h.diagnostics.entries))!;
     expect(entries.single.kind, 'details.refresh');
     expect(entries.single.error, isNot(contains('token=X')));
@@ -113,7 +124,7 @@ void main() {
     await h.pump(t, const SizedBox(), at: mangaRoute('mangadex', _url));
     src.failWith = null;
     await _tapRefresh(t);
-    expect(find.text('100 chapters'), findsOneWidget);
-    expect(find.text('No new chapters'), findsOneWidget);
+    expect(_said('100 chapters'), findsOneWidget);
+    expect(_said('No new chapters'), findsOneWidget);
   });
 }

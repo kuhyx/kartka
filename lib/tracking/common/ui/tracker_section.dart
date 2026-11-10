@@ -5,13 +5,15 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/models/manga_key.dart';
 import 'package:kartka/core/redact.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/tracking/common/credentials_login.dart';
 import 'package:kartka/tracking/common/track_binding.dart';
 import 'package:kartka/tracking/common/tracker.dart';
 import 'package:kartka/tracking/common/tracking_service.dart';
 import 'package:kartka/tracking/common/ui/track_search.dart';
 
-/// One-line summary of a remote list entry.
+/// One-line summary of a remote list entry, spoken only: [TrackStatusRow]
+/// paints it as glyphs and numbers.
 String formatStatus(TrackStatus? s) {
   if (s == null) return 'Not on your list yet';
   final total = s.totalChapters;
@@ -24,6 +26,49 @@ String formatStatus(TrackStatus? s) {
     '$count chapters',
     if (score != null) 'score $score',
   ].join(' · ');
+}
+
+/// A remote list entry as the tracker's own status word, a chapter count
+/// and a score, each behind a glyph; the whole row speaks [formatStatus].
+class TrackStatusRow extends StatelessWidget {
+  /// Paints [status]; null means not on the remote list yet.
+  const new(this.status, {super.key});
+
+  /// The remote entry, or null.
+  final TrackStatus? status;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = status;
+    if (s == null) {
+      return Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: Icon(Icons.playlist_add, semanticLabel: formatStatus(null)),
+      );
+    }
+    final total = s.totalChapters;
+    final score = s.score;
+    return SpokenLabel(
+      semanticLabel: formatStatus(s),
+      child: ExcludeSemantics(
+        child: Wrap(
+          spacing: AppSpacing.xs,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text(s.status),
+            const Icon(Icons.layers_outlined, size: 16),
+            Text(
+              total == null ? '${s.chaptersRead}' : '${s.chaptersRead}/$total',
+            ),
+            if (score != null) ...[
+              const Icon(Icons.star_outline, size: 16),
+              Text('$score'),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 /// One tracker in the track sheet: login, search-and-bind, or the bound
@@ -110,14 +155,16 @@ class _TrackerSectionState extends State<TrackerSection> {
         child: Text(_t.name, style: Theme.of(context).textTheme.titleMedium),
       ),
       if (loggedIn)
-        TextButton(
+        IconButton(
+          style: _button,
           onPressed: () => unawaited(_guard(_t.logout)),
-          child: const Text('Log out'),
+          icon: const Icon(Icons.logout, semanticLabel: 'Log out'),
         )
       else
-        FilledButton(
+        IconButton.filled(
+          style: _button,
           onPressed: () => unawaited(_guard(() => _login(context))),
-          child: Text('Log in to ${_t.name}'),
+          icon: Icon(Icons.login, semanticLabel: 'Log in to ${_t.name}'),
         ),
     ],
   );
@@ -138,20 +185,25 @@ class _TrackerSectionState extends State<TrackerSection> {
           child: FutureBuilder<TrackStatus?>(
             key: ValueKey(binding),
             future: _t.fetch(binding.remoteId),
-            builder: (context, s) => Text(
-              s.connectionState == ConnectionState.done
-                  ? (s.hasError ? '${s.error}' : formatStatus(s.data))
-                  : 'Loading…',
-            ),
+            builder: (context, s) => s.connectionState != ConnectionState.done
+                ? const LinearProgressIndicator()
+                : s.hasError
+                ? Text('${s.error}')
+                : TrackStatusRow(s.data),
           ),
         ),
-        TextButton(
+        IconButton(
+          style: _button,
           onPressed: () => unawaited(
             _guard(() => widget.service.unbind(widget.mangaKey, _t.id)),
           ),
-          child: const Text('Unbind'),
+          icon: const Icon(Icons.link_off, semanticLabel: 'Unbind'),
         ),
       ],
     );
   }
+
+  static final ButtonStyle _button = IconButton.styleFrom(
+    minimumSize: const Size.square(48),
+  );
 }

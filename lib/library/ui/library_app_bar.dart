@@ -58,25 +58,30 @@ class LibraryAppBar extends StatelessWidget implements PreferredSizeWidget {
     if (c.selecting) {
       return AppBar(
         leading: IconButton(
-          tooltip: 'Exit selection',
-          icon: const Icon(Icons.close),
+          icon: const Icon(Icons.close, semanticLabel: 'Exit selection'),
           onPressed: c.clearSelection,
         ),
-        title: Text('${c.selected.length} selected'),
+        title: Text(
+          '${c.selected.length}',
+          semanticsLabel: '${c.selected.length} selected',
+        ),
         actions: [
           IconButton(
-            tooltip: 'Select all',
-            icon: const Icon(Icons.select_all),
+            icon: const Icon(Icons.select_all, semanticLabel: 'Select all'),
             onPressed: c.selectAllVisible,
           ),
           IconButton(
-            tooltip: 'Set categories',
-            icon: const Icon(Icons.label_outline),
+            icon: const Icon(
+              Icons.label_outline,
+              semanticLabel: 'Set categories',
+            ),
             onPressed: c.selected.isEmpty ? null : onSetCategories,
           ),
           IconButton(
-            tooltip: 'Remove from library',
-            icon: const Icon(Icons.delete_outline),
+            icon: const Icon(
+              Icons.delete_outline,
+              semanticLabel: 'Remove from library',
+            ),
             onPressed: c.selected.isEmpty ? null : onRemove,
           ),
         ],
@@ -87,42 +92,38 @@ class LibraryAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: searching
           ? TextField(
               autofocus: true,
-              decoration: const InputDecoration(hintText: 'Search library'),
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.search, semanticLabel: 'Search library'),
+              ),
               onChanged: (s) => c.query = c.query.copyWith(search: s),
             )
-          : const Text('Library'),
+          : const Icon(Icons.menu_book, semanticLabel: 'Library'),
       actions: [
         if (searching)
           IconButton(
-            tooltip: 'Close search',
-            icon: const Icon(Icons.close),
+            icon: const Icon(Icons.close, semanticLabel: 'Close search'),
             onPressed: onCloseSearch,
           )
         else
           IconButton(
-            tooltip: 'Search',
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search, semanticLabel: 'Search'),
             onPressed: onSearch,
           ),
         if (onUpdateAll != null)
           IconButton(
-            tooltip: 'Update library',
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh, semanticLabel: 'Update library'),
             onPressed: onUpdateAll,
           ),
         IconButton(
-          tooltip: 'Sort and filter',
-          icon: const Icon(Icons.filter_list),
+          icon: const Icon(Icons.filter_list, semanticLabel: 'Sort and filter'),
           onPressed: onOptions,
         ),
         IconButton(
-          tooltip: 'Select',
-          icon: const Icon(Icons.checklist),
+          icon: const Icon(Icons.checklist, semanticLabel: 'Select'),
           onPressed: c.startSelecting,
         ),
         IconButton(
-          tooltip: 'Edit categories',
-          icon: const Icon(Icons.label),
+          icon: const Icon(Icons.label, semanticLabel: 'Edit categories'),
           onPressed: onEditCategories,
         ),
       ],

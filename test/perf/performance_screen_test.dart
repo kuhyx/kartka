@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/app.dart';
 import 'package:kartka/app/registry.dart';
+import 'package:kartka/app/shell.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/perf/jank_tracker.dart';
 import 'package:kartka/perf/perf_feature.dart';
@@ -35,13 +36,15 @@ void main() {
     final reader = tester.getTopLeft(find.textContaining('/read/'));
     final library = tester.getTopLeft(find.text('/library'));
     expect(reader.dy, lessThan(library.dy));
-    expect(find.textContaining('1 of 2 frames janky (50 %)'), findsOneWidget);
-    expect(find.textContaining('worst 40.0 ms'), findsOneWidget);
+    expect(find.bySemanticsLabel('1 of 2 frames janky (50 %)'), findsOneWidget);
+    expect(find.bySemanticsLabel('worst 40.0 ms'), findsOneWidget);
+    expect(find.text('1/2 (50 %)'), findsOneWidget);
+    expect(find.text('40.0 ms'), findsOneWidget);
 
-    await tester.tap(find.text('Reset'));
+    await tester.tap(find.bySemanticsLabel('Reset'));
     await tester.pump();
     expect(find.text('/library'), findsNothing);
-    expect(find.text('No frames measured yet'), findsOneWidget);
+    expect(find.bySemanticsLabel('No frames measured yet'), findsOneWidget);
   });
 
   testWidgets('event-loop stalls show on their screen', (tester) async {
@@ -54,8 +57,9 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(home: PerformanceScreen(tracker: tracker)),
     );
-    expect(find.textContaining('1 stall (worst 180.0 ms)'), findsOneWidget);
-    expect(find.textContaining('2 stalls (worst 90.0 ms)'), findsOneWidget);
+    expect(find.bySemanticsLabel('1 stall (worst 180.0 ms)'), findsOneWidget);
+    expect(find.bySemanticsLabel('2 stalls (worst 90.0 ms)'), findsOneWidget);
+    expect(find.text('2 (90.0 ms)'), findsOneWidget);
   });
 
   testWidgets('More tile opens the screen; the tracker sees the route', (
@@ -68,9 +72,9 @@ void main() {
     ]);
     await tester.pumpWidget(KartkaApp(registry: registry, platform: platform));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('More'));
+    await tester.tap(find.byIcon(tabInfo[KartkaTab.more]!.icon));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Performance'));
+    await tester.tap(find.bySemanticsLabel('Performance'));
     await tester.pumpAndSettle();
     expect(find.byType(PerformanceScreen), findsOneWidget);
     tracker.onTimings([frame(1)]);

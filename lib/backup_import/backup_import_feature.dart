@@ -68,9 +68,10 @@ KartkaFeature backupImportFeatureWith(
   ],
   settingsTiles: [
     (context) => ListTile(
-      leading: const Icon(Icons.file_upload_outlined),
-      title: const Text('Import SY backup'),
-      subtitle: const Text('Library, categories, progress and trackers'),
+      leading: const Icon(
+        Icons.file_upload_outlined,
+        semanticLabel: 'Import SY backup',
+      ),
       onTap: () => context.push(importSyBackupRoute),
     ),
   ],

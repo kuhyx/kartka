@@ -17,8 +17,10 @@ import 'package:kartka/platform/page_image.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/reader_feature.dart';
+import 'package:kartka/reader/ui/chapter_transition.dart';
 import 'package:kartka/reader/ui/reader_screen.dart';
 
+import '../helpers/spoken_icon.dart';
 import 'support/fakes.dart';
 import 'ui/reader_harness.dart';
 
@@ -155,12 +157,13 @@ void main() {
     build(pages: const {});
     await ReaderPrefs(kv).setModeFor('fake|/m/1', ReaderMode.pagedLtr);
     await pump(tester, readRoute('fake', '/m/1', '/c/2'));
-    expect(find.text('Could not open Ch. 3'), findsNothing);
+    expect(spokenIcon('Could not open'), findsNothing);
     for (var i = 0; i < 2; i++) {
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
       await settle(tester);
     }
-    expect(find.text('Could not open Ch. 3'), findsOneWidget);
+    expect(spokenIcon('Could not open'), findsOneWidget);
+    expect(find.widgetWithText(ChapterTransition, 'Ch. 3'), findsOneWidget);
     final logged = await tester.runAsync(
       () => DiagnosticsLog.of(diagnostics).entries(),
     );
@@ -187,10 +190,10 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.textContaining('pages prefetched'), findsOneWidget);
-    await tester.tap(find.text('Reader'));
+    expect(spokenIcon('pages prefetched'), findsOneWidget);
+    await tester.tap(spokenIcon('Reader'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Invert tap zones'));
+    await tester.tap(spokenIcon('Invert tap zones'));
     await tester.pumpAndSettle();
     expect((await ReaderPrefs(kv).settings()).invertTaps, isTrue);
   });
@@ -235,7 +238,7 @@ void main() {
     }
     await pump(tester, readRoute('fake', '/m/1', '/c/2'));
     expect(find.byType(Image), findsWidgets);
-    expect(find.text('Retry'), findsNothing);
+    expect(spokenIcon('Retry'), findsNothing);
     // Only the next, not downloaded, chapter is prefetched from the network.
     expect(http.requests.map((r) => r.url.path), ['/c/3/0.png']);
   });

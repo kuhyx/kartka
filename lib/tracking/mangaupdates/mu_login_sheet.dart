@@ -45,6 +45,11 @@ class _MuLoginFormState extends State<MuLoginForm> {
   final _username = TextEditingController();
   final _password = TextEditingController();
   bool _busy = false;
+
+  /// A field was empty on submit: both fields turn red, an icon says why.
+  bool _missing = false;
+
+  /// The server's refusal, in its own words.
   String? _error;
 
   @override
@@ -59,11 +64,15 @@ class _MuLoginFormState extends State<MuLoginForm> {
     final user = _username.text.trim();
     final pass = _password.text;
     if (user.isEmpty || pass.isEmpty) {
-      setState(() => _error = 'Enter your username and password.');
+      setState(() {
+        _missing = true;
+        _error = null;
+      });
       return;
     }
     setState(() {
       _busy = true;
+      _missing = false;
       _error = null;
     });
     try {
@@ -87,11 +96,10 @@ class _MuLoginFormState extends State<MuLoginForm> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Log in to MangaUpdates', style: theme.textTheme.titleLarge),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                'Kartka keeps only the session token, never your password.',
-                style: theme.textTheme.bodySmall,
+              const Icon(
+                Icons.login,
+                size: 48,
+                semanticLabel: 'Log in to MangaUpdates',
               ),
               const SizedBox(height: AppSpacing.md),
               TextField(
@@ -101,7 +109,7 @@ class _MuLoginFormState extends State<MuLoginForm> {
                 enabled: !_busy,
                 autofillHints: const [AutofillHints.username],
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Username'),
+                decoration: _decoration(Icons.person_outline, 'Username'),
               ),
               const SizedBox(height: AppSpacing.md),
               TextField(
@@ -112,8 +120,16 @@ class _MuLoginFormState extends State<MuLoginForm> {
                 autofillHints: const [AutofillHints.password],
                 textInputAction: TextInputAction.done,
                 onSubmitted: (_) => _submit(),
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: _decoration(Icons.password, 'Password'),
               ),
+              if (_missing) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Icon(
+                  Icons.error_outline,
+                  color: theme.colorScheme.error,
+                  semanticLabel: 'Enter your username and password.',
+                ),
+              ],
               if (_error != null) ...[
                 const SizedBox(height: AppSpacing.sm),
                 Text(
@@ -131,7 +147,7 @@ class _MuLoginFormState extends State<MuLoginForm> {
                         dimension: AppSpacing.md,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Log in'),
+                    : const Icon(Icons.login, semanticLabel: 'Log in'),
               ),
             ],
           ),
@@ -139,4 +155,11 @@ class _MuLoginFormState extends State<MuLoginForm> {
       ),
     );
   }
+
+  /// A spoken glyph in place of the label; an empty error widget turns the
+  /// border red when a field was missing.
+  InputDecoration _decoration(IconData icon, String spoken) => InputDecoration(
+    prefixIcon: Icon(icon, semanticLabel: spoken),
+    error: _missing ? const SizedBox.shrink() : null,
+  );
 }

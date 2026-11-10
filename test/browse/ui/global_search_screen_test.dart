@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/ui/global_search_screen.dart';
 
+import '../../helpers/spoken_icon.dart';
 import '../fakes.dart';
 import 'harness.dart';
 
@@ -17,8 +18,8 @@ void main() {
     await h.pump(t, const SizedBox(), at: globalSearchRoute('gate'));
     expect(find.text('Good'), findsOneWidget);
     expect(find.text('Title 1'), findsOneWidget);
-    expect(find.textContaining('Failed:'), findsOneWidget);
-    expect(find.text('No results'), findsOneWidget);
+    expect(spokenIcon('Failed'), findsOneWidget);
+    expect(spokenIcon('No results'), findsOneWidget);
   });
 
   testWidgets('slow sources show progress while others render', (t) async {
@@ -43,7 +44,7 @@ void main() {
     expect(src.calls, ['search(zz):1']);
     await t.tap(find.text('Good'));
     await t.pumpAndSettle();
-    expect(find.text('Popular'), findsOneWidget);
+    expect(spokenIcon('Popular'), findsOneWidget);
     expect(src.calls.last, 'search(zz):1');
   });
 

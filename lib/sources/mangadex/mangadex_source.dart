@@ -51,7 +51,7 @@ class MangaDexSource implements MangaSource {
   @override
   SourceRef get ref => const SourceRef(
     id: mangadexSourceId,
-    name: 'MangaDex',
+    name: mangadexSourceName,
     lang: 'all',
     origin: SourceOrigin.native,
   );

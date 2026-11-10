@@ -3,6 +3,7 @@ library;
 
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/ui/confirm_mark.dart';
 import 'package:kartka/tracking/mangaupdates/mu_login_sheet.dart';
 import 'package:kartka/tracking/mangaupdates/mu_tracker.dart';
 
@@ -34,10 +35,11 @@ class _MuSettingsTileState extends State<MuSettingsTile> {
       _reload();
       return;
     }
-    final out = await confirmDestructive(
+    final out = await confirmMark(
       context,
-      title: 'Log out of MangaUpdates?',
-      message: 'Reading progress stops syncing to MangaUpdates.',
+      icon: Icons.logout,
+      semanticLabel: 'Log out of MangaUpdates?',
+      confirmIcon: Icons.logout,
       confirmLabel: 'Log out',
     );
     if (!out) return;
@@ -53,14 +55,23 @@ class _MuSettingsTileState extends State<MuSettingsTile> {
       final loading = snap.connectionState != ConnectionState.done;
       return ListTile(
         leading: const Icon(Icons.sync_alt),
-        title: const Text('MangaUpdates'),
-        subtitle: Text(
-          loading
-              ? 'Checking…'
-              : user == null
-              ? 'Not logged in'
-              : 'Logged in as $user',
-        ),
+        // The tracker's own name, like a source name: content, not chrome.
+        title: Text(widget.tracker.name),
+        subtitle: loading
+            ? const LinearProgressIndicator()
+            : Row(
+                children: [
+                  Icon(
+                    user == null ? Icons.person_off_outlined : Icons.person,
+                    size: 16,
+                    semanticLabel: user == null ? 'Not logged in' : 'Logged in',
+                  ),
+                  if (user != null) ...[
+                    const SizedBox(width: AppSpacing.xs),
+                    Text(user),
+                  ],
+                ],
+              ),
         enabled: !loading,
         onTap: () => _tap(user),
       );

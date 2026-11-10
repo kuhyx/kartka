@@ -103,14 +103,15 @@ void main() {
       MaterialApp.router(theme: buildDarkTheme(), routerConfig: router),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Auto-download new chapters'), findsOneWidget);
+    expect(find.bySemanticsLabel('Auto-download new chapters'), findsOneWidget);
+    expect(find.bySemanticsLabel('0 queued · 0 B used'), findsOneWidget);
     await tester.tap(find.byType(Switch));
     await tester.pumpAndSettle();
     expect(await platform.kv.get(autoDownloadKvKey), 'true');
 
-    await tester.tap(find.text('Downloads'));
+    await tester.tap(find.bySemanticsLabel('Downloads'));
     await tester.pumpAndSettle();
-    expect(find.text('No downloads'), findsOneWidget);
+    expect(find.bySemanticsLabel('No downloads'), findsOneWidget);
     expect(downloadsRoutePath, '/downloads');
   });
 }

@@ -54,9 +54,10 @@ KartkaFeature buildSuwayomiFeature(KartkaEnv env, {TitleLookup? titleOf}) {
     services: [provider, extensions],
     settingsTiles: [
       (context) => ListTile(
-        leading: const Icon(Icons.dns_outlined),
-        title: const Text('Suwayomi server'),
-        subtitle: const Text('Server, login and extensions'),
+        leading: const Icon(
+          Icons.dns_outlined,
+          semanticLabel: 'Suwayomi server: server, login and extensions',
+        ),
         onTap: () => context.push(suwayomiSettingsRoute),
       ),
     ],

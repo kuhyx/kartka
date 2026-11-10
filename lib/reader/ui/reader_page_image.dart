@@ -79,13 +79,23 @@ class ReaderPageImage extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Icon(
+            Icons.broken_image_outlined,
+            color: Theme.of(context).colorScheme.error,
+            semanticLabel: 'Page failed',
+          ),
+          Text('$pageNumber', style: Theme.of(context).textTheme.labelLarge),
           Text(
-            'Page $pageNumber failed: $message',
+            message,
             textAlign: TextAlign.center,
             style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
           const SizedBox(height: AppSpacing.sm),
-          OutlinedButton(onPressed: onRetry, child: const Text('Retry')),
+          IconButton.outlined(
+            style: IconButton.styleFrom(minimumSize: const Size.square(48)),
+            onPressed: onRetry,
+            icon: const Icon(Icons.refresh, semanticLabel: 'Retry'),
+          ),
         ],
       ),
     ),

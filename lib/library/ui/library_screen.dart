@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/library_routes.dart';
 import 'package:kartka/library/state/library_controller.dart';
 import 'package:kartka/library/state/library_deps.dart';
@@ -55,12 +57,27 @@ class _LibraryScreenState extends State<LibraryScreen> {
   Future<void> _remove() async {
     final messenger = ScaffoldMessenger.of(context);
     final batch = await _c.removeSelected();
+    final n = batch.entries.length;
     messenger.showSnackBar(
       SnackBar(
-        content: Text('Removed ${batch.entries.length} from library'),
-        action: SnackBarAction(
-          label: 'Undo',
-          onPressed: () => unawaited(_c.restore(batch)),
+        content: Row(
+          children: [
+            Expanded(
+              child: _Mark(
+                Icons.delete_outline,
+                '$n',
+                'Removed $n from library',
+              ),
+            ),
+            IconButton(
+              color: AppPalette.accent,
+              icon: const Icon(Icons.undo, semanticLabel: 'Undo'),
+              onPressed: () {
+                messenger.hideCurrentSnackBar();
+                unawaited(_c.restore(batch));
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -68,8 +85,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   Future<void> _updateAll() async {
     final messenger = ScaffoldMessenger.of(context);
-    final summary = await widget.deps.updater!.updateAll();
-    messenger.showSnackBar(SnackBar(content: Text(summary.message)));
+    final s = await widget.deps.updater!.updateAll();
+    final fresh = s.newChapters > 0;
+    messenger.showSnackBar(
+      SnackBar(
+        content: _Mark(
+          fresh ? Icons.fiber_new_outlined : Icons.done_all,
+          fresh ? '${s.newChapters}' : '',
+          s.message,
+        ),
+      ),
+    );
   }
 
   Future<void> _setCategories() async {
@@ -105,7 +131,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final cats = _c.categories;
     if (cats.isEmpty) return null;
     return CategoryTabs(
-      labels: [if (_lead == 1) 'Default', for (final c in cats) c.name],
+      labels: [if (_lead == 1) null, for (final c in cats) c.name],
       index: _tabIndex,
       onSelect: _selectTab,
     );
@@ -155,4 +181,27 @@ class _LibraryScreenState extends State<LibraryScreen> {
       ),
     );
   }
+}
+
+/// A snackbar glyph and count; [spoken] is the old sentence.
+class _Mark extends StatelessWidget {
+  const new(this.icon, this.count, this.spoken);
+
+  final IconData icon;
+  final String count;
+  final String spoken;
+
+  @override
+  Widget build(BuildContext context) => SpokenLabel(
+    semanticLabel: spoken,
+    child: ExcludeSemantics(
+      child: Row(
+        children: [
+          Icon(icon, color: Theme.of(context).colorScheme.onInverseSurface),
+          const SizedBox(width: AppSpacing.sm),
+          Text(count),
+        ],
+      ),
+    ),
+  );
 }

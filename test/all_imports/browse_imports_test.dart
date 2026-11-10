@@ -38,9 +38,11 @@ import 'package:kartka/browse/ui/detail_header.dart';
 import 'package:kartka/browse/ui/detail_menu.dart';
 import 'package:kartka/browse/ui/detail_status.dart';
 import 'package:kartka/browse/ui/global_search_screen.dart';
+import 'package:kartka/browse/ui/language_mark.dart';
 import 'package:kartka/browse/ui/language_picker.dart';
 import 'package:kartka/browse/ui/manga_detail_screen.dart';
 import 'package:kartka/browse/ui/manga_grid.dart';
+import 'package:kartka/browse/ui/refresh_mark.dart';
 import 'package:kartka/browse/ui/source_screen.dart';
 
 void main() {

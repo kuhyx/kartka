@@ -1,6 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
 import 'package:kartka/source_health/install/keep_reconciler.dart';
 import 'package:kartka/source_health/install/source_installs.dart';
@@ -89,10 +90,9 @@ class _SourcesTabState extends State<SourcesTab> {
           return const Center(child: CircularProgressIndicator());
         }
         if (records.isEmpty) {
-          return const EmptyState(
+          return const EmptyMark(
             icon: Icons.insights_outlined,
-            title: 'No source health yet',
-            message: 'The weekly source evaluator has not published results.',
+            semanticLabel: 'No source health yet',
           );
         }
         final meta = metaSnap.hasError ? null : metaSnap.data;
@@ -139,7 +139,8 @@ class _SourcesTabState extends State<SourcesTab> {
         onChanged: edit,
       ),
       FilterBar(query: _query, onChanged: edit),
-      if (shown.isEmpty) const Text('No sources match these filters.'),
+      if (shown.isEmpty)
+        const EmptyMark(icon: Icons.filter_list_off, semanticLabel: 'No match'),
     ];
     return Column(
       children: [
@@ -187,10 +188,13 @@ class _SourcesTabState extends State<SourcesTab> {
     alignment: Alignment.centerLeft,
     child: ValueListenableBuilder<ScoringProfile>(
       valueListenable: store.profile,
-      builder: (context, p, _) => OutlinedButton.icon(
+      builder: (context, p, _) => IconButton.outlined(
         key: const Key('open-scoring'),
-        icon: const Icon(Icons.tune),
-        label: Text('Scoring · ${p.name}'),
+        style: IconButton.styleFrom(minimumSize: const Size.square(48)),
+        icon: Icon(
+          p.isDefault ? Icons.tune : Icons.sync,
+          semanticLabel: 'Scoring: ${p.name}',
+        ),
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute<void>(builder: (_) => ScoringPage(store: store)),
         ),
@@ -203,13 +207,11 @@ class _SourcesTabState extends State<SourcesTab> {
     controller: _search,
     onChanged: _setSearch,
     decoration: InputDecoration(
-      prefixIcon: const Icon(Icons.search),
-      hintText: 'Search name, language, reason, metric…',
+      prefixIcon: const Icon(Icons.search, semanticLabel: 'Search sources'),
       suffixIcon: _search.text.isEmpty
           ? null
           : IconButton(
-              tooltip: 'Clear search',
-              icon: const Icon(Icons.clear),
+              icon: const Icon(Icons.clear, semanticLabel: 'Clear search'),
               onPressed: () {
                 _search.clear();
                 _setSearch('');
@@ -232,9 +234,11 @@ class _ReadError extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         spacing: AppSpacing.sm,
         children: [
-          Text(
-            "Couldn't read source health",
-            style: Theme.of(context).textTheme.titleMedium,
+          Icon(
+            Icons.error_outline,
+            size: 48,
+            color: Theme.of(context).colorScheme.error,
+            semanticLabel: "Couldn't read source health",
           ),
           Text(redactUrlQueries('$error'), textAlign: TextAlign.center),
         ],

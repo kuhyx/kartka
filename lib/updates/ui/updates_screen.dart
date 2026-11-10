@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/ui/update_progress_strip.dart';
 import 'package:kartka/updates/state/updates_controller.dart';
 import 'package:kartka/updates/state/updates_deps.dart';
 import 'package:kartka/updates/ui/update_row_tiles.dart';
+import 'package:kartka/updates/ui/update_summary_mark.dart';
 
 /// The Updates tab: new chapters of library manga by day, then manga, with
 /// "update all" on the refresh action and on pull.
@@ -32,7 +34,7 @@ class _UpdatesScreenState extends State<UpdatesScreen> {
   Future<void> _updateAll() async {
     final messenger = ScaffoldMessenger.of(context);
     final summary = await widget.deps.updater!.updateAll();
-    messenger.showSnackBar(SnackBar(content: Text(summary.message)));
+    messenger.showSnackBar(SnackBar(content: UpdateSummaryMark(summary)));
   }
 
   Widget _list(BuildContext context, Widget? _) {
@@ -47,10 +49,9 @@ class _UpdatesScreenState extends State<UpdatesScreen> {
           children: [
             SizedBox(
               height: box.maxHeight,
-              child: const EmptyState(
+              child: const EmptyMark(
                 icon: Icons.new_releases_outlined,
-                title: 'No updates yet — pull to check',
-                message: 'New chapters of library manga show up here.',
+                semanticLabel: 'No updates yet',
               ),
             ),
           ],
@@ -72,12 +73,17 @@ class _UpdatesScreenState extends State<UpdatesScreen> {
     final list = ListenableBuilder(listenable: _c, builder: _list);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Updates'),
+        title: const Icon(
+          Icons.new_releases_outlined,
+          semanticLabel: 'Updates',
+        ),
         actions: [
           if (updater != null)
             IconButton(
-              tooltip: 'Check for updates',
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(
+                Icons.refresh,
+                semanticLabel: 'Check for updates',
+              ),
               onPressed: () => unawaited(_updateAll()),
             ),
         ],

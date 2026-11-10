@@ -8,16 +8,26 @@ import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/language_filter.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/state/shared_health_lookup.dart';
+import 'package:kartka/browse/ui/language_mark.dart';
 import 'package:kartka/browse/ui/language_picker.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 
-/// Section title per origin.
+/// Spoken section title per origin (never painted).
 const Map<SourceOrigin, String> originLabels = {
   SourceOrigin.native: 'Built-in',
   SourceOrigin.suwayomi: 'Suwayomi',
   SourceOrigin.plugin: 'Plugins',
   SourceOrigin.local: 'Local',
+};
+
+/// Painted section glyph per origin.
+const Map<SourceOrigin, IconData> originIcons = {
+  SourceOrigin.native: Icons.inventory_2_outlined,
+  SourceOrigin.suwayomi: Icons.dns_outlined,
+  SourceOrigin.plugin: Icons.extension_outlined,
+  SourceOrigin.local: Icons.folder_outlined,
 };
 
 /// The Browse tab: a global search field, then the sources of the selected
@@ -45,11 +55,10 @@ class _BrowseTabState extends State<BrowseTab> {
     final health = deps.health;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Browse'),
+        title: const Icon(Icons.menu_book_outlined, semanticLabel: 'Browse'),
         actions: [
           IconButton(
-            tooltip: 'Languages',
-            icon: const Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_list, semanticLabel: 'Languages'),
             onPressed: () => unawaited(
               showLanguagePicker(context, deps.languages, [
                 for (final s in deps.sources.current) s.ref,
@@ -110,8 +119,10 @@ class _SourceList extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.md),
           child: TextField(
             decoration: const InputDecoration(
-              labelText: 'Search all sources',
-              prefixIcon: Icon(Icons.search),
+              prefixIcon: Icon(
+                Icons.search,
+                semanticLabel: 'Search all sources',
+              ),
             ),
             textInputAction: TextInputAction.search,
             onSubmitted: (q) {
@@ -122,21 +133,27 @@ class _SourceList extends StatelessWidget {
           ),
         ),
         if (sections.isEmpty && !anyInstalled)
-          const EmptyState(
+          const EmptyMark(
             icon: Icons.extension_off_outlined,
-            title: 'No sources',
-            message: 'Install a plugin or connect Suwayomi to browse.',
+            semanticLabel: 'No sources',
           )
         else if (sections.isEmpty)
-          const EmptyState(
+          const EmptyMark(
             icon: Icons.filter_list_off,
-            title: 'No sources in your languages',
-            message: 'Pick more languages with the filter button.',
+            semanticLabel: 'No sources in your languages',
           ),
         for (final section in sections) ...[
-          SectionHeader(
-            languageLabel(section.language),
+          Padding(
             padding: SectionHeader.defaultPadding,
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: LanguageMark(
+                section.language,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ),
           ),
           for (final g in section.groups) ...[
             Padding(
@@ -146,10 +163,12 @@ class _SourceList extends StatelessWidget {
                 AppSpacing.md,
                 AppSpacing.xs,
               ),
-              child: Text(
-                originLabels[g.origin]!,
-                style: theme.textTheme.labelLarge?.copyWith(
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Icon(
+                  originIcons[g.origin],
                   color: theme.colorScheme.onSurfaceVariant,
+                  semanticLabel: originLabels[g.origin],
                 ),
               ),
             ),
