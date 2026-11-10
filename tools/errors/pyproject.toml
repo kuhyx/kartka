@@ -1,6 +1,7 @@
 [project]
 name = "kartka-errors"
 version = "0.1.0"
+license = "MIT"
 description = "Collects Kartka's error reports from RTDB into fixme.md"
 requires-python = ">=3.15"
 dependencies = [

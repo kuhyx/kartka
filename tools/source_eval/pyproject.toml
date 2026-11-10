@@ -1,6 +1,7 @@
 [project]
 name = "kartka-source-eval"
 version = "0.1.0"
+license = "MIT"
 description = "Measures manga sources (uptime, blocking, coverage, completeness, image quality) for Kartka"
 requires-python = ">=3.15"
 dependencies = [
