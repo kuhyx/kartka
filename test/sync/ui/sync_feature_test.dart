@@ -142,7 +142,7 @@ void main() {
     await t.pumpAndSettle();
     await t.tap(find.byIcon(Icons.account_circle_outlined));
     await t.pumpAndSettle();
-    expect(find.text('Sync settings'), findsOneWidget);
+    expect(find.bySemanticsLabel('Sync settings'), findsOneWidget);
     final reads = db.reads;
     await t.runAsync(() async {
       await t.pageBack();

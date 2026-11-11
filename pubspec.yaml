@@ -41,7 +41,7 @@ dependencies:
       ref: design_system-v0.3.1
       path: design_system
   # CBZ / folder import (FilePicker seam); web and Android implementations.
-  file_picker: 13.3.2
+  file_picker: 13.3.3
   flutter:
     sdk: flutter
   flutter_js: 0.8.7
@@ -71,7 +71,7 @@ dependencies:
   sync_settings_ui:
     git:
       url: https://github.com/kuhyx/utils
-      ref: sync_settings_ui-v0.6.2
+      ref: sync_settings_ui-v0.7.0
       path: sync_settings_ui
   url_launcher: 6.3.3
   wakelock_plus: 1.8.2

@@ -76,7 +76,7 @@ void main() {
 
   FilledButton googleButton(WidgetTester t) => t.widget<FilledButton>(
     find.ancestor(
-      of: find.text('Sign in with Google'),
+      of: find.bySemanticsLabel('Sign in with Google'),
       matching: find.byWidgetPredicate((w) => w is FilledButton),
     ),
   );
@@ -88,7 +88,7 @@ void main() {
       MaterialApp(home: buildAccountSettingsScreen(route: GoogleRoute.plugin)),
     );
     await t.pumpAndSettle();
-    expect(find.text('Sync settings'), findsOneWidget);
+    expect(find.bySemanticsLabel('Sync settings'), findsOneWidget);
     expect(googleButton(t).onPressed, isNotNull);
     expect(find.textContaining('not available'), findsNothing);
   });
@@ -113,10 +113,13 @@ void main() {
       ),
     );
     await t.pumpAndSettle();
-    await t.tap(find.text('Sign in with Google'));
+    await t.tap(find.bySemanticsLabel('Sign in with Google'));
     await t.pumpAndSettle();
     expect(asked, 1);
-    expect(find.text('Google sign-in was cancelled.'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('Google sign-in was cancelled.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('a platform with no route: no Google button, no sentence', (
@@ -128,7 +131,7 @@ void main() {
       MaterialApp(home: buildAccountSettingsScreen(route: GoogleRoute.none)),
     );
     await t.pumpAndSettle();
-    expect(find.text('Sign in with Google'), findsNothing);
+    expect(find.bySemanticsLabel('Sign in with Google'), findsNothing);
     expect(find.textContaining('not available'), findsNothing);
   });
 
@@ -140,20 +143,17 @@ void main() {
     );
     await t.pumpAndSettle();
     await t.enterText(
-      find.widgetWithText(TextField, 'Sync account email'),
+      find.widgetWithIcon(TextField, Icons.alternate_email),
       'a@b.c',
     );
-    await t.enterText(
-      find.widgetWithText(TextField, 'Sync account password'),
-      'pw',
-    );
+    await t.enterText(find.widgetWithIcon(TextField, Icons.lock_outline), 'pw');
     // The test binding answers every HTTP request with 400, so sign-in
     // fails offline; reaching that failure is what this pins.
     await t.runAsync(() async {
-      await t.tap(find.text('Connect Firebase'));
+      await t.tap(find.bySemanticsLabel('Connect Firebase'));
       await Future<void>.delayed(const Duration(milliseconds: 200));
     });
     await t.pumpAndSettle();
-    expect(find.text('Connect Firebase'), findsOneWidget);
+    expect(find.bySemanticsLabel('Connect Firebase'), findsOneWidget);
   });
 }
