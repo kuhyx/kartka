@@ -1,6 +1,7 @@
 // coverage:ignore-file
 // Thin wiring of plugins that need a device (path_provider, the Keystore,
 // app links); every piece it assembles is unit-tested on its own.
+// phone-slot: not-shared-storage (getExternalStorageDirectory is per-package).
 import 'dart:io';
 
 import 'package:app_links/app_links.dart';
