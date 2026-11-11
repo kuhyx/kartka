@@ -47,6 +47,8 @@ setup() {
     git -C "${w}/src" push -q origin HEAD 2>/dev/null
     printf '{}' > "${w}/oauth.json"
     printf 'key' > "${w}/debug.keystore"
+    mkdir -p "${w}/src/android"
+    printf 'storeFile=/x\n' > "${w}/src/android/key.properties"  # untracked, as in ~/src
     printf 'WHITELIST="\ncom.kuhy.kartka\n"\n' > "${w}/focus.sh"
     printf 'device' > "$FAKE/phone/present"
     printf 'com.home' > "$FAKE/phone/focus"
@@ -116,6 +118,11 @@ expect "C4 phone absent" 1 && check "C4 nothing installed" not_installed
 setup 4
 rm "${W}/oauth.json"
 expect "C8 oauth missing" 1 && check "C8 names file" out_has oauth.json && check "C8 not built" not_built
+
+setup 10
+rm "${W}/src/android/key.properties"
+expect "release key missing" 1 && check "names key.properties" out_has key.properties &&
+    check "no key: not built" not_built
 
 setup 5
 printf 'x\n' >> "${W}/src/pubspec.yaml"

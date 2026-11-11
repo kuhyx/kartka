@@ -64,6 +64,10 @@ capped() {
 preflight() {
     [[ -f "${OAUTH}" ]] || die "OAuth defines missing: ${OAUTH}"
     [[ -f "${KEYSTORE}" ]] || die "signing key missing: ${KEYSTORE}"
+    # The shared release key (gitignored; build_android.sh signs with it plus
+    # the debug -> release rotation lineage, scripts/lib/signing.sh).
+    [[ -f "${SRC}/android/key.properties" ]] ||
+        die "release key missing: ${SRC}/android/key.properties"
     if ! git -C "${SRC}" diff --quiet || ! git -C "${SRC}" diff --cached --quiet; then
         die "${SRC} has uncommitted tracked changes"
     fi

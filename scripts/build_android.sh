@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck source-path=SCRIPTDIR
 
 # ============================================================================
 # build_android.sh -- build the arm64 APK in steps that each fit a 60 s cap.
@@ -41,10 +42,13 @@ readonly GRADLE_JVMARGS="-Xmx1536m -XX:MaxMetaspaceSize=768m -XX:ReservedCodeCac
 # default (27) fails AGP's jlink transform.
 readonly FLUTTER_SETTINGS="${HOME}/.config/flutter/settings"
 
+# shellcheck source=lib/signing.sh
+source "${SCRIPT_DIR}/lib/signing.sh"
+
 log() { printf '==> %s\n' "$1"; }
 die() { printf 'error: %s\n' "$1" >&2; exit 1; }
 
-usage() { sed -n '3,26p' "$0"; exit "${1:-0}"; }
+usage() { sed -n '4,27p' "$0"; exit "${1:-0}"; }
 
 # pub get + gradlew + local.properties, only when missing or stale.
 # local.properties carries versionName/versionCode from pubspec.yaml.
@@ -140,7 +144,15 @@ run_step() {
             # Flutter enables minify on the release build type only.
             if [[ "$MODE" == release ]]; then gradle ":app:minify${CAP_MODE}WithR8"; fi
             ;;
-        apk) gradle ":app:assemble${CAP_MODE}" ;;
+        apk)
+            gradle ":app:assemble${CAP_MODE}"
+            # The Pixel's app is debug-signed: add the rotation lineage.
+            if [[ "$MODE" == release && -f "$(key_props_file)" ]]; then
+                local apk="${ROOT}/build/app/outputs/flutter-apk/app-release.apk"
+                sign_rotated "$apk" || die "rotation signing failed"
+                check_apk_signer "$apk" || die "release APK signer check failed"
+            fi
+            ;;
         gradle) shift; gradle "$@" ;;
         *) usage 2 >&2 ;;
     esac
