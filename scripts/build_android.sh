@@ -76,6 +76,7 @@ dart_defines() {
     while IFS=$'\t' read -r key value; do sdk[$key]="$value"; done < <(
         cd "${ROOT}" && fvm flutter --version --machine 2>/dev/null |
             jq -r 'to_entries[] | "\(.key)\t\(.value)"')
+    defs+=("$(b64 "KARTKA_BUILD=${KARTKA_BUILD}")")
     defs+=("$(b64 "FLUTTER_BUILD_NAME=${version%%+*}")")
     defs+=("$(b64 "FLUTTER_BUILD_NUMBER=${version##*+}")")
     defs+=("$(b64 "FLUTTER_VERSION=${sdk[frameworkVersion]}")")
@@ -106,6 +107,7 @@ gradle() {
         -Pbase-application-name=android.app.Application \
         "-Pdart-defines=${DEFINES}" -Pdart-obfuscation=false \
         -Ptrack-widget-creation=true -Ptree-shake-icons=true \
+        "-PkartkaBuild=${KARTKA_BUILD}" "-PkartkaVersionCode=${KARTKA_VERSION_CODE}" \
         "-Pflutter.androidSdkRoot=${sdk}" "-Pflutter.installedNdkVersions=${ndks}" \
         "$@")
 }
@@ -160,6 +162,11 @@ main() {
         sudo pacman -S --needed --noconfirm jq
     fi
     ensure_config
+    # Every APK names its commit: versionName <pubspec>-<sha>, versionCode =
+    # commit count (monotonic on main, so `adb install -r` never downgrades).
+    KARTKA_BUILD="$(git -C "${ROOT}" rev-parse --short HEAD)"
+    KARTKA_VERSION_CODE="$(git -C "${ROOT}" rev-list --count HEAD)"
+    readonly KARTKA_BUILD KARTKA_VERSION_CODE
     DEFINES="$(dart_defines)"
     readonly DEFINES
     run_step "$step" "${@:3}"

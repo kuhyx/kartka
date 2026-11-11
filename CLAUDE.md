@@ -18,6 +18,8 @@ embedder, which manages ~20 fps at 4K.
 - coverage: `scripts/coverage.sh`
 - coverage-gaps: `coverage-gaps coverage/lcov.info`
 - build-android: `scripts/build_android.sh [release|profile] [step]` (arm64 APK in `build/app/outputs/flutter-apk/`)
+- deploy: `scripts/deploy.sh`
+  (pulls ~/src/kartka, installs on the Pixel + desktop, health-checks; `--verify-only` checks only)
 
 Android builds under the 60 s cap: prefix each call with
 `CAP_MEM=4G CAP_CPU_PCT=20 ~/.claude/scripts/capped.sh`. Cold tree: run the

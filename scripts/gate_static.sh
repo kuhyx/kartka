@@ -16,3 +16,6 @@ export CAP_MEM="${CAP_MEM:-4G}" CAP_CPU_PCT="${CAP_CPU_PCT:-20}"
 
 "${pre[@]}" fvm dart analyze --fatal-infos
 "${pre[@]}" fvm dart format --set-exit-if-changed lib test desktop
+
+# The deploy script against fakes (no phone, no port 47391).
+scripts/test_deploy.sh

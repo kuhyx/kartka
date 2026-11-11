@@ -13,15 +13,14 @@
 #                                       library); ANDROID_SERIAL picks a device.
 #
 # OAuth client ids are compile-time: when ~/.config/kartka/oauth.json exists
-# it is passed as --dart-define-from-file (build_android.sh encodes it the
-# same way for the APK); never committed.
+# scripts/build_web.sh passes it as --dart-define-from-file (build_android.sh
+# encodes it the same way for the APK); never committed.
 # ============================================================================
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
-readonly OAUTH_DEFINES="${HOME}/.config/kartka/oauth.json"
 readonly APP_ID="com.kuhy.kartka"
 readonly APK="${SCRIPT_DIR}/build/app/outputs/flutter-apk/app-release.apk"
 
@@ -44,19 +43,9 @@ ensure_adb() {
     sudo pacman -S --needed --noconfirm android-tools
 }
 
-# Prints the --dart-define-from-file flag when the OAuth defines exist.
-define_args() {
-    if [[ -f "${OAUTH_DEFINES}" ]]; then
-        printf -- '--dart-define-from-file=%s\n' "${OAUTH_DEFINES}"
-    fi
-}
-
 run_desktop() {
-    local -a defines
-    mapfile -t defines < <(define_args)
-    cd "${SCRIPT_DIR}"
-    log "building the web bundle"
-    fvm flutter build web --release "${defines[@]}"
+    log "building the web bundle (stamped with its build, scripts/build_web.sh)"
+    "${SCRIPT_DIR}/scripts/build_web.sh"
     log "starting the wrapper (it prints its URL)"
     cd "${SCRIPT_DIR}/desktop"
     fvm dart pub get >/dev/null
