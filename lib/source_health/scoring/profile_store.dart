@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/source_health/scoring/profile.dart';
 
-/// The settings key; node `/kartka/settings/sourceHealth~2Escoring`. Listed
+/// The settings key; node `/kartka-e2e/settings/sourceHealth~2Escoring`. Listed
 /// in `lib/sync/settings/settings_catalog.dart` (plain vault) and shared with
 /// the evaluator through `scoring_profile.json`.
 const String kScoringSetting = 'sourceHealth.scoring';

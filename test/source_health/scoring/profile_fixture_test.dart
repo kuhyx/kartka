@@ -11,6 +11,7 @@ import 'package:kartka/source_health/scoring/judge.dart';
 import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/scoring/profile_store.dart';
 import 'package:kartka/source_health/thresholds.dart';
+import 'package:kartka/sync/e2e/sealed_transport.dart' show kE2eLayout;
 import 'package:kartka/sync/settings/settings_catalog.dart';
 
 final _shared = jsonDecode(
@@ -50,7 +51,10 @@ void main() {
   test('the setting key and its RTDB node are the shared ones', () {
     expect(_shared['settingKey'], kScoringSetting);
     expect(kSyncedSettings, contains(kScoringSetting));
-    expect('kartka/${settingPath(kScoringSetting)}', _shared['settingNode']);
+    expect(
+      '${kE2eLayout.prefix}/${settingPath(kScoringSetting)}',
+      _shared['settingNode'],
+    );
   });
 
   group('parse', () {

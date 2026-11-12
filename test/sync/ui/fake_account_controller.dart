@@ -1,12 +1,26 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:kartka/sync/e2e/e2e_unlock.dart';
 import 'package:kartka/sync/sync_status.dart';
 import 'package:kartka/sync/ui/sync_account_controller.dart';
 
 /// A [SyncAccountController] that records what the screen asks of it.
 class FakeAccountController implements SyncAccountController {
-  new(this.status, {this.passphrase = false, this.problemsNow = const {}});
+  new(
+    this.status, {
+    this.passphrase = false,
+    this.problemsNow = const {},
+    this.e2e,
+  });
+
+  @override
+  KartkaE2e? e2e;
+
+  int unlocks = 0;
+
+  @override
+  Future<void> unlocked() async => unlocks++;
 
   @override
   SyncStatus status;

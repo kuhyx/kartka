@@ -5,7 +5,7 @@ license = "MIT"
 description = "Collects Kartka's error reports from RTDB into fixme.md"
 requires-python = ">=3.15"
 dependencies = [
-    "crdt-sync @ git+https://github.com/kuhyx/utils@crdt-sync-v0.9.2#subdirectory=crdt-sync",
+    "crdt-sync @ git+https://github.com/kuhyx/utils@crdt-sync-v0.11.0#subdirectory=crdt-sync",
 ]
 
 [project.scripts]

@@ -54,8 +54,12 @@ ceiling) and < 45 s: shards use `flutter test -j 2` (peak ~1.9 GiB; the default
   `/oauth`, on `127.0.0.1:47391` (plus a one-shot `/sync-credentials` only
   with `--sync-credentials`, the agent instance; contracts-runtime §17).
 - Browser engine + "Open in WebView": `docs/DOCS-contracts-webview.md`.
-- Error reports (every error shown or escaped → RTDB `/kartka/errors` →
+- Error reports (every error shown or escaped → RTDB `/kartka-e2e/errors` (sealed) →
   `~/.local/state/kartka-errors/fixme.md` via `tools/errors`): `docs/DOCS-error-reports.md`.
+- Sync is end-to-end encrypted under `/kartka-e2e` (`lib/sync/e2e/`,
+  DOCS-contracts §4); the PC tools open it with `tools/*/src/*/e2e.py`,
+  pinned to the app by `test/fixtures/e2e_vectors.json`. Tests never read
+  the real `~/.config/crdt-sync/password` (conftest fixture).
 - Feature dirs (`lib/sources`, `lib/library`, `lib/reader`, ...) belong to
   their parts; foundation never imports them.
 
@@ -96,7 +100,7 @@ to `flutter_web_drive` (kuhyx/utils; README there): `tree`, `tap "<label>"`,
 existing `build/web`, so rebuild that first when lib/ changed. Flows in
 `tools/agent/flows/` log numbered steps and exit non-zero with the failing
 step and a screenshot: `f0_smoke.sh` (shell + tab switch + non-blank shot),
-`f3_sync.sh [title chapter [trigger_epoch]]` (signs in to the real /kartka
+`f3_sync.sh [title chapter [trigger_epoch]]` (signs in to the real /kartka-e2e
 RTDB, then the chapter reads as read within 10 s). Sign-in uses no password:
 the account is Google-only. When `~/.config/kartka-agent/firebase_auth.json`
 exists, `start` passes it as `--sync-credentials`, and the app adopts it

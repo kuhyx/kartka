@@ -1,4 +1,4 @@
-/// RTDB `/kartka/source_health_meta`: one evaluator run's totals, so the
+/// RTDB `/kartka-e2e/source_health_meta`: one evaluator run's totals, so the
 /// Sources screen can say how many candidates were tested and which were
 /// skipped before testing.
 library;

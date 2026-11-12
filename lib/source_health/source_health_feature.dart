@@ -26,7 +26,7 @@ import 'package:kartka/sync/rtdb_reader.dart';
 
 /// The source-health part: fills the Sources tab (with Install / Open per
 /// source) and supplies Browse's `SourceHealthLookup`, both fed from RTDB
-/// `/kartka/source_health` and re-scored with the synced scoring profile
+/// `/kartka-e2e/source_health` and re-scored with the synced scoring profile
 /// (`sourceHealth.scoring`). Also installs every Keep source, and every
 /// source a library entry uses, on its own ([KeepReconciler], a service the
 /// migration part reads with the feed).

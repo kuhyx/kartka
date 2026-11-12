@@ -11,6 +11,8 @@ import 'package:kartka/sync/sync_scheduler.dart';
 import 'package:kartka/sync/sync_status.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'e2e/e2e_fixtures.dart';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -75,13 +77,13 @@ void main() {
   test('a device with no sync account opens no transport', () async {
     installFakeSecureStorage();
     SharedPreferences.setMockInitialValues({});
-    expect(await openFirebaseTransport(FakeKartkaHttp()), isNull);
+    expect(await openFirebaseTransport(FakeKartkaHttp(), testE2e()), isNull);
   });
 
   test('a keystore failure becomes a sync error, not a crash', () async {
     installFakeSecureStorage(throwing: true);
     SharedPreferences.setMockInitialValues({});
-    final opened = openFirebaseTransport(FakeKartkaHttp());
+    final opened = openFirebaseTransport(FakeKartkaHttp(), testE2e());
     await expectLater(
       opened.then((t) => t == null ? 'none' : 'transport'),
       anyOf(completion('none'), throwsA(isA<Exception>())),

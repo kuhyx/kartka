@@ -1,0 +1,43 @@
+{
+  "key": "0707070707070707070707070707070707070707070707070707070707070707",
+  "nodes": [
+    {
+      "path": "settings/sourceHealth~2Escoring",
+      "node": {
+        "key": "sourceHealth.scoring",
+        "value": "{\"keepScore\":0.8}",
+        "hlc": "2026-11-12T10:00:00.000Z-0000-dev-a"
+      },
+      "stored": {
+        "p": "AYIX/qjo+eEtOsfZJyVi1zFVnIVsM9ZI5wjrIP7tlX/vKApmmVZ5FR86ilC7gEUgDuilN838KDviUIZO9RzH9tdlcDbA+clJkCB3GsZcPuh9t7wVfrXZyO9Ica0R8FPOMVwg07Po20XuOo2J8Bt4eC7RQ1hIkIoFzEQNCwwxcMbZQ5udfqBbw7E6By/MFjY4FQ==",
+        "h": "2026-11-12T10:00:00.000Z-0000-dev-a"
+      }
+    },
+    {
+      "path": "errors/dev-a/e1",
+      "node": {
+        "at": "2026-11-12T10:00:00.000Z",
+        "kind": "ui.snackbar",
+        "error": "Zażółć: boom",
+        "stack": [
+          "#0 f"
+        ]
+      },
+      "stored": {
+        "p": "AV2QyBX3d65VKcRee1ZQjUwwMc3iMk5H6GwKXsx8/RczBYysbLP/j8O3L03N1ixl1/7TC22kdumLdTgMnz1KnZzbbvVnRLUmFwWYL0mb6MxIp8LrXftbiP8QHbN85It+5I0Nr0/qfBBw/9+9aWULjLBMKtHb9mtd94xOmVpzs2rGU3i2WXyxeoQawQ=="
+      }
+    },
+    {
+      "path": "read/h1/c1",
+      "node": {
+        "read": false,
+        "hlc": "2026-11-12T10:00:00.000Z-0000-dev-a"
+      },
+      "stored": {
+        "p": "ARLYcTnkr/+Q1eaGCostCQG3q4uJKf45CsaP8HHyNkyrfs0wus8VaxfAEB/t3w3gg/iBJ3H0vBxyRPjqpzL1UvZIiqimdgNEQtx5+XHKeIf32oJxfvfD5m020D6u0mn1skiO",
+        "h": "2026-11-12T10:00:00.000Z-0000-dev-a",
+        "d": true
+      }
+    }
+  ]
+}

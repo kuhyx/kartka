@@ -12,6 +12,7 @@ import 'dart:async';
 
 import 'package:crdt_sync/crdt_sync.dart' show Hlc, RemoteSyncError;
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
+import 'package:kartka/sync/e2e/legacy_import.dart';
 import 'package:kartka/sync/merge/merge_rules.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/sync_feed.dart';
@@ -136,13 +137,14 @@ class SyncEngine {
       final transport = await _connect();
       if (transport == null) return;
       _emit(_current.copyWith(phase: SyncPhase.syncing));
+      final copied = await importLegacy(transport, shadow, _mergeRemote);
       final revs = await transport.get('revs');
       final peers = <String, String>{
         if (revs is Map)
           for (final e in revs.entries)
             if (e.key != deviceId) '${e.key}': '${e.value}',
       };
-      final plan = force
+      final plan = force || copied != null
           ? (full: true, paths: <String>{})
           : await planPull(transport, peers, shadow.peers);
       if (plan.full) {
@@ -156,6 +158,7 @@ class SyncEngine {
         }
       }
       shadow.peers = peers;
+      if (copied != null) shadow.legacyRevs = copied;
       await shadow.save();
       await _push(transport);
       shadow.lastSync = _now();

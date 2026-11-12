@@ -1,7 +1,7 @@
 {
   "_comment": "Ranking is rank tier first (needs-browser-engine flag + any blocking cut reason, 0..2), then score. Read by tools/source_eval/tests/test_profile_fixture.py AND test/source_health/scoring/profile_fixture_test.dart: the DEFAULT scoring profile and golden judgements, so the two languages cannot drift. Python derives cutReasons and subsetOf from the records + found; Dart reads them as published.",
   "settingKey": "sourceHealth.scoring",
-  "settingNode": "kartka/settings/sourceHealth~2Escoring",
+  "settingNode": "kartka-e2e/settings/sourceHealth~2Escoring",
   "scale": {"fullWidthPx": 1067, "worstP95Ms": 5000},
   "thresholds": {
     "minUptime": 0.95, "minCoverage": 0.6, "subsetOverlap": 0.5,

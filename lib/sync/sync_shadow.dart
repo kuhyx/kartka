@@ -23,6 +23,7 @@ const _revKey = 'sync.rev';
 const _peersKey = 'sync.peers';
 const _lastSyncKey = 'sync.lastSync';
 const _hlcKey = 'sync.hlc';
+const _legacyKey = 'sync.legacyRevs';
 
 /// In-memory mirror of the persisted sync state.
 class SyncShadow {
@@ -48,7 +49,7 @@ class SyncShadow {
     }
     s._dirty.addAll(_strings(decoded[raw.length]));
     s._unapplied.addAll(_strings(decoded[raw.length + 1]));
-    for (final key in [_peersKey, _lastSyncKey, _hlcKey]) {
+    for (final key in [_peersKey, _lastSyncKey, _hlcKey, _legacyKey]) {
       if (await store.get(key) case final value?) s._persisted[key] = value;
     }
     s
@@ -58,7 +59,8 @@ class SyncShadow {
           e.key: '${e.value}',
       }
       ..lastSync = DateTime.tryParse(s._persisted[_lastSyncKey] ?? '')
-      ..lastHlc = s._persisted[_hlcKey];
+      ..lastHlc = s._persisted[_hlcKey]
+      ..legacyRevs = s._persisted[_legacyKey];
     return s;
   }
 
@@ -83,6 +85,9 @@ class SyncShadow {
 
   /// The last Hlc this device issued or observed, as its string form.
   String? lastHlc;
+
+  /// The old `/kartka` revisions last copied into the e2e root.
+  String? legacyRevs;
 
   /// Every node path held, e.g. `library/<h>`.
   Iterable<String> get paths => _buckets.values.expand((b) => b.keys);
@@ -161,6 +166,7 @@ class SyncShadow {
     }
     wrote |= await _put(_peersKey, jsonEncode(peers));
     wrote |= await _put(_hlcKey, lastHlc);
+    wrote |= await _put(_legacyKey, legacyRevs);
     // Due from a save that changed something until a lastSync is written
     // (the engine sets it only after that save, at the end of a sync).
     _clockDue |= wrote;

@@ -1,4 +1,4 @@
-/// The synced namespaces under `/kartka` and how their nodes merge.
+/// The synced namespaces under `/kartka-e2e` and how their nodes merge.
 library;
 
 import 'package:kartka/sync/merge/merge_rules.dart';

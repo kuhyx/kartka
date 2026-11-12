@@ -18,7 +18,7 @@ from source_eval.http import (
     bounded,
 )
 from source_eval.metrics import metrics
-from source_eval.profile import DEFAULT, SETTING_NODE, Profile, parse_profile
+from source_eval.profile import DEFAULT, Profile
 from source_eval.score import Record, rank
 from source_eval.state import sha1
 from source_eval.uptime import HOSTS_BLOCKED
@@ -28,9 +28,10 @@ if TYPE_CHECKING:
     from source_eval.state import Manifest, RunDir
     from source_eval.uptime import UptimeLog
 
-RTDB_PATH = "kartka/source_health"
+#: Public source metadata: stays clear inside the app's e2e root.
+RTDB_PATH = "kartka-e2e/source_health"
 #: The run meta: a separate node, so ``source_health`` stays ``{sha1(id): record}``.
-META_PATH = "kartka/source_health_meta"
+META_PATH = "kartka-e2e/source_health_meta"
 APP_NAME = "kartka-source-eval"
 #: What to run (once, in a browser) when the evaluator has no session.
 SEED_HINT = (
@@ -210,33 +211,8 @@ def firebase_writer() -> FirebaseRtdb:
     )
 
 
-def load_profile(open_reader: Callable[[], RtdbReader]) -> tuple[Profile, str | None]:
-    """The active scoring profile (the app's synced setting) and a warning.
-
-    Read-only; ``open_reader`` is called here so a failed sign-in is covered.
-    No custom profile (node absent or removed) is DEFAULT with no warning; an
-    unreadable or invalid one is DEFAULT plus a warning saying why.
-    """
-    try:
-        node = open_reader().get(SETTING_NODE)
-    except Exception as error:  # noqa: BLE001 -- any failure falls back
-        return DEFAULT, f"profile unreadable ({error}); scoring with DEFAULT"
-    if node is None:
-        return DEFAULT, None
-    value = node.get("value") if isinstance(node, dict) else None
-    if value is None and isinstance(node, dict):
-        return DEFAULT, None  # a removal node: only {key, hlc}
-    try:
-        parsed = parse_profile(json.loads(value)) if isinstance(value, str) else None
-    except ValueError:
-        parsed = None
-    if parsed is None:
-        return DEFAULT, "profile invalid; scoring with DEFAULT"
-    return parsed, None
-
-
 def publish(report: dict[str, object], writer: RtdbWriter) -> int:
-    """Write every record to ``/kartka/source_health/<sha1(id)>``, then the meta.
+    """Write every record to ``/kartka-e2e/source_health/<sha1(id)>``, then the meta.
 
     Returns the record count.
     """

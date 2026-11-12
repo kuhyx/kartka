@@ -47,7 +47,7 @@ def test_publish_writes_records_then_meta() -> None:
     meta = report.build_meta("r", "t", 2, records, SKIPPED)
     rep: dict[str, object] = {"sources": records, "meta": meta}
     assert report.publish(rep, Writer()) == 2
-    assert report.META_PATH == "kartka/source_health_meta"
+    assert report.META_PATH == "kartka-e2e/source_health_meta"
     assert calls == [
         (report.RTDB_PATH, {sha1("x"): records[0], sha1("y"): records[1]}),
         (report.META_PATH, meta),

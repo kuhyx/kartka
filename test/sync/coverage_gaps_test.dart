@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
+import 'package:kartka/sync/e2e/sealed_transport.dart';
 import 'package:kartka/sync/rtdb_reader.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/sync_feature.dart';
@@ -16,6 +17,7 @@ import 'package:kartka/sync/sync_status.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'device_harness.dart';
+import 'e2e/e2e_fixtures.dart';
 import 'fakes.dart';
 
 /// A signed-in crdt_sync client whose HTTP is [handler], with a live token.
@@ -46,26 +48,39 @@ FirebaseRestClient _client(MockClientHandler handler) {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('a signed-in client becomes a working transport', () async {
+  test('a signed-in client becomes a sealed transport on kartka-e2e', () async {
     final patches = <http.Request>[];
+    String? header;
     final client = _client((r) async {
       patches.add(r);
+      if (jsonDecode(r.body) case {'e2e': final String h}) header = h;
       return http.Response('{}', 200);
     });
-    final reads = FakeKartkaHttp((_) => FakeKartkaHttp.text('"7"'));
-    final t = (await openFirebaseTransport(reads, open: () async => client))!;
+    final reads = FakeKartkaHttp(
+      (r) => FakeKartkaHttp.text(
+        r.url.path.endsWith('/e2e.json') ? jsonEncode(header) : '"7"',
+      ),
+    );
+    final t = (await openFirebaseTransport(
+      reads,
+      testE2e(),
+      open: () async => client,
+    ))!;
+    expect(t, isA<SealedTransport>());
     expect(await t.get('revs/dev-a'), '7');
-    expect(reads.requests.single.url.queryParameters['auth'], 'tok');
+    expect(reads.requests.last.url.queryParameters['auth'], 'tok');
+    expect(reads.requests.last.url.path, '/kartka-e2e/revs/dev-a.json');
     await t.patch({'revs/dev-a': '8'});
-    expect(patches.single.method, 'PATCH');
-    expect(patches.single.url.path, '/kartka.json');
-    expect(jsonDecode(patches.single.body), {'revs/dev-a': '8'});
+    expect(patches.last.method, 'PATCH');
+    expect(patches.last.url.path, '/kartka-e2e.json');
+    expect(jsonDecode(patches.last.body), {'revs/dev-a': '8'});
   });
 
   test('non-sync failures while opening become sync errors', () async {
     expect(
       openFirebaseTransport(
         FakeKartkaHttp(),
+        testE2e(),
         open: () async => throw PlatformException(code: 'keystore'),
       ),
       throwsA(isA<FirebaseSyncError>()),
@@ -73,6 +88,7 @@ void main() {
     expect(
       openFirebaseTransport(
         FakeKartkaHttp(),
+        testE2e(),
         open: () async => throw FirebaseAuthError('bad'),
       ),
       throwsA(isA<FirebaseAuthError>()),

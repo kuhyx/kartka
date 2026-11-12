@@ -16,8 +16,11 @@ from typing import Any
 
 #: The synced-setting key (``lib/sync/settings/settings_catalog.dart``).
 SETTING_KEY = "sourceHealth.scoring"
-#: Where it lives in RTDB: ``settings/<rtdbKey(key)>`` (``.`` escapes to ``~2E``).
-SETTING_NODE = "kartka/settings/sourceHealth~2Escoring"
+#: Its node relative to the app's e2e root: ``settings/<rtdbKey(key)>``
+#: (``.`` escapes to ``~2E``); also the path its seal is bound to.
+SETTING_REL = "settings/sourceHealth~2Escoring"
+#: Where it lives in RTDB, sealed by the app (``source_eval.e2e``).
+SETTING_NODE = f"kartka-e2e/{SETTING_REL}"
 
 _WEIGHT_FIELDS = (
     ("completeCoverage", "complete_coverage"),

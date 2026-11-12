@@ -7,15 +7,39 @@ lazy from pathlib import Path
 lazy import pytest
 
 from kartka_errors.cli import ERRORS_PATH, main
+from kartka_errors.e2e import HEADER
 from kartka_errors.rtdb import NoSessionError, RtdbError
+from tests.e2e_support import HEADER_TEXT, seal
+
+
+def sealed(tree: dict[str, object] | None) -> object:
+    """``tree`` with every map report sealed as the app writes it."""
+    if tree is None:
+        return None
+    return {
+        device: {
+            entry_id: seal(f"errors/{device}/{entry_id}", node)
+            if isinstance(node, dict)
+            else node
+            for entry_id, node in nodes.items()
+        }
+        if isinstance(nodes, dict)
+        else nodes
+        for device, nodes in tree.items()
+    }
 
 
 class FakeRtdb:
-    def __init__(self, tree: dict[str, object] | None) -> None:
-        self.tree = tree
+    def __init__(
+        self, tree: dict[str, object] | None, header: object = HEADER_TEXT
+    ) -> None:
+        self.tree = sealed(tree)
+        self.header = header
         self.patches: list[tuple[str, dict[str, object]]] = []
 
     def get(self, path: str) -> object:
+        if path == HEADER:
+            return self.header
         assert path == ERRORS_PATH
         return self.tree
 
@@ -171,7 +195,7 @@ def test_default_out_is_outside_the_repo(
     monkeypatch.chdir(tmp_path)
     code = main(
         ["ingest", "--state", str(tmp_path / "state.json")],
-        open_rtdb=lambda: FakeRtdb({"phone": {"e1": ENTRY}}),  # type: ignore[arg-type,return-value]
+        open_rtdb=lambda: FakeRtdb({"phone": {"e1": ENTRY}}),
         now=lambda: "2026-10-29T12:00:00Z",
     )
     expected = home / ".local" / "state" / "kartka-errors" / "fixme.md"

@@ -64,6 +64,7 @@ void main() {
       );
       final writer = _Writer();
       final t = FirebaseTransport(
+        root: 'kartka',
         writer: writer,
         http: http,
         databaseUrl: 'https://db.example/',
@@ -78,6 +79,7 @@ void main() {
 
     test('a non-2xx read throws instead of looking empty', () async {
       final t = FirebaseTransport(
+        root: 'kartka',
         writer: _Writer(),
         http: FakeKartkaHttp(),
         databaseUrl: 'https://db.example',
@@ -87,6 +89,7 @@ void main() {
 
     test('a network failure is a sync error that never shows the token', () {
       final t = FirebaseTransport(
+        root: 'kartka',
         writer: _Writer(),
         http: FakeKartkaHttp(
           (r) => throw ClientException('Failed host lookup', r.url),
@@ -107,6 +110,7 @@ void main() {
     test('patches go through the crdt_sync writer at /kartka', () async {
       final writer = _Writer();
       final t = FirebaseTransport(
+        root: 'kartka',
         writer: writer,
         http: FakeKartkaHttp(),
         databaseUrl: 'https://db.example',

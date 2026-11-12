@@ -1,5 +1,5 @@
 /// Reports the diagnostics log's failures to the PC through RTDB
-/// (`/kartka/errors/<device>/<id>`), where `tools/errors` collects them.
+/// (`/kartka-e2e/errors/<device>/<id>`), where `tools/errors` collects them.
 library;
 
 import 'dart:async';
@@ -52,7 +52,7 @@ class ErrorUploader {
     this._now = DateTime.now,
   });
 
-  /// RTDB namespace under `/kartka`.
+  /// RTDB namespace under `/kartka-e2e`.
   static const root = 'errors';
 
   /// Where the ids already pushed are kept.

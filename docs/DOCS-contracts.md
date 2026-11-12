@@ -61,7 +61,17 @@ PATTERN (`/read/:sourceId/:mangaUrl/:chapterUrl`, `?` when unknown), never
 the concrete path, to every `ScreenObserver` service, once per change.
 `JankTracker` (`lib/perf/`) is one.
 
-## 4. Sync model (RTDB root `/kartka/`, via crdt_sync_flutter)
+## 4. Sync model (RTDB root `/kartka-e2e/`, via crdt_sync_flutter)
+
+End-to-end encrypted (`lib/sync/e2e/`, 2026-11-12). Every node below and
+every `errors/<device>/<id>` report is stored as `{p, h, d?}`: `p` the
+node's JSON sealed with crdt_sync's `E2eCipher` (Argon2id key of the shared
+crdt-sync password, header `kartka-e2e/e2e`), AAD
+`kartka-e2e/<path>#<d ? 1 : 0>#<h>`; `h` the newest Hlc and `d: true` a
+tombstone, both clear. Node paths, `revs/`, `log/` and `source_health*`
+stay clear. No key = no transport: nothing is pulled or pushed. The old
+plaintext `/kartka` tree is only read, by the one-time copy
+(`legacy_import.dart`), which reruns when its `revs/` change.
 
 | Path | Value | Merge |
 |---|---|---|

@@ -10,6 +10,7 @@ import 'package:kartka/core/diagnostics/diagnostics_log.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/sync/decorators/sync_repository_decorator.dart';
 import 'package:kartka/sync/decorators/synced_bindings.dart';
+import 'package:kartka/sync/e2e/e2e_unlock.dart';
 import 'package:kartka/sync/error_upload.dart';
 import 'package:kartka/sync/polling_rtdb_reader.dart';
 import 'package:kartka/sync/rtdb_reader.dart';
@@ -26,10 +27,12 @@ const String syncAccountRoute = '/more/sync';
 /// The registry entry: production runtime over the platform's storage.
 KartkaFeature syncFeature(KartkaEnv env) {
   final log = DiagnosticsLog.of(env.platform.diagnostics);
+  final e2e = KartkaE2e(env.platform.secrets);
   final runtime = SyncRuntime(
     kv: env.platform.kv,
-    openTransport: () => openFirebaseTransport(env.platform.http),
+    openTransport: () => openFirebaseTransport(env.platform.http, e2e),
     diagnostics: log,
+    e2e: e2e,
   );
   // Error reports ride the same signed-in transport (tools/errors).
   startErrorUploads(runtime, log: log, kv: env.platform.kv);

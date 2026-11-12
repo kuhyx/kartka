@@ -5,6 +5,7 @@ library;
 import 'package:crdt_sync_flutter/crdt_sync_flutter.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:kartka/sync/e2e/e2e_unlock.dart';
 import 'package:kartka/sync/google_client.dart';
 import 'package:kartka/sync/settings/synced_settings.dart';
 import 'package:kartka/sync/sync_config.dart';
@@ -40,6 +41,13 @@ abstract interface class SyncAccountController {
 
   /// Sets or changes this device's sync passphrase (§16).
   Future<void> setPassphrase(String passphrase);
+
+  /// The e2e key (lock state + where its passphrase is kept); null when
+  /// this build has none.
+  KartkaE2e? get e2e;
+
+  /// Called after the e2e passphrase was saved: resyncs with it.
+  Future<void> unlocked();
 }
 
 /// The production controller over a started engine.
@@ -88,6 +96,12 @@ class EngineAccountController implements SyncAccountController {
   @override
   Future<void> setPassphrase(String passphrase) async =>
       await settings?.setPassphrase(passphrase);
+
+  @override
+  KartkaE2e? get e2e => runtime.e2e;
+
+  @override
+  Future<void> unlocked() => runtime.accountChanged();
 }
 
 /// This build's Google route: the plugin on Android, the GIS button on the

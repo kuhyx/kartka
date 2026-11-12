@@ -4,7 +4,7 @@ Decides, by measurement, which manga sources Kartka keeps. Output is the
 contract §5 record ([`DOCS-contracts-source-health.md`](DOCS-contracts-source-health.md))
 per source, ranked, plus a run `meta` block, written to
 `tools/source_eval/out/latest.json` and, with `--publish`, to RTDB
-`/kartka/source_health/<sha1(sourceId)>` and `/kartka/source_health_meta`.
+`/kartka-e2e/source_health/<sha1(sourceId)>` and `/kartka-e2e/source_health_meta`.
 
 ## Commands
 
@@ -184,7 +184,7 @@ and FlareSolverr off (the local dev server and the live deploy both do).
   `blocking`, `coverage<0.60`, `subset`) are always computed and published in
   `cutReasons`.
 - **scoring profile**: `report` reads the app's active profile from RTDB
-  `/kartka/settings/sourceHealth~2Escoring` (read-only GET with the
+  `/kartka-e2e/settings/sourceHealth~2Escoring` (read-only GET with the
   `kartka-source-eval` session, even without `--publish`) and scores,
   ranks and publishes with it. `--weights default` skips the read and forces
   DEFAULT. Node absent or removed = DEFAULT; an unreadable or invalid profile
@@ -192,7 +192,7 @@ and FlareSolverr off (the local dev server and the live deploy both do).
   `report` prints `profile: default|custom`.
 - **meta**: `{runId, generatedAt, candidates, tested, verdicts, skipped,
   profile}` (contract §5 "Run meta"); `--publish` PATCHes it to
-  `/kartka/source_health_meta` after the records. `profile` is
+  `/kartka-e2e/source_health_meta` after the records. `profile` is
   `{name: default|custom, weights, pagesLoadMultiplier, keepScore, cuts}`.
 - **availability** (additive): `native` (Kartka Dart source; today
   mangadex.org), `mangayomiJs` (a Mangayomi JS source on the same base

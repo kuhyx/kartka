@@ -140,7 +140,7 @@ under the line cap; same rules. Implementation notes:
   summary: {hostsBlockedHere: [id], keepOnlyViaKeiyoushi: [id],
   notCutOnlyViaKeiyoushi: [{id, name, verdict}]}, meta}`; the summary feeds
   the Suwayomi keep/drop decision (§13).
-- **Run meta** (2026-10-25): RTDB `/kartka/source_health_meta`, a separate
+- **Run meta** (2026-10-25): RTDB `/kartka-e2e/source_health_meta`, a separate
   node (`source_health` stays `{sha1(id): record}`), also `meta` in the run
   file:
 
@@ -166,7 +166,7 @@ under the line cap; same rules. Implementation notes:
   account's root rule allows it).
 - **Active profile in RTDB** (kuhy's decision, 2026-10-25): the synced setting
   `sourceHealth.scoring` (runtime §16), node
-  `/kartka/settings/sourceHealth~2Escoring` = `{key, value, hlc}`, where
+  `/kartka-e2e/settings/sourceHealth~2Escoring` = `{key, value, hlc}`, where
   `value` is the profile as a JSON **string**. The evaluator reads it
   (read-only, via its own `kartka-source-eval` session) at `report`; absent or
   removed means DEFAULT, an unreadable or invalid one falls back to DEFAULT

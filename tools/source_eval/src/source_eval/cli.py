@@ -21,9 +21,10 @@ from source_eval.app import App
 from source_eval.backends.suwayomi import SuwayomiConfig
 from source_eval.http import BoundedTransport, RequestsTransport, SystemClock
 from source_eval.profile import DEFAULT, Profile
-from source_eval.report import firebase_writer, load_profile
+from source_eval.report import firebase_writer
 from source_eval.settings import Settings
 from source_eval.state import Manifest
+from source_eval.synced_profile import load_profile
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence

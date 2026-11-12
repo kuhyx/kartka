@@ -3,14 +3,14 @@ import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/sync/rtdb_reader.dart';
 
-/// A [SourceHealthFeed] over RTDB `/kartka/source_health` (§4) and
-/// `/kartka/source_health_meta`, which only
+/// A [SourceHealthFeed] over RTDB `/kartka-e2e/source_health` (§4) and
+/// `/kartka-e2e/source_health_meta`, which only
 /// the evaluator writes. Read-only; the reader does the polling.
 class RtdbSourceHealthFeed implements SourceHealthFeed {
   /// Creates a feed reading through the sync part's [RtdbReader].
   new(this._reader);
 
-  /// The subtree, relative to the `/kartka` root as [RtdbReader] expects.
+  /// The subtree, relative to the `/kartka-e2e` root as [RtdbReader] expects.
   static const String path = 'source_health';
 
   /// The run-summary node, relative to the same root.

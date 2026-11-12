@@ -165,20 +165,20 @@ packages:
     dependency: "direct main"
     description:
       path: crdt_sync_dart
-      ref: "crdt_sync_dart-v0.12.1"
-      resolved-ref: "6641d85f0550ca60433fc8e0d13a3dafdbb664d6"
+      ref: "crdt_sync_dart-v0.14.1"
+      resolved-ref: edd0f7a7882cb1d3904932ba94faa282d08165df
       url: "https://github.com/kuhyx/utils"
     source: git
-    version: "0.12.1"
+    version: "0.14.1"
   crdt_sync_flutter:
     dependency: "direct main"
     description:
       path: crdt_sync_flutter
-      ref: "crdt_sync_flutter-v0.5.1"
-      resolved-ref: "95cd3731ede686114353d32ae6c286ad1694b488"
+      ref: "crdt_sync_flutter-v0.8.1"
+      resolved-ref: "3225af8365481677d61a8cabec0c0ad4d0407567"
       url: "https://github.com/kuhyx/utils"
     source: git
-    version: "0.5.1"
+    version: "0.8.1"
   cross_file:
     dependency: transitive
     description:
@@ -1042,11 +1042,11 @@ packages:
     dependency: "direct main"
     description:
       path: sync_settings_ui
-      ref: "sync_settings_ui-v0.7.0"
-      resolved-ref: "3084080d744c348a217727e26a6be838e7d5a4ff"
+      ref: "sync_settings_ui-v0.7.3"
+      resolved-ref: "02d9d689e921d80ec155af9903164c3d2d259dce"
       url: "https://github.com/kuhyx/utils"
     source: git
-    version: "0.7.0"
+    version: "0.7.3"
   synchronized:
     dependency: transitive
     description:

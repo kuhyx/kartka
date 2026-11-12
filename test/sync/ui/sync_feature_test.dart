@@ -14,6 +14,7 @@ import 'package:kartka/sync/settings/sync_passphrase.dart';
 import 'package:kartka/sync/settings/synced_settings.dart';
 import 'package:kartka/sync/sync_feature.dart';
 import 'package:kartka/sync/sync_runtime.dart';
+import 'package:kartka/sync/sync_status.dart';
 import 'package:kartka/sync/ui/sync_account_controller.dart';
 import 'package:kartka/sync/ui/sync_account_screen.dart';
 import 'package:kartka/tracking/common/binding_store.dart';
@@ -84,6 +85,9 @@ void main() {
     expect(await c.hasPassphrase(), isTrue);
     expect(await secrets.get(kSyncPassphraseKey), 'pp');
     expect(await c.watchProblems().first, isEmpty);
+    expect(c.e2e, isNull);
+    await c.unlocked(); // resyncs through a freshly opened transport
+    expect(engine.status.phase, SyncPhase.idle);
   });
 
   test('the feature registers its services without starting sync', () {

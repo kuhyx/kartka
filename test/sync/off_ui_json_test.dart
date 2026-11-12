@@ -61,6 +61,7 @@ void main() {
   test('a large RTDB response is decoded off the UI isolate', () async {
     final body = jsonEncode(_big());
     final t = FirebaseTransport(
+      root: 'kartka',
       writer: _Writer(),
       http: FakeKartkaHttp((r) => FakeKartkaHttp.text(body)),
       databaseUrl: 'https://db.example/',

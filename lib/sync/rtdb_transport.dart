@@ -1,5 +1,5 @@
 /// The read/write surface the sync engine needs from RTDB, relative to the
-/// `/kartka` root (DOCS-contracts §4, §12).
+/// `/kartka-e2e` root (DOCS-contracts §4, §12).
 ///
 /// Path segments passed here are already RTDB-safe ([rtdbKey]); the engine
 /// builds them, so implementations do not re-escape.
@@ -7,7 +7,7 @@ library;
 
 import 'package:crdt_sync/crdt_sync.dart' show encodeKey;
 
-/// Decoded-JSON access to the `/kartka` subtree.
+/// Decoded-JSON access to the `/kartka-e2e` subtree.
 abstract interface class RtdbTransport {
   /// The decoded JSON at [path], or null when absent.
   Future<Object?> get(String path);

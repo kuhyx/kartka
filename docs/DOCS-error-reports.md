@@ -29,14 +29,15 @@ for the global hooks: an identical `kind` + message inside 30 s is dropped
 and at most 20 reports a minute are kept, so an error loop cannot flood
 the log (which rewrites its file on every append).
 
-## Transport: `/kartka/errors/<device>/<id>`
+## Transport: `/kartka-e2e/errors/<device>/<id>`
 
 `ErrorUploader` (`lib/sync/error_upload.dart`, started by `syncFeature`):
 
 - The log is the offline queue. `<id>` is the first 20 hex of sha1 over the
   entry's JSON, so a re-push is a no-op; ids pushed are kept in kv
   `errors.sent` (last 2500). `perf.*` entries are never uploaded.
-- PATCHed straight through the sync transport (`SyncRuntime.transport`):
+- Sealed per report (DOCS-contracts §4; locked = not sent) and PATCHed
+  straight through the sync transport (`SyncRuntime.transport`):
   no `revs/` bump, no change-feed entry, so no peer fetches it, and the
   engine never reads `errors/` (it GETs per namespace, never the root).
 - Batches of 50, at most 200 per flush. Debounced 5 s after an append, and
@@ -56,7 +57,9 @@ the log (which rewrites its file on every append).
 `tools/errors/run.sh ingest` (Python 3.15, uv, `crdt-sync` pinned like
 `tools/source_eval`) signs in with the evaluator's seeded Google session
 (`~/.config/kartka-source-eval/firebase_auth.json`; exit 3 names the seed
-command when it is missing), reads `/kartka/errors`, merges every report
+command when it is missing), reads `/kartka-e2e/errors` and opens each report
+with the shared crdt-sync password (exit 4, nothing deleted, when locked;
+no `kartka-e2e/e2e` header yet = nothing to read), merges every report
 into `~/.local/state/kartka-errors/state.json`, saves it, rewrites
 `fixme.md` (outside the repo; deleted when nothing is open), then deletes
 exactly the `device/id` paths it read (never the whole node, which would

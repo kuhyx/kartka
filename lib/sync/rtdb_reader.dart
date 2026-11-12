@@ -1,7 +1,7 @@
 /// Read-only access to Kartka's Firebase RTDB tree for parts that only
 /// consume synced data (e.g. `source_health` reading `source_health/`).
 ///
-/// Paths are relative to the `/kartka` root and `/`-separated, for example
+/// Paths are relative to the `/kartka-e2e` root and `/`-separated, for example
 /// `source_health` or `source_health/<sourceIdHash>`. Values are decoded JSON
 /// exactly as stored: `Map<String, Object?>`, `List<Object?>`, `String`,
 /// `num`, `bool`, or `null` when nothing is stored at the path.
@@ -14,7 +14,7 @@ import 'dart:async';
 
 import 'package:kartka/sync/merge/merge_rules.dart' show canon;
 
-/// Reads decoded JSON from the `/kartka` RTDB root. Never writes.
+/// Reads decoded JSON from the `/kartka-e2e` RTDB root. Never writes.
 abstract interface class RtdbReader {
   /// The value at [path], or null when absent.
   ///
@@ -31,7 +31,7 @@ abstract interface class RtdbReader {
 
 /// An [RtdbReader] over a fixed in-memory tree, for tests and offline mode.
 class InMemoryRtdbReader implements RtdbReader {
-  /// Creates a reader over [tree] (the decoded JSON under `/kartka`).
+  /// Creates a reader over [tree] (the decoded JSON under `/kartka-e2e`).
   new([Map<String, Object?>? tree]) : _tree = tree ?? <String, Object?>{};
 
   Map<String, Object?> _tree;

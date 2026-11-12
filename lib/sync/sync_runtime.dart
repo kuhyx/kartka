@@ -11,6 +11,8 @@ import 'package:crdt_sync_flutter/crdt_sync_flutter.dart'
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/key_value_store.dart';
+import 'package:kartka/sync/e2e/e2e_unlock.dart';
+import 'package:kartka/sync/e2e/sealed_transport.dart';
 import 'package:kartka/sync/firebase_transport.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/sync_config.dart';
@@ -19,27 +21,37 @@ import 'package:kartka/sync/sync_scheduler.dart';
 import 'package:kartka/sync/sync_shadow.dart';
 import 'package:kartka/sync/sync_status.dart';
 
-/// Opens the production transport: a signed-in crdt_sync client, or null.
+/// Opens the production transport: the sealed e2e root on a signed-in
+/// crdt_sync client, or null while signed out. Throws
+/// [E2eLockedSyncError] while [e2e] has no key: nothing is sent then.
 ///
 /// [open] defaults to crdt_sync_flutter's `openSync` (via
 /// [kartkaSyncAccess]); tests inject a fake.
 Future<RtdbTransport?> openFirebaseTransport(
-  KartkaHttp http, {
+  KartkaHttp http,
+  KartkaE2e e2e, {
   Future<FirebaseRestClient?> Function()? open,
 }) async {
   try {
     final client = await (open ?? kartkaSyncAccess.openSync)();
     if (client == null) return null;
-    return FirebaseTransport(
+    FirebaseTransport at(String root) => FirebaseTransport(
       writer: FirebaseRestWriter(client),
       http: http,
       databaseUrl: kKartkaSync.project.databaseUrl,
+      root: root,
+    );
+    final root = at(kE2eLayout.prefix);
+    return SealedTransport(
+      root,
+      await e2e.unlock(root),
+      legacy: LegacyTree(at(kLegacyRoot)),
     );
   } on RemoteSyncError {
     rethrow;
   } on Exception catch (e) {
-    // A keystore or plugin failure: report it as a sync error, so the
-    // engine shows it on the account screen instead of crashing a poll.
+    // A keystore, wrapper or plugin failure: report it as a sync error, so
+    // the engine shows it on the account screen instead of crashing a poll.
     throw FirebaseSyncError('cannot open sync: $e');
   }
 }
@@ -53,6 +65,7 @@ class SyncRuntime {
     Future<String> Function()? deviceId,
     this.startScheduler = true,
     this.diagnostics,
+    this.e2e,
   }) : _deviceId = deviceId ?? _persistedDeviceId;
 
   /// Where the shadow lives.
@@ -63,6 +76,9 @@ class SyncRuntime {
 
   /// Where the engine logs failures that are not sync errors (§7).
   final DiagnosticsLog? diagnostics;
+
+  /// The e2e key, for the lock button (null in tests without one).
+  final KartkaE2e? e2e;
 
   /// Whether starting the engine also starts foreground polling.
   final bool startScheduler;

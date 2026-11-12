@@ -1,9 +1,11 @@
-/// More → Sync: status, last sync, "Sync now", sign in / out, and the sync
-/// passphrase.
+/// More → Sync: status, last sync, "Sync now", sign in / out, the e2e key
+/// and the sync passphrase.
 library;
 
 import 'dart:async';
 
+import 'package:crdt_sync_flutter/crdt_sync_flutter.dart'
+    show E2ePassphraseButton;
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:kartka/sync/sync_status.dart';
@@ -145,6 +147,21 @@ class _SyncAccountScreenState extends State<SyncAccountScreen> {
               ),
             ),
           ),
+          if (widget.controller.e2e case final e2e?)
+            ListTile(
+              leading: const Icon(
+                Icons.enhanced_encryption_outlined,
+                semanticLabel: 'End-to-end key',
+              ),
+              trailing: ValueListenableBuilder<bool>(
+                valueListenable: e2e.locked,
+                builder: (context, locked, _) => E2ePassphraseButton(
+                  locked: locked,
+                  storage: e2e.storage,
+                  onSaved: () => unawaited(widget.controller.unlocked()),
+                ),
+              ),
+            ),
           if (_problems.isNotEmpty)
             Wrap(
               spacing: AppSpacing.sm,

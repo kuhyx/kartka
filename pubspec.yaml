@@ -21,13 +21,13 @@ dependencies:
   crdt_sync:
     git:
       url: https://github.com/kuhyx/utils
-      ref: crdt_sync_dart-v0.12.1
+      ref: crdt_sync_dart-v0.14.1
       path: crdt_sync_dart
   # Keystore session, per-install device id and openSync for sync.
   crdt_sync_flutter:
     git:
       url: https://github.com/kuhyx/utils
-      ref: crdt_sync_flutter-v0.5.1
+      ref: crdt_sync_flutter-v0.8.1
       path: crdt_sync_flutter
   # SHA-1 for mangaKeyHash (RTDB-safe keys, DOCS-contracts §4).
   crypto: 3.0.8
@@ -71,7 +71,7 @@ dependencies:
   sync_settings_ui:
     git:
       url: https://github.com/kuhyx/utils
-      ref: sync_settings_ui-v0.7.0
+      ref: sync_settings_ui-v0.7.3
       path: sync_settings_ui
   url_launcher: 6.3.3
   wakelock_plus: 1.8.2
