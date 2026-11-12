@@ -14,6 +14,7 @@ future Claude session can paste to fix them. Builds on the diagnostics log
 | `reader.open` | `ReaderSession.open` (the reader's Retry screen). |
 | `reader.page` | `ReaderSession.image` (a page's Retry); background prefetch stays quiet. |
 | `downloads.failed` | `DownloadService.onFailure` (the queue's Retry), wired by `downloadsFeature`. |
+| `downloads.offline` | `downloadFailureReporter`: a server that cannot be reached (`isOfflineError`), once per server per 10 min, not once per chapter. |
 | `plugins.repo` | `PluginManager.onRepoError` (the per-repo error list on More → Plugins). |
 | `health.read` | `ReportingHealthFeed`, around the Sources tab's feed only (not the badges). |
 | `details.load`, `details.refresh` | `MangaDetailController.load` / `refresh`. |

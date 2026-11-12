@@ -1,15 +1,11 @@
 import 'dart:async';
 
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/net/network_errors.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 
 /// Checks one manga (normally `ChapterUpdateChecker.check`).
 typedef CheckManga = Future<UpdateResult> Function(MangaKey key);
-
-/// The server a source's requests go to, for the per-host limit: every
-/// `suwayomi:*` source is one Suwayomi-Server, anything else its own host.
-String updateHostOf(String sourceId) =>
-    sourceId.startsWith('suwayomi:') ? 'suwayomi' : sourceId;
 
 /// Checks every key with [check], at most [maxTotal] at once, at most
 /// [maxPerSource] per source (so no one site gets a burst) and at most
@@ -26,7 +22,7 @@ Future<List<UpdateResult>> checkAll(
   int maxTotal = 4,
   int maxPerSource = 1,
   int maxPerHost = 2,
-  String Function(String sourceId) hostOf = updateHostOf,
+  String Function(String sourceId) hostOf = serverOf,
   void Function(UpdateResult result, int done)? onResult,
 }) {
   if (keys.isEmpty) return Future.value(const []);

@@ -19,6 +19,7 @@ import 'package:kartka/core/models/page_ref.dart';
 import 'package:kartka/core/models/reading_progress.dart';
 import 'package:kartka/core/models/search_page.dart';
 import 'package:kartka/core/models/source_ref.dart';
+import 'package:kartka/core/net/network_errors.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/repositories/category_repository.dart';
 import 'package:kartka/core/repositories/download_repository.dart';

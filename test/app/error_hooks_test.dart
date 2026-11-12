@@ -8,7 +8,10 @@ import 'package:go_router/go_router.dart';
 import 'package:kartka/app/app.dart';
 import 'package:kartka/app/error_hooks.dart';
 import 'package:kartka/app/registry.dart';
+import 'package:kartka/browse/state/refresh_outcome.dart';
+import 'package:kartka/browse/state/source_wait.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
+import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 
@@ -154,6 +157,22 @@ void main() {
         ),
       ),
     );
+    // A missing source is a known state, not an error to report.
+    for (final missing in [
+      UnknownSourceError('suwayomi:1'),
+      const SourceUnavailable('sy-builtin:6901'),
+    ]) {
+      await show(
+        (c) => ScaffoldMessenger.of(c).showSnackBar(
+          SnackBar(
+            content: SpokenLabel(
+              semanticLabel: refreshMessage(RefreshFailed(missing)),
+              child: const Icon(Icons.error_outline),
+            ),
+          ),
+        ),
+      );
+    }
     final entries = await tester.runAsync(
       () => DiagnosticsLog.of(platform.diagnostics).entries(),
     );

@@ -1,6 +1,7 @@
-/// Which update-check failures are the network's, not the source's.
+/// Which update-check and download failures are the network's, not the
+/// source's, and which server a source's requests go to.
 ///
-/// Matched on the error's text: `lib/updates` may not import `dart:io` or
+/// Matched on the error's text: only `lib/platform` may import `dart:io` or
 /// `package:http` (import boundaries), and their exceptions reach here
 /// wrapped (`ClientException with SocketException: ...`) anyway.
 library;
@@ -27,3 +28,8 @@ bool isTransientNetworkError(Object error) =>
 /// Whether [error] means the server cannot be reached at all (no DNS
 /// answer, no route): checking more of its manga would fail the same way.
 bool isOfflineError(Object error) => _offline.hasMatch('$error');
+
+/// The server a source's requests go to: every `suwayomi:*` source is one
+/// Suwayomi-Server, anything else its own host.
+String serverOf(String sourceId) =>
+    sourceId.startsWith('suwayomi:') ? 'suwayomi' : sourceId;

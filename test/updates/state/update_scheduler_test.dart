@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/net/network_errors.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/updates/state/update_scheduler.dart';
 
@@ -106,8 +107,8 @@ void main() {
       await checker.releaseAll();
     }
     expect(await run, hasLength(4));
-    expect(updateHostOf('suwayomi:42'), 'suwayomi');
-    expect(updateHostOf('mangadex'), 'mangadex');
+    expect(serverOf('suwayomi:42'), 'suwayomi');
+    expect(serverOf('mangadex'), 'mangadex');
   });
 
   test('no keys completes at once with nothing', () async {

@@ -54,7 +54,8 @@ class MangaDetailController extends ChangeNotifier {
   /// Loads details and a fresh chapter list in parallel. After a
   /// [SourceUnavailable] (the Retry button) it first asks every provider to
   /// re-list its sources, so a server that was down at start is seen again.
-  /// A failure is logged as `details.load` (source id only, URLs stripped).
+  /// A failure is logged as `details.load` (source id only, URLs stripped),
+  /// except a missing source (`isMissingSource`): the screen says so.
   ///
   /// Stale-while-revalidate: with nothing shown yet, a library entry (and
   /// the stored chapter list) is shown at once while the network runs, so a
@@ -67,18 +68,20 @@ class MangaDetailController extends ChangeNotifier {
 
   StackTrace? _stack;
 
-  Future<void> _log(String kind, Object failure, [StackTrace? stack]) async =>
-      await _deps.diagnostics?.append(
-        DiagnosticEntry.failure(
-          at: _deps.clock(),
-          kind: kind,
-          error: stripUrls('$failure'),
-          stack: stack == null
-              ? null
-              : StackTrace.fromString(stripUrls('$stack')),
-          sourceId: sourceId,
-        ),
-      );
+  Future<void> _log(String kind, Object failure, [StackTrace? stack]) async {
+    if (isMissingSource(failure)) return;
+    await _deps.diagnostics?.append(
+      DiagnosticEntry.failure(
+        at: _deps.clock(),
+        kind: kind,
+        error: stripUrls('$failure'),
+        stack: stack == null
+            ? null
+            : StackTrace.fromString(stripUrls('$stack')),
+        sourceId: sourceId,
+      ),
+    );
+  }
 
   Future<void> _load() async {
     if (error is SourceUnavailable) unawaited(_deps.sources.refresh());

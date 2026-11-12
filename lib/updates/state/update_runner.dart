@@ -2,11 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:kartka/browse/state/refresh_outcome.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/net/network_errors.dart';
 import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/library/data/lww.dart';
 import 'package:kartka/library/ports.dart';
-import 'package:kartka/updates/state/network_errors.dart';
 import 'package:kartka/updates/state/update_scheduler.dart';
 
 /// Waits [duration] (the retry backoff; tests pass a no-op).
@@ -36,8 +36,9 @@ final class _Unavailable {
 /// reached (`isOfflineError`), its remaining manga are not checked: one
 /// `updates.offline` entry per server, counted as `notChecked`, not
 /// `failed`. A source nothing is registered for (`UnknownSourceError`) is
-/// the same, once per source: one `updates.unavailable` entry, its manga
-/// counted as `unavailable`. New chapters reach the updates feed
+/// skipped the same way, its manga counted as `unavailable` and not
+/// logged: the summary already names them, and a report per run of a
+/// known state is noise. New chapters reach the updates feed
 /// through `ChapterAdditionSink`, not from here, so a run writes each
 /// chapter once.
 class UpdateRunner extends ChangeNotifier implements LibraryUpdater {
@@ -107,7 +108,7 @@ class UpdateRunner extends ChangeNotifier implements LibraryUpdater {
   /// [check] with retries; a key of a server already found down is not
   /// checked, and one that finds it down marks it.
   Future<UpdateResult> _guarded(MangaKey key, _Run run) async {
-    final host = updateHostOf(splitMangaKey(key).$1);
+    final host = serverOf(splitMangaKey(key).$1);
     final sourceId = splitMangaKey(key).$1;
     for (var attempt = 0; ; attempt++) {
       if (run.down.containsKey(host)) {
@@ -118,9 +119,7 @@ class UpdateRunner extends ChangeNotifier implements LibraryUpdater {
       }
       final result = await check(key);
       if (result is UpdateFailed && result.error is UnknownSourceError) {
-        if (run.missing.add(sourceId)) {
-          run.logs.add(_log('updates.unavailable', result.error, result, null));
-        }
+        run.missing.add(sourceId);
         return UpdateFailed(key, const _Unavailable());
       }
       if (result is! UpdateFailed || !isTransientNetworkError(result.error)) {
@@ -171,7 +170,7 @@ class UpdateRunner extends ChangeNotifier implements LibraryUpdater {
           chapters += added.length;
           if (added.isNotEmpty) manga++;
         case UpdateFailed(error: _NotChecked()):
-          final host = updateHostOf(splitMangaKey(r.key).$1);
+          final host = serverOf(splitMangaKey(r.key).$1);
           skipped[host] = (skipped[host] ?? 0) + 1;
         case UpdateFailed(error: _Unavailable()):
           unavailable++;
@@ -201,7 +200,7 @@ class _Run {
   /// Servers found unreachable, with the first error that showed it.
   final down = <String, Object>{};
 
-  /// Source ids found not installed (each logged once).
+  /// Source ids found not installed.
   final missing = <String>{};
 
   /// Diagnostics writes in flight, awaited before the summary.

@@ -5,6 +5,7 @@ import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/net/network_errors.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/downloads/auto/auto_downloader.dart';
 import 'package:kartka/downloads/download_service.dart';
@@ -82,13 +83,32 @@ KartkaFeature downloadsFeature(KartkaEnv env) {
   );
 }
 
-/// Logs a failed chapter download as `downloads.failed` with its source.
+/// How long a server's `downloads.offline` entry stands for every later
+/// chapter that fails on it the same way.
+const offlineReportWindow = Duration(minutes: 10);
+
+/// Logs a failed chapter download with its source as `downloads.failed`.
+/// A server that cannot be reached at all (`isOfflineError`) is logged as
+/// `downloads.offline` instead, once per server ([serverOf]) per
+/// [offlineReportWindow], so a queue failing chapter after chapter while
+/// offline reports one entry, not one per chapter. The chapters still end
+/// failed either way (Retry in the queue).
 void Function(DownloadTask, Object, StackTrace) downloadFailureReporter(
-  DiagnosticsLog log,
-) =>
-    (task, error, stack) => ErrorReporter.of(log).report(
-      'downloads.failed',
-      error,
-      stack: stack,
-      sourceId: splitMangaKey(task.mangaKey).$1,
-    );
+  DiagnosticsLog log, {
+  DateTime Function() now = DateTime.now,
+}) {
+  final offlineSince = <String, DateTime>{};
+  return (task, error, stack) {
+    final sourceId = splitMangaKey(task.mangaKey).$1;
+    var kind = 'downloads.failed';
+    if (isOfflineError(error)) {
+      final server = serverOf(sourceId);
+      final at = now();
+      final since = offlineSince[server];
+      if (since != null && at.difference(since) < offlineReportWindow) return;
+      offlineSince[server] = at;
+      kind = 'downloads.offline';
+    }
+    ErrorReporter.of(log).report(kind, error, stack: stack, sourceId: sourceId);
+  };
+}
