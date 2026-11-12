@@ -17,6 +17,12 @@ ExecStartPre=%h/src/kartka/tools/source_eval/systemd/eval_server_ready.sh
 ExecStart=%h/src/kartka/tools/source_eval/systemd/weekly.sh
 Nice=19
 IOSchedulingClass=idle
+# Unnoticeable next to a game (kuhy 2026-11-12): SCHED_IDLE runs only on CPU
+# time nothing else wants, and the affinity keeps it off the 7900X3D V-cache
+# CCD (CPUs 0-5,12-17) that games use. CPUAffinity, not AllowedCPUs: the user
+# manager has no cpuset controller delegated, so AllowedCPUs would be ignored.
+CPUSchedulingPolicy=idle
+CPUAffinity=6-11 18-23
 MemoryMax=2G
 # ~4 ms CPU per request (state checkpoints) + Pillow decode of ~30 images per
 # source: ~0.2 CPU at 25 req/s over 128 lanes. 100 % keeps a throttled client

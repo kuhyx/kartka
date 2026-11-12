@@ -37,6 +37,12 @@ ExecStart=%h/services/suwayomi/app/current/jre/bin/java \
 SuccessExitStatus=143
 Nice=19
 IOSchedulingClass=idle
+# Unnoticeable next to a game (kuhy 2026-11-12): SCHED_IDLE runs only on CPU
+# time nothing else wants, and the affinity keeps it off the 7900X3D V-cache
+# CCD (CPUs 0-5,12-17) that games use. CPUAffinity, not AllowedCPUs: the user
+# manager has no cpuset controller delegated, so AllowedCPUs would be ignored.
+CPUSchedulingPolicy=idle
+CPUAffinity=6-11 18-23
 # Measured 2026-10-25 (sample 200, 128 lanes): 1 core and 3 GB were the limit,
 # 8.4 req/s at 64 in flight (about 120 ms of server CPU per request). 3 cores
 # and a 3 GB heap (+~0.9 GB metaspace, code cache, thread stacks) lift both.
