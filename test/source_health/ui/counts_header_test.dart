@@ -30,6 +30,7 @@ void main() {
       ),
     );
     await tester.pump();
+    await openFilters(tester);
     expect(
       counts(tester),
       '585 tested of 590 candidates · 120 keep · 400 cut · 65 pending · '
@@ -60,6 +61,7 @@ void main() {
       ),
     );
     await tester.pump();
+    await openFilters(tester);
     expect(
       counts(tester),
       '6 tested · candidates unknown · 2 keep · 3 cut · 1 pending · showing 6',
@@ -79,10 +81,13 @@ void main() {
     await tester.pump();
     feed.meta.addError(StateError('denied'));
     await tester.pump();
+    await openFilters(tester);
     expect(counts(tester), startsWith('6 tested · candidates unknown'));
+    await closeSheet(tester);
     feed.meta.add(const SourceHealthMeta(tested: 9));
     await tester.pump();
     await tester.pump();
+    await openFilters(tester);
     expect(
       counts(tester),
       '9 tested · candidates unknown · 2 keep · 3 cut · 1 pending · showing 6',

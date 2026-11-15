@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
+import 'package:kartka/source_health/ui/filters_sheet.dart';
 import 'package:kartka/source_health/ui/sources_tab.dart';
 
 import '../../helpers/spoken_icon.dart';
@@ -61,7 +62,15 @@ void main() {
     ]);
     await tester.pump();
     expect(spokenIcon('Never evaluated'), findsOne);
-    expect(spokenContaining('older than 8 days'), findsOne);
+    expect(spokenContaining('Stale: results'), findsOne);
+    await openFilters(tester);
+    expect(
+      find.descendant(
+        of: find.byType(FiltersSheet),
+        matching: spokenContaining('older than 8 days'),
+      ),
+      findsOne,
+    );
   });
 
   testWidgets('subset link to a source outside the ranking is disabled', (
@@ -77,6 +86,7 @@ void main() {
       })!,
     ]);
     await tester.pump();
+    await openCard(tester, 'a');
     final link = tester.widget<TextButton>(
       find.ancestor(
         of: find.text('gone (95 %)'),

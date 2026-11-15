@@ -10,7 +10,15 @@ import 'package:kartka/source_health/ui/health_icons.dart';
 /// results pass the stale limit.
 class FreshnessBanner extends StatelessWidget {
   /// Creates a banner for results from [at], judged at [now].
-  const new({required this.at, required this.now, super.key});
+  const new({
+    required this.at,
+    required this.now,
+    this.compact = false,
+    super.key,
+  });
+
+  /// Kept to one line (the stamp shrinks first), for the Sources header.
+  final bool compact;
 
   /// When the evaluator last ran; null = never.
   final DateTime? at;
@@ -22,25 +30,34 @@ class FreshnessBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final when = at;
     final stamp = when == null ? notMeasured : instant(when);
-    return Wrap(
-      spacing: AppSpacing.sm,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        IconValue(
-          Icons.schedule,
-          stamp,
-          semanticLabel: when == null ? 'Never evaluated' : 'Last evaluated',
-          key: const Key('evaluated-at'),
-        ),
-        if (isStale(when, now))
-          StatusPill(
+    final value = IconValue(
+      Icons.schedule,
+      stamp,
+      semanticLabel: when == null ? 'Never evaluated' : 'Last evaluated',
+      key: const Key('evaluated-at'),
+    );
+    final pill = isStale(when, now)
+        ? StatusPill(
             icon: Icons.warning_amber_rounded,
             semanticLabel:
                 'Stale: results are older than '
                 '${HealthThresholds.staleAfter.inDays} days',
             fill: statusColors(context).warning,
-          ),
-      ],
+          )
+        : null;
+    if (compact) {
+      return Row(
+        spacing: AppSpacing.sm,
+        children: [
+          Flexible(child: value),
+          ?pill,
+        ],
+      );
+    }
+    return Wrap(
+      spacing: AppSpacing.sm,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [value, ?pill],
     );
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
-import 'package:kartka/library/ui/library_swipe.dart';
+import 'package:kartka/library/ui/category_tabs.dart';
+import 'package:kartka/library/ui/library_cell.dart';
 
 import '../support/fakes.dart';
 import 'harness.dart';
@@ -29,8 +30,15 @@ Future<Fakes> _seed({bool categories = true}) async {
 int _tabIndex(WidgetTester tester) =>
     tester.widget<TabBar>(find.byType(TabBar)).controller!.index;
 
+Future<void> _tap(WidgetTester tester, String tab) async {
+  await tester.tap(
+    find.descendant(of: find.byType(TabBar), matching: find.text(tab)),
+  );
+  await tester.pumpAndSettle();
+}
+
 Future<void> _fling(WidgetTester tester, double dx) async {
-  await tester.fling(find.byType(CategorySwipe), Offset(dx, 0), 2000);
+  await tester.fling(find.byType(PageView), Offset(dx, 0), 2000);
   await tester.pumpAndSettle();
 }
 
@@ -45,67 +53,43 @@ void _shows({
 }
 
 void main() {
-  test('wrapIndex wraps both ways and ignores a single tab', () {
-    expect(wrapIndex(2, 1, 3), 0);
-    expect(wrapIndex(0, -1, 3), 2);
-    expect(wrapIndex(0, 1, 3), 1);
-    expect(wrapIndex(0, 1, 1), 0);
-  });
-
-  testWidgets('fling left on the first tab goes to the second', (tester) async {
+  testWidgets('tapping a tab switches the category', (tester) async {
     await pumpLibrary(tester, (await _seed()).deps);
-    expect(_tabIndex(tester), 0);
-    await _fling(tester, -300);
-    expect(_tabIndex(tester), 1);
-    _shows(akira: true, berserk: false);
-  });
-
-  testWidgets('fling left on the last tab wraps to Default', (tester) async {
-    await pumpLibrary(tester, (await _seed()).deps);
-    await tester.tap(find.text('8'));
-    await tester.pumpAndSettle();
-    expect(_tabIndex(tester), 2);
-    await _fling(tester, -300);
     expect(_tabIndex(tester), 0);
     _shows(akira: false, berserk: false, claymore: true);
-  });
-
-  testWidgets('fling right on Default wraps to the last tab', (tester) async {
-    await pumpLibrary(tester, (await _seed()).deps);
-    await _fling(tester, 300);
+    await _tap(tester, '1');
+    expect(_tabIndex(tester), 1);
+    _shows(akira: true, berserk: false);
+    await _tap(tester, '8');
     expect(_tabIndex(tester), 2);
     _shows(akira: false, berserk: true);
   });
 
-  testWidgets('slow long drag also switches; short slow one does not', (
+  testWidgets('a sideways swipe pages the grid, never the category', (
     tester,
   ) async {
-    await pumpLibrary(tester, (await _seed()).deps);
-    final at = tester.getCenter(find.byType(CategorySwipe));
-    final g = await tester.startGesture(at);
-    for (var i = 0; i < 10; i++) {
-      await g.moveBy(const Offset(-30, 0));
-      await tester.pump(const Duration(milliseconds: 200));
+    tester.view.physicalSize = const Size(400, 500);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final f = Fakes();
+    for (var i = 0; i < 30; i++) {
+      await f.deps.repos.library.upsert(entry('/m/$i', title: 'M$i'));
     }
-    await g.up();
-    await tester.pumpAndSettle();
-    expect(_tabIndex(tester), 1);
-    await tester.timedDrag(
-      find.byType(CategorySwipe),
-      const Offset(-150, 0),
-      const Duration(seconds: 2),
+    await f.deps.repos.categories.upsert(
+      Category(id: 'one', name: '1', order: 0, updatedAt: t0),
     );
-    await tester.pumpAndSettle();
-    expect(_tabIndex(tester), 1);
-  });
-
-  testWidgets('a short fast flick does not switch', (tester) async {
-    await pumpLibrary(tester, (await _seed()).deps);
-    for (final dx in [-30.0, 30.0, -100.0]) {
-      await tester.fling(find.byType(CategorySwipe), Offset(dx, 0), 3000);
-      await tester.pumpAndSettle();
-      expect(_tabIndex(tester), 0);
-    }
+    await f.deps.repos.categories.setMembership('mangadex|/m/0', 'one', true);
+    await pumpLibrary(tester, f.deps);
+    final firstPage = find.byType(LibraryCell).hitTestable();
+    final before = tester.widgetList(firstPage).map((w) => w.key).toSet();
+    await _fling(tester, -300);
+    expect(_tabIndex(tester), 0);
+    final after = tester.widgetList(firstPage).map((w) => w.key).toSet();
+    expect(after.intersection(before), isEmpty);
+    expect(after, isNotEmpty);
+    await _tap(tester, '1');
+    // A new tab starts on its first page.
+    expect(find.text('M0'), findsOneWidget);
   });
 
   testWidgets('a manga given a category leaves Default; empty Default hides', (
@@ -121,21 +105,13 @@ void main() {
     expect(find.bySemanticsLabel(RegExp('^Default')), findsNothing);
     expect(_tabIndex(tester), 0);
     _shows(akira: true, berserk: false, claymore: true);
-    await _fling(tester, -300);
+    await _tap(tester, '8');
     expect(_tabIndex(tester), 1);
     _shows(akira: false, berserk: true);
     await f.deps.repos.categories.setMembership(_a, 'one', false);
     await tester.pumpAndSettle();
     expect(find.bySemanticsLabel(RegExp('^Default')), findsOneWidget);
     expect(_tabIndex(tester), 2);
-  });
-
-  testWidgets('vertical drag does not change the tab', (tester) async {
-    await pumpLibrary(tester, (await _seed()).deps);
-    await tester.fling(find.byType(CategorySwipe), const Offset(0, -300), 2000);
-    await tester.pumpAndSettle();
-    expect(_tabIndex(tester), 0);
-    _shows(akira: false, berserk: false, claymore: true);
   });
 
   testWidgets('tabs follow when a category is added', (tester) async {
@@ -145,16 +121,30 @@ void main() {
       Category(id: 'nine', name: '9', order: 2, updatedAt: t0),
     );
     await tester.pumpAndSettle();
-    await _fling(tester, 300);
+    await _tap(tester, '9');
     expect(_tabIndex(tester), 3);
     expect(find.bySemanticsLabel('No matches'), findsOneWidget);
   });
 
-  testWidgets('no categories: a swipe changes nothing', (tester) async {
+  testWidgets('no categories: no tab bar, everything shows', (tester) async {
     await pumpLibrary(tester, (await _seed(categories: false)).deps);
     expect(find.byType(TabBar), findsNothing);
-    await _fling(tester, -300);
-    await _fling(tester, 300);
     _shows(akira: true, berserk: true, claymore: true);
+  });
+
+  testWidgets('an outside index change animates the same bar', (tester) async {
+    Widget bar(int index) => MaterialApp(
+      home: Scaffold(
+        appBar: CategoryTabs(
+          labels: const [null, '1', '8'],
+          index: index,
+          onSelect: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpWidget(bar(0));
+    await tester.pumpWidget(bar(2));
+    await tester.pumpAndSettle();
+    expect(_tabIndex(tester), 2);
   });
 }

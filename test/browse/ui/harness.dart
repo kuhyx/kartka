@@ -11,6 +11,7 @@ import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
+import 'package:kartka/browse/state/browse_shown_store.dart';
 import 'package:kartka/browse/state/chapter_sort_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/ui/global_search_screen.dart';
@@ -50,7 +51,12 @@ class FakeHealth implements SourceHealthLookup {
     BuildContext context,
     String sourceId,
     SourceHealthSummary? summary,
-  ) => summary == null ? null : Text('badge:${summary.verdict.name}');
+  ) => summary == null
+      ? null
+      : Text(
+          'badge:${summary.verdict.name}'
+          '${summary.needsBrowserEngine ? '+engine' : ''}',
+        );
 }
 
 /// Detail slot rendering a marker text; records [opened] calls.
@@ -75,6 +81,7 @@ class Harness {
     this.downloadService,
     KartkaBrowser? browser,
     BrowseLanguageStore? languages,
+    BrowseShownStore? shown,
   }) : provider = FakeSourceProvider(),
        languages = languages ?? BrowseLanguageStore(MemoryKeyValueStore()) {
     final registry = SourceRegistry([
@@ -96,6 +103,7 @@ class Harness {
       browser: browser ?? const UnavailableBrowser(),
       diagnostics: diagnostics,
       chapterSort: ChapterSortStore(sortKv),
+      shown: shown,
     );
   }
 

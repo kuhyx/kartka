@@ -6,6 +6,7 @@ import 'package:kartka/source_health/source_health_lookup_impl.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/source_card.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
+import 'package:kartka/source_health/ui/source_tile.dart';
 
 import '../../helpers/spoken_icon.dart';
 import '../browser_engine_flag_test.dart' show allManga;
@@ -128,5 +129,27 @@ void main() {
       ),
     );
     expect(chip, findsNothing);
+  });
+
+  testWidgets('a Sources tile warns with an icon; unflagged tiles do not', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      host(
+        Column(
+          children: [
+            SourceTile(record: allManga, onOpen: () {}, onMenu: () {}),
+            SourceTile(
+              record: fixtureRecord('mangadex'),
+              onOpen: () {},
+              onMenu: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+    final icon = find.byIcon(Icons.warning_amber_rounded);
+    expect(icon, findsOne);
+    expect(tester.widget<Icon>(icon).semanticLabel, 'Needs browser engine');
   });
 }

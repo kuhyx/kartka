@@ -13,6 +13,7 @@ import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_ordering.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
+import 'package:kartka/browse/state/browse_shown_store.dart';
 import 'package:kartka/browse/state/chapter_list_decoder.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/browse/state/chapter_sort_store.dart';
@@ -28,6 +29,7 @@ import 'package:kartka/browse/state/shared_health_lookup.dart';
 import 'package:kartka/browse/state/source_wait.dart';
 import 'package:kartka/browse/state/store_chapter_update_checker.dart';
 import 'package:kartka/browse/state/stored_detail.dart';
+import 'package:kartka/browse/ui/browse_filters.dart';
 import 'package:kartka/browse/ui/browse_tab.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/browse/ui/chapter_download_button.dart';
@@ -44,6 +46,7 @@ import 'package:kartka/browse/ui/manga_detail_screen.dart';
 import 'package:kartka/browse/ui/manga_grid.dart';
 import 'package:kartka/browse/ui/refresh_mark.dart';
 import 'package:kartka/browse/ui/source_screen.dart';
+import 'package:kartka/browse/ui/source_tile.dart';
 
 void main() {
   test('every lib/browse file loads', () {});

@@ -9,10 +9,10 @@ import 'package:kartka/library/library_routes.dart';
 import 'package:kartka/library/state/library_controller.dart';
 import 'package:kartka/library/state/library_deps.dart';
 import 'package:kartka/library/ui/category_picker_dialog.dart';
+import 'package:kartka/library/ui/category_tabs.dart';
 import 'package:kartka/library/ui/library_app_bar.dart';
 import 'package:kartka/library/ui/library_grid.dart';
 import 'package:kartka/library/ui/library_options_sheet.dart';
-import 'package:kartka/library/ui/library_swipe.dart';
 import 'package:kartka/library/ui/update_progress_strip.dart';
 
 /// The Library tab: category tabs over a cover grid, with search, sort,
@@ -121,12 +121,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
       ? _c.query.copyWith(clearCategory: true)
       : _c.query.copyWith(categoryId: _c.categories[i - _lead].id);
 
-  void _step(int step) {
-    final count = _c.categories.length + _lead;
-    final next = wrapIndex(_tabIndex, step, count);
-    if (next != _tabIndex) _selectTab(next);
-  }
-
   PreferredSizeWidget? _tabs() {
     final cats = _c.categories;
     if (cats.isEmpty) return null;
@@ -166,12 +160,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
               children: [
                 if (updater != null) UpdateProgressStrip(updater),
                 Expanded(
-                  child: CategorySwipe(
-                    onStep: _step,
-                    child: LibraryGrid(
-                      controller: _c,
-                      onRefresh: updater == null ? null : _updateAll,
-                    ),
+                  // Sideways swipes page the grid; categories switch by
+                  // tapping their tab.
+                  child: LibraryGrid(
+                    controller: _c,
+                    onRefresh: updater == null ? null : _updateAll,
                   ),
                 ),
               ],

@@ -70,6 +70,7 @@ void main() {
     tester,
   ) async {
     await pump(tester);
+    await openFilters(tester);
     expect(spokenContaining('Scoring: default'), findsOne);
     expect(cardOrder(tester, ['a', 'b']), ['a', 'b']);
 
@@ -83,11 +84,15 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(spokenContaining('Scoring: custom'), findsOne);
+    await closeSheet(tester);
     expect(cardOrder(tester, ['a', 'b']), ['b', 'a']);
     // The default scores (score.py: 0.991, and .5 × (.6 × .4 + .4) + .5)
-    // show next to the new.
-    expect(find.byKey(const Key('default-score')), findsNWidgets(2));
+    // show next to the new, on each source's card.
+    await openCard(tester, 'a');
+    expect(find.byKey(const Key('default-score')), findsOne);
     expect(spokenIcon('default 0.99'), findsOne);
+    await closeSheet(tester);
+    await openCard(tester, 'b');
     expect(spokenIcon('default 0.82'), findsOne);
     expect(find.text('0.82'), findsOne);
   });
@@ -179,6 +184,7 @@ void main() {
 
   testWidgets('the reason filter offers "Pages never load"', (tester) async {
     await pump(tester);
+    await openFilters(tester);
     expect(spokenIcon(HealthReason.pagesNeverLoad.label), findsOne);
   });
 }

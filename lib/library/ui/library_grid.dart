@@ -1,13 +1,15 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kartka/app/fit_pages.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/state/library_controller.dart';
 import 'package:kartka/library/ui/library_cell.dart';
 
-/// The cover grid for the current query, or an empty state; with
-/// [onRefresh], both can be pulled to run it ("update all").
+/// The cover grid for the current query, paged sideways so it always fits
+/// one screen, or an empty state; with [onRefresh], both can be pulled to
+/// run it ("update all").
 class LibraryGrid extends StatelessWidget {
   /// Creates the grid.
   const new({required this.controller, this.onRefresh, super.key});
@@ -31,47 +33,51 @@ class LibraryGrid extends StatelessWidget {
     final c = controller;
     final items = c.visible;
     if (items.isEmpty) {
-      final empty = c.items.isEmpty
-          ? const EmptyMark(
-              icon: Icons.collections_bookmark_outlined,
-              semanticLabel: 'Your library is empty',
-            )
-          : const EmptyMark(
-              icon: Icons.filter_alt_off_outlined,
-              semanticLabel: 'No matches',
-            );
-      if (onRefresh == null) return empty;
-      // Scrollable, so the empty state can be pulled too.
-      return LayoutBuilder(
-        builder: (context, box) => ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          children: [SizedBox(height: box.maxHeight, child: empty)],
-        ),
+      return _pullable(
+        c.items.isEmpty
+            ? const EmptyMark(
+                icon: Icons.collections_bookmark_outlined,
+                semanticLabel: 'Your library is empty',
+              )
+            : const EmptyMark(
+                icon: Icons.filter_alt_off_outlined,
+                semanticLabel: 'No matches',
+              ),
       );
     }
-    return GridView.builder(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(AppSpacing.sm),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 160,
-        childAspectRatio: 0.55,
-        mainAxisSpacing: AppSpacing.sm,
-        crossAxisSpacing: AppSpacing.sm,
+    return _pullable(
+      FitPages(
+        // A new tab starts on its first page.
+        key: ValueKey(c.tab),
+        itemCount: items.length,
+        labelHeight: libraryLabelHeight(context),
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        itemBuilder: (context, i) {
+          final item = items[i];
+          return LibraryCell(
+            key: ValueKey(item.key),
+            item: item,
+            selected: c.selected.contains(item.key),
+            coverLoader: c.deps.coverLoader,
+            onSelect: () => c.toggle(item.key),
+            onTap: c.selecting
+                ? () => c.toggle(item.key)
+                : () => context.push(mangaRoute(item.sourceId, item.mangaUrl)),
+          );
+        },
       ),
-      itemCount: items.length,
-      itemBuilder: (context, i) {
-        final item = items[i];
-        return LibraryCell(
-          key: ValueKey(item.key),
-          item: item,
-          selected: c.selected.contains(item.key),
-          coverLoader: c.deps.coverLoader,
-          onSelect: () => c.toggle(item.key),
-          onTap: c.selecting
-              ? () => c.toggle(item.key)
-              : () => context.push(mangaRoute(item.sourceId, item.mangaUrl)),
-        );
-      },
+    );
+  }
+
+  /// [child] at exactly the box height: it never scrolls, but with
+  /// [onRefresh] it can still be pulled.
+  Widget _pullable(Widget child) {
+    if (onRefresh == null) return child;
+    return LayoutBuilder(
+      builder: (context, box) => SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(height: box.maxHeight, child: child),
+      ),
     );
   }
 }

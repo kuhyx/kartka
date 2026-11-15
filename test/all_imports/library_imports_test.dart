@@ -24,13 +24,13 @@ import 'package:kartka/library/state/library_query.dart';
 import 'package:kartka/library/state/source_availability.dart';
 import 'package:kartka/library/ui/categories_screen.dart';
 import 'package:kartka/library/ui/category_picker_dialog.dart';
+import 'package:kartka/library/ui/category_tabs.dart';
 import 'package:kartka/library/ui/library_app_bar.dart';
 import 'package:kartka/library/ui/library_cell.dart';
 import 'package:kartka/library/ui/library_cover.dart';
 import 'package:kartka/library/ui/library_grid.dart';
 import 'package:kartka/library/ui/library_options_sheet.dart';
 import 'package:kartka/library/ui/library_screen.dart';
-import 'package:kartka/library/ui/library_swipe.dart';
 import 'package:kartka/library/ui/name_dialog.dart';
 import 'package:kartka/library/ui/update_progress_strip.dart';
 

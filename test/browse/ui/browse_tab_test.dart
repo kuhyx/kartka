@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/state/shared_health_lookup.dart';
 import 'package:kartka/browse/ui/browse_tab.dart';
+import 'package:kartka/browse/ui/source_tile.dart';
 import 'package:kartka/core/models/models.dart';
 
 import '../../helpers/spoken_icon.dart';
@@ -17,7 +18,11 @@ void main() {
     FakeSource('local', name: 'Local files', origin: SourceOrigin.local),
   ];
 
-  testWidgets('groups by origin, orders by rank, shows badges', (t) async {
+  double x(WidgetTester t, String text) => t.getTopLeft(find.text(text)).dx;
+
+  testWidgets('one grid of every source in rank order, origin as a glyph', (
+    t,
+  ) async {
     final h = Harness(
       sources: sources,
       health: const FakeHealth({
@@ -26,25 +31,92 @@ void main() {
       }),
     );
     await h.pump(t, const BrowseTab());
-    for (final label in ['Built-in', 'Suwayomi', 'Local']) {
-      expect(find.bySemanticsLabel(label), findsOneWidget);
+    for (final name in ['MangaDex', 'Alpha', 'Beta', 'Local files']) {
+      expect(find.text(name), findsOneWidget);
     }
-    expect(find.bySemanticsLabel('Plugins'), findsNothing);
-    final beta = t.getTopLeft(find.text('Beta')).dy;
-    final alpha = t.getTopLeft(find.text('Alpha')).dy;
-    expect(beta, lessThan(alpha));
+    // Ranked first (Beta #1, Alpha #5), then unranked by name.
+    expect(x(t, 'Beta'), lessThan(x(t, 'Alpha')));
+    expect(x(t, 'Alpha'), lessThan(x(t, 'Local files')));
     expect(find.text('badge:keep'), findsOneWidget);
     expect(find.text('badge:cut'), findsOneWidget);
-    expect(find.text('EN · #1'), findsOneWidget);
+    expect(spokenIcon('Suwayomi'), findsNWidgets(2));
+    expect(spokenIcon('Built-in'), findsOneWidget);
+    expect(spokenIcon('Local'), findsOneWidget);
+    expect(find.text('Built-in'), findsNothing); // Never painted.
+  });
+
+  testWidgets('long-press shows language, rank and badge', (t) async {
+    final h = Harness(
+      sources: sources,
+      health: const FakeHealth({
+        'suwayomi:2': SourceHealthSummary(rank: 1, verdict: HealthVerdict.keep),
+      }),
+    );
+    await h.pump(t, const BrowseTab());
+    await t.longPress(find.text('Beta'));
+    await t.pumpAndSettle();
+    final sheet = find.byType(SourceSheet);
+    expect(
+      find.descendant(of: sheet, matching: find.text('EN · #1')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: sheet, matching: find.text('badge:keep')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('a rank without a badge is shown on the tile', (t) async {
+    final h = Harness(
+      sources: [FakeSource('a', name: ' ')],
+      health: const _RankOnly(),
+    );
+    await h.pump(t, const BrowseTab());
+    expect(find.text('#3'), findsOneWidget);
+    expect(find.text('?'), findsOneWidget);
+  });
+
+  testWidgets('the engine warning is an icon on the tile, a chip in the '
+      'sheet', (t) async {
+    // The stacked rank + "Needs browser engine" badge, squeezed into a
+    // 3-column tile, scaled down until it was unreadable on the phone.
+    final h = Harness(
+      sources: sources,
+      health: const FakeHealth({
+        'suwayomi:1': SourceHealthSummary(
+          rank: 7,
+          verdict: HealthVerdict.cut,
+          needsBrowserEngine: true,
+        ),
+      }),
+    );
+    await h.pump(t, const BrowseTab());
+    expect(find.text('badge:cut'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is Icon && w.semanticLabel == 'Needs browser engine',
+      ),
+      findsOneWidget,
+    );
+    await t.longPress(find.text('Alpha'));
+    await t.pumpAndSettle();
+    final sheet = find.byType(SourceSheet);
+    expect(
+      find.descendant(of: sheet, matching: find.text('badge:cut+engine')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('without health: name order and no badges', (t) async {
     final h = Harness(sources: sources);
     await h.pump(t, const BrowseTab());
     expect(find.textContaining('badge:'), findsNothing);
+    expect(x(t, 'Alpha'), lessThan(x(t, 'Beta')));
+    await t.longPress(find.text('Alpha'));
+    await t.pumpAndSettle();
     expect(
-      t.getTopLeft(find.text('Alpha')).dy,
-      lessThan(t.getTopLeft(find.text('Beta')).dy),
+      find.descendant(of: find.byType(SourceSheet), matching: find.text('EN')),
+      findsOneWidget,
     );
   });
 
@@ -57,7 +129,7 @@ void main() {
     ]);
     await t.pumpAndSettle();
     expect(find.text('Xplug'), findsOneWidget);
-    expect(find.bySemanticsLabel('Plugins'), findsOneWidget);
+    expect(spokenIcon('Plugins'), findsOneWidget);
   });
 
   testWidgets('tapping a source opens its screen', (t) async {
@@ -75,7 +147,7 @@ void main() {
     await t.enterText(find.byType(TextField), '   ');
     await t.testTextInput.receiveAction(TextInputAction.search);
     await t.pumpAndSettle();
-    expect(find.bySemanticsLabel('Built-in'), findsOneWidget); // Blank: stays.
+    expect(find.text('Beta'), findsOneWidget); // Blank: stays.
     await t.enterText(find.byType(TextField), 'berserk');
     await t.testTextInput.receiveAction(TextInputAction.search);
     await t.pumpAndSettle();
@@ -111,12 +183,25 @@ void main() {
     await h.pump(t, const BrowseTab());
     await t.pumpWidget(const SizedBox());
     await h.pump(t, const BrowseTab(), settle: false);
-    expect(find.text('EN · #1'), findsOneWidget);
+    expect(find.text('badge:keep'), findsOneWidget);
     expect(upstream.watches, 1);
     // Let the shared subscription's linger timer run out.
     await t.pumpWidget(const SizedBox());
     await t.pump(const Duration(minutes: 2));
   });
+}
+
+/// Health with a rank but no badge widget.
+class _RankOnly extends FakeHealth {
+  const new() : super(const {});
+
+  @override
+  Stream<Map<String, SourceHealthSummary>> watch() => Stream.value(const {
+    'a': SourceHealthSummary(rank: 3, verdict: HealthVerdict.keep),
+  });
+
+  @override
+  Widget? buildBadge(BuildContext c, String id, SourceHealthSummary? s) => null;
 }
 
 class _CountingHealth extends FakeHealth {

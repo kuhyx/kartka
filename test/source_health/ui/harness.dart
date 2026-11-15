@@ -40,15 +40,38 @@ class ControlledFeed implements SourceHealthFeed {
   Stream<SourceHealthMeta?> watchMeta() => meta.stream;
 }
 
-/// Top edge of the card for source [id].
-double cardTop(WidgetTester tester, String id) =>
-    tester.getTopLeft(find.byKey(ValueKey('source-$id'))).dy;
+/// Top-left of the tile for source [id].
+Offset cardPos(WidgetTester tester, String id) =>
+    tester.getTopLeft(find.byKey(ValueKey('source-$id')));
 
-/// Source ids of the shown cards, top to bottom.
+/// Source ids of the shown tiles, row by row, left to right.
 List<String> cardOrder(WidgetTester tester, List<String> ids) {
-  final shown = [
-    for (final id in ids)
-      if (find.byKey(ValueKey('source-$id')).evaluate().isNotEmpty) id,
-  ]..sort((a, b) => cardTop(tester, a).compareTo(cardTop(tester, b)));
+  final shown =
+      [
+        for (final id in ids)
+          if (find.byKey(ValueKey('source-$id')).evaluate().isNotEmpty) id,
+      ]..sort((a, b) {
+        final pa = cardPos(tester, a);
+        final pb = cardPos(tester, b);
+        return pa.dy == pb.dy ? pa.dx.compareTo(pb.dx) : pa.dy.compareTo(pb.dy);
+      });
   return shown;
+}
+
+/// Opens the Filters sheet.
+Future<void> openFilters(WidgetTester tester) async {
+  await tester.tap(find.byKey(const Key('open-filters')));
+  await tester.pumpAndSettle();
+}
+
+/// Closes the open bottom sheet by tapping its barrier.
+Future<void> closeSheet(WidgetTester tester) async {
+  await tester.tapAt(const Offset(10, 10));
+  await tester.pumpAndSettle();
+}
+
+/// Opens the long-press sheet (the full card) of source [id].
+Future<void> openCard(WidgetTester tester, String id) async {
+  await tester.longPress(find.byKey(ValueKey('source-$id')));
+  await tester.pumpAndSettle();
 }

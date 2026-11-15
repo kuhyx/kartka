@@ -38,6 +38,7 @@ import 'package:kartka/source_health/source_health_lookup_impl.dart';
 import 'package:kartka/source_health/thresholds.dart';
 import 'package:kartka/source_health/ui/counts_header.dart';
 import 'package:kartka/source_health/ui/filter_bar.dart';
+import 'package:kartka/source_health/ui/filters_sheet.dart';
 import 'package:kartka/source_health/ui/freshness_banner.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/health_icons.dart';
@@ -51,6 +52,8 @@ import 'package:kartka/source_health/ui/skipped_page.dart';
 import 'package:kartka/source_health/ui/source_card.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
 import 'package:kartka/source_health/ui/source_line_mark.dart';
+import 'package:kartka/source_health/ui/source_sheets.dart';
+import 'package:kartka/source_health/ui/source_tile.dart';
 import 'package:kartka/source_health/ui/sources_tab.dart';
 
 void main() {

@@ -1,16 +1,19 @@
 import 'dart:async';
 
-import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/app/fit_pages.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/ui/update_progress_strip.dart';
 import 'package:kartka/updates/state/updates_controller.dart';
 import 'package:kartka/updates/state/updates_deps.dart';
-import 'package:kartka/updates/ui/update_row_tiles.dart';
+import 'package:kartka/updates/ui/update_groups.dart';
+import 'package:kartka/updates/ui/update_sheet.dart';
 import 'package:kartka/updates/ui/update_summary_mark.dart';
+import 'package:kartka/updates/ui/update_tile.dart';
 
-/// The Updates tab: new chapters of library manga by day, then manga, with
-/// "update all" on the refresh action and on pull.
+/// The Updates tab: one tile per manga with new chapters, newest first, in a
+/// grid that fits the screen (more pages sideways); a tile opens a sheet
+/// with its chapters. "Update all" is on the refresh action and on pull.
 class UpdatesScreen extends StatefulWidget {
   /// Creates the tab over [deps].
   const new({required this.deps, super.key});
@@ -58,12 +61,26 @@ class _UpdatesScreenState extends State<UpdatesScreen> {
         ),
       );
     }
-    return ListView.builder(
-      physics: physics,
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
-      itemCount: rows.length,
-      itemBuilder: (context, i) =>
-          updateRowTile(context, rows[i], widget.deps.coverLoader),
+    final groups = groupByManga(rows);
+    // Scrollable (but never scrolling) so the grid can be pulled too.
+    return LayoutBuilder(
+      builder: (context, box) => SingleChildScrollView(
+        physics: physics,
+        child: SizedBox(
+          height: box.maxHeight,
+          child: FitPages(
+            itemCount: groups.length,
+            labelHeight: updateTileLabelHeight,
+            itemBuilder: (context, i) => UpdateTile(
+              group: groups[i],
+              covers: widget.deps.coverLoader,
+              onTap: () => unawaited(
+                showUpdateSheet(context, groups[i], widget.deps.coverLoader),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

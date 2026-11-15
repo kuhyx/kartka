@@ -15,11 +15,10 @@ class SourceGroup {
   final List<SourceRef> sources;
 }
 
-/// Groups [sources] by origin (in [SourceOrigin] declaration order, empty
-/// groups omitted) and orders each group: ranked sources by ascending rank,
-/// then unranked ones; ties broken by case-insensitive name, then id, so the
+/// [sources] in display order: ranked sources by ascending rank, then
+/// unranked ones; ties broken by case-insensitive name, then id, so the
 /// order is total and stable across rebuilds.
-List<SourceGroup> groupSources(
+List<SourceRef> orderSources(
   Iterable<SourceRef> sources,
   Map<String, SourceHealthSummary> health,
 ) {
@@ -35,10 +34,17 @@ List<SourceGroup> groupSources(
     return byName != 0 ? byName : a.id.compareTo(b.id);
   }
 
-  return [
-    for (final origin in SourceOrigin.values)
-      if (sources.where((s) => s.origin == origin).toList() case final group
-          when group.isNotEmpty)
-        SourceGroup(origin, group..sort(compare)),
-  ];
+  return sources.toList()..sort(compare);
 }
+
+/// Groups [sources] by origin (in [SourceOrigin] declaration order, empty
+/// groups omitted), each group in [orderSources] order.
+List<SourceGroup> groupSources(
+  Iterable<SourceRef> sources,
+  Map<String, SourceHealthSummary> health,
+) => [
+  for (final origin in SourceOrigin.values)
+    if (orderSources(sources.where((s) => s.origin == origin), health)
+        case final group when group.isNotEmpty)
+      SourceGroup(origin, group),
+];

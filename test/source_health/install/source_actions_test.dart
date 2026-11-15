@@ -15,6 +15,7 @@ import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 import '../../helpers/spoken_icon.dart';
 import '../../plugins/runtime/support.dart' as plugin_support;
 import '../../sources/suwayomi/fakes.dart';
+import '../ui/harness.dart';
 import 'harness.dart';
 
 const _weebcentral = 'eu.kanade.tachiyomi.extension.en.weebcentral';
@@ -108,8 +109,10 @@ void main() {
     ];
     await pumpTabWith(tester, rig, records);
     for (final r in records) {
+      await openCard(tester, r.id);
       expect(installOf(r.id), findsNothing, reason: r.id);
       await tester.tap(openOf(r.id));
+      await closeSheet(tester);
     }
     expect(rig.opened, [for (final r in records) r.id]);
   });

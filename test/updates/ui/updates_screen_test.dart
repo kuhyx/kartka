@@ -11,6 +11,7 @@ import 'package:kartka/library/ports.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/updates/data/update_feed.dart';
 import 'package:kartka/updates/state/updates_deps.dart';
+import 'package:kartka/updates/ui/update_tile.dart';
 import 'package:kartka/updates/ui/updates_screen.dart';
 
 import '../../helpers/fake_updater.dart';
@@ -90,27 +91,64 @@ Future<_H> _pump(
 }
 
 void main() {
-  testWidgets('feed grouped by day and manga, unread dot', (t) async {
+  testWidgets('one tile per manga: title, unread count, cover', (t) async {
     final h = await _pump(t);
-    expect(spokenIcon('Today'), findsOneWidget);
+    expect(find.byType(UpdateTile), findsOneWidget);
     expect(find.text('Akira'), findsOneWidget);
-    expect(find.text('Ch. 4'), findsOneWidget);
-    expect(find.text('Ch. 3'), findsOneWidget);
-    expect(find.byKey(const ValueKey('unread /c/4')), findsOneWidget);
-    expect(find.byKey(const ValueKey('unread /c/3')), findsNothing);
+    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Ch. 4'), findsNothing);
     expect(h.covers, ['https://x.test/a.jpg']);
   });
 
-  testWidgets('tapping a chapter opens the reader on it', (t) async {
+  testWidgets('a fully read manga has no count', (t) async {
+    final h = await _pump(t);
+    await h.repos.progress.markRead(_a.key, '/c/4');
+    await t.pumpAndSettle();
+    expect(find.text('Akira'), findsOneWidget);
+    expect(find.text('1'), findsNothing);
+  });
+
+  testWidgets('the sheet lists chapters by day with unread dots', (t) async {
     await _pump(t);
+    await t.tap(find.byType(UpdateTile));
+    await t.pumpAndSettle();
+    expect(spokenIcon('Today'), findsOneWidget);
+    expect(find.text('Ch. 4'), findsOneWidget);
+    expect(find.text('Ch. 3'), findsOneWidget);
+    expect(spokenIcon('Open manga'), findsOneWidget);
+    expect(find.byKey(const ValueKey('unread /c/4')), findsOneWidget);
+    expect(find.byKey(const ValueKey('unread /c/3')), findsNothing);
+  });
+
+  testWidgets('tapping a chapter in the sheet opens the reader', (t) async {
+    await _pump(t);
+    await t.tap(find.byType(UpdateTile));
+    await t.pumpAndSettle();
     await t.tap(find.text('Ch. 4'));
     await t.pumpAndSettle();
     expect(find.text('reader mangadex /a /c/4'), findsOneWidget);
+    expect(spokenIcon('Open manga'), findsNothing);
   });
 
-  testWidgets('tapping the manga header opens its detail page', (t) async {
+  testWidgets('"Open manga" in the sheet opens its detail page', (t) async {
     await _pump(t);
-    await t.tap(find.text('Akira'));
+    await t.tap(find.byType(UpdateTile));
+    await t.pumpAndSettle();
+    await t.tap(spokenIcon('Open manga'));
+    await t.pumpAndSettle();
+    expect(find.text('detail mangadex /a'), findsOneWidget);
+  });
+
+  testWidgets('the sheet heading opens the detail page too', (t) async {
+    await _pump(t);
+    await t.tap(find.byType(UpdateTile));
+    await t.pumpAndSettle();
+    await t.tap(
+      find.descendant(
+        of: find.byType(BottomSheet),
+        matching: find.text('Akira'),
+      ),
+    );
     await t.pumpAndSettle();
     expect(find.text('detail mangadex /a'), findsOneWidget);
   });
@@ -118,6 +156,9 @@ void main() {
   testWidgets('new feed entries appear live', (t) async {
     final h = await _pump(t);
     await h.feed.record(_a.key, [_ch(5)]);
+    await t.pumpAndSettle();
+    expect(find.text('2'), findsOneWidget);
+    await t.tap(find.byType(UpdateTile));
     await t.pumpAndSettle();
     expect(find.text('Ch. 5'), findsOneWidget);
   });
@@ -133,6 +174,13 @@ void main() {
     await t.fling(spokenIcon('No updates yet'), const Offset(0, 400), 1000);
     await t.pumpAndSettle();
     expect(h.updater.calls, 2);
+  });
+
+  testWidgets('pulling the grid runs update-all', (t) async {
+    final h = await _pump(t);
+    await t.fling(find.byType(UpdateTile), const Offset(0, 400), 1000);
+    await t.pumpAndSettle();
+    expect(h.updater.calls, 1);
   });
 
   testWidgets('progress of a run shows under the bar', (t) async {
@@ -158,7 +206,7 @@ void main() {
 
   testWidgets('no updater: no refresh action, no pull', (t) async {
     await _pump(t, withUpdater: false);
-    expect(find.text('Ch. 4'), findsOneWidget);
+    expect(find.text('Akira'), findsOneWidget);
     expect(spokenIcon('Check for updates'), findsNothing);
     expect(find.byType(RefreshIndicator), findsNothing);
   });

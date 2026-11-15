@@ -11,6 +11,7 @@ import 'package:kartka/browse/ports/browse_unread_counts.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
+import 'package:kartka/browse/state/browse_shown_store.dart';
 import 'package:kartka/browse/state/chapter_sort_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/state/detail_store.dart';
@@ -148,6 +149,7 @@ class BrowseRuntime {
       final kv = syncedKv(_env);
       return ChapterSortStore(kv, reloadOn: kv.remoteChanges);
     }(),
+    shown: BrowseShownStore(_env.platform.kv),
   );
 
   /// The unread-count port implementation.

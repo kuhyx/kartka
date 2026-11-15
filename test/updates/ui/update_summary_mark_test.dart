@@ -48,7 +48,9 @@ void main() {
     for (final label in ['Today', 'Yesterday']) {
       await _show(
         t,
-        Builder(builder: (c) => updateRowTile(c, DayRow(label), null)),
+        Builder(
+          builder: (c) => updateRowTile(c, DayRow(label), null, open: (_) {}),
+        ),
       );
       expect(spokenIcon(label), findsOneWidget);
       expect(find.text(label), findsNothing);
@@ -56,7 +58,8 @@ void main() {
     await _show(
       t,
       Builder(
-        builder: (c) => updateRowTile(c, const DayRow('2026-01-02'), null),
+        builder: (c) =>
+            updateRowTile(c, const DayRow('2026-01-02'), null, open: (_) {}),
       ),
     );
     expect(find.text('2026-01-02'), findsOneWidget);

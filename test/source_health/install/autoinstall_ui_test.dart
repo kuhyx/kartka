@@ -36,6 +36,7 @@ void main() {
     feed.meta.add(null);
     ids.add({'suwayomi:1', 'suwayomi:2'});
     await tester.pump();
+    await openFilters(tester);
     expect(find.byKey(const Key('autoinstall-status')), findsNothing);
     expect(find.byKey(const Key('migrate-better')), findsNothing);
 
@@ -49,8 +50,12 @@ void main() {
     for (final n in ['2', '1']) {
       expect(find.descendant(of: status, matching: find.text(n)), findsOne);
     }
+    await closeSheet(tester);
+    await openCard(tester, 'suwayomi:1');
     expect(find.byKey(const ValueKey('open-suwayomi:1')), findsOne);
     expect(spokenIcon('Installed — test failed: no titles'), findsOne);
+    await closeSheet(tester);
+    await openCard(tester, 'suwayomi:2');
     expect(
       find.byKey(const ValueKey('autoinstall-flag-suwayomi:2')),
       findsNothing,
@@ -69,7 +74,10 @@ void main() {
     feed.controller.add([keepRecord('suwayomi:1')]);
     feed.meta.add(null);
     await tester.pump();
+    await openFilters(tester);
     await tester.tap(find.byKey(const Key('migrate-better')));
+    await tester.pumpAndSettle();
     expect(opened, isNotNull);
+    expect(find.byKey(const Key('migrate-better')), findsNothing);
   });
 }

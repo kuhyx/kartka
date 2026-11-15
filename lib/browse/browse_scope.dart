@@ -5,6 +5,7 @@ import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
+import 'package:kartka/browse/state/browse_shown_store.dart';
 import 'package:kartka/browse/state/chapter_sort_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
 import 'package:kartka/browse/state/detail_store.dart';
@@ -26,6 +27,7 @@ class BrowseDeps {
   /// buttons; no [downloadService] → no cancel / delete buttons; no
   /// [coverLoader] → placeholder covers; no [updates] → a checker over
   /// [chapters]; no [chapterSort] → an unsaved "Unread first" choice; no
+  /// [shown] → an unsaved language-chip choice; no
   /// [details] → a reopen shows only the library entry until the network.
   new({
     required this.sources,
@@ -42,11 +44,13 @@ class BrowseDeps {
     this.diagnostics,
     ChapterUpdateChecker? updates,
     ChapterSortStore? chapterSort,
+    BrowseShownStore? shown,
     this.details = const DetailStore(null),
     DateTime Function()? clock,
   }) : clock = clock ?? DateTime.now,
        updates = updates ?? StoreChapterUpdateChecker(chapters),
-       chapterSort = chapterSort ?? ChapterSortStore(null);
+       chapterSort = chapterSort ?? ChapterSortStore(null),
+       shown = shown ?? BrowseShownStore(null);
 
   /// Live source list.
   final SourceRegistry sources;
@@ -91,6 +95,9 @@ class BrowseDeps {
 
   /// The global "Unread first" chapter sort.
   final ChapterSortStore chapterSort;
+
+  /// The language chip the Browse grid shows, kept per device.
+  final BrowseShownStore shown;
 
   /// Last fetched details per library manga (the instant detail header).
   final DetailStore details;

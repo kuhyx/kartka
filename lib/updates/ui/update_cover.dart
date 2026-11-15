@@ -14,13 +14,21 @@ const updateCoverSize = Size(updateCoverWidth, updateCoverWidth * 1.5);
 /// placeholder while loading, on failure, or without a url or loader.
 class UpdateCover extends StatefulWidget {
   /// Creates the thumbnail of [url].
-  const new({required this.url, required this.loader, super.key});
+  const new({
+    required this.url,
+    required this.loader,
+    this.size = updateCoverSize,
+    super.key,
+  });
 
   /// Cover url.
   final String? url;
 
   /// Byte loader.
   final CoverBytes? loader;
+
+  /// Displayed size (the heading thumbnail by default).
+  final Size size;
 
   @override
   State<UpdateCover> createState() => _UpdateCoverState();
@@ -57,12 +65,11 @@ class _UpdateCoverState extends State<UpdateCover> {
     );
     final bytes = _bytes;
     final cacheWidth =
-        (updateCoverSize.width * MediaQuery.devicePixelRatioOf(context))
-            .round();
+        (widget.size.width * MediaQuery.devicePixelRatioOf(context)).round();
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadius.sm),
       child: SizedBox.fromSize(
-        size: updateCoverSize,
+        size: widget.size,
         child: bytes == null
             ? placeholder
             : FutureBuilder<Uint8List>(

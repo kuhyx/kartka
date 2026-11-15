@@ -4,6 +4,20 @@ import 'package:kartka/library/state/library_deps.dart';
 import 'package:kartka/library/state/library_item.dart';
 import 'package:kartka/library/ui/library_cover.dart';
 
+/// Height of a cell's one-line title row, from the real font and text
+/// scale (the test font differs from Roboto, so no fixed number fits both).
+double libraryLabelHeight(BuildContext context) {
+  final painter = TextPainter(
+    text: TextSpan(text: 'Ag', style: Theme.of(context).textTheme.labelLarge),
+    textScaler: MediaQuery.textScalerOf(context),
+    textDirection: TextDirection.ltr,
+    maxLines: 1,
+  )..layout();
+  final height = painter.height;
+  painter.dispose();
+  return height + 2 * AppSpacing.sm;
+}
+
 /// One cover in the Library grid: title, unread badge, selection state.
 ///
 /// A focus stop with a visible accent ring; Enter/Space activate [onTap],
@@ -106,7 +120,7 @@ class _LibraryCellState extends State<LibraryCell> {
                 padding: const EdgeInsets.all(AppSpacing.sm),
                 child: Text(
                   item.title,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelLarge,
                 ),

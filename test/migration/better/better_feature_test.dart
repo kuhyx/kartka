@@ -107,6 +107,8 @@ void main() {
   testWidgets('the Sources tab links the screen', (t) async {
     final r = await _registry();
     await _pump(t, r, r.tab(KartkaTab.sources)!);
+    await t.tap(find.byKey(const Key('open-filters')));
+    await _settle(t);
     await t.tap(find.byKey(const Key('migrate-better')));
     await _settle(t);
     expect(find.byType(BetterSourcesScreen), findsOne);

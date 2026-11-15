@@ -78,6 +78,9 @@ void main() {
       'mangadex': SourceHealthSummary(rank: 4, verdict: HealthVerdict.keep),
     };
     await _pumpApp(t, _registry(health: const FakeHealth(ranks)), '/');
+    expect(find.text('badge:keep'), findsOneWidget);
+    await t.longPress(find.text('MangaDex'));
+    await t.pumpAndSettle();
     expect(find.text('EN · #4'), findsOneWidget);
     await t.pumpWidget(const SizedBox());
     await t.pump(const Duration(minutes: 2)); // The shared linger timer.

@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:kartka/app/fit_pages.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
@@ -10,14 +11,11 @@ import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ranking.dart';
 import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/scoring/profile_store.dart';
-import 'package:kartka/source_health/ui/counts_header.dart';
-import 'package:kartka/source_health/ui/filter_bar.dart';
+import 'package:kartka/source_health/ui/filters_sheet.dart';
 import 'package:kartka/source_health/ui/freshness_banner.dart';
-import 'package:kartka/source_health/ui/keep_actions_bar.dart';
-import 'package:kartka/source_health/ui/query_bar.dart';
-import 'package:kartka/source_health/ui/scoring_page.dart';
-import 'package:kartka/source_health/ui/source_card.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
+import 'package:kartka/source_health/ui/source_sheets.dart';
+import 'package:kartka/source_health/ui/source_tile.dart';
 
 /// The Sources tab: the evaluator's ranking with every metric, searchable,
 /// sortable and filterable, live from [feed].
@@ -59,13 +57,15 @@ class _SourcesTabState extends State<SourcesTab> {
   late final Stream<List<SourceHealthRecord>> _records = widget.feed.watch();
   late final Stream<SourceHealthMeta?> _meta = widget.feed.watchMeta();
   // Owned here, not by the field: the query must survive the field being
-  // rebuilt (and the text must stay in step with it).
+  // rebuilt (and the text must stay in step with it). A notifier, so the
+  // filters sheet edits the same query the grid reads.
   final _search = TextEditingController();
-  HealthQuery _query = const HealthQuery();
+  final _query = ValueNotifier<HealthQuery>(const HealthQuery());
 
   @override
   void dispose() {
     _search.dispose();
+    _query.dispose();
     super.dispose();
   }
 
@@ -73,11 +73,11 @@ class _SourcesTabState extends State<SourcesTab> {
       widget.scoring?.profile.value ?? defaultScoringProfile;
 
   void _setSearch(String text) =>
-      setState(() => _query = _query.copyWith(search: text));
+      _query.value = _query.value.copyWith(search: text);
 
   // The meta builder is outermost so its (possibly single-subscription)
   // stream is listened to once, whatever the records stream does. A meta
-  // read error only costs the header its run totals.
+  // read error only costs the sheet its run totals.
   @override
   Widget build(BuildContext context) => StreamBuilder<SourceHealthMeta?>(
     stream: _meta,
@@ -96,52 +96,59 @@ class _SourcesTabState extends State<SourcesTab> {
           );
         }
         final meta = metaSnap.hasError ? null : metaSnap.data;
-        return _ranking(context, records, meta);
+        return ValueListenableBuilder<HealthQuery>(
+          valueListenable: _query,
+          builder: (context, q, _) => _ranking(context, records, meta, q),
+        );
       },
     ),
   );
 
-  Widget _ranking(
-    BuildContext context,
-    List<SourceHealthRecord> records,
-    SourceHealthMeta? meta,
-  ) {
-    final shown = _query.apply(records);
-    String? nameOf(String id) {
-      for (final r in records) {
-        if (r.id == id) return r.name;
-      }
-      return null;
-    }
-
-    void open(String id) {
-      final target = records.firstWhere((r) => r.id == id);
+  void _open(BuildContext context, List<SourceHealthRecord> all, String id) =>
       Navigator.of(context).push(
         MaterialPageRoute<void>(
           builder: (_) => SourceDetailPage(
-            record: target,
-            all: records,
+            record: all.firstWhere((r) => r.id == id),
+            all: all,
             now: widget.clock(),
             profile: _profile,
             installs: widget.installs,
           ),
         ),
       );
-    }
 
-    void edit(HealthQuery q) => setState(() => _query = q);
-    final header = <Widget>[
-      FreshnessBanner(at: lastEvaluated(records), now: widget.clock()),
-      QueryBar(
-        query: _query,
-        langs: langsOf(records),
-        origins: originsOf(records),
-        onChanged: edit,
-      ),
-      FilterBar(query: _query, onChanged: edit),
-      if (shown.isEmpty)
-        const EmptyMark(icon: Icons.filter_list_off, semanticLabel: 'No match'),
-    ];
+  void _menu(BuildContext context, List<SourceHealthRecord> all, String id) =>
+      showSourceSheet(
+        context,
+        all: all,
+        id: id,
+        keepScore: _profile.keepScore,
+        installs: widget.installs,
+        onOpen: (target) => _open(context, all, target),
+      );
+
+  void _filters(
+    BuildContext context,
+    List<SourceHealthRecord> all,
+    SourceHealthMeta? meta,
+  ) => showFiltersSheet(
+    context,
+    records: all,
+    meta: meta,
+    query: _query,
+    now: widget.clock(),
+    scoring: widget.scoring,
+    autoInstall: widget.autoInstall,
+    onMigrate: widget.onMigrate,
+  );
+
+  Widget _ranking(
+    BuildContext context,
+    List<SourceHealthRecord> records,
+    SourceHealthMeta? meta,
+    HealthQuery q,
+  ) {
+    final shown = q.apply(records);
     return Column(
       children: [
         Padding(
@@ -149,58 +156,50 @@ class _SourcesTabState extends State<SourcesTab> {
             AppSpacing.md,
             AppSpacing.md,
             AppSpacing.md,
-            0,
+            AppSpacing.sm,
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: AppSpacing.sm,
             children: [
-              _searchField(),
-              if (widget.scoring case final store?) _scoringButton(store),
-              KeepActionsBar(
-                autoInstall: widget.autoInstall,
-                onMigrate: widget.onMigrate,
+              Row(
+                spacing: AppSpacing.sm,
+                children: [
+                  Expanded(child: _searchField()),
+                  FiltersButton(
+                    query: q,
+                    onPressed: () => _filters(context, records, meta),
+                  ),
+                ],
               ),
-              CountsHeader(records: records, meta: meta, showing: shown.length),
+              FreshnessBanner(
+                at: lastEvaluated(records),
+                now: widget.clock(),
+                compact: true,
+              ),
             ],
           ),
         ),
         Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            itemCount: header.length + shown.length,
-            separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-            itemBuilder: (_, i) => i < header.length
-                ? header[i]
-                : SourceCard(
-                    record: shown[i - header.length],
-                    onOpen: open,
-                    nameOf: nameOf,
-                    keepScore: _profile.keepScore,
-                    installs: widget.installs,
+          child: shown.isEmpty
+              ? const EmptyMark(
+                  icon: Icons.filter_list_off,
+                  semanticLabel: 'No match',
+                )
+              : FitPages(
+                  columns: 2,
+                  minSquare: 0.45,
+                  itemCount: shown.length,
+                  itemBuilder: (_, i) => SourceTile(
+                    record: shown[i],
+                    onOpen: () => _open(context, records, shown[i].id),
+                    onMenu: () => _menu(context, records, shown[i].id),
                   ),
-          ),
+                ),
         ),
       ],
     );
   }
-
-  Widget _scoringButton(ScoringProfileStore store) => Align(
-    alignment: Alignment.centerLeft,
-    child: ValueListenableBuilder<ScoringProfile>(
-      valueListenable: store.profile,
-      builder: (context, p, _) => IconButton.outlined(
-        key: const Key('open-scoring'),
-        style: IconButton.styleFrom(minimumSize: const Size.square(48)),
-        icon: Icon(
-          p.isDefault ? Icons.tune : Icons.sync,
-          semanticLabel: 'Scoring: ${p.name}',
-        ),
-        onPressed: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => ScoringPage(store: store)),
-        ),
-      ),
-    ),
-  );
 
   Widget _searchField() => TextField(
     key: const Key('search'),

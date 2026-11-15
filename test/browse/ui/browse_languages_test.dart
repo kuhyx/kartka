@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
+import 'package:kartka/browse/state/browse_shown_store.dart';
 import 'package:kartka/browse/ui/browse_tab.dart';
 import 'package:kartka/browse/ui/language_mark.dart';
 import 'package:kartka/core/models/models.dart';
@@ -26,19 +27,18 @@ void main() {
     FakeSource('mangadex', name: 'MangaDex'),
   ];
 
-  // A source name is painted; a language heading only speaks its name.
-  double y(WidgetTester t, String text) {
-    final painted = find.text(text);
-    final f = painted.evaluate().isEmpty ? spokenContaining(text) : painted;
-    return t.getTopLeft(f).dy;
-  }
+  // The chips in order: '*' for All, else the bucket.
+  List<String> chips(WidgetTester t) => [
+    for (final c in t.widgetList<ChoiceChip>(find.byType(ChoiceChip)))
+      switch (c.label) {
+        final LanguageMark m => m.bucket,
+        _ => '*',
+      },
+  ];
 
-  // Tall enough that every section is built (ListView builds lazily).
-  void tall(WidgetTester t) {
-    t.view
-      ..physicalSize = const Size(800, 2400)
-      ..devicePixelRatio = 1;
-    addTearDown(t.view.reset);
+  Future<void> tapChip(WidgetTester t, String key) async {
+    await t.tap(find.byKey(ValueKey(key)));
+    await t.pumpAndSettle();
   }
 
   Future<void> openPicker(WidgetTester t) async {
@@ -46,24 +46,68 @@ void main() {
     await t.pumpAndSettle();
   }
 
-  testWidgets('unset: only en, all/multi, ja are shown, in that order', (
+  testWidgets('unset: All, then en, all/multi, ja chips; each its own grid', (
     t,
   ) async {
-    tall(t);
     final h = Harness(sources: mixed());
     await h.pump(t, const BrowseTab());
+    expect(chips(t), ['*', 'en', 'all', 'ja']);
     expect(find.text('Polski'), findsNothing);
-    expect(y(t, 'English'), lessThan(y(t, 'MangaDex')));
-    expect(y(t, 'MangaDex'), lessThan(y(t, 'All languages')));
-    expect(y(t, 'All languages'), lessThan(y(t, 'Everything')));
-    expect(y(t, 'Everything'), lessThan(y(t, 'Multi')));
-    expect(y(t, 'Multi'), lessThan(y(t, 'Japanese')));
-    expect(y(t, 'Japanese'), lessThan(y(t, 'Raw JP')));
+    for (final n in ['MangaDex', 'Everything', 'Multi', 'Raw JP']) {
+      expect(find.text(n), findsOneWidget);
+    }
+    await tapChip(t, 'lang-chip-all');
+    expect(find.text('MangaDex'), findsNothing);
+    expect(find.text('Everything'), findsOneWidget);
+    expect(find.text('Multi'), findsOneWidget);
+    await tapChip(t, 'lang-chip-ja');
+    expect(find.text('Raw JP'), findsOneWidget);
+    expect(find.text('Multi'), findsNothing);
+    await tapChip(t, 'lang-chip-*');
+    expect(find.text('MangaDex'), findsOneWidget);
+  });
+
+  testWidgets('the chip choice is remembered across remounts and restarts', (
+    t,
+  ) async {
+    final kv = MemoryKeyValueStore();
+    final h = Harness(sources: mixed(), shown: BrowseShownStore(kv));
+    await h.pump(t, const BrowseTab());
+    await tapChip(t, 'lang-chip-ja');
+    expect(await kv.get(BrowseShownStore.storageKey), 'ja');
+    await t.pumpWidget(const SizedBox());
+    await h.pump(t, const BrowseTab());
+    expect(find.text('MangaDex'), findsNothing);
+    expect(find.text('Raw JP'), findsOneWidget);
+
+    final fresh = BrowseShownStore(kv);
+    await fresh.ready;
+    expect(fresh.value, 'ja');
+    await fresh.set(null);
+    expect(await kv.get(BrowseShownStore.storageKey), isNull);
+  });
+
+  testWidgets('a remembered language without sources falls back to All', (
+    t,
+  ) async {
+    final kv = MemoryKeyValueStore({BrowseShownStore.storageKey: 'ko'});
+    final shown = BrowseShownStore(kv);
+    await shown.ready;
+    final h = Harness(sources: mixed(), shown: shown);
+    await h.pump(t, const BrowseTab());
+    expect(find.text('MangaDex'), findsOneWidget);
+    final all = t.widget<ChoiceChip>(find.byKey(const ValueKey('lang-chip-*')));
+    expect(all.selected, isTrue);
+  });
+
+  testWidgets('an in-memory choice is kept without a store', (t) async {
+    final shown = BrowseShownStore(null);
+    await shown.set('ja');
+    expect(shown.value, 'ja');
   });
 
   testWidgets('the picker lists present languages with counts, selected '
       'first; toggling shows and hides sources and persists', (t) async {
-    tall(t);
     final kv = MemoryKeyValueStore();
     final h = Harness(sources: mixed(), languages: BrowseLanguageStore(kv));
     await h.pump(t, const BrowseTab());
@@ -87,10 +131,6 @@ void main() {
     expect(count('2', '2 sources'), findsOneWidget);
     expect(count('1', '1 source'), findsNWidgets(3));
 
-    expect(
-      find.descendant(of: dialog, matching: spokenIcon('All languages')),
-      findsOne,
-    );
     await t.tap(find.descendant(of: dialog, matching: find.text('PL')));
     await t.tap(find.descendant(of: dialog, matching: find.text('EN')));
     await t.pumpAndSettle();
@@ -98,8 +138,10 @@ void main() {
     await t.tap(spokenIcon('Done'));
     await t.pumpAndSettle();
     expect(find.text('Polski'), findsOneWidget);
+    expect(chips(t), ['*', 'all', 'ja', 'pl']);
+    await tapChip(t, 'lang-chip-pl');
+    expect(find.text('Polski'), findsOneWidget);
     expect(find.text('MangaDex'), findsNothing);
-    expect(y(t, 'Raw JP'), lessThan(y(t, 'Polski')));
     expect(jsonDecode((await kv.get(BrowseLanguageStore.storageKey))!), [
       'all',
       'ja',
@@ -121,6 +163,14 @@ void main() {
     await h.pump(t, const BrowseTab());
     expect(spokenIcon('No sources in your languages'), findsOneWidget);
     expect(spokenIcon('No sources'), findsNothing);
+  });
+
+  testWidgets('the + chip opens the picker too', (t) async {
+    final h = Harness(sources: mixed());
+    await h.pump(t, const BrowseTab());
+    await t.tap(find.byKey(const ValueKey('lang-add')));
+    await t.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsOneWidget);
   });
 
   testWidgets('the picker with no sources installed says so', (t) async {

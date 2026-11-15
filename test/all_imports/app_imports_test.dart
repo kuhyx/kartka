@@ -6,6 +6,7 @@ import 'package:kartka/app/app.dart';
 import 'package:kartka/app/cached_cover.dart';
 import 'package:kartka/app/error_hooks.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/app/fit_pages.dart';
 import 'package:kartka/app/redacted_logging.dart';
 import 'package:kartka/app/registry.dart';
 import 'package:kartka/app/routes.dart';

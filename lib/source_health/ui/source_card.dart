@@ -16,8 +16,9 @@ import 'package:kartka/source_health/ui/source_line_mark.dart';
 /// Opens the detail page of the source with this id.
 typedef OpenSource = void Function(String sourceId);
 
-/// One row of the ranking: rank, name, verdict, score, every metric and the
-/// cut reasons in plain words. Activating it opens the detail page.
+/// The full card of one source, shown by the tile's long-press sheet: rank,
+/// name, verdict, score, every metric and the cut reasons in plain words.
+/// Activating it opens the detail page.
 class SourceCard extends StatelessWidget {
   /// Creates a card for [record].
   new({
@@ -26,7 +27,7 @@ class SourceCard extends StatelessWidget {
     required this.nameOf,
     this.keepScore = kDefaultKeepScore,
     this.installs,
-  }) : super(key: ValueKey('source-${record.id}'));
+  }) : super(key: ValueKey('source-card-${record.id}'));
 
   /// Install / Open state; null shows no action button.
   final SourceInstalls? installs;

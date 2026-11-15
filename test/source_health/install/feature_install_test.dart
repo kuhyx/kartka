@@ -71,10 +71,15 @@ void main() {
     for (var i = 0; i < 4; i++) {
       await tester.pump();
     }
+    await openCard(tester, 'suwayomi:42');
     expect(installOf('suwayomi:42'), findsOne);
+    await closeSheet(tester);
     // No plugin installer is registered, so the plugin source only opens.
+    await openCard(tester, 'plugin:demo');
     expect(installOf('plugin:demo'), findsNothing);
     expect(openOf('plugin:demo'), findsOne);
+    await closeSheet(tester);
+    await openCard(tester, 'mangadex');
     await tester.tap(openOf('mangadex'));
     await tester.pumpAndSettle();
     expect(find.text('browsing mangadex'), findsOne);

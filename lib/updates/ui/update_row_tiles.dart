@@ -1,6 +1,5 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/updates/state/update_rows.dart';
@@ -15,8 +14,14 @@ const Map<String, IconData> _dayIcons = {
 };
 
 /// The widget for one [row]: a day heading, a manga heading that opens the
-/// detail page, or a chapter that opens the reader on it.
-Widget updateRowTile(BuildContext context, UpdateRow row, CoverBytes? covers) {
+/// detail page, or a chapter that opens the reader on it. Both open through
+/// [open] with the route to go to.
+Widget updateRowTile(
+  BuildContext context,
+  UpdateRow row,
+  CoverBytes? covers, {
+  required void Function(String route) open,
+}) {
   final theme = Theme.of(context);
   switch (row) {
     case DayRow(:final label):
@@ -43,7 +48,7 @@ Widget updateRowTile(BuildContext context, UpdateRow row, CoverBytes? covers) {
       return ListTile(
         leading: UpdateCover(url: entry.coverUrl, loader: covers),
         title: Text(entry.title, maxLines: 2, overflow: TextOverflow.ellipsis),
-        onTap: () => context.push(mangaRoute(entry.sourceId, entry.mangaUrl)),
+        onTap: () => open(mangaRoute(entry.sourceId, entry.mangaUrl)),
       );
     case ChapterRow(:final entry, :final chapter, :final unread):
       return ListTile(
@@ -61,9 +66,8 @@ Widget updateRowTile(BuildContext context, UpdateRow row, CoverBytes? covers) {
         trailing: unread
             ? _UnreadDot(key: ValueKey('unread ${chapter.url}'))
             : null,
-        onTap: () => context.push(
-          readRoute(entry.sourceId, entry.mangaUrl, chapter.url),
-        ),
+        onTap: () =>
+            open(readRoute(entry.sourceId, entry.mangaUrl, chapter.url)),
       );
   }
 }

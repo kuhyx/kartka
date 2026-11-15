@@ -96,8 +96,12 @@ void main() {
     router.go('/');
     await t.pumpAndSettle();
     expect(find.text('Monster'), findsOneWidget);
+    await t.tap(find.text('Monster'));
+    await t.pumpAndSettle();
     expect(find.text('Ch. 3'), findsOneWidget);
     expect(find.text('Ch. 4'), findsOneWidget);
+    await t.tapAt(const Offset(10, 10)); // Dismiss the sheet.
+    await t.pumpAndSettle();
 
     // The baseline moved, so update-all finds nothing new now.
     await t.tap(spokenIcon('Check for updates'));

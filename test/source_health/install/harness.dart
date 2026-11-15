@@ -57,12 +57,14 @@ class InstallRig {
   Future<List<DiagnosticEntry>> entries() => log.entries();
 }
 
-/// The Sources tab showing [records] with [rig]'s actions.
+/// The Sources tab showing [records] with [rig]'s actions. The actions live
+/// on the long-press sheet, which is opened for a lone record (or [card]).
 Future<void> pumpTabWith(
   WidgetTester tester,
   InstallRig rig,
   List<SourceHealthRecord> records, {
   Set<String> installed = const {},
+  String? card,
 }) async {
   tallSurface(tester);
   final feed = ControlledFeed();
@@ -72,6 +74,8 @@ Future<void> pumpTabWith(
   rig.ids.add(installed);
   await tester.pump();
   await tester.pump();
+  final shown = card ?? (records.length == 1 ? records.single.id : null);
+  if (shown != null) await openCard(tester, shown);
 }
 
 /// [record]'s detail page with [rig]'s actions.

@@ -49,13 +49,16 @@ void main() {
       'mangadex',
       'suwayomi:2499283573021220255',
     ]);
+    await openFilters(tester);
     expect(counts(tester), endsWith('showing 2'));
+    await closeSheet(tester);
     await typeSearch(tester, 'CLOUDFLARE');
     expect(cardOrder(tester, _ids), ['plugin:comick']);
     await tester.tap(spokenIcon('Clear search'));
     await tester.pumpAndSettle();
     expect(cardOrder(tester, _ids), hasLength(6));
     expect(spokenIcon('Clear search'), findsNothing);
+    await openFilters(tester);
     expect(counts(tester), endsWith('showing 6'));
   });
 
@@ -74,6 +77,7 @@ void main() {
     tester,
   ) async {
     await pumpTab(tester);
+    await openFilters(tester);
     await tester.tap(_reason(HealthReason.coverage));
     await tester.pumpAndSettle();
     expect(cardOrder(tester, _ids), ['suwayomi:1111', 'plugin:comick']);
@@ -92,12 +96,15 @@ void main() {
 
   testWidgets('minimum score slider combines with search', (tester) async {
     await pumpTab(tester);
+    await openFilters(tester);
     expect(spokenIcon('Min score'), findsOne);
     expect(find.text('0.00'), findsOne);
     await setMinScore(tester, 0.85);
     expect(find.text('0.85'), findsWidgets);
     expect(cardOrder(tester, _ids), ['mangadex', 'local']);
+    await closeSheet(tester);
     await typeSearch(tester, 'local');
+    await openFilters(tester);
     expect(cardOrder(tester, _ids), ['local']);
     expect(counts(tester), endsWith('showing 1'));
   });
