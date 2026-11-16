@@ -22,6 +22,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://achymanga.online",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:2311891545723109443",
+  "installed": false,
+  "lang": "en",
+  "name": "AchyManga",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.achymanga"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://ahottie.top",
   "catalogs": [
    "keiyoushi"
@@ -32,6 +49,74 @@
   "name": "AHottie",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.all.ahottie"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://ahri-gallery.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:6328598225352606131",
+  "installed": false,
+  "lang": "all",
+  "name": "Ahri Gallery",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.ahrigallery"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://ahri-gallery.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:1960348568282192357",
+  "installed": false,
+  "lang": "ja",
+  "name": "Ahri Gallery",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.ahrigallery"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://ahri-gallery.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:4258304358617590905",
+  "installed": false,
+  "lang": "en",
+  "name": "Ahri Gallery",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.ahrigallery"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://airibox.top",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:8745980356692752458",
+  "installed": false,
+  "lang": "all",
+  "name": "Airibox",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.airibox"
  },
  {
   "availability": {
@@ -168,6 +253,23 @@
   "name": "BaoBua",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.all.baobua"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://baramangaonline.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:4820009787408102796",
+  "installed": false,
+  "lang": "all",
+  "name": "Bara Manga Online",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.baramangaonline"
  },
  {
   "availability": {
@@ -430,6 +532,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://cosplayrule34.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:8633420017329212941",
+  "installed": false,
+  "lang": "all",
+  "name": "CosplayRule34",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.cosplayrule34"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://cosplaytele.com",
   "catalogs": [
    "keiyoushi"
@@ -481,6 +600,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://d9comics.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:8402307151004919938",
+  "installed": false,
+  "lang": "en",
+  "name": "D9 Comics",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.d9comics"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://danbooru.donmai.us",
   "catalogs": [
    "keiyoushi"
@@ -525,6 +661,57 @@
   "name": "DeviantArt",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.all.deviantart"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://www.dlsite.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:6040331647076858586",
+  "installed": false,
+  "lang": "ja",
+  "name": "DLsite",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.dlsite"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://www.dlsite.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:4210329134305024062",
+  "installed": false,
+  "lang": "en",
+  "name": "DLsite",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.dlsite"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://doudoudoujin.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:4031568581018999460",
+  "installed": false,
+  "lang": "all",
+  "name": "DouDouDoujin",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.doudoudoujin"
  },
  {
   "availability": {
@@ -780,6 +967,23 @@
   "name": "GlobalComix",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.all.globalcomix"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://www.gocomics.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:5960491017424675036",
+  "installed": false,
+  "lang": "en",
+  "name": "GoComics",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.gocomics"
  },
  {
   "availability": {
@@ -1331,6 +1535,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://historyofhyrule.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:1995287596306677267",
+  "installed": false,
+  "lang": "all",
+  "name": "History of Hyrule",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.historyofhyrule"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://hni-scantrad.net",
   "catalogs": [
    "keiyoushi"
@@ -1460,6 +1681,40 @@
   "name": "INKRUSH",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.all.inkrush"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://ithinkilikeyou.net",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:8934072178713434939",
+  "installed": false,
+  "lang": "all",
+  "name": "I Think I Like You",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.ithinkilikeyou"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://jagodibuja.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:5211085235074917460",
+  "installed": false,
+  "lang": "en",
+  "name": "Jago Dibuja",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.jagodibuja"
  },
  {
   "availability": {
@@ -1688,6 +1943,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://kusowanka.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:2174847726253593532",
+  "installed": false,
+  "lang": "all",
+  "name": "Kusowanka",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.kusowanka"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://kyokotsu.com",
   "catalogs": [
    "keiyoushi"
@@ -1766,6 +2038,40 @@
   "name": "League of Legends",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.all.leagueoflegends"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://lectorhentai.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:8489181931479760463",
+  "installed": false,
+  "lang": "en",
+  "name": "Lector Hentai",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.lectorhentai"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://lemoon.io",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:2363849104410739815",
+  "installed": false,
+  "lang": "all",
+  "name": "Lemoon",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.lemoon"
  },
  {
   "availability": {
@@ -2249,6 +2555,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://www.mangamulti.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:7309212159933705862",
+  "installed": false,
+  "lang": "en",
+  "name": "Manga Multi",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.mangamulti"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://mangaomega.com",
   "catalogs": [
    "keiyoushi"
@@ -2293,6 +2616,23 @@
   "name": "MANGA Plus Creators by SHUEISHA",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.all.mangapluscreators"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://uncensoredmanga.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:9019747441194723320",
+  "installed": false,
+  "lang": "en",
+  "name": "Uncensored Manga",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.mangasincensura"
  },
  {
   "availability": {
@@ -2599,6 +2939,40 @@
   "name": "MyReadingManga",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.all.myreadingmanga"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://naisho.moe",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:246007156644245992",
+  "installed": false,
+  "lang": "all",
+  "name": "Naisho",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.naisho"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://hotnakedwomen.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:6711216111994206341",
+  "installed": false,
+  "lang": "all",
+  "name": "NakedPics",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.nakedpics"
  },
  {
   "availability": {
@@ -3150,6 +3524,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://pornsticky.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:5052420760211841842",
+  "installed": false,
+  "lang": "all",
+  "name": "PornSticky",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.pornsticky"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://projectsuki.com",
   "catalogs": [
    "keiyoushi"
@@ -3218,6 +3609,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://rule34.xxx",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:6421345590175893162",
+  "installed": false,
+  "lang": "all",
+  "name": "Rule34",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.rule34"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://www.sandraandwoo.com",
   "catalogs": [
    "keiyoushi"
@@ -3269,6 +3677,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://saycomic.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:2550435243743833052",
+  "installed": false,
+  "lang": "en",
+  "name": "Say Comics",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.saymanhwa"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://saymanhwa.net",
   "catalogs": [
    "keiyoushi"
@@ -3279,6 +3704,40 @@
   "name": "SayManhwa",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.all.saymanhwa"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://saycomic.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:8859801074806913109",
+  "installed": false,
+  "lang": "ja",
+  "name": "Say Comics",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.saymanhwa"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://reader.seinagi.org.es",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:89967806248598714",
+  "installed": false,
+  "lang": "en",
+  "name": "Seinagi",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.seinagi"
  },
  {
   "availability": {
@@ -3456,6 +3915,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://en.thehentai.net",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:6996262189349007954",
+  "installed": false,
+  "lang": "en",
+  "name": "The Hentai",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.thehentai"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://thelibraryofohara.com",
   "catalogs": [
    "keiyoushi"
@@ -3517,6 +3993,40 @@
   "name": "ToonLook",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.all.toonlook"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://toon.space",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:1664744658092918162",
+  "installed": false,
+  "lang": "en",
+  "name": "ToonSpace",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.toonspace"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://toon.space",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:2881599016959747917",
+  "installed": false,
+  "lang": "ja",
+  "name": "ToonSpace",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.toonspace"
  },
  {
   "availability": {
@@ -3857,6 +4367,23 @@
   "name": "小黄书",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.all.yellownote"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://yespornpics.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:7565626369772015997",
+  "installed": false,
+  "lang": "all",
+  "name": "YesPornPics",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.all.yespornpics"
  },
  {
   "availability": {
@@ -4221,6 +4748,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://www.asuratoons.info",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:1355417827809951744",
+  "installed": false,
+  "lang": "en",
+  "name": "Asuratoons (unoriginal)",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.asuratoons"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://athreascans.com",
   "catalogs": [
    "keiyoushi"
@@ -4578,6 +5122,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://chikari.moe",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:8528134465693373218",
+  "installed": false,
+  "lang": "en",
+  "name": "Chikari",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.chikari"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://manga.clone-army.org",
   "catalogs": [
    "keiyoushi"
@@ -4775,6 +5336,23 @@
   "name": "Comizy",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.en.comizy"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://complexbowler.neocities.org",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:6359307016277841551",
+  "installed": false,
+  "lang": "en",
+  "name": "Complex Bowler",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.complexbowler"
  },
  {
   "availability": {
@@ -5751,6 +6329,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://hentai18.net",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:1054622014336587048",
+  "installed": false,
+  "lang": "en",
+  "name": "Hentai18",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.hentai18"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://hentai1.io",
   "catalogs": [
    "keiyoushi"
@@ -5778,23 +6373,6 @@
   "name": "Hentai20 (Unoriginal)",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.en.hentai20lol"
- },
- {
-  "availability": {
-   "keiyoushi": true,
-   "mangayomiJs": false,
-   "native": false
-  },
-  "base_url": "https://hentai3z.cc",
-  "catalogs": [
-   "keiyoushi"
-  ],
-  "id": "suwayomi:1647077515907093606",
-  "installed": false,
-  "lang": "en",
-  "name": "Hentai3z.CC",
-  "origin": "suwayomi",
-  "pkg": "eu.kanade.tachiyomi.extension.en.hentai3zcc"
  },
  {
   "availability": {
@@ -6091,6 +6669,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://hentai.yoga",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:4629014421013059878",
+  "installed": false,
+  "lang": "en",
+  "name": "Hentai.yoga",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.hentaiyoga"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://hentara.com",
   "catalogs": [
    "keiyoushi"
@@ -6261,6 +6856,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://play.hypercomic.io",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:793310137619152855",
+  "installed": false,
+  "lang": "en",
+  "name": "HYPERCOMIC",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.hypercomic"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://ilikecomix.com",
   "catalogs": [
    "keiyoushi"
@@ -6339,6 +6951,23 @@
   "name": "InfinityScans",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.en.infinityscans"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://inkora.spacely.tech",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:3924688286823005722",
+  "installed": false,
+  "lang": "en",
+  "name": "Inkora",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.inkora"
  },
  {
   "availability": {
@@ -6839,6 +7468,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://lazy-monki-scans.netlify.app",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:7621495388133559436",
+  "installed": false,
+  "lang": "en",
+  "name": "Lazy Monki Scans",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.lazymonkiscans"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://leslie-victims.pages.dev",
   "catalogs": [
    "keiyoushi"
@@ -6866,6 +7512,23 @@
   "name": "Lgbtics",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.en.lgbtics"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://lgbtoon.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:7348724258803698620",
+  "installed": false,
+  "lang": "en",
+  "name": "LGBToon",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.lgbtoon"
  },
  {
   "availability": {
@@ -8267,6 +8930,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://manhuaplus.top",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:8481144117764948107",
+  "installed": false,
+  "lang": "en",
+  "name": "ManhuaPlus.top",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.manhuaplustop"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://manhuatop.org",
   "catalogs": [
    "keiyoushi"
@@ -8335,6 +9015,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://manhwa18dash.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:964627071039073400",
+  "installed": false,
+  "lang": "en",
+  "name": "Manhwa18Dash",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.manhwa18dash"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://www.manhwa18.today",
   "catalogs": [
    "keiyoushi"
@@ -8362,6 +9059,23 @@
   "name": "Manhwa18TX",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.en.manhwa18tx"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://manhwa210.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:3248855109192504827",
+  "installed": false,
+  "lang": "en",
+  "name": "Manhwa210",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.manhwa210"
  },
  {
   "availability": {
@@ -8658,6 +9372,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://manhwax.pro",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:6800665234733328599",
+  "installed": false,
+  "lang": "en",
+  "name": "ManhwaX (unoriginal)",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.manhwax"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://hentaitnt.net",
   "catalogs": [
    "keiyoushi"
@@ -8794,11 +9525,11 @@
    "mangayomiJs": false,
    "native": false
   },
-  "base_url": "https://mistscans.com",
+  "base_url": "https://mistscans.org",
   "catalogs": [
    "keiyoushi"
   ],
-  "id": "suwayomi:80073424419623517",
+  "id": "suwayomi:5732165121603348598",
   "installed": false,
   "lang": "en",
   "name": "Mist Scans",
@@ -8964,6 +9695,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://mythtoons.org",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:4095669960873681987",
+  "installed": false,
+  "lang": "en",
+  "name": "Myth Toons",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.mythtoons"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://saymanhwa.com",
   "catalogs": [
    "keiyoushi"
@@ -9008,6 +9756,23 @@
   "name": "NineHentai",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.en.ninehentai"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://ninkocomics.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:6441436063565688111",
+  "installed": false,
+  "lang": "en",
+  "name": "Ninko Comics",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.ninkocomics"
  },
  {
   "availability": {
@@ -9117,6 +9882,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://ocecomic.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:2461381064825938556",
+  "installed": false,
+  "lang": "en",
+  "name": "OceComic",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.ocecomic"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://octopusmanga.com",
   "catalogs": [
    "keiyoushi"
@@ -9219,7 +10001,7 @@
    "mangayomiJs": false,
    "native": false
   },
-  "base_url": "https://w20.1punchman.com",
+  "base_url": "https://w21.1punchman.com",
   "catalogs": [
    "keiyoushi"
   ],
@@ -9491,6 +10273,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://pornhwa.me",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:4964211766486203362",
+  "installed": false,
+  "lang": "en",
+  "name": "Pornhwa.me",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.pornhwame"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://www.pornhwaz.com",
   "catalogs": [
    "keiyoushi"
@@ -9705,6 +10504,23 @@
   "name": "Read Comics Online",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.en.readcomicsonline"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://readcomicsonline.lol",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:3920948196044407056",
+  "installed": false,
+  "lang": "en",
+  "name": "ReadComicsOnline.lol",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.readcomicsonlinelol"
  },
  {
   "availability": {
@@ -10137,6 +10953,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://rule34comic.party",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:5276184613570933378",
+  "installed": false,
+  "lang": "en",
+  "name": "Rule34Comic",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.rule34comic"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://w2.ruridragon.com",
   "catalogs": [
    "keiyoushi"
@@ -10426,7 +11259,7 @@
    "mangayomiJs": false,
    "native": false
   },
-  "base_url": "https://www.streamex.hn",
+  "base_url": "https://streamex.hn",
   "catalogs": [
    "keiyoushi"
   ],
@@ -10664,7 +11497,7 @@
    "mangayomiJs": false,
    "native": false
   },
-  "base_url": "https://w2.theexiledheavyknight.com",
+  "base_url": "https://w3.theexiledheavyknight.com",
   "catalogs": [
    "keiyoushi"
   ],
@@ -10674,6 +11507,23 @@
   "name": "Read The Exiled Heavy Knight Manga Online",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.en.theexiledheavyknightmangaonline"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://www.thefarside.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:6675391126259818336",
+  "installed": false,
+  "lang": "en",
+  "name": "The Far Side",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.thefarside"
  },
  {
   "availability": {
@@ -10776,6 +11626,23 @@
   "name": "TimelessToons",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.en.timelesstoons"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://tinyview.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:2631104441524479327",
+  "installed": false,
+  "lang": "en",
+  "name": "Tinyview",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.tinyview"
  },
  {
   "availability": {
@@ -10892,7 +11759,7 @@
   "id": "suwayomi:1581110056159285576",
   "installed": false,
   "lang": "en",
-  "name": "Toonily.me",
+  "name": "ToonTop",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.en.toonilyme"
  },
@@ -10970,6 +11837,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://lewdmanhwa.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:3627030858599443012",
+  "installed": false,
+  "lang": "en",
+  "name": "LewdManhwa",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.toonz"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://mangatop.org",
   "catalogs": [
    "keiyoushi"
@@ -11021,7 +11905,7 @@
    "mangayomiJs": false,
    "native": false
   },
-  "base_url": "https://w82.thetowerofgod.com",
+  "base_url": "https://w85.thetowerofgod.com",
   "catalogs": [
    "keiyoushi"
   ],
@@ -11310,6 +12194,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://webtoonhentai.org",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:5114393880070298909",
+  "installed": false,
+  "lang": "en",
+  "name": "Webtoon Hentai (unoriginal)",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.webtoonhentai"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://webtoonlib.to",
   "catalogs": [
    "keiyoushi"
@@ -11327,7 +12228,7 @@
    "mangayomiJs": false,
    "native": false
   },
-  "base_url": "https://webtoonscan.com",
+  "base_url": "https://webtoonscan.org",
   "catalogs": [
    "keiyoushi"
   ],
@@ -11388,23 +12289,6 @@
   "name": "Wildtoon",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.en.wildtoon"
- },
- {
-  "availability": {
-   "keiyoushi": true,
-   "mangayomiJs": false,
-   "native": false
-  },
-  "base_url": "https://witchtoons.net",
-  "catalogs": [
-   "keiyoushi"
-  ],
-  "id": "suwayomi:3119719730967642939",
-  "installed": false,
-  "lang": "en",
-  "name": "WitchScans",
-  "origin": "suwayomi",
-  "pkg": "eu.kanade.tachiyomi.extension.en.witchscans"
  },
  {
   "availability": {
@@ -11599,6 +12483,40 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://yiff-comics.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:8728786976342675797",
+  "installed": false,
+  "lang": "en",
+  "name": "Yiff Comics (unoriginal)",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.yiffcomics"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://www.yurivan.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:2396200775010426393",
+  "installed": false,
+  "lang": "en",
+  "name": "Yurivan",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.yurivan"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://www.zazamanga.com",
   "catalogs": [
    "keiyoushi"
@@ -11643,6 +12561,23 @@
   "name": "Zinmanga.net",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.en.zinmanganet"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://www.zipcomic.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:5701332871722346370",
+  "installed": false,
+  "lang": "en",
+  "name": "ZipComic",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.en.zipcomic"
  },
  {
   "availability": {
@@ -12296,7 +13231,7 @@
    "mangayomiJs": false,
    "native": false
   },
-  "base_url": "https://dokiraw.city",
+  "base_url": "https://dokiraw.quest",
   "catalogs": [
    "keiyoushi"
   ],
@@ -12551,6 +13486,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://hentai-one.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:4943901964119803158",
+  "installed": false,
+  "lang": "ja",
+  "name": "Hentai-One",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.ja.hentaione"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://heros-web.com",
   "catalogs": [
    "keiyoushi"
@@ -12636,7 +13588,7 @@
    "mangayomiJs": false,
    "native": false
   },
-  "base_url": "https://jmanga.cool",
+  "base_url": "https://jmanga.cloud",
   "catalogs": [
    "keiyoushi"
   ],
@@ -13163,6 +14115,57 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://mangaraw.best",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:5626323664838879030",
+  "installed": false,
+  "lang": "ja",
+  "name": "Mangaraw.best",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.ja.mangarawbest"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://mangaraw.ink",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:3854652698619054740",
+  "installed": false,
+  "lang": "ja",
+  "name": "Mangaraw.ink",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.ja.mangarawink"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://mangarawjp.net",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:3036990057284261953",
+  "installed": false,
+  "lang": "ja",
+  "name": "MangaRawJP",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.ja.mangarawjp"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://mangaruu.com",
   "catalogs": [
    "keiyoushi"
@@ -13435,6 +14438,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://nukibooks.com",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:5179763109109786309",
+  "installed": false,
+  "lang": "ja",
+  "name": "ヌキブックス",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.ja.nukibooks"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://webcomic.ohtabooks.com",
   "catalogs": [
    "keiyoushi"
@@ -13520,6 +14540,23 @@
    "mangayomiJs": false,
    "native": false
   },
+  "base_url": "https://comics.pie.co.jp",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:8591257649902401345",
+  "installed": false,
+  "lang": "ja",
+  "name": "PIE COMICS",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.ja.piecomics"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
   "base_url": "https://comic.pixiv.net",
   "catalogs": [
    "keiyoushi"
@@ -13554,7 +14591,7 @@
    "mangayomiJs": false,
    "native": false
   },
-  "base_url": "https://raw18.guru",
+  "base_url": "https://raw18.rent",
   "catalogs": [
    "keiyoushi"
   ],
@@ -13887,6 +14924,23 @@
   "name": "Tonari no Young Jump",
   "origin": "suwayomi",
   "pkg": "eu.kanade.tachiyomi.extension.ja.tonarinoyoungjump"
+ },
+ {
+  "availability": {
+   "keiyoushi": true,
+   "mangayomiJs": false,
+   "native": false
+  },
+  "base_url": "https://to-ti.in",
+  "catalogs": [
+   "keiyoushi"
+  ],
+  "id": "suwayomi:1835566331167834452",
+  "installed": false,
+  "lang": "ja",
+  "name": "Torch Comics",
+  "origin": "suwayomi",
+  "pkg": "eu.kanade.tachiyomi.extension.ja.torchcomics"
  },
  {
   "availability": {
