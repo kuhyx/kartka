@@ -24,19 +24,19 @@ done
 step "tree lists every tab label"
 tree="$(check drive tree)"
 for tab in "${TABS[@]}"; do
-  grep -q "\"${tab} | Tab [0-9] of 5\"" <<<"$tree" || fail "tab \"$tab\" missing from tree"
+  grep -qE "^#[0-9]+ tab \"${tab}\"" <<<"$tree" || fail "tab \"$tab\" missing from tree"
 done
 
 step "tap Library: Library becomes the current tab"
 check drive tap Library >/dev/null
-check drive wait Library --flag current --timeout 5
+check drive wait Library --flag selected --timeout 5
 
 step "tap Browse"
 check drive tap Browse
 
 step "Browse is now the current tab and Library is not"
-check drive wait Browse --flag current --timeout 5
-check drive wait Library --flag current --gone --timeout 5
+check drive wait Browse --flag selected --timeout 5
+check drive wait Library --flag selected --gone --timeout 5
 
 step "screenshot is not blank"
 check drive shot --min-colours 16

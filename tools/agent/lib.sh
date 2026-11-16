@@ -65,11 +65,15 @@ check() {
 }
 
 # Pop pushed full-screen routes (sign-in form, reader) until the tab rail shows.
+# The shell is up when the nav's "More" node has the tab role (Flutter 3.50
+# exposes real tab roles instead of a "Tab N of 5" label).
+on_tabs() { drive tree 2>/dev/null | grep -qE '^#[0-9]+ tab "More"'; }
+
 pop_to_tabs() {
   local i
   for ((i = 0; i < 4; i++)); do
-    drive wait "Tab 5 of 5" --contains --timeout 1 >/dev/null 2>&1 && return 0
+    on_tabs && return 0
     check drive tap Back >/dev/null
   done
-  check drive wait "Tab 5 of 5" --contains --timeout 2 >/dev/null
+  on_tabs || fail "the tab shell never appeared"
 }
