@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The detail screen's app-bar overflow ("More"): Read, library
 /// membership, downloads, the "Unread first" sort and every registered

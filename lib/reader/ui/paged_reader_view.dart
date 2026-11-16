@@ -1,9 +1,9 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/reader/logic/chapter_strip.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/ui/reader_view_controller.dart';
 import 'package:kartka/reader/ui/zoomable_page.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Builds the content of one strip slot.
 typedef SlotBuilder = Widget Function(BuildContext context, StripSlot slot);

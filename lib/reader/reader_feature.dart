@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/routes.dart';
@@ -15,6 +14,7 @@ import 'package:kartka/reader/platform/reader_system.dart';
 import 'package:kartka/reader/state/reader_deps.dart';
 import 'package:kartka/reader/ui/reader_screen.dart';
 import 'package:kartka/reader/ui/reader_settings_tile.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The reader part: the `/read/...` route and its settings tile.
 ///

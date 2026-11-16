@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings_store.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings_tile.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   late MangadexSettingsStore store;

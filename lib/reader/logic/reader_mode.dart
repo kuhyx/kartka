@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// How the reader lays out the pages of a chapter.
 enum ReaderMode {

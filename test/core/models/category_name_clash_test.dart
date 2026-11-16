@@ -1,8 +1,8 @@
 // Guards the Category doc in lib/core/models/category.dart: UI files import
 // material.dart and the models barrel together, and that must compile.
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   test('Category from the models barrel is usable beside material.dart', () {

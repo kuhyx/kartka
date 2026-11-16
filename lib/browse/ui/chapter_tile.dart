@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/ui/chapter_download_button.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// One chapter row: opens the reader; explicit buttons (focus stops, no
 /// long-press) toggle the read mark and download, cancel or delete it.

@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/updates/state/update_rows.dart';
 import 'package:kartka/updates/state/updates_deps.dart';
 import 'package:kartka/updates/ui/update_groups.dart';
 import 'package:kartka/updates/ui/update_row_tiles.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Opens the bottom sheet of [group]: its manga heading, an "Open manga"
 /// action and its new chapters by day. A tap closes the sheet, then goes to

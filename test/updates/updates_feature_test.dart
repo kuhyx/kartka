@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
@@ -15,6 +14,7 @@ import 'package:kartka/library/ports.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/updates/updates_feature.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../browse/fakes.dart';
 import '../browse/ui/harness.dart';

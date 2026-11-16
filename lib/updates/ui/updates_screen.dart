@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:kartka/app/fit_pages.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/ui/update_progress_strip.dart';
@@ -10,6 +9,7 @@ import 'package:kartka/updates/ui/update_groups.dart';
 import 'package:kartka/updates/ui/update_sheet.dart';
 import 'package:kartka/updates/ui/update_summary_mark.dart';
 import 'package:kartka/updates/ui/update_tile.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The Updates tab: one tile per manga with new chapters, newest first, in a
 /// grid that fits the screen (more pages sideways); a tile opens a sheet

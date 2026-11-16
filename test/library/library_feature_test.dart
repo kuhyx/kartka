@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
@@ -14,6 +13,7 @@ import 'package:kartka/library/ui/library_screen.dart';
 import 'package:kartka/platform/cover_cache.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'support/fakes.dart';
 

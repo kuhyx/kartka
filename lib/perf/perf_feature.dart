@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/perf/jank_tracker.dart';
 import 'package:kartka/perf/performance_screen.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Route of the Performance screen (opened from the More tab).
 const performanceRoute = '/performance';

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/settings/settings_sync.dart';
@@ -12,6 +11,7 @@ import 'package:kartka/source_health/source_health_lookup_impl.dart';
 import 'package:kartka/source_health/ui/scoring_page.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
 import 'package:kartka/source_health/ui/sources_tab.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/spoken_icon.dart';
 import 'harness.dart';

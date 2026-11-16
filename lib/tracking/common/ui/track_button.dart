@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/models/manga_key.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/tracking/common/track_binding.dart';
 import 'package:kartka/tracking/common/tracking_service.dart';
 import 'package:kartka/tracking/common/ui/tracker_section.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The manga-detail action: shows whether [mangaKey] is tracked and opens
 /// the track sheet. (The pull of remote progress on opening the detail

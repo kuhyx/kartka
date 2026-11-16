@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/cached_cover.dart';
 import 'package:kartka/platform/cover_cache.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../browse/ui/harness.dart' show onePixelPng;
 

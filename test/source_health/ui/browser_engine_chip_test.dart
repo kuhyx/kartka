@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/source_health/feed/fixture_feed.dart';
@@ -7,6 +6,7 @@ import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/source_card.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
 import 'package:kartka/source_health/ui/source_tile.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/spoken_icon.dart';
 import '../browser_engine_flag_test.dart' show allManga;

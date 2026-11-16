@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/tracking/common/tracker.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Search field plus results; picking a hit binds it. `Enter` searches.
 class TrackSearch extends StatefulWidget {

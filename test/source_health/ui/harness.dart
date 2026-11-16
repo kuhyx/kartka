@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// [child] inside the app's dark theme.
 Widget host(Widget child) => MaterialApp(

@@ -1,8 +1,8 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/library/state/library_deps.dart';
 import 'package:kartka/library/state/library_item.dart';
 import 'package:kartka/library/ui/library_cover.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Height of a cell's one-line title row, from the real font and text
 /// scale (the test font differs from Roboto, so no fixed number fits both).

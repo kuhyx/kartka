@@ -1,11 +1,11 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/app.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/registry.dart';
 import 'package:kartka/app/shell.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/fake_platform.dart';
 

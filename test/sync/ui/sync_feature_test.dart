@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:crdt_sync_flutter/testing/fake_secure_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
@@ -17,6 +16,7 @@ import 'package:kartka/sync/sync_runtime.dart';
 import 'package:kartka/sync/ui/sync_account_controller.dart';
 import 'package:kartka/sync/ui/sync_account_screen.dart';
 import 'package:kartka/tracking/common/binding_store.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 SyncRuntime _runtime(InMemoryRtdb db, {Future<String>? deviceId}) =>
@@ -122,7 +122,10 @@ void main() {
     );
     await t.pumpWidget(_app(f));
     await t.tap(find.byIcon(Icons.cloud_sync_outlined));
+    // Finish the page transition (the spinner never settles): since Flutter
+    // 3.50 the incoming route is offstage and outside semantics until then.
     await t.pump();
+    await t.pump(const Duration(seconds: 1));
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     pending.completeError(StateError('no prefs'));
     await t.pump();

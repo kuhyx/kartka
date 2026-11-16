@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/fit_pages.dart';
 import 'package:kartka/browse/browse_routes.dart';
@@ -15,6 +14,7 @@ import 'package:kartka/browse/ui/language_picker.dart';
 import 'package:kartka/browse/ui/source_tile.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The Browse tab: a global search field, one chip row (All, then each
 /// selected language that has sources; the choice is remembered) and a

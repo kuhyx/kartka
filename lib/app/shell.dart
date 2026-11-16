@@ -1,8 +1,8 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Label and icon of each shell tab, in [KartkaTab] order (the destinations
 /// must line up with the router's branches).

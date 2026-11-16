@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/backup_import/backup_importer.dart';
@@ -8,6 +7,7 @@ import 'package:kartka/backup_import/repositories_seam.dart';
 import 'package:kartka/backup_import/tracker_binding_sink.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/source_provider.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Route of the import screen (More → Import SY backup).
 const String importSyBackupRoute = '/more/import-sy-backup';

@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The detail screen's floating "Continue": opens the progress chapter, or
 /// the first unread one when there is no progress yet. Absent only when the

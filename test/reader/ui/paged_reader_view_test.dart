@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/reader/logic/chapter_strip.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/ui/paged_reader_view.dart';
 import 'package:kartka/reader/ui/reader_view_controller.dart';
 import 'package:kartka/reader/ui/zoomable_page.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   late List<int> items;

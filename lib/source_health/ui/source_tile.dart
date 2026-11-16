@@ -1,10 +1,10 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/source_health/metric_text.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/health_icons.dart';
 import 'package:kartka/source_health/ui/source_line_mark.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Compact tile of the Sources grid: name; health glyph + rank, score and
 /// Tap opens the detail page, long-press the sheet with the full card

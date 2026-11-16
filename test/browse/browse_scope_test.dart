@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/ui/chapter_tile.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'ui/harness.dart';
 

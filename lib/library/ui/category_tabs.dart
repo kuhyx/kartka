@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The category tab bar, driven by [index] so a tap and a filter change
 /// animate the same indicator. Owns its [TabController] and replaces it only

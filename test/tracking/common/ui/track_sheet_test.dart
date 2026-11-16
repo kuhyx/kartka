@@ -1,5 +1,4 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/library/data/local_progress_repository.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
@@ -9,6 +8,7 @@ import 'package:kartka/tracking/common/tracker.dart';
 import 'package:kartka/tracking/common/tracking_service.dart';
 import 'package:kartka/tracking/common/ui/track_button.dart';
 import 'package:kartka/tracking/common/ui/tracker_section.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../service_fakes.dart';
 

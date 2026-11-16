@@ -1,5 +1,5 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The result line of a migration run, word-free: a failed backup shows an
 /// error glyph plus the (redacted) error; a finished run shows the migrated

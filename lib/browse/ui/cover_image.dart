@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:kartka/app/cached_cover.dart';
 import 'package:kartka/browse/browse_scope.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A manga cover loaded through [BrowseDeps.coverLoader]; a neutral
 /// placeholder while loading, on failure, or when there is no cover.

@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/scoring/profile_store.dart';
 import 'package:kartka/source_health/ui/scoring_page.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/spoken_icon.dart';
 import 'harness.dart';

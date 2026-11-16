@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/browse/manga_detail_slot.dart';
@@ -15,6 +14,7 @@ import 'package:kartka/migration/migration_screen.dart';
 import 'package:kartka/migration/migration_target.dart';
 import 'package:kartka/tracking/common/chapter_url_resolver.dart';
 import 'package:kartka/tracking/common/tracking_service.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Route of the review screen (More → Migrate to Atsumaru).
 const String migrateRoute = '/more/migrate-atsumaru';

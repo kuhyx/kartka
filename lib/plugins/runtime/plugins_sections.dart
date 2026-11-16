@@ -1,11 +1,11 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/plugins/runtime/plugin_index.dart';
 import 'package:kartka/plugins/runtime/plugin_languages.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Minimum tap target of an icon-only button.
 const _tap = Size.square(48);

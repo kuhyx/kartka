@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
@@ -15,6 +14,7 @@ import 'package:kartka/platform/cover_cache.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/tracking/common/chapter_url_resolver.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../helpers/spoken_icon.dart';
 import 'fake_download_service.dart';

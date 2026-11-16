@@ -2,7 +2,7 @@
 library;
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Shows the dialog; the entered passphrase, or null when cancelled.
 Future<String?> askPassphrase(BuildContext context, {required bool change}) =>

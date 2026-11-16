@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/state/browse_shown_store.dart';
@@ -8,6 +7,7 @@ import 'package:kartka/browse/ui/browse_tab.dart';
 import 'package:kartka/browse/ui/language_mark.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/spoken_icon.dart';
 import '../fakes.dart';

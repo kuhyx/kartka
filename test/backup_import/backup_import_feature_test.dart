@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
@@ -14,6 +13,7 @@ import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/platform/file_picker.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'fakes.dart';
 import 'fixture_builder.dart';

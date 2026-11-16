@@ -1,8 +1,8 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/reader/data/reader_settings.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/logic/tap_zones.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Editor for the global reader settings, used in the reader's sheet and
 /// in the app's settings screen.

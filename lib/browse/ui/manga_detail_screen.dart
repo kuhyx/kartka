@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
@@ -14,6 +13,7 @@ import 'package:kartka/browse/ui/detail_status.dart';
 import 'package:kartka/browse/ui/refresh_mark.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// `/manga/:sourceId/:mangaUrl`: a compact header, then the chapter list
 /// (newest first, or unread first) right away; "Continue" floats, every

@@ -1,6 +1,6 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
+import 'package:material_ui/material_ui.dart';
 
 const _tap = Size.square(48);
 

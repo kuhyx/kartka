@@ -1,5 +1,5 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Word-free stand-in for design_system's `showToast` / `showError`: shows
 /// [mark] (icons and numbers, its words in a semantic label) in a snack bar.

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/redact.dart';
@@ -21,6 +20,7 @@ import 'package:kartka/reader/ui/reader_page_image.dart';
 import 'package:kartka/reader/ui/reader_settings_panel.dart';
 import 'package:kartka/reader/ui/reader_view_controller.dart';
 import 'package:kartka/reader/ui/webtoon_reader_view.dart';
+import 'package:material_ui/material_ui.dart';
 
 part 'reader_screen_body.dart';
 

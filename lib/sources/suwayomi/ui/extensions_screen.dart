@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/redact.dart';
@@ -12,6 +11,7 @@ import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_exceptions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 import 'package:kartka/sources/suwayomi/ui/extension_tile.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Installed and available Suwayomi extensions, with install, update and
 /// uninstall. What is "available" is whatever the server's stores offer.

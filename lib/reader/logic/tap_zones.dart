@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// What a tap on the page does.
 enum TapAction {

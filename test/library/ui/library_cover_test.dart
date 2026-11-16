@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/library/ui/library_cover.dart';
+import 'package:material_ui/material_ui.dart';
 
 Widget _wrap(Widget child) =>
     MaterialApp(home: SizedBox(width: 100, height: 150, child: child));

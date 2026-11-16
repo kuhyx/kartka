@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
@@ -6,6 +5,7 @@ import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
 import 'package:kartka/reader/state/reader_deps.dart';
 import 'package:kartka/reader/ui/reader_screen.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../support/fakes.dart';
 

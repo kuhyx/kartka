@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/source/challenge.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The detail screen before details exist: a spinner while loading, else
 /// the failure (a challenge prompt, "Source unavailable", or the redacted

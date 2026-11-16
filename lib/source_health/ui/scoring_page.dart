@@ -1,5 +1,4 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/ui/section_mark.dart';
 import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/reason_filter.dart';
@@ -7,6 +6,7 @@ import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/scoring/profile_store.dart';
 import 'package:kartka/source_health/thresholds.dart';
 import 'package:kartka/source_health/ui/health_icons.dart';
+import 'package:material_ui/material_ui.dart';
 
 const _weightLabels = [
   'Coverage (with complete chapters)',

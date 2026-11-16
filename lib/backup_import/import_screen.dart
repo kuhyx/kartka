@@ -1,8 +1,8 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/backup_import/import_controller.dart';
 import 'package:kartka/backup_import/import_preview.dart';
 import 'package:kartka/core/redact.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// More → "Import SY backup": choose a `.tachibk`, review, import.
 class ImportScreen extends StatelessWidget {

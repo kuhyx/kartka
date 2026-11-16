@@ -1,5 +1,4 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/source_health/cut_reasons.dart';
 import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/install/source_action_button.dart';
@@ -12,6 +11,7 @@ import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/metric_strip.dart';
 import 'package:kartka/source_health/ui/reason_marks.dart';
 import 'package:kartka/source_health/ui/source_line_mark.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Opens the detail page of the source with this id.
 typedef OpenSource = void Function(String sourceId);

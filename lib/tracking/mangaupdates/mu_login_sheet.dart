@@ -2,8 +2,8 @@
 library;
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/tracking/mangaupdates/mu_models.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Logs in with the typed credentials; throws [MuException] on failure.
 typedef MuLogin = Future<void> Function(String username, String password);

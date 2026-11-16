@@ -1,5 +1,4 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/app/fit_pages.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
@@ -16,6 +15,7 @@ import 'package:kartka/source_health/ui/freshness_banner.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
 import 'package:kartka/source_health/ui/source_sheets.dart';
 import 'package:kartka/source_health/ui/source_tile.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The Sources tab: the evaluator's ranking with every metric, searchable,
 /// sortable and filterable, live from [feed].

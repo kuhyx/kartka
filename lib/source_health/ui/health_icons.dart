@@ -1,7 +1,7 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/source_health/reason_filter.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The glyphs of the Sources screens (textgate: no painted words). One map
 /// per kind, so a metric reads the same on the card, the detail page and

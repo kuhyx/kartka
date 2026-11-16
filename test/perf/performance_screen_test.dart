@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/app.dart';
 import 'package:kartka/app/registry.dart';
@@ -8,6 +7,7 @@ import 'package:kartka/perf/jank_tracker.dart';
 import 'package:kartka/perf/perf_feature.dart';
 import 'package:kartka/perf/performance_screen.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'frames.dart';
 

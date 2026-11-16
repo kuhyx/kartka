@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/paged_controller.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
@@ -11,6 +10,7 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/challenge.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// One source: Popular / Latest / Search tabs, each an infinite grid.
 class SourceScreen extends StatelessWidget {

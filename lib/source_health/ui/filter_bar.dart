@@ -1,8 +1,8 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/source_health/ranking.dart';
 import 'package:kartka/source_health/reason_filter.dart';
 import 'package:kartka/source_health/ui/health_icons.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Reason chips (any selected reason matches) and the minimum-score slider.
 class FilterBar extends StatelessWidget {

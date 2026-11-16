@@ -1,10 +1,10 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/updates/state/update_rows.dart';
 import 'package:kartka/updates/state/updates_deps.dart';
 import 'package:kartka/updates/ui/update_cover.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The relative day headings ([dayLabel]) are painted as glyphs, spoken as
 /// the word; any other heading is a date and stays painted.

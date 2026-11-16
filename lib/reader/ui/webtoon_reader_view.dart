@@ -1,10 +1,10 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/reader/logic/chapter_strip.dart';
 import 'package:kartka/reader/logic/webtoon_position.dart';
 import 'package:kartka/reader/ui/paged_reader_view.dart';
 import 'package:kartka/reader/ui/reader_view_controller.dart';
 import 'package:kartka/reader/ui/zoomable_page.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 /// Continuous vertical scroll of every page, zoomable as a whole.

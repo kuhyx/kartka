@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/library/data/local_progress_repository.dart';
@@ -12,6 +11,7 @@ import 'package:kartka/tracking/mangaupdates/mu_models.dart';
 import 'package:kartka/tracking/mangaupdates/mu_session.dart';
 import 'package:kartka/tracking/mangaupdates/mu_settings_tile.dart';
 import 'package:kartka/tracking/mangaupdates/mu_tracker.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'mu_fakes.dart';
 

@@ -1,9 +1,9 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
 import 'package:kartka/plugins/runtime/plugins_screen.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'support.dart';
 

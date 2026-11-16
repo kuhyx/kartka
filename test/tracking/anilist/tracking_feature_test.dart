@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/backup_import/tracker_binding_sink.dart';
@@ -12,6 +11,7 @@ import 'package:kartka/tracking/anilist/tracking_feature.dart';
 import 'package:kartka/tracking/common/tracker.dart';
 import 'package:kartka/tracking/common/tracking_service.dart';
 import 'package:kartka/tracking/common/ui/track_button.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../common/service_fakes.dart';
 import '../fakes.dart';

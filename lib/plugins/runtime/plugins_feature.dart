@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart'
     show LicenseEntryWithLineBreaks, LicenseRegistry;
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/registry.dart';
 import 'package:kartka/app/settings_stores.dart';
@@ -14,6 +13,7 @@ import 'package:kartka/plugins/runtime/plugin_source_provider.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
 import 'package:kartka/plugins/runtime/plugins_screen.dart';
 import 'package:kartka/plugins/runtime/third_party_licenses.g.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Route of the Plugins screen.
 const String pluginsRoute = '/plugins';

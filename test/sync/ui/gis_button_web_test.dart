@@ -3,11 +3,11 @@ library;
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:google_sign_in_web/google_sign_in_web.dart';
 import 'package:kartka/sync/ui/google_route.dart';
+import 'package:material_ui/material_ui.dart';
 
 // Runs the real web glue (google_sign_in_web + the GIS script from
 // accounts.google.com), which the VM suite's fake button cannot:

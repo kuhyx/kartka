@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:kartka/sync/sync_status.dart';
 import 'package:kartka/sync/ui/sync_account_controller.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A [SyncAccountController] that records what the screen asks of it.
 class FakeAccountController implements SyncAccountController {

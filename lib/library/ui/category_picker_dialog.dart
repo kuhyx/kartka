@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:kartka/core/models/category.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Asks which categories the selection belongs to.
 ///

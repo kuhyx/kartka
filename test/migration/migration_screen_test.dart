@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/migration/migration_controller.dart';
 import 'package:kartka/migration/migration_outcome.dart';
 import 'package:kartka/migration/migration_screen.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'fakes.dart';
 

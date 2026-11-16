@@ -1,7 +1,7 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/browse/ui/language_mark.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Spoken origin name per origin (never painted).
 const Map<SourceOrigin, String> originLabels = {

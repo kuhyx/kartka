@@ -1,7 +1,7 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/ui/snack_mark.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   Future<BuildContext> pump(WidgetTester t, {bool scaffold = true}) async {

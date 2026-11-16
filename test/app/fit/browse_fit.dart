@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/ui/browse_tab.dart';
 import 'package:kartka/browse/ui/source_tile.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../browse/fakes.dart';
 import '../../browse/ui/harness.dart';

@@ -1,8 +1,8 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/ui/section_mark.dart';
 import 'package:kartka/library/state/library_controller.dart';
 import 'package:kartka/library/state/library_query.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Each sort's glyph and its spoken name.
 const Map<LibrarySort, (IconData, String)> _sorts = {

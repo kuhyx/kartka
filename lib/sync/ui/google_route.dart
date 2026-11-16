@@ -11,10 +11,10 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show googleIdToken;
-import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/sync/google_client.dart';
 import 'package:kartka/sync/ui/gis_button.dart' as gis;
+import 'package:material_ui/material_ui.dart';
 
 /// A Google sign-in flow.
 enum GoogleRoute {

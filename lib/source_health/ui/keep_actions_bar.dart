@@ -1,10 +1,10 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/source_health/install/auto_install_state.dart';
 import 'package:kartka/source_health/install/keep_reconciler.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/health_icons.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The Sources tab's Keep row: the auto-install's quiet one-line status
 /// (when it has one) and "Migrate to better sources" (when wired).

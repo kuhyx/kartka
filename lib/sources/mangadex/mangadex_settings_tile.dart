@@ -1,8 +1,8 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/sources/mangadex/mangadex_mapper.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings_store.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// One-line summary, e.g. `en, pl · Safe, Suggestive`: language codes and
 /// MangaDex's own rating names. Data saver shows as an icon instead.

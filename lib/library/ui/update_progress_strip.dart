@@ -1,6 +1,6 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/library/ports.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A thin bar and "12/87" while [updater] runs; nothing when idle.
 class UpdateProgressStrip extends StatelessWidget {

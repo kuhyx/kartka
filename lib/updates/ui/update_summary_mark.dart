@@ -1,7 +1,7 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/ports.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// An update-all result as glyphs and counts, for a snackbar.
 ///

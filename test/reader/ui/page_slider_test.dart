@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/reader/ui/page_slider.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   Future<List<int>> pump(

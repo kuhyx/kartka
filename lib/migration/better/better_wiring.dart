@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/browse/source_registry.dart';
@@ -13,6 +12,7 @@ import 'package:kartka/migration/migration_deps.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
 import 'package:kartka/source_health/install/keep_reconciler.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The [betterSourcesRoute] screen over [registry], migrating with [deps].
 /// The source-health part supplies the scored feed and the auto-install's

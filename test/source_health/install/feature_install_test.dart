@@ -1,5 +1,4 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
@@ -10,6 +9,7 @@ import 'package:kartka/source_health/model/quality_metrics.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/source_health_feature.dart';
 import 'package:kartka/sync/rtdb_reader.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../browse/fakes.dart';
 import '../ui/harness.dart';

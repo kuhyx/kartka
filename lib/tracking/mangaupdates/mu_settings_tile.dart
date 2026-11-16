@@ -2,10 +2,10 @@
 library;
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/ui/confirm_mark.dart';
 import 'package:kartka/tracking/mangaupdates/mu_login_sheet.dart';
 import 'package:kartka/tracking/mangaupdates/mu_tracker.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Settings tile for the MangaUpdates tracker.
 class MuSettingsTile extends StatefulWidget {

@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/platform/browser_engine.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Shown instead of a plain error when a site answered with a browser
 /// challenge (docs/DOCS-contracts-webview.md §2, §7). Kartka never solves

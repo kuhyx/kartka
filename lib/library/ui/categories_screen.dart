@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:kartka/core/models/category.dart';
 import 'package:kartka/core/ui/confirm_mark.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/state/category_actions.dart';
 import 'package:kartka/library/state/library_deps.dart';
 import 'package:kartka/library/ui/name_dialog.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Create, rename, reorder (drag or Move up/down buttons) and delete
 /// categories.

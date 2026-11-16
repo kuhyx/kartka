@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:kartka/app/cached_cover.dart';
 import 'package:kartka/library/state/library_deps.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A cover image, or a neutral placeholder while loading, on failure, or
 /// when there is no url or loader ([CachedCover]: decoded at tile size and

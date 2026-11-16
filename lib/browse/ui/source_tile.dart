@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/ui/browse_filters.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// One source in the Browse grid: initial, health badge (or the bare
 /// rank) and origin glyph on top, the name on one full-width line below.
@@ -48,11 +48,9 @@ class SourceTile extends StatelessWidget {
       child: InkWell(
         key: ValueKey('source-${source.id}'),
         onTap: () => unawaited(context.push(sourceRoute(source.id))),
-        onLongPress: () => unawaited(
-          showModalBottomSheet<void>(
-            context: context,
-            builder: (_) => SourceSheet(source, summary, health),
-          ),
+        onLongPress: () => showModalBottomSheet<void>(
+          context: context,
+          builder: (_) => SourceSheet(source, summary, health),
         ),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.sm),

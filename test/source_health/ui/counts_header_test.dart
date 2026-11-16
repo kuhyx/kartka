@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/source_health/feed/fixture_feed.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/ui/skipped_page.dart';
 import 'package:kartka/source_health/ui/sources_tab.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/spoken_icon.dart';
 import '../fixtures.dart';

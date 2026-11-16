@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/core/source/source_provider.dart';
@@ -9,6 +8,7 @@ import 'package:kartka/sources/mangadex/mangadex_image_headers.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings_store.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings_tile.dart';
 import 'package:kartka/sources/mangadex/mangadex_source.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   final platform = memoryPlatform();

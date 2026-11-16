@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:kartka/browse/language_filter.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A language bucket without words: its code upper-cased (`EN`, `PT-BR`),
 /// or a globe for [kAllLanguages]. The language name ([languageLabel]) is

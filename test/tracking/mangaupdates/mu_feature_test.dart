@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
@@ -7,6 +6,7 @@ import 'package:kartka/tracking/mangaupdates/mu_feature.dart';
 import 'package:kartka/tracking/mangaupdates/mu_session.dart';
 import 'package:kartka/tracking/mangaupdates/mu_settings_tile.dart';
 import 'package:kartka/tracking/mangaupdates/mu_tracker.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'mu_fakes.dart';
 

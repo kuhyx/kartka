@@ -1,5 +1,4 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kartka/core/ui/section_mark.dart';
 import 'package:kartka/source_health/install/source_action_button.dart';
@@ -16,6 +15,7 @@ import 'package:kartka/source_health/ui/health_icons.dart';
 import 'package:kartka/source_health/ui/metric_tile.dart';
 import 'package:kartka/source_health/ui/reason_marks.dart';
 import 'package:kartka/source_health/ui/source_line_mark.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// One source's evaluation: verdict, cut reasons, every metric with what it
 /// means and its threshold, and the score breakdown. Escape goes back.

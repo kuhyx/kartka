@@ -5,10 +5,10 @@ library;
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/sync/sync_status.dart';
 import 'package:kartka/sync/ui/passphrase_dialog.dart';
 import 'package:kartka/sync/ui/sync_account_controller.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The sync account screen.
 class SyncAccountScreen extends StatefulWidget {

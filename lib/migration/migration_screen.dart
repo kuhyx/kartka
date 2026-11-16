@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/migration/migration_controller.dart';
 import 'package:kartka/migration/migration_outcome.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// "Migrate to Atsumaru": each entry with its best match, exact matches
 /// pre-ticked. Nothing changes until the user taps Apply, which first

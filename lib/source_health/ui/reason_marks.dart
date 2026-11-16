@@ -1,10 +1,10 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/source_health/cut_reasons.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/scoring/profile.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/health_icons.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A record's cut reasons as glyphs: a heading glyph, then one glyph per
 /// reason code, in danger (why the score is low) or warning (kept on score

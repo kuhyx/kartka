@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/browse_scope.dart';
@@ -9,6 +8,7 @@ import 'package:kartka/browse/state/global_search_controller.dart';
 import 'package:kartka/browse/ui/manga_grid.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Searches every source at once; one row of hits per source, each row
 /// filling in as its source answers.

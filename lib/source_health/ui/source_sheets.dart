@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/source_health/install/keep_reconciler.dart';
 import 'package:kartka/source_health/install/source_installs.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
@@ -10,6 +7,7 @@ import 'package:kartka/source_health/ranking.dart';
 import 'package:kartka/source_health/scoring/profile_store.dart';
 import 'package:kartka/source_health/ui/filters_sheet.dart';
 import 'package:kartka/source_health/ui/source_card.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Long-press sheet: the full card of source [id] (every metric, the subset
 /// link, the install action). [onOpen] opens a detail page once the sheet is
@@ -29,23 +27,21 @@ void showSourceSheet(
     return null;
   }
 
-  unawaited(
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (sheet) => SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: SourceCard(
-            record: all.firstWhere((r) => r.id == id),
-            nameOf: nameOf,
-            keepScore: keepScore,
-            installs: installs,
-            onOpen: (target) {
-              Navigator.of(sheet).pop();
-              onOpen(target);
-            },
-          ),
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    builder: (sheet) => SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: SourceCard(
+          record: all.firstWhere((r) => r.id == id),
+          nameOf: nameOf,
+          keepScore: keepScore,
+          installs: installs,
+          onOpen: (target) {
+            Navigator.of(sheet).pop();
+            onOpen(target);
+          },
         ),
       ),
     ),
@@ -62,23 +58,21 @@ void showFiltersSheet(
   ScoringProfileStore? scoring,
   KeepReconciler? autoInstall,
   void Function(BuildContext context)? onMigrate,
-}) => unawaited(
-  showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    builder: (sheet) => FiltersSheet(
-      records: records,
-      meta: meta,
-      query: query,
-      now: now,
-      scoring: scoring,
-      autoInstall: autoInstall,
-      onMigrate: onMigrate == null
-          ? null
-          : (_) {
-              Navigator.of(sheet).pop();
-              onMigrate(context);
-            },
-    ),
+}) => showModalBottomSheet<void>(
+  context: context,
+  isScrollControlled: true,
+  builder: (sheet) => FiltersSheet(
+    records: records,
+    meta: meta,
+    query: query,
+    now: now,
+    scoring: scoring,
+    autoInstall: autoInstall,
+    onMigrate: onMigrate == null
+        ? null
+        : (_) {
+            Navigator.of(sheet).pop();
+            onMigrate(context);
+          },
   ),
 );

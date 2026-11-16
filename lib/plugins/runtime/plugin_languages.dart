@@ -2,12 +2,10 @@
 /// offers. Buckets and labels are Browse's, so `multi` reads as `all`.
 library;
 
-import 'dart:async';
-
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/browse/language_filter.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The selection until the user picks: multi-language and English plugins.
 const List<String> kDefaultPluginLanguages = [kAllLanguages, 'en'];
@@ -69,11 +67,9 @@ class PluginLanguagesChip extends StatelessWidget {
           label: names.isEmpty
               ? const Icon(Icons.block, size: 18, semanticLabel: 'none')
               : Text(names),
-          onPressed: () => unawaited(
-            showDialog<void>(
-              context: context,
-              builder: (_) => _LanguagesDialog(selected, counts, onChanged),
-            ),
+          onPressed: () => showDialog<void>(
+            context: context,
+            builder: (_) => _LanguagesDialog(selected, counts, onChanged),
           ),
         ),
       ),

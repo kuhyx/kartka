@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/snack_mark.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_exceptions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_settings.dart';
+import 'package:material_ui/material_ui.dart';
 
 const _tap = Size.square(48);
 

@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
@@ -13,6 +12,7 @@ import 'package:kartka/updates/data/update_feed.dart';
 import 'package:kartka/updates/state/updates_deps.dart';
 import 'package:kartka/updates/ui/update_tile.dart';
 import 'package:kartka/updates/ui/updates_screen.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/fake_updater.dart';
 import '../../helpers/spoken_icon.dart';

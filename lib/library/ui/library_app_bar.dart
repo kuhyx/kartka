@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:kartka/library/state/library_controller.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The Library app bar in its three modes: normal, searching, selecting.
 class LibraryAppBar extends StatelessWidget implements PreferredSizeWidget {

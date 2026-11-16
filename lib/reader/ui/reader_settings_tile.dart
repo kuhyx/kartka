@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
 import 'package:kartka/reader/data/reader_settings.dart';
 import 'package:kartka/reader/ui/reader_settings_panel.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The reader's entry in the app settings screen.
 class ReaderSettingsTile extends StatefulWidget {

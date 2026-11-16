@@ -1,10 +1,10 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/downloads/queue/download_task.dart';
 import 'package:kartka/downloads/ui/format.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// One queued, running or failed chapter, with its progress bar.
 class QueueTile extends StatelessWidget {

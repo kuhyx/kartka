@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/browse/state/paged_controller.dart';
@@ -11,6 +10,7 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/source/challenge.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// One manga cover + title; opens the detail route. A focus stop, so arrow
 /// keys walk the grid and the grid scrolls to the focused tile.

@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/sync/google_client.dart';
 import 'package:kartka/sync/ui/gis_button.dart' as gis;
 import 'package:kartka/sync/ui/google_route.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   test('the Web client id is compiled in, so the button is offered', () {

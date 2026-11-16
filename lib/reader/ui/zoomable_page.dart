@@ -1,5 +1,5 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Tells the page image inside a [ZoomablePage] whether it is zoomed in, so
 /// it can decode at the larger size only then.

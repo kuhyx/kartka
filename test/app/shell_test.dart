@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/app.dart';
 import 'package:kartka/app/registry.dart';
 import 'package:kartka/app/shell.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../helpers/fake_platform.dart';
 

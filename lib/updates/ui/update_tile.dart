@@ -1,8 +1,8 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/updates/state/updates_deps.dart';
 import 'package:kartka/updates/ui/update_cover.dart';
 import 'package:kartka/updates/ui/update_groups.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Height under the cover for the one-line title.
 const double updateTileLabelHeight = AppSpacing.lg;

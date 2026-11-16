@@ -1,9 +1,9 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/ui/confirm_mark.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/downloads/queue/download_index.dart';
 import 'package:kartka/downloads/ui/format.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// One manga's offline chapters: size, per-chapter delete, delete all.
 class OfflineMangaTile extends StatelessWidget {

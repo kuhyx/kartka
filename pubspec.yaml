@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 0.1.0+1
 
 environment:
-  sdk: ^3.13.5
+  sdk: ^3.14.0
 
 # Exact pins, newest stable, checked by scripts/check_dependency_freshness.sh
 # (pre-commit) and the dependency-freshness workflow (CI). Only the carve-out
@@ -14,7 +14,7 @@ dependencies:
   # Android deep link kartka://oauth for OAuthRedirect.
   app_links: 7.2.2
   # gzip for .tachibk and CBZ/ZIP for the local source (pure Dart, web too).
-  archive: 4.6.0
+  archive: 4.7.1
   # Deep ==/hashCode for the list and map fields of the core models.
   collection: 1.19.1
   # Merge primitives (Hlc) and the Firebase RTDB client for sync (lib/sync/).
@@ -27,7 +27,7 @@ dependencies:
   crdt_sync_flutter:
     git:
       url: https://github.com/kuhyx/utils
-      ref: crdt_sync_flutter-v0.8.1
+      ref: crdt_sync_flutter-v0.8.2
       path: crdt_sync_flutter
   # SHA-1 for mangaKeyHash (RTDB-safe keys, DOCS-contracts §4).
   crypto: 3.0.8
@@ -38,7 +38,7 @@ dependencies:
   design_system:
     git:
       url: https://github.com/kuhyx/utils
-      ref: design_system-v0.3.1
+      ref: design_system-v0.4.0
       path: design_system
   # CBZ / folder import (FilePicker seam); web and Android implementations.
   file_picker: 13.3.3
@@ -64,6 +64,8 @@ dependencies:
   http: 1.6.0
   # IndexedDB on web (KeyValueStore); the in-memory backend keeps tests fast.
   idb_shim: 2.11.3
+  # Flutter 3.50 moved the Material widgets out of the framework.
+  material_ui: 1.11.0
   path: 1.9.1
   path_provider: 2.1.6
   scrollable_positioned_list: 0.3.8
@@ -71,7 +73,7 @@ dependencies:
   sync_settings_ui:
     git:
       url: https://github.com/kuhyx/utils
-      ref: sync_settings_ui-v0.7.3
+      ref: sync_settings_ui-v0.8.2
       path: sync_settings_ui
   url_launcher: 6.3.3
   wakelock_plus: 1.8.2

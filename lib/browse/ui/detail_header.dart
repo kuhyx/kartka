@@ -1,7 +1,7 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/browse/ui/cover_image.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Publication-status glyphs; the status word is spoken only.
 const Map<MangaStatus, IconData> _statusIcons = {

@@ -3,7 +3,6 @@
 /// settings, error reports, and More → Sync.
 library;
 
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
@@ -19,6 +18,7 @@ import 'package:kartka/sync/sync_engine.dart';
 import 'package:kartka/sync/sync_runtime.dart';
 import 'package:kartka/sync/ui/sync_account_controller.dart';
 import 'package:kartka/sync/ui/sync_account_screen.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Route of the sync account screen.
 const String syncAccountRoute = '/more/sync';

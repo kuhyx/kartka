@@ -2,7 +2,6 @@ import 'dart:ui' show ErrorCallback, PlatformDispatcher;
 
 import 'package:design_system/design_system.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/app.dart';
@@ -14,6 +13,7 @@ import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../helpers/fake_platform.dart';
 

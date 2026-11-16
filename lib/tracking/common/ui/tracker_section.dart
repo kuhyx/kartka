@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/models/manga_key.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
@@ -11,6 +10,7 @@ import 'package:kartka/tracking/common/track_binding.dart';
 import 'package:kartka/tracking/common/tracker.dart';
 import 'package:kartka/tracking/common/tracking_service.dart';
 import 'package:kartka/tracking/common/ui/track_search.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// One-line summary of a remote list entry, spoken only: [TrackStatusRow]
 /// paints it as glyphs and numbers.

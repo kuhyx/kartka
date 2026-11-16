@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Loads cover bytes for a url (normally `CoverCache.get`).
 typedef CoverBytes = Future<Uint8List> Function(String url);

@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The download control of one chapter row, following its live state:
 /// download (or retry) when absent or failed, cancel while queued or

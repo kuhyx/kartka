@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// design_system's `FitGrid` (v0.3.0) with two fixes the phone showed:
 /// a gap above the page dots, so the last row's edge and shadow are not

@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/platform/browser_engine.dart';
 import 'package:kartka/platform/engine_scripts.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   final url = Uri.parse('https://site.test/');

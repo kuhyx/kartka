@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/reader/logic/chapter_strip.dart';
 import 'package:kartka/reader/ui/reader_view_controller.dart';
 import 'package:kartka/reader/ui/webtoon_reader_view.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   late List<int> items;

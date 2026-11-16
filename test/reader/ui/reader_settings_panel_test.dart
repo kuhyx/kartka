@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/reader/data/reader_settings.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/logic/tap_zones.dart';
 import 'package:kartka/reader/ui/reader_controls.dart';
 import 'package:kartka/reader/ui/reader_settings_panel.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/spoken_icon.dart';
 

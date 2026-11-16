@@ -1,5 +1,4 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/source_health/install/keep_reconciler.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
@@ -12,6 +11,7 @@ import 'package:kartka/source_health/ui/freshness_banner.dart';
 import 'package:kartka/source_health/ui/keep_actions_bar.dart';
 import 'package:kartka/source_health/ui/query_bar.dart';
 import 'package:kartka/source_health/ui/scoring_page.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// How many facets of [q] (besides the search text) are off their default.
 int activeFilterCount(HealthQuery q) => [

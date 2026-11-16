@@ -1,10 +1,10 @@
 import 'package:crdt_sync_flutter/testing/fake_secure_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/sync/sync_status.dart';
 import 'package:kartka/sync/ui/google_route.dart';
 import 'package:kartka/sync/ui/sync_account_controller.dart';
 import 'package:kartka/sync/ui/sync_account_screen.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fake_account_controller.dart';

@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/reader/ui/page_precache.dart';
 import 'package:kartka/reader/ui/zoomable_page.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// One page image, with loading and retryable error states.
 class ReaderPageImage extends StatelessWidget {

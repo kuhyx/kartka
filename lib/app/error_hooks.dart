@@ -5,10 +5,10 @@ library;
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/app/screen_observer.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Logs uncaught framework (`uncaught.flutter`) and async
 /// (`uncaught.async`) errors through [reporter], then defers to the

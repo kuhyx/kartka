@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/ui/section_mark.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
@@ -10,6 +9,7 @@ import 'package:kartka/downloads/downloads_snapshot.dart';
 import 'package:kartka/downloads/ui/format.dart';
 import 'package:kartka/downloads/ui/offline_manga_tile.dart';
 import 'package:kartka/downloads/ui/queue_tile.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// More → Downloads: the queue with progress, pause/resume, cancel, retry,
 /// and the offline chapters with their storage use.

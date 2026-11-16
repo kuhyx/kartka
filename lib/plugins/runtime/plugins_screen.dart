@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/confirm_mark.dart';
 import 'package:kartka/core/ui/section_mark.dart';
@@ -9,6 +8,7 @@ import 'package:kartka/plugins/runtime/plugin_languages.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
 import 'package:kartka/plugins/runtime/plugin_store.dart';
 import 'package:kartka/plugins/runtime/plugins_sections.dart';
+import 'package:material_ui/material_ui.dart';
 
 const _tap = Size.square(48);
 

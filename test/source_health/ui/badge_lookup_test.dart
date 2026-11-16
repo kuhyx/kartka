@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/source_health/feed/fixture_feed.dart';
 import 'package:kartka/source_health/source_health_lookup_impl.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../fixtures.dart';
 import 'harness.dart';

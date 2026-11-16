@@ -1,11 +1,11 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/ui/snack_mark.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/source_health/install/source_installs.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/health_icons.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Install / Installing… / Open for one source, on its card and detail page.
 /// A failed install shows a snackbar with the redacted reason.

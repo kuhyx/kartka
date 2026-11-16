@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
@@ -11,6 +10,7 @@ import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/state/reader_deps.dart';
 import 'package:kartka/reader/ui/page_precache.dart';
 import 'package:kartka/reader/ui/reader_screen.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../support/fakes.dart';
 import 'reader_harness.dart';

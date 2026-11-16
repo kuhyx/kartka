@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/diagnostics/diagnostic_entry.dart';
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
@@ -10,6 +9,7 @@ import 'package:kartka/source_health/install/source_installs.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ui/source_detail_page.dart';
 import 'package:kartka/source_health/ui/sources_tab.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../ui/harness.dart';
 

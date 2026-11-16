@@ -1,7 +1,7 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/ui/section_mark.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   testWidgets('a section mark is a glyph in the header gutter', (t) async {

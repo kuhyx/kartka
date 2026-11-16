@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/updates/state/updates_deps.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Thumbnail width of a manga heading's cover.
 const updateCoverWidth = 40.0;

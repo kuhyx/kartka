@@ -1,5 +1,5 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Word-free stand-in for design_system's `SectionHeader`: a glyph in the
 /// section-header slot, its old title kept as [semanticLabel] only.

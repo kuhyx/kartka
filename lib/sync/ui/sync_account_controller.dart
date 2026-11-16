@@ -4,7 +4,6 @@ library;
 
 import 'package:crdt_sync_flutter/crdt_sync_flutter.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/material.dart';
 import 'package:kartka/sync/google_client.dart';
 import 'package:kartka/sync/settings/synced_settings.dart';
 import 'package:kartka/sync/sync_config.dart';
@@ -12,6 +11,7 @@ import 'package:kartka/sync/sync_engine.dart';
 import 'package:kartka/sync/sync_runtime.dart';
 import 'package:kartka/sync/sync_status.dart';
 import 'package:kartka/sync/ui/google_route.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sync_settings_ui/sync_settings_ui.dart';
 
 /// The sync account screen's view of sync.

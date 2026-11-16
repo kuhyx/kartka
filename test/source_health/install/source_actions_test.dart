@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/plugins/runtime/plugin_manager.dart';
@@ -11,6 +10,7 @@ import 'package:kartka/source_health/model/quality_metrics.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/spoken_icon.dart';
 import '../../plugins/runtime/support.dart' as plugin_support;

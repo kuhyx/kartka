@@ -1,5 +1,4 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/metric_text.dart';
@@ -7,6 +6,7 @@ import 'package:kartka/source_health/metric_values.dart';
 import 'package:kartka/source_health/model/metrics.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ui/health_icons.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Every metric of [record] as glyph + value, for the ranking card. Each is
 /// spoken as `<metric>: <worded value>` (`metric_text.dart`).

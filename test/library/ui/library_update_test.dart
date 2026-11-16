@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/library/state/library_deps.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/fake_updater.dart';
 import '../support/fakes.dart';

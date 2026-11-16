@@ -1,7 +1,7 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/ui/page_slider.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The overlay shown on a centre tap: top bar and bottom page bar.
 class ReaderControls extends StatelessWidget {

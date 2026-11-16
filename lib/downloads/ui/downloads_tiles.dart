@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/downloads/auto/auto_downloader.dart';
 import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/downloads/downloads_snapshot.dart';
 import 'package:kartka/downloads/ui/format.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// More tab: opens the Downloads screen and shows storage used.
 class DownloadsNavTile extends StatefulWidget {

@@ -1,5 +1,4 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
@@ -7,6 +6,7 @@ import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/health_icons.dart';
 import 'package:kartka/source_health/ui/skipped_page.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// `585 tested of 590 candidates · 120 keep · 400 cut · 65 pending · showing
 /// 12`. Totals come from [meta] when the evaluator published it; otherwise

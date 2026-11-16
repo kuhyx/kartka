@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -19,6 +18,7 @@ import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/reader_feature.dart';
 import 'package:kartka/reader/ui/chapter_transition.dart';
 import 'package:kartka/reader/ui/reader_screen.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../helpers/spoken_icon.dart';
 import 'support/fakes.dart';

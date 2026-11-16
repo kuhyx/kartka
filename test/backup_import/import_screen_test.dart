@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/backup_import/backup_importer.dart';
 import 'package:kartka/backup_import/import_controller.dart';
@@ -10,6 +9,7 @@ import 'package:kartka/backup_import/import_preview.dart';
 import 'package:kartka/backup_import/import_screen.dart';
 import 'package:kartka/platform/file_picker.dart';
 import 'package:kartka/platform/memory/memory_fakes.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'fake_setup.dart';
 import 'fakes.dart';

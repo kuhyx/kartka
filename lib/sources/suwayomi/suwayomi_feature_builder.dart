@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/settings_stores.dart';
@@ -12,6 +11,7 @@ import 'package:kartka/sources/suwayomi/suwayomi_source.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_source_provider.dart';
 import 'package:kartka/sources/suwayomi/ui/extensions_screen.dart';
 import 'package:kartka/sources/suwayomi/ui/suwayomi_settings_screen.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Route of the Suwayomi settings screen.
 const suwayomiSettingsRoute = '/suwayomi';

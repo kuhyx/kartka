@@ -1,10 +1,10 @@
 import 'package:design_system/design_system.dart';
-import 'package:flutter/material.dart';
 import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/ranking.dart';
 import 'package:kartka/source_health/thresholds.dart';
 import 'package:kartka/source_health/ui/health_badge.dart';
 import 'package:kartka/source_health/ui/health_icons.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A clock glyph and when the evaluator last ran, plus a warning pill once
 /// results pass the stale limit.
