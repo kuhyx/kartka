@@ -11,19 +11,9 @@ from crdt_sync._fbkeys import encode_key
 import pytest
 
 from source_eval import cli, report
-from source_eval.e2e import HEADER
-from source_eval.profile import (
-    DEFAULT,
-    SETTING_KEY,
-    SETTING_NODE,
-    SETTING_REL,
-    Cuts,
-    Profile,
-)
+from source_eval.profile import DEFAULT, SETTING_KEY, SETTING_NODE, Cuts, Profile
 from source_eval.state import Manifest
-from source_eval.synced_profile import load_profile
 from tests.app_helpers import make_app
-from tests.e2e_support import HEADER_TEXT, seal
 from tests.fakes import FakeTransport, resp
 
 if TYPE_CHECKING:
@@ -32,38 +22,31 @@ if TYPE_CHECKING:
 CUSTOM = dataclasses.replace(DEFAULT, keep_score=0.5, cuts=Cuts(coverage=True))
 
 
-HLC = "2026-11-12T10:00:00.000Z-0000-dev-a"
-
-
 def node_for(profile: dict[str, Any] | str) -> dict[str, object]:
-    """The settings node the app writes (``value`` a JSON string), sealed."""
+    """The settings node the app writes: ``value`` is a JSON string."""
     value = profile if isinstance(profile, str) else json.dumps(profile)
-    return seal(
-        SETTING_REL, {"key": SETTING_KEY, "value": value, "hlc": HLC}, newest=HLC
-    )
+    return {"key": SETTING_KEY, "value": value, "hlc": "0001"}
 
 
 class Reader:
-    """An RTDB reader answering the e2e header and one node."""
+    """An RTDB reader answering one path."""
 
-    def __init__(self, answer: object, header: object = HEADER_TEXT) -> None:
+    def __init__(self, answer: object) -> None:
         self.answer = answer
-        self.header = header
         self.paths: list[str] = []
 
     def get(self, path: str) -> object:
         self.paths.append(path)
         if isinstance(self.answer, Exception):
             raise self.answer
-        return self.header if path == HEADER else self.answer
+        return self.answer
 
     def patch(self, path: str, data: dict[str, object]) -> None:
         pytest.fail("the profile read must not publish")
 
 
 def test_node_is_the_settings_namespace_of_the_escaped_key() -> None:
-    assert f"kartka-e2e/settings/{encode_key(SETTING_KEY)}" == SETTING_NODE
-    assert SETTING_NODE.endswith(SETTING_REL)
+    assert f"kartka/settings/{encode_key(SETTING_KEY)}" == SETTING_NODE
 
 
 def test_firebase_rtdb_get() -> None:
@@ -81,34 +64,15 @@ def test_firebase_rtdb_get() -> None:
 
 def test_load_profile_reads_the_synced_setting() -> None:
     reader = Reader(node_for(CUSTOM.to_json()))
-    assert load_profile(lambda: reader) == (CUSTOM, None)
-    assert reader.paths == [HEADER, HEADER, SETTING_NODE]  # unlock re-reads it
+    assert report.load_profile(lambda: reader) == (CUSTOM, None)
+    assert reader.paths == [SETTING_NODE]
 
 
 @pytest.mark.parametrize(
-    "answer",
-    [None, seal(SETTING_REL, {"key": SETTING_KEY, "hlc": HLC}, newest=HLC)],
-    ids=["absent", "removed"],
+    "answer", [None, {"key": SETTING_KEY, "hlc": "0001"}], ids=["absent", "removed"]
 )
 def test_no_custom_profile_means_default_without_a_warning(answer: object) -> None:
-    assert load_profile(lambda: Reader(answer)) == (DEFAULT, None)
-
-
-def test_no_e2e_header_means_nothing_synced_yet() -> None:
-    reader = Reader(node_for(CUSTOM.to_json()), header=None)
-    assert load_profile(lambda: reader) == (DEFAULT, None)
-    assert reader.paths == [HEADER]
-
-
-@pytest.mark.parametrize("secret", ["", "wrong"])
-def test_a_locked_profile_falls_back_with_a_warning(
-    password_file: Path, secret: str
-) -> None:
-    password_file.write_text(secret, encoding="utf-8")
-    profile, warning = load_profile(lambda: Reader(node_for(CUSTOM.to_json())))
-    assert profile == DEFAULT
-    assert warning is not None
-    assert "locked" in warning
+    assert report.load_profile(lambda: Reader(answer)) == (DEFAULT, None)
 
 
 @pytest.mark.parametrize(
@@ -117,29 +81,17 @@ def test_a_locked_profile_falls_back_with_a_warning(
         node_for("not json"),
         node_for({"keepScore": 7}),
         node_for("[1]"),
-        seal(SETTING_REL, {"key": SETTING_KEY, "value": 3, "hlc": HLC}),
+        {"key": SETTING_KEY, "value": 3, "hlc": "0001"},
         ["not", "a", "node"],
-        {"key": SETTING_KEY, "value": "{}", "hlc": HLC},
-        seal("settings/other", {"key": SETTING_KEY, "value": "{}"}),
         RuntimeError("HTTP 401"),
         OSError("offline"),
     ],
-    ids=[
-        "bad-json",
-        "invalid",
-        "not-object",
-        "value-type",
-        "node-type",
-        "plaintext",
-        "moved",
-        "http",
-        "os",
-    ],
+    ids=["bad-json", "invalid", "not-object", "value-type", "node-type", "http", "os"],
 )
 def test_unreadable_or_invalid_profile_falls_back_with_a_warning(
     answer: object,
 ) -> None:
-    profile, warning = load_profile(lambda: Reader(answer))
+    profile, warning = report.load_profile(lambda: Reader(answer))
     assert profile == DEFAULT
     assert warning is not None
     assert "DEFAULT" in warning
@@ -150,7 +102,7 @@ def test_a_failed_sign_in_falls_back_with_a_warning() -> None:
         msg = "no credential"
         raise OSError(msg)
 
-    profile, warning = load_profile(no_session)
+    profile, warning = report.load_profile(no_session)
     assert profile == DEFAULT
     assert warning is not None
     assert "no credential" in warning
@@ -216,7 +168,7 @@ def test_cli_report_reads_the_profile_unless_default_is_forced(
         == "default"
     )
     assert run() == 0
-    assert reader.paths == [HEADER, HEADER, SETTING_NODE]  # unlock re-reads it
+    assert reader.paths == [SETTING_NODE]
     assert (
         json.loads((tmp_path / "o.json").read_text())["meta"]["profile"]["name"]
         == "custom"

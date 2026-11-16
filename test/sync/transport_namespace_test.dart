@@ -31,7 +31,6 @@ Future<List<String>> _paths({String? namespace}) async {
     (r) => FakeKartkaHttp.text(jsonEncode({'a': 1})),
   );
   final t = FirebaseTransport(
-    root: 'kartka',
     writer: FirebaseRestWriter(client),
     http: reads,
     databaseUrl: 'https://db.example/',
@@ -67,7 +66,6 @@ void main() {
     for (final bad in ['slot3', 'sandbox/', 'sandbox/Slot', '/x', 'a\n']) {
       expect(
         () => FirebaseTransport(
-          root: 'kartka',
           writer: _NoWriter(),
           http: FakeKartkaHttp(),
           databaseUrl: 'https://db',
@@ -82,7 +80,6 @@ void main() {
   test('the compiled define defaults to empty (production paths)', () async {
     final reads = FakeKartkaHttp((r) => FakeKartkaHttp.text('null'));
     final t = FirebaseTransport(
-      root: 'kartka',
       writer: _NoWriter(),
       http: reads,
       databaseUrl: 'https://db',

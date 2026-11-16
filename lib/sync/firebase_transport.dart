@@ -13,8 +13,7 @@ import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/sync/off_ui_json.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 
-/// The pre-e2e RTDB root. Since e2e it is only read (the one-time copy);
-/// the data lives under `kE2eLayout.prefix` (lib/sync/e2e/).
+/// The RTDB root every Kartka node lives under.
 const String kKartkaRoot = 'kartka';
 
 /// Minimal write surface of `FirebaseRestClient`, so tests can fake it.
@@ -42,7 +41,7 @@ class FirebaseRestWriter implements RtdbWriter {
       client.patchValues(path, values);
 }
 
-/// Reads and writes `/<root>` on the RTDB at `databaseUrl`.
+/// Reads and writes `/kartka` on the RTDB at `databaseUrl`.
 class FirebaseTransport implements RtdbTransport {
   /// Creates a transport; [databaseUrl] is the regional RTDB host.
   ///
@@ -54,7 +53,6 @@ class FirebaseTransport implements RtdbTransport {
     required this.writer,
     required this.http,
     required String databaseUrl,
-    required this.root,
     String? namespace,
   }) : _namespace = checkSyncNamespace(namespace ?? syncNamespace),
        _base = Uri.parse(
@@ -69,9 +67,6 @@ class FirebaseTransport implements RtdbTransport {
   /// HTTP for reads.
   final KartkaHttp http;
 
-  /// The RTDB node every path is relative to.
-  final String root;
-
   final Uri _base;
   final String _namespace;
 
@@ -79,7 +74,7 @@ class FirebaseTransport implements RtdbTransport {
   Future<Object?> get(String path) async {
     final segments = [
       ..._namespace.split('/').where((s) => s.isNotEmpty),
-      ...root.split('/'),
+      kKartkaRoot,
       ...path.split('/').where((s) => s.isNotEmpty),
     ];
     final last = '${segments.removeLast()}.json';
@@ -109,5 +104,5 @@ class FirebaseTransport implements RtdbTransport {
 
   @override
   Future<void> patch(Map<String, Object?> updates) =>
-      writer.patchValues(root, updates);
+      writer.patchValues(kKartkaRoot, updates);
 }

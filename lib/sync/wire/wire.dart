@@ -1,5 +1,5 @@
 /// Model <-> RTDB node mapping for the synced namespaces (contracts §4, §12,
-/// §13). Paths are relative to `/kartka-e2e`.
+/// §13). Paths are relative to `/kartka`.
 library;
 
 import 'dart:math';
