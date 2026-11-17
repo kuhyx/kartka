@@ -6,6 +6,7 @@ import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/source/challenge.dart';
+import 'package:kartka/core/source/manga_gone_error.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -32,7 +33,7 @@ class DetailStatus extends StatelessWidget {
         child: ChallengePrompt(challenge, onRetry: () => unawaited(c.load())),
       );
     }
-    if (error is SourceUnavailable) {
+    if (error is SourceUnavailable || error is MangaGoneError) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [_unavailable(c), retry],
@@ -60,7 +61,8 @@ Widget? staleBanner(MangaDetailController c) => switch (c.error) {
     padding: const EdgeInsets.all(AppSpacing.md),
     child: ChallengePrompt(challenge, onRetry: () => unawaited(c.load())),
   ),
-  SourceUnavailable() => Column(children: [_unavailable(c), _retry(c)]),
+  SourceUnavailable() ||
+  MangaGoneError() => Column(children: [_unavailable(c), _retry(c)]),
   _ => null,
 };
 
@@ -71,13 +73,17 @@ Widget _retry(MangaDetailController c) => IconButton(
 );
 
 /// The source id is data (which plugin to install), so it stays painted.
+/// A manga the source no longer has gets its own mark: the source is fine.
 Widget _unavailable(MangaDetailController c) => Column(
   mainAxisSize: MainAxisSize.min,
   children: [
-    const EmptyMark(
-      icon: Icons.cloud_off_outlined,
-      semanticLabel: 'Source unavailable',
-    ),
+    if (c.error is MangaGoneError)
+      const EmptyMark(icon: Icons.link_off, semanticLabel: 'Not on the server')
+    else
+      const EmptyMark(
+        icon: Icons.cloud_off_outlined,
+        semanticLabel: 'Source unavailable',
+      ),
     Text(c.sourceId),
   ],
 );

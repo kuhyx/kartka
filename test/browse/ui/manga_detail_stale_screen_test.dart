@@ -5,6 +5,7 @@ import 'package:kartka/app/routes.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/challenge.dart';
+import 'package:kartka/core/source/manga_gone_error.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../helpers/spoken_icon.dart';
@@ -84,4 +85,21 @@ void main() {
     expect(find.text('sy-builtin:1'), findsOneWidget);
     expect(spokenIcon('Retry'), findsOneWidget);
   });
+
+  testWidgets('a manga gone from the server keeps its details, marked', (
+    t,
+  ) async {
+    final src = FakeSource('mangadex')..failWith = _Gone();
+    final h = await _stored(t, src);
+    await h.pump(t, const SizedBox(), at: mangaRoute('mangadex', _url));
+    await t.pumpAndSettle();
+    expect(find.text('Stored title'), findsOneWidget);
+    expect(spokenIcon('Not on the server'), findsOneWidget);
+    expect(spokenIcon('Retry'), findsOneWidget);
+  });
+}
+
+class _Gone extends Error implements MangaGoneError {
+  @override
+  String toString() => 'SuwayomiException: not on the server';
 }
