@@ -1,8 +1,8 @@
+import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show WaitWatch;
 import 'package:design_system/design_system.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/fit_pages.dart';
 import 'package:kartka/app/routes.dart';
-import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/state/library_controller.dart';
 import 'package:kartka/library/ui/library_cell.dart';

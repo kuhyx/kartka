@@ -1,5 +1,4 @@
 import 'package:kartka/core/diagnostics/diagnostic_entry.dart';
-import 'package:kartka/core/diagnostics/slow_wait.dart';
 import 'package:kartka/core/net/network_errors.dart';
 
 /// Whether [e] goes up to `/kartka/errors` (`ErrorUploader`): failures and
@@ -10,6 +9,6 @@ import 'package:kartka/core/net/network_errors.dart';
 /// Pure Dart, so `tools/agent/uploadable.dart` judges a device log by the
 /// very rule the app ships.
 bool isUploadedEntry(DiagnosticEntry e) =>
-    e.kind == perfSlowKind ||
+    e.kind == 'perf.slow' ||
     !e.kind.startsWith('perf.') &&
         (e.kind.startsWith('uncaught.') || !isEnvironmentError(e.error));

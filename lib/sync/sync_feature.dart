@@ -3,14 +3,15 @@
 /// settings, error reports, and More → Sync.
 library;
 
+import 'package:crdt_sync_flutter/crdt_sync_flutter.dart'
+    show AppErrors, WaitWatch;
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
-import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/sync/decorators/sync_repository_decorator.dart';
 import 'package:kartka/sync/decorators/synced_bindings.dart';
-import 'package:kartka/sync/error_upload.dart';
+import 'package:kartka/sync/error_sink.dart';
 import 'package:kartka/sync/polling_rtdb_reader.dart';
 import 'package:kartka/sync/rtdb_reader.dart';
 import 'package:kartka/sync/settings/sync_passphrase.dart';
@@ -32,8 +33,12 @@ KartkaFeature syncFeature(KartkaEnv env) {
     openTransport: () => openFirebaseTransport(env.platform.http),
     diagnostics: log,
   );
-  // Error reports ride the same signed-in transport (tools/errors).
-  startErrorUploads(runtime, log: log, kv: env.platform.kv);
+  // Error reports ride the same signed-in transport, through the shared
+  // uploader (crdt_sync_flutter): RTDB /kartka/errors/<device>/<id>.
+  AppErrors.instance?.connect(
+    sink: () async => errorSink(await runtime.transport()),
+    deviceId: runtime.deviceId,
+  );
   return syncFeatureWith(
     runtime,
     settings: SyncedSettings(

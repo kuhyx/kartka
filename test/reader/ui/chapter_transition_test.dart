@@ -1,6 +1,6 @@
+import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show WaitWatch;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/reader/ui/chapter_transition.dart';
 import 'package:material_ui/material_ui.dart';
 

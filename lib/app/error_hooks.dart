@@ -1,38 +1,13 @@
-/// App-wide error capture: everything the user sees fail (or that escapes)
-/// lands in the diagnostics log, from where sync reports it to the PC.
+/// Screen-level error capture: an error snackbar and the screen on top go
+/// into the diagnostics log. Uncaught errors and the upload are the shared
+/// reporter's (`app_errors.dart`).
 library;
-
-import 'dart:ui' show PlatformDispatcher;
 
 import 'package:design_system/design_system.dart';
 import 'package:kartka/app/screen_observer.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:material_ui/material_ui.dart';
-
-/// Logs uncaught framework (`uncaught.flutter`) and async
-/// (`uncaught.async`) errors through [reporter], then defers to the
-/// handlers installed before it (presentError, the redacted print).
-/// Called once from `main`, after `installRedactedLogging`.
-void installErrorReporting(ErrorReporter reporter) {
-  final framework = FlutterError.onError;
-  FlutterError.onError = (details) {
-    if (!details.silent) {
-      reporter.report(
-        'uncaught.flutter',
-        details.exception,
-        stack: details.stack,
-      );
-    }
-    framework?.call(details);
-  };
-  final dispatcher = PlatformDispatcher.instance;
-  final async = dispatcher.onError;
-  dispatcher.onError = (error, stack) {
-    reporter.report('uncaught.async', error, stack: stack);
-    return async?.call(error, stack) ?? false;
-  };
-}
 
 /// Keeps [log]'s route current, so every entry names its screen (a
 /// go_router pattern only: ids, URLs and titles never reach the log).

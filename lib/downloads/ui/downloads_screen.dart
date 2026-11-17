@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show WaitWatch;
 import 'package:design_system/design_system.dart';
-import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/ui/section_mark.dart';
 import 'package:kartka/core/ui/spoken_label.dart';

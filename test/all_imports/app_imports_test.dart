@@ -3,6 +3,7 @@
 // ignore_for_file: unused_import
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/app.dart';
+import 'package:kartka/app/app_errors.dart';
 import 'package:kartka/app/cached_cover.dart';
 import 'package:kartka/app/error_hooks.dart';
 import 'package:kartka/app/feature.dart';
@@ -14,7 +15,6 @@ import 'package:kartka/app/scope.dart';
 import 'package:kartka/app/screen_observer.dart';
 import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/app/shell.dart';
-import 'package:kartka/app/wait_watch.dart';
 
 void main() {
   test('every lib/app file loads', () {});

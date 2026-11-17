@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show WaitWatch;
 import 'package:kartka/app/fit_pages.dart';
-import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/ui/update_progress_strip.dart';
 import 'package:kartka/updates/state/updates_controller.dart';

@@ -1,8 +1,9 @@
+import 'package:crdt_sync_flutter/crdt_sync_flutter.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/app/app_errors.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
-import 'package:kartka/sync/error_upload.dart';
-import 'package:kartka/sync/rtdb_transport.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// The messages of every environment-caused ticket (a server, network or
 /// upstream site that is down, a manga the server no longer has): they
@@ -37,18 +38,26 @@ const _known = {
       'address associated with hostname, errno = 7), uri=https://$_rtdb',
 };
 
-/// Real bugs keep going up.
-const _bugs = {
+const _uncaught = 'ClientException: Connection reset by peer, uri=x';
+
+/// Real bugs keep going up (an escaped one through the shared hook, not
+/// the bridge, so it is not queued twice).
+const Map<String, String> _bugs = {
   'details.load': 'SuwayomiException: response has no data',
   'reader.page': 'KartkaHttpException(404, https://x.org/api/v1/page/0)',
   'uncaught.flutter': 'Bad state: No element',
-  'uncaught.async': 'ClientException: Connection reset by peer, uri=x',
+  'uncaught.async': _uncaught,
 };
 
 void main() {
-  test('known environment states stay local; bugs go up', () async {
+  test('known environment states stay local; bugs are queued', () async {
+    SharedPreferences.setMockInitialValues({});
+    final errors = AppErrors.forTest(
+      kartkaErrorsConfig(build: 1),
+      await ErrorQueue.open(await SharedPreferences.getInstance()),
+    );
     final log = DiagnosticsLog(MemoryBlobStore());
-    final db = InMemoryRtdb();
+    addTearDown(bridgeDiagnostics(log, errors).cancel);
     var s = 0;
     for (final MapEntry(:key, :value) in {..._known, ..._bugs}.entries) {
       await log.append(
@@ -68,15 +77,11 @@ void main() {
         ),
       );
     }
-    final up = ErrorUploader(
-      log: log,
-      kv: MemoryKeyValueStore({ErrorUploader.sinceKey: '2000-01-01T00:00:00Z'}),
-      transport: () async => db,
-      deviceId: () async => 'dev',
-    );
-    expect(await up.flush(), isTrue);
-    final nodes = (db.tree['errors']! as Map)['dev']! as Map;
-    final sent = {for (final n in nodes.values) (n! as Map)['error']};
-    expect(sent, _bugs.values.toSet());
+    await pumpEventQueue();
+    final sent = {for (final e in errors.queue.entries) e.error};
+    expect(sent, {
+      for (final MapEntry(:key, :value) in _bugs.entries)
+        if (!key.startsWith('uncaught.')) value,
+    });
   });
 }

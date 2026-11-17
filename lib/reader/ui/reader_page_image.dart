@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show WaitWatch;
 import 'package:design_system/design_system.dart';
-import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/reader/ui/page_precache.dart';
 import 'package:kartka/reader/ui/zoomable_page.dart';
