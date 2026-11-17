@@ -7,6 +7,7 @@ import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/library_routes.dart';
 import 'package:kartka/library/state/library_controller.dart';
 import 'package:kartka/library/state/library_deps.dart';
+import 'package:kartka/library/state/notify_schedulers.dart';
 import 'package:kartka/library/ui/category_picker_dialog.dart';
 import 'package:kartka/library/ui/category_tabs.dart';
 import 'package:kartka/library/ui/library_app_bar.dart';
@@ -32,6 +33,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   late final LibraryController _c = LibraryController(
     widget.deps,
     schedule: beforeNextFrame,
+    afterPaint: afterNextFrame,
   )..start();
   bool _searching = false;
 

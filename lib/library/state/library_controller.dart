@@ -1,25 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart' hide Category;
-import 'package:flutter/scheduler.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/library/data/lww.dart';
 import 'package:kartka/library/state/entry_facts.dart';
 import 'package:kartka/library/state/library_deps.dart';
 import 'package:kartka/library/state/library_item.dart';
 import 'package:kartka/library/state/library_query.dart';
+import 'package:kartka/library/state/notify_schedulers.dart';
 import 'package:kartka/library/state/source_availability.dart';
-
-/// Runs a coalesced notification later.
-typedef NotifyScheduler = void Function(void Function() run);
-
-/// [NotifyScheduler] for the next event-loop turn.
-void nextTurn(void Function() run) => Timer.run(run);
-
-/// [NotifyScheduler] for just before the next frame builds (it schedules
-/// one): at most one library rebuild request per frame.
-void beforeNextFrame(void Function() run) =>
-    SchedulerBinding.instance.scheduleFrameCallback((_) => run());
 
 /// Entries removed together, kept for undo.
 typedef RemovedBatch = ({List<LibraryEntry> entries, DateTime at});
@@ -27,14 +16,16 @@ typedef RemovedBatch = ({List<LibraryEntry> entries, DateTime at});
 /// State of the Library tab: the joined items, category tabs, the query and
 /// the multi-selection. Every write goes through the decorated repositories.
 class LibraryController extends ChangeNotifier {
-  /// Creates the controller; call [start] to subscribe. `schedule` runs
-  /// the coalesced notify later: the screen passes [beforeNextFrame], the
-  /// default (unit tests, no binding) is the next event-loop turn.
-  new(this.deps, {this._schedule = nextTurn}) {
+  /// Creates the controller; call [start] to subscribe. `schedule` runs the
+  /// coalesced notify ([beforeNextFrame] on screen), `afterPaint` starts the
+  /// fact streams after the first grid is drawn ([afterNextFrame]).
+  new(this.deps, {this._schedule = nextTurn, this._afterPaint = nextTurn}) {
     _facts = FactsTracker(deps, _dataChanged);
   }
 
   final NotifyScheduler _schedule;
+  final NotifyScheduler _afterPaint;
+  bool _factsOn = false;
 
   /// Repositories, ports and clock.
   final LibraryDeps deps;
@@ -128,9 +119,19 @@ class LibraryController extends ChangeNotifier {
   void _onEntries(List<LibraryEntry> entries) {
     _entries = {for (final e in entries) e.key: e};
     _selected.retainAll(_entries.keys);
-    _facts.track(_entries.keys.toSet());
+    if (_factsOn) {
+      _facts.track(_entries.keys.toSet());
+    } else if (!_loaded) {
+      _afterPaint(_startFacts);
+    }
     _loaded = true;
     _dataChanged();
+  }
+
+  void _startFacts() {
+    if (_disposed) return;
+    _factsOn = true;
+    _facts.track(_entries.keys.toSet());
   }
 
   void _onCategories(List<Category> categories) {
