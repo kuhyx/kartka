@@ -110,7 +110,7 @@ class ProxyRoute {
     } on Object catch (e) {
       response
         ..statusCode = HttpStatus.badGateway
-        ..headers.set(proxyErrorHeader, e.runtimeType.toString());
+        ..headers.set(proxyErrorHeader, _oneLine('$e'));
       return;
     }
     response.statusCode = upstream.statusCode;
@@ -143,4 +143,10 @@ class ProxyRoute {
   static bool _isSelf(Uri target, int ownPort) =>
       target.port == ownPort &&
       (target.host == '127.0.0.1' || target.host == 'localhost');
+}
+
+/// [text] as a safe header value: printable ASCII, one line, <= 300 chars.
+String _oneLine(String text) {
+  final clean = text.replaceAll(RegExp(r'[^\x20-\x7e]+'), ' ').trim();
+  return clean.length > 300 ? clean.substring(0, 300) : clean;
 }

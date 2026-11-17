@@ -34,6 +34,10 @@ abstract final class KartkaWrapper {
   /// `<METHOD> /proxy?url=<absolute http(s) URL>`.
   static const proxyPath = '/proxy';
 
+  /// On a 502 from [proxyPath], the wrapper's own error (the upstream was
+  /// not reached); absent when the upstream itself answered 502.
+  static const proxyErrorHeader = 'x-kartka-proxy-error';
+
   /// `GET|PUT|DELETE /files/<blobKey>`, `GET /files?prefix=` (JSON list).
   static const filesPath = '/files';
 

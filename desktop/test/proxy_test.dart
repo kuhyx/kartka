@@ -120,7 +120,9 @@ void main() {
     await closed.close();
     final r = await h.call('GET', proxied('http://127.0.0.1:$port/'));
     expect(r.status, 502);
-    expect(r.headers.value(proxyErrorHeader), isNotNull);
+    // The cause, one line, so the app can tell offline from a bug.
+    expect(r.headers.value(proxyErrorHeader), startsWith('SocketException: '));
+    expect(r.headers.value(proxyErrorHeader), contains('Connection refused'));
   });
 
   test('header policy', () {

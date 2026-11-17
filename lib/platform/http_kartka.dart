@@ -67,7 +67,13 @@ class ProxyKartkaHttp extends KartkaHttp {
     // bodyBytes, not body: setting body would add a text/plain Content-Type
     // the caller did not ask for.
     if (body != null) request.bodyBytes = utf8.encode(body);
-    return await _complete(client.send(request), _unprefix);
+    final response = await client.send(request);
+    final cause = response.headers[KartkaWrapper.proxyErrorHeader];
+    if (response.statusCode == 502 && cause != null) {
+      await response.stream.drain<void>();
+      throw KartkaNetworkException(cause, url);
+    }
+    return await _complete(Future.value(response), _unprefix);
   }
 
   static Map<String, String> _unprefix(Map<String, String> headers) => {

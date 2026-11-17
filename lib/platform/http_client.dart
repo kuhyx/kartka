@@ -88,3 +88,20 @@ class KartkaHttpException implements Exception {
   @override
   String toString() => 'KartkaHttpException($statusCode, $url)';
 }
+
+/// The desktop wrapper could not reach [url] at all: [cause] is its error
+/// (`SocketException: Failed host lookup: ...`). Worded like package:http's
+/// own on Android, so offline is told apart the same way on both.
+class KartkaNetworkException implements Exception {
+  /// Creates the exception for [url] failing with [cause].
+  const new(this.cause, this.url);
+
+  /// The wrapper's error, one line.
+  final String cause;
+
+  /// The requested URL.
+  final Uri url;
+
+  @override
+  String toString() => 'ClientException with $cause, uri=$url';
+}

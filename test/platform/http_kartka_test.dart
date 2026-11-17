@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:kartka/core/net/network_errors.dart';
 import 'package:kartka/platform/http_kartka.dart';
 import 'package:kartka/platform/platform.dart';
 import 'package:kartka/platform/wrapper_protocol.dart';
@@ -104,6 +105,35 @@ void main() {
       expect(r.headers, {'content-type': 'image/jpeg', 'set-cookie': 'a=b'});
     });
 
+    test("the wrapper's own failure throws with its cause", () async {
+      final kh = ProxyKartkaHttp(
+        MockClient(
+          (_) async => http.Response(
+            '',
+            502,
+            headers: {
+              KartkaWrapper.proxyErrorHeader:
+                  "SocketException: Failed host lookup: 'h' (OS Error)",
+            },
+          ),
+        ),
+        Uri.parse('http://127.0.0.1:47391/'),
+      );
+      final error = await kh
+          .get(Uri.parse('https://h/x'))
+          .then<Object>((_) => fail('must throw'), onError: (Object e) => e);
+      expect(error, isA<KartkaNetworkException>());
+      expect('$error', contains("Failed host lookup: 'h'"));
+      expect('$error', contains('uri=https://h/x'));
+      expect(isOfflineError(error), isTrue);
+      // An upstream 502 (no marker) stays a response.
+      final plain = ProxyKartkaHttp(
+        MockClient((_) async => http.Response('bad', 502)),
+        Uri.parse('http://127.0.0.1:47391/'),
+      );
+      expect((await plain.get(Uri.parse('https://h/x'))).statusCode, 502);
+    });
+
     test('refuses non-http(s) before reaching the wrapper', () async {
       final kh = ProxyKartkaHttp(
         MockClient((_) async => fail('must not send')),
@@ -127,6 +157,7 @@ void main() {
     expect(KartkaWrapper.requestHeaderPrefix, 'x-kartka-h-');
     expect(KartkaWrapper.responseHeaderPrefix, 'x-kartka-r-');
     expect(KartkaWrapper.proxyPath, '/proxy');
+    expect(KartkaWrapper.proxyErrorHeader, 'x-kartka-proxy-error');
     expect(KartkaWrapper.filesPath, '/files');
     expect(KartkaWrapper.secretsPath, '/secrets');
     expect(KartkaWrapper.oauthPath, '/oauth');
