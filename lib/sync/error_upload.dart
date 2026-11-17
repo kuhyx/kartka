@@ -108,11 +108,12 @@ class ErrorUploader {
       .substring(0, 20);
 
   /// Failures and slow waits go up; the rest of `perf.*` (jank) and
-  /// environment states (`isEnvironmentError`: offline, server down) stay
-  /// local, whatever kind logged them.
+  /// environment states (`isEnvironmentError`: offline, server down) a
+  /// screen caught stay local. An escaped (`uncaught.*`) one is a bug.
   static bool _reported(DiagnosticEntry e) =>
       e.kind == perfSlowKind ||
-      !e.kind.startsWith('perf.') && !isEnvironmentError(e.error);
+      !e.kind.startsWith('perf.') &&
+          (e.kind.startsWith('uncaught.') || !isEnvironmentError(e.error));
 
   /// Fixes the cutoff (now, unless one is stored) and starts flushing
   /// [debounce] after each reported append.

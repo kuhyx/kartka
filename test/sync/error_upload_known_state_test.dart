@@ -42,6 +42,7 @@ const _bugs = {
   'details.load': 'SuwayomiException: response has no data',
   'reader.page': 'KartkaHttpException(404, https://x.org/api/v1/page/0)',
   'uncaught.flutter': 'Bad state: No element',
+  'uncaught.async': 'ClientException: Connection reset by peer, uri=x',
 };
 
 void main() {

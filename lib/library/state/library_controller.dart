@@ -119,11 +119,9 @@ class LibraryController extends ChangeNotifier {
   void _onEntries(List<LibraryEntry> entries) {
     _entries = {for (final e in entries) e.key: e};
     _selected.retainAll(_entries.keys);
-    if (_factsOn) {
-      _facts.track(_entries.keys.toSet());
-    } else if (!_loaded) {
-      _afterPaint(_startFacts);
-    }
+    // The fact streams start after the first paint, never holding it.
+    if (_factsOn) _facts.track(_entries.keys.toSet());
+    if (!_loaded) _afterPaint(_startFacts);
     _loaded = true;
     _dataChanged();
   }

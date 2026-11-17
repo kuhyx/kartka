@@ -12,9 +12,9 @@ const _webView =
     '(/fetchChapterPages) : Timed out waiting for WebView after 20s"}]}';
 const _ok = '{"data":{"aboutServer":{"name":"S","version":"1"}}}';
 
-/// One dropped connection or one upstream WebView timeout is retried once
-/// silently (bcbad5dd, 2d4a35c2); a second failure, or one of an
-/// operation that changes the server, still throws.
+/// One dropped connection is retried once silently (bcbad5dd); a second
+/// failure, any other error, or one of an operation that changes the
+/// server, still throws.
 void main() {
   (SuwayomiClient, List<String>) client(List<Object> answers) {
     final calls = <String>[];
@@ -40,15 +40,17 @@ void main() {
     expect(calls, hasLength(2));
   });
 
-  test('a WebView timeout is retried once', () async {
+  test('a WebView timeout is not retried here', () async {
+    // The download engine already retries the page list 4 times; a retry
+    // here too would double every 20 s wait.
     final (c, calls) = client([_webView, _ok]);
-    expect(await c.testConnection(), 'S 1');
-    expect(calls, hasLength(2));
+    await expectLater(c.testConnection(), throwsA(isA<SuwayomiException>()));
+    expect(calls, hasLength(1));
   });
 
   test('a second failure throws', () async {
-    final (c, calls) = client([_webView, _webView]);
-    await expectLater(c.testConnection(), throwsA(isA<SuwayomiException>()));
+    final (c, calls) = client([Exception(_abort), Exception(_abort)]);
+    await expectLater(c.testConnection(), throwsA(isA<Exception>()));
     expect(calls, hasLength(2));
   });
 

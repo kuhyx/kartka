@@ -32,11 +32,11 @@ class SuwayomiClient {
 
   static final _operationName = RegExp(r'^\w+ (\w+)');
 
-  /// A dropped connection, or the server's upstream WebView timing out:
-  /// both usually pass on a second try.
+  /// A dropped connection: it usually passes on a second try. (A slow
+  /// upstream is not retried here: callers such as the download engine
+  /// already retry it, and each try can take 20 s.)
   static final _retryable = RegExp(
-    'connection abort|Connection reset|Connection closed|'
-    'Timed out waiting for WebView',
+    'connection abort|Connection reset|Connection closed',
     caseSensitive: false,
   );
 
