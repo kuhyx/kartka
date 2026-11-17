@@ -15,7 +15,11 @@ typedef SettingsReader = SuwayomiSettings Function();
 /// into [SuwayomiException]s.
 class SuwayomiClient {
   /// Creates a client reading fresh [settings] on every call.
-  new({required this.http, required this.settings});
+  new({
+    required this.http,
+    required this.settings,
+    this.retryDelay = const Duration(seconds: 1),
+  });
 
   /// The app's only HTTP client.
   final KartkaHttp http;
@@ -23,13 +27,44 @@ class SuwayomiClient {
   /// Current connection settings.
   final SettingsReader settings;
 
+  /// Wait before the one retry of a [_retryable] failure.
+  final Duration retryDelay;
+
   static final _operationName = RegExp(r'^\w+ (\w+)');
 
-  /// Runs [document] with [variables] and returns its `data` object.
+  /// A dropped connection, or the server's upstream WebView timing out:
+  /// both usually pass on a second try.
+  static final _retryable = RegExp(
+    'connection abort|Connection reset|Connection closed|'
+    'Timed out waiting for WebView',
+    caseSensitive: false,
+  );
+
+  /// Operations that change the server: never sent twice. Every other
+  /// one, `mutation` or not, only fetches (`fetchChapterPages`, ...).
+  static const _changesServer = {'KartkaUpdateExtension'};
+
+  /// Runs [document] with [variables] and returns its `data` object. A
+  /// [_retryable] failure is retried once after [retryDelay] (not for an
+  /// operation that changes the server).
   Future<Map<String, Object?>> run(
     String document, [
     Map<String, Object?> variables = const {},
   ]) async {
+    try {
+      return await _run(document, variables);
+    } on Object catch (e) {
+      final op = _operationName.firstMatch(document)?.group(1);
+      if (_changesServer.contains(op) || !_retryable.hasMatch('$e')) rethrow;
+      await Future<void>.delayed(retryDelay);
+      return await _run(document, variables);
+    }
+  }
+
+  Future<Map<String, Object?>> _run(
+    String document,
+    Map<String, Object?> variables,
+  ) async {
     final current = settings();
     if (!current.isConfigured) throw const SuwayomiNotConfiguredException();
     final response = await http.post(
