@@ -1,3 +1,5 @@
+import 'package:kartka/core/source/manga_gone_error.dart';
+
 /// Base class of everything the Suwayomi client throws on purpose.
 class SuwayomiException implements Exception {
   /// Creates an exception carrying the server's [message].
@@ -24,7 +26,8 @@ class SuwayomiAuthException extends SuwayomiException {
 
 /// The server has never seen this manga or chapter and a title search did
 /// not find it either, so it has no server-side id to fetch by.
-class SuwayomiNotOnServerException extends SuwayomiException {
+class SuwayomiNotOnServerException extends SuwayomiException
+    implements MangaGoneError {
   /// Creates the exception for [url] of [sourceId]. The message names the
   /// source only: it is logged verbatim (`updates.check`), and diagnostics
   /// carry no URLs.

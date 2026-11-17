@@ -1,6 +1,7 @@
 import 'package:kartka/browse/state/source_wait.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/redact.dart';
+import 'package:kartka/core/source/manga_gone_error.dart';
 import 'package:kartka/core/source/unknown_source_error.dart';
 
 /// What a manga-detail refresh (pull-to-refresh or the app-bar action) did.
@@ -31,9 +32,12 @@ final class RefreshSucceeded extends RefreshOutcome {
 const int refreshListedChapters = 5;
 
 /// Whether [error] only says the source is not there (not installed, or
-/// not listed yet): a known state the screen shows, never a report.
+/// not listed yet), or no longer has the manga: a known state the screen
+/// shows, never a report.
 bool isMissingSource(Object error) =>
-    error is UnknownSourceError || error is SourceUnavailable;
+    error is UnknownSourceError ||
+    error is SourceUnavailable ||
+    error is MangaGoneError;
 
 /// The snackbar text for [outcome]: `Refresh failed: <message>` (URL
 /// secrets redacted), `No new chapters`, or `3 new: ch 101, 102, 103`

@@ -3,6 +3,7 @@ import 'package:kartka/browse/state/refresh_outcome.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/net/network_errors.dart';
+import 'package:kartka/core/source/manga_gone_error.dart';
 import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/library/data/lww.dart';
@@ -150,7 +151,7 @@ class UpdateRunner extends ChangeNotifier implements LibraryUpdater {
   );
 
   static bool _isSkip(Object error) =>
-      error is _NotChecked || error is _Unavailable;
+      error is _NotChecked || error is _Unavailable || error is MangaGoneError;
 
   void _publish(UpdateProgress? p) {
     if (p == _progress) return;
