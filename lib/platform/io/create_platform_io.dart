@@ -52,8 +52,12 @@ Future<KartkaPlatform> createPlatform() async {
       SecureKeyValueStore(const FlutterSecureStorage()),
     ),
     filePicker: PluginFilePicker(
-      pickDirectory: () async =>
-          await listDirectoryFiles(await fp.FilePicker.getDirectoryPath()),
+      pickDirectory: () async => await listDirectoryFiles(
+        // Deprecated for pickDirectory's content:// Uri, which dart:io
+        // cannot list; the path still works until a SAF reader exists.
+        // ignore: deprecated_member_use
+        await fp.FilePicker.getDirectoryPath(),
+      ),
     ),
     oauth: DeepLinkOAuthRedirect(
       launch: (url) => launchUrl(url, mode: LaunchMode.externalApplication),
