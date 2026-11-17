@@ -30,7 +30,8 @@ class ProxyFault {
 /// connection per write of the file), `page-500` (Suwayomi page images
 /// answer 500), `webview` / `upstream-dns` (the page list / details call
 /// answers Suwayomi's GraphQL error for an upstream WebView timeout / DNS
-/// failure).
+/// failure), `gone` (the server no longer has the manga: its id lookup and
+/// the title search come back empty).
 class ProxyFaults {
   /// Faults read from [file].
   new(this.file);
@@ -66,6 +67,12 @@ class ProxyFaults {
             'KartkaChapters',
           }.contains(_operation(body)) =>
         _graphqlError('www.upstream.invalid: Name or service not known'),
+      'gone' when _operation(body) == 'KartkaMangaId' => _graphqlData({
+        'mangas': {'nodes': <Object>[]},
+      }),
+      'gone' when _operation(body) == 'KartkaSourceManga' => _graphqlData({
+        'fetchSourceManga': {'hasNextPage': false, 'mangas': <Object>[]},
+      }),
       _ => null,
     };
   }
@@ -101,6 +108,9 @@ class ProxyFaults {
       return null;
     }
   }
+
+  static ProxyFault _graphqlData(Map<String, Object?> data) =>
+      ProxyFault.answer(200, jsonEncode({'data': data}));
 
   static ProxyFault _graphqlError(String message) => ProxyFault.answer(
     200,

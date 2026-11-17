@@ -72,4 +72,22 @@ void main() {
     expect(details!.body, contains('Name or service not known'));
     expect(jsonDecode(details.body!), contains('errors'));
   });
+
+  test('gone: the server has no such manga (lookup and search empty)', () {
+    file.writeAsStringSync('{"s.org": "gone"}');
+    const api = 'https://s.org/api/graphql';
+    final lookup = at(api, '{"operationName":"KartkaMangaId"}');
+    expect(jsonDecode(lookup!.body!), {
+      'data': {
+        'mangas': {'nodes': <Object>[]},
+      },
+    });
+    final search = at(api, '{"operationName":"KartkaSourceManga"}');
+    expect(jsonDecode(search!.body!), {
+      'data': {
+        'fetchSourceManga': {'hasNextPage': false, 'mangas': <Object>[]},
+      },
+    });
+    expect(at(api, '{"operationName":"KartkaDetails"}'), isNull);
+  });
 }
