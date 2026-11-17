@@ -53,6 +53,9 @@ extension on _ReaderScreenState {
       error: forward ? s.nextError : null,
       onRetry: s.retryNext,
       loading: forward && s.nextLoading,
+      // Backward, reaching the slot opens the previous chapter's route,
+      // whose own reader.open times that wait.
+      onScreen: forward && s.onTrailing,
     );
     // A webtoon item has unbounded height; give the transition a screen.
     return s.mode.isPaged

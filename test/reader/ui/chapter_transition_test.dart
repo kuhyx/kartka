@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/reader/ui/chapter_transition.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -13,6 +14,7 @@ void main() {
     String? error,
     VoidCallback? onRetry,
     bool loading = false,
+    bool onScreen = true,
   }) => tester.pumpWidget(
     MaterialApp(
       home: Scaffold(
@@ -23,6 +25,7 @@ void main() {
           error: error,
           onRetry: onRetry,
           loading: loading,
+          onScreen: onScreen,
         ),
       ),
     ),
@@ -91,5 +94,13 @@ void main() {
       tester.getSize(find.byType(IconButton)).height,
       greaterThanOrEqualTo(48),
     );
+  });
+
+  testWidgets('only an on-screen spinner is timed (19643be5)', (tester) async {
+    await pump(tester, forward: true, target: 'Ch. 6', onScreen: false);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(WaitWatch), findsNothing);
+    await pump(tester, forward: true, target: 'Ch. 6');
+    expect(find.byType(WaitWatch), findsOneWidget);
   });
 }

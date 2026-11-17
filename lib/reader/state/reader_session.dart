@@ -132,6 +132,9 @@ class ReaderSession extends ChangeNotifier {
   ChapterInfo? get previousChapter =>
       segments.isEmpty ? null : segments.first.neighbours.previous;
 
+  /// Whether the view's current item is the slot after the last page.
+  bool get onTrailing => _onTrailing;
+
   /// Whether the next chapter's pages, or the chapter list that names it,
   /// are being fetched.
   bool get nextLoading => _nextLoad != null;

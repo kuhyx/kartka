@@ -17,6 +17,7 @@ class ChapterTransition extends StatelessWidget {
     this.error,
     this.onRetry,
     this.loading = false,
+    this.onScreen = true,
     super.key,
   });
 
@@ -35,6 +36,11 @@ class ChapterTransition extends StatelessWidget {
   /// Tries the neighbour again.
   final VoidCallback? onRetry;
 
+  /// Whether this slot is the one the reader is on. A paged view also lays
+  /// out the slot next to the current page off screen; its spinner is not a
+  /// wait the reader sees, so it is not timed as `reader.chapter`.
+  final bool onScreen;
+
   /// Whether the neighbour is still being looked for, before its name is
   /// known (the chapter list is fetched again).
   final bool loading;
@@ -44,6 +50,9 @@ class ChapterTransition extends StatelessWidget {
     final theme = Theme.of(context);
     final target = targetName;
     final failure = error;
+    final spinner = CircularProgressIndicator(
+      semanticsLabel: target == null ? 'Looking for the next chapter' : null,
+    );
     final muted = theme.textTheme.labelLarge?.copyWith(
       color: theme.colorScheme.onSurfaceVariant,
     );
@@ -71,14 +80,10 @@ class ChapterTransition extends StatelessWidget {
                 icon: const Icon(Icons.refresh, semanticLabel: 'Retry'),
               ),
             ] else if (target != null || loading) ...[
-              WaitWatch(
-                operation: 'reader.chapter',
-                child: CircularProgressIndicator(
-                  semanticsLabel: target == null
-                      ? 'Looking for the next chapter'
-                      : null,
-                ),
-              ),
+              if (onScreen)
+                WaitWatch(operation: 'reader.chapter', child: spinner)
+              else
+                spinner,
               if (target != null) ...[
                 const SizedBox(height: AppSpacing.md),
                 Row(
