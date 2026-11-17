@@ -27,6 +27,7 @@ class Harness {
     EngineHost? engine,
     bool allowLoopbackEngine = false,
     String? faults,
+    bool agent = false,
   }) async {
     final dir = Directory.systemTemp.createTempSync('kartka_desktop');
     final web = Directory('${dir.path}/web')..createSync();
@@ -50,6 +51,7 @@ class Harness {
       engine: engine,
       allowLoopbackEngine: allowLoopbackEngine,
       faultFile: faults == null ? null : faultPath,
+      agent: agent,
     );
     await server.start(0);
     return Harness._(dir, server);

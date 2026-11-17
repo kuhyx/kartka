@@ -2,6 +2,7 @@
 // file on the VM so `flutter test --coverage` reports it.
 // ignore_for_file: unused_import
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/platform/agent_probe.dart';
 import 'package:kartka/platform/blob_store.dart';
 import 'package:kartka/platform/browser_engine.dart';
 import 'package:kartka/platform/caching_key_value_store.dart';

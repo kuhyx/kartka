@@ -97,7 +97,8 @@ to `flutter_web_drive` (kuhyx/utils; README there): `tree`, `tap "<label>"`,
 existing `build/web`, so rebuild that first when lib/ changed. `fault <host|*> <mode>` / `fault clear`
 injects `/proxy` faults (offline, abort-once, page-500, webview,
 upstream-dns, gone; `desktop/lib/src/faults.dart`); `tools/agent/uploadable.dart`
-judges a diagnostics log by the app's upload rule. Flows in
+judges a diagnostics log by the app's upload rule. The agent wrapper runs with
+`--agent`, so its app never uploads error reports (no board tickets). Flows in
 `tools/agent/flows/` log numbered steps and exit non-zero with the failing
 step and a screenshot: `f0_smoke.sh` (shell + tab switch + non-blank shot),
 `f3_sync.sh [title chapter [trigger_epoch]]` (signs in to the real /kartka

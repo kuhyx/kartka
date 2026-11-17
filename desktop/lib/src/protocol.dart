@@ -27,6 +27,10 @@ const proxyErrorHeader = 'x-kartka-proxy-error';
 /// Route paths.
 const proxyPath = '/proxy';
 
+/// `GET` -> `{"agent": true|false}`: whether this is the headless agent
+/// instance (`--agent`), whose app must not upload error reports.
+const agentPath = '/agent';
+
 /// Blob files: `/files/<key>`, `/files?prefix=`.
 const filesPath = '/files';
 

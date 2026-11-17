@@ -1,5 +1,6 @@
 import 'package:crdt_sync_flutter/crdt_sync_flutter.dart'
     show AppErrors, ErrorSink, ErrorUploader;
+import 'package:kartka/platform/agent_probe.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/sync_runtime.dart';
 
@@ -15,8 +16,17 @@ ErrorSink? errorSink(RtdbTransport? transport) => transport == null
 
 /// Starts [errors]' upload over [runtime]'s signed-in transport as its
 /// device (never starts sync); nothing before `installAppErrors` (tests).
-ErrorUploader? connectErrorUploads(AppErrors? errors, SyncRuntime runtime) =>
-    errors?.connect(
-      sink: () async => errorSink(await runtime.transport()),
-      deviceId: runtime.deviceId,
-    );
+/// In the headless agent instance ([isAgent]) the sink stays null, so its
+/// checks queue reports on the device but never file board tickets.
+ErrorUploader? connectErrorUploads(
+  AppErrors? errors,
+  SyncRuntime runtime, {
+  Future<bool> Function() isAgent = isAgentInstance,
+}) {
+  if (errors == null) return null;
+  final agent = isAgent();
+  return errors.connect(
+    sink: () async => await agent ? null : errorSink(await runtime.transport()),
+    deviceId: runtime.deviceId,
+  );
+}

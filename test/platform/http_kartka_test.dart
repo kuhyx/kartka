@@ -158,6 +158,7 @@ void main() {
     expect(KartkaWrapper.responseHeaderPrefix, 'x-kartka-r-');
     expect(KartkaWrapper.proxyPath, '/proxy');
     expect(KartkaWrapper.proxyErrorHeader, 'x-kartka-proxy-error');
+    expect(KartkaWrapper.agentPath, '/agent');
     expect(KartkaWrapper.filesPath, '/files');
     expect(KartkaWrapper.secretsPath, '/secrets');
     expect(KartkaWrapper.oauthPath, '/oauth');

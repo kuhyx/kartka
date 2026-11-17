@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:kartka_desktop/src/chromium.dart';
@@ -31,7 +32,8 @@ class WrapperServer {
   /// unless [engine] is given; [headlessOnly] (the default, and the agent
   /// instance) refuses the visible "Open in WebView" window.
   /// [allowLoopbackEngine] is for tests. [faultFile] (agent instance only)
-  /// turns on `/proxy` fault injection ([ProxyFaults]).
+  /// turns on `/proxy` fault injection ([ProxyFaults]); [agent] makes
+  /// `/agent` answer true, so the app uploads no error reports.
   new({
     required String webRoot,
     required String filesDir,
@@ -44,6 +46,7 @@ class WrapperServer {
     bool headlessOnly = true,
     bool allowLoopbackEngine = false,
     String? faultFile,
+    bool agent = false,
   }) : this._(
          log ?? stderr.writeln,
          webRoot,
@@ -65,6 +68,7 @@ class WrapperServer {
              ),
          allowLoopbackEngine,
          faultFile,
+         agent,
        );
 
   new _(
@@ -77,6 +81,7 @@ class WrapperServer {
     this._engineHost,
     bool allowLoopbackEngine,
     String? faultFile,
+    this._agent,
   ) : _static = StaticFiles(webRoot),
       _files = FileRoutes(filesDir),
       _secrets = SecretRoutes(secretsFile),
@@ -96,6 +101,7 @@ class WrapperServer {
   final FileRoutes _files;
   final SecretRoutes _secrets;
   final SeedRoute? _seed;
+  final bool _agent;
   final ProxyRoute _proxy;
   final EngineHost _engineHost;
   final EngineRoutes _engine;
@@ -172,6 +178,7 @@ class WrapperServer {
       path == proxyPath ||
       path == oauthResultPath ||
       path == syncCredentialsPath ||
+      path == agentPath ||
       _under(path, enginePath) ||
       _under(path, filesPath) ||
       _under(path, secretsPath);
@@ -185,6 +192,12 @@ class WrapperServer {
     if (_under(path, filesPath)) return await _files.handle(request);
     if (_under(path, enginePath)) return await _engine.handle(request);
     if (_under(path, secretsPath)) return await _secrets.handle(request);
+    if (path == agentPath) {
+      request.response
+        ..headers.contentType = ContentType.json
+        ..write(jsonEncode({'agent': _agent}));
+      return;
+    }
     // Without --sync-credentials the path falls through to a static 404.
     final seed = _seed;
     if (path == syncCredentialsPath && seed != null) {

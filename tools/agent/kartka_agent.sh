@@ -49,7 +49,7 @@ start_wrapper() {
       "$(command -v fvm)" dart run bin/kartka_desktop.dart \
       --web-root "$REPO_DIR/build/web" --no-browser --port "$AGENT_PORT" \
       --files-dir "$AGENT_HOME/files" --secrets-path "$AGENT_HOME/secrets.json" \
-      --fault-file "$AGENT_FAULTS" "${seed[@]}"
+      --fault-file "$AGENT_FAULTS" --agent "${seed[@]}"
   fi
   # A first `dart run` compiles the wrapper; poll, and if it is still going
   # tell the caller to rerun rather than blocking past the 60 s action cap.

@@ -38,6 +38,9 @@ abstract final class KartkaWrapper {
   /// not reached); absent when the upstream itself answered 502.
   static const proxyErrorHeader = 'x-kartka-proxy-error';
 
+  /// `GET` -> `{"agent": bool}`: the headless agent instance (no uploads).
+  static const agentPath = '/agent';
+
   /// `GET|PUT|DELETE /files/<blobKey>`, `GET /files?prefix=` (JSON list).
   static const filesPath = '/files';
 

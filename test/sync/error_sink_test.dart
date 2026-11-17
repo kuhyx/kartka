@@ -33,16 +33,39 @@ void main() {
       startScheduler: false,
     );
     expect(connectErrorUploads(null, runtime), isNull);
+    Future<bool> notAgent() async => false;
     SharedPreferences.setMockInitialValues({});
     final errors = AppErrors.forTest(
       kartkaErrorsConfig(build: 9),
       await ErrorQueue.open(await SharedPreferences.getInstance()),
     );
-    final up = connectErrorUploads(errors, runtime)!;
+    final up = connectErrorUploads(errors, runtime, isAgent: notAgent)!;
     addTearDown(up.dispose);
     errors.reporter.report('ui.snackbar', 'Refresh failed: boom');
     expect(await up.flush(), isTrue);
     final sent = (db.tree['errors']! as Map)['dev-1']! as Map;
     expect((sent.values.single! as Map)['build'], 9);
+  });
+
+  test('the agent instance uploads nothing', () async {
+    final db = InMemoryRtdb();
+    final runtime = SyncRuntime(
+      kv: MemoryKeyValueStore(),
+      openTransport: () async => db,
+      deviceId: () async => 'agent',
+      startScheduler: false,
+    );
+    SharedPreferences.setMockInitialValues({});
+    final errors = AppErrors.forTest(
+      kartkaErrorsConfig(build: 9),
+      await ErrorQueue.open(await SharedPreferences.getInstance()),
+    );
+    Future<bool> agent() async => true;
+    final up = connectErrorUploads(errors, runtime, isAgent: agent)!;
+    addTearDown(up.dispose);
+    errors.reporter.report('ui.snackbar', 'Refresh failed: boom');
+    expect(await up.flush(), isFalse, reason: 'no sink: kept queued');
+    expect(db.tree['errors'], isNull);
+    expect(errors.queue.entries, hasLength(1));
   });
 }

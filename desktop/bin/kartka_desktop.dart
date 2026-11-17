@@ -36,6 +36,8 @@ Future<void> main(List<String> args) async {
     headlessOnly: args.contains('--no-browser'),
     // Agent instance only (tools/agent `fault`): injected /proxy faults.
     faultFile: _arg(args, '--fault-file'),
+    // Agent instance only: the app then uploads no error reports.
+    agent: args.contains('--agent'),
   );
   // Ctrl-C / systemd stop: take the engine's chromium down too.
   for (final signal in [ProcessSignal.sigint, ProcessSignal.sigterm]) {
