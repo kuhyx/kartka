@@ -1,4 +1,3 @@
-import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show AppErrors;
 import 'package:design_system/design_system.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/app_errors.dart';
@@ -72,7 +71,7 @@ class _KartkaAppState extends State<KartkaApp> {
       _router,
       () => [
         DiagnosticsRouteObserver(_log),
-        if (AppErrors.instance case final errors?) ErrorRouteObserver(errors),
+        ...errorRouteObservers(),
         ...widget.registry.all<ScreenObserver>(),
       ],
     );

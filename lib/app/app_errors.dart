@@ -59,3 +59,8 @@ class ErrorRouteObserver implements ScreenObserver {
   @override
   void screenChanged(String pattern) => errors.reporter.route = pattern;
 }
+
+/// The [ErrorRouteObserver] of the installed reporting, if any.
+List<ScreenObserver> errorRouteObservers() => [
+  if (AppErrors.instance case final errors?) ErrorRouteObserver(errors),
+];

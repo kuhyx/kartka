@@ -28,6 +28,10 @@ void main() {
     AppErrors.instance = null;
   });
 
+  test('no observer before the reporter is installed', () {
+    expect(errorRouteObservers(), isEmpty);
+  });
+
   testWidgets('an error and a 2 s wait reach the sink with the build', (
     tester,
   ) async {
@@ -39,7 +43,8 @@ void main() {
     );
     final log = DiagnosticsLog(MemoryBlobStore());
     addTearDown(bridgeDiagnostics(log, errors!).cancel);
-    ErrorRouteObserver(errors).screenChanged('/library');
+    expect(errorRouteObservers(), hasLength(1));
+    errorRouteObservers().single.screenChanged('/library');
 
     await tester.pumpWidget(
       const MaterialApp(home: WaitWatch.centered('library.load')),

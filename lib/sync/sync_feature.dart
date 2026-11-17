@@ -35,10 +35,7 @@ KartkaFeature syncFeature(KartkaEnv env) {
   );
   // Error reports ride the same signed-in transport, through the shared
   // uploader (crdt_sync_flutter): RTDB /kartka/errors/<device>/<id>.
-  AppErrors.instance?.connect(
-    sink: () async => errorSink(await runtime.transport()),
-    deviceId: runtime.deviceId,
-  );
+  connectErrorUploads(AppErrors.instance, runtime);
   return syncFeatureWith(
     runtime,
     settings: SyncedSettings(
