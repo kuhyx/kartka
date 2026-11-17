@@ -40,4 +40,20 @@ void main() {
     expect(e.kind, 'health.read');
     expect(e.error, contains('HTTP 401'));
   });
+
+  test('an offline read error reaches the tab, unlogged (f1a7bf7e)', () async {
+    final inner = _Feed();
+    final log = DiagnosticsLog(MemoryBlobStore());
+    final seen = <Object>[];
+    ReportingHealthFeed(inner, log).watch().listen(null, onError: seen.add);
+    inner.records.addError(
+      StateError(
+        'FirebaseSyncError: network error reading source_health: '
+        "ClientException with SocketException: Failed host lookup: 'x'",
+      ),
+    );
+    await pumpEventQueue();
+    expect(seen, hasLength(1));
+    expect(await log.entries(), isEmpty);
+  });
 }
