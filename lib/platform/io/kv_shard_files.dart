@@ -57,7 +57,7 @@ Map<String, String> flattenShards(List<Map<String, String>> shards) => {
 /// old code would have overwritten it on the next save.
 List<Map<String, String>> readKvDir(String dir, String? legacy) {
   final marker = File('$dir/$kvMigratedMarker');
-  final source = legacy == null || marker.existsSync()
+  final source = legacy == null || !kvMigrationPending(dir, legacy)
       ? null
       : [File(legacy), File('$legacy.migrated')].where((f) => f.existsSync());
   if (source != null && source.isNotEmpty) {
@@ -73,8 +73,29 @@ List<Map<String, String>> readKvDir(String dir, String? legacy) {
       old.renameSync('$legacy.${values == null ? 'corrupt' : 'migrated'}');
     }
   }
-  return [for (var i = 0; i < kvShardCount; i++) _readShard(dir, i)];
+  return readKvShards(dir, 0, kvShardCount);
 }
+
+/// Whether [readKvDir] still has a legacy kv.json to migrate: until it has,
+/// the shards must be read by that one call, never in parallel ranges.
+bool kvMigrationPending(String dir, String? legacy) =>
+    legacy != null && !File('$dir/$kvMigratedMarker').existsSync();
+
+/// Isolates that parse the shards at once on a launch (~20 MB on the
+/// phone: one core needs ~0.9 s, and the library waits on it).
+const kvReadGroups = 4;
+
+/// The `[from, to)` shard ranges of the [kvReadGroups] parallel reads.
+List<(int, int)> kvReadRanges() => [
+  for (var g = 0; g < kvReadGroups; g++)
+    (g * kvShardCount ~/ kvReadGroups, (g + 1) * kvShardCount ~/ kvReadGroups),
+];
+
+/// Shards `[from, to)` of [dir], parsed (no migration: see
+/// [kvMigrationPending]).
+List<Map<String, String>> readKvShards(String dir, int from, int to) => [
+  for (var i = from; i < to; i++) _readShard(dir, i),
+];
 
 Map<int, Map<String, String>> _indexed(Map<String, String> values) =>
     groupKvShards(values).asMap();

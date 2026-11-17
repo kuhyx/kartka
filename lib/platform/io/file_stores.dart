@@ -182,8 +182,18 @@ class FileKeyValueStore implements OffUiDecodingStore {
 }
 
 // Top-level, so each isolate closure captures only its arguments.
-Future<List<Map<String, String>>> _readOff(String dir, String? legacy) =>
-    Isolate.run(() => readKvDir(dir, legacy));
+/// Parses the shards in [kvReadGroups] isolates at once (one, while a
+/// legacy kv.json is still to migrate); each result moves back uncopied.
+Future<List<Map<String, String>>> _readOff(String dir, String? legacy) async {
+  if (kvMigrationPending(dir, legacy)) {
+    return await Isolate.run(() => readKvDir(dir, legacy));
+  }
+  final parts = await Future.wait([
+    for (final (from, to) in kvReadRanges())
+      Isolate.run(() => readKvShards(dir, from, to)),
+  ]);
+  return [for (final part in parts) ...part];
+}
 
 Future<void> _patchOff(String dir, Map<String, String?> changes) =>
     Isolate.run(() => patchKvShards(dir, changes));
