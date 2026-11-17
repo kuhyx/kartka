@@ -34,6 +34,8 @@ Future<void> main(List<String> args) async {
     engineProfile: _arg(args, '--engine-profile'),
     // --no-browser is the headless instance: never a visible window.
     headlessOnly: args.contains('--no-browser'),
+    // Agent instance only (tools/agent `fault`): injected /proxy faults.
+    faultFile: _arg(args, '--fault-file'),
   );
   // Ctrl-C / systemd stop: take the engine's chromium down too.
   for (final signal in [ProcessSignal.sigint, ProcessSignal.sigterm]) {

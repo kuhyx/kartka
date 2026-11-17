@@ -26,6 +26,7 @@ class Harness {
     bool seedFile = false,
     EngineHost? engine,
     bool allowLoopbackEngine = false,
+    String? faults,
   }) async {
     final dir = Directory.systemTemp.createTempSync('kartka_desktop');
     final web = Directory('${dir.path}/web')..createSync();
@@ -37,6 +38,8 @@ class Harness {
         ..createSync(recursive: true)
         ..writeAsStringSync(seed);
     }
+    final faultPath = '${dir.path}/faults.json';
+    if (faults != null) File(faultPath).writeAsStringSync(faults);
     final server = WrapperServer(
       webRoot: web.path,
       filesDir: '${dir.path}/files',
@@ -46,6 +49,7 @@ class Harness {
       syncCredentialsFile: seed != null || seedFile ? seedPath : null,
       engine: engine,
       allowLoopbackEngine: allowLoopbackEngine,
+      faultFile: faults == null ? null : faultPath,
     );
     await server.start(0);
     return Harness._(dir, server);

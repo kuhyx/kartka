@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:kartka_desktop/src/chromium.dart';
 import 'package:kartka_desktop/src/engine.dart';
 import 'package:kartka_desktop/src/engine_routes.dart';
+import 'package:kartka_desktop/src/faults.dart';
 import 'package:kartka_desktop/src/oauth_routes.dart';
 import 'package:kartka_desktop/src/protocol.dart';
 import 'package:kartka_desktop/src/proxy.dart';
@@ -29,7 +30,8 @@ class WrapperServer {
   /// engine lives next to [filesDir] (`engine-profile`, `engine-hosts.json`)
   /// unless [engine] is given; [headlessOnly] (the default, and the agent
   /// instance) refuses the visible "Open in WebView" window.
-  /// [allowLoopbackEngine] is for tests.
+  /// [allowLoopbackEngine] is for tests. [faultFile] (agent instance only)
+  /// turns on `/proxy` fault injection ([ProxyFaults]).
   new({
     required String webRoot,
     required String filesDir,
@@ -41,6 +43,7 @@ class WrapperServer {
     String? engineProfile,
     bool headlessOnly = true,
     bool allowLoopbackEngine = false,
+    String? faultFile,
   }) : this._(
          log ?? stderr.writeln,
          webRoot,
@@ -61,6 +64,7 @@ class WrapperServer {
                allowLoopback: allowLoopbackEngine,
              ),
          allowLoopbackEngine,
+         faultFile,
        );
 
   new _(
@@ -72,6 +76,7 @@ class WrapperServer {
     HttpClient upstream,
     this._engineHost,
     bool allowLoopbackEngine,
+    String? faultFile,
   ) : _static = StaticFiles(webRoot),
       _files = FileRoutes(filesDir),
       _secrets = SecretRoutes(secretsFile),
@@ -79,7 +84,12 @@ class WrapperServer {
           ? null
           : SeedRoute(syncCredentialsFile, _log),
       _engine = EngineRoutes(_engineHost, allowLoopback: allowLoopbackEngine),
-      _proxy = ProxyRoute(upstream, _log, cookieFor: _engineHost.cookieHeader);
+      _proxy = ProxyRoute(
+        upstream,
+        _log,
+        cookieFor: _engineHost.cookieHeader,
+        faults: faultFile == null ? null : ProxyFaults(File(faultFile)),
+      );
 
   final void Function(String line) _log;
   final StaticFiles _static;

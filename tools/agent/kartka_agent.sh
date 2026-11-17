@@ -5,6 +5,9 @@
 #   kartka_agent.sh start     # isolated wrapper (port 47392) + headless chromium
 #   kartka_agent.sh stop      # stop both units (data and profile kept)
 #   kartka_agent.sh status
+#   kartka_agent.sh fault <host|*> <mode>   # inject a /proxy fault: offline,
+#                             # abort-once, page-500, webview, upstream-dns
+#   kartka_agent.sh fault clear             # back to the real network
 #   kartka_agent.sh <verb>    # any flutter_web_drive verb: tree, tap, text,
 #                             # key, scroll, wait, shot, eval, console, tap-xy
 #
@@ -46,7 +49,7 @@ start_wrapper() {
       "$(command -v fvm)" dart run bin/kartka_desktop.dart \
       --web-root "$REPO_DIR/build/web" --no-browser --port "$AGENT_PORT" \
       --files-dir "$AGENT_HOME/files" --secrets-path "$AGENT_HOME/secrets.json" \
-      "${seed[@]}"
+      --fault-file "$AGENT_FAULTS" "${seed[@]}"
   fi
   # A first `dart run` compiles the wrapper; poll, and if it is still going
   # tell the caller to rerun rather than blocking past the 60 s action cap.
@@ -81,13 +84,33 @@ cmd_status() {
   done
 }
 
+# Writes the wrapper's fault rules (desktop/lib/src/faults.dart); it rereads
+# them per request, so no restart. `clear` removes every rule.
+cmd_fault() {
+  local host="${1:-}" mode="${2:-}"
+  mkdir -p "$AGENT_HOME"
+  if [[ "$host" == clear ]]; then
+    rm -f "$AGENT_FAULTS"
+    echo "faults: none"
+    return 0
+  fi
+  [[ -n "$host" && -n "$mode" ]] ||
+    { echo "usage: kartka_agent.sh fault <host|*> <mode> | clear" >&2; exit 2; }
+  local current='{}'
+  [[ -r "$AGENT_FAULTS" ]] && current="$(cat "$AGENT_FAULTS")"
+  jq --arg h "$host" --arg m "$mode" '.[$h] = $m' <<<"$current" >"$AGENT_FAULTS.tmp"
+  mv "$AGENT_FAULTS.tmp" "$AGENT_FAULTS"
+  echo "faults: $(jq -c . "$AGENT_FAULTS")"
+}
+
 main() {
   local verb="${1:-}"
   case "$verb" in
     start) cmd_start ;;
     stop) cmd_stop ;;
     status) cmd_status ;;
-    "" | -h | --help) sed -n '2,18p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' ;;
+    fault) shift; cmd_fault "$@" ;;
+    "" | -h | --help) sed -n '2,21p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' ;;
     *) drive "$@" ;;
   esac
 }

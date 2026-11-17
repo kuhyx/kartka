@@ -9,7 +9,7 @@ import 'dart:math' as math;
 import 'package:crypto/crypto.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/diagnostics/report_redact.dart';
-import 'package:kartka/core/net/network_errors.dart';
+import 'package:kartka/core/diagnostics/upload_rule.dart';
 import 'package:kartka/platform/key_value_store.dart';
 import 'package:kartka/sync/rtdb_transport.dart';
 import 'package:kartka/sync/sync_namespaces.dart';
@@ -107,13 +107,8 @@ class ErrorUploader {
       .toString()
       .substring(0, 20);
 
-  /// Failures and slow waits go up; the rest of `perf.*` (jank) and
-  /// environment states (`isEnvironmentError`: offline, server down) a
-  /// screen caught stay local. An escaped (`uncaught.*`) one is a bug.
-  static bool _reported(DiagnosticEntry e) =>
-      e.kind == perfSlowKind ||
-      !e.kind.startsWith('perf.') &&
-          (e.kind.startsWith('uncaught.') || !isEnvironmentError(e.error));
+  /// What goes up: [isUploadedEntry].
+  static bool _reported(DiagnosticEntry e) => isUploadedEntry(e);
 
   /// Fixes the cutoff (now, unless one is stored) and starts flushing
   /// [debounce] after each reported append.

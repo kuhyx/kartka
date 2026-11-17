@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:kartka_desktop/src/faults.dart';
 import 'package:kartka_desktop/src/protocol.dart';
 
 /// Upstream request headers the proxy forwards (after the
@@ -47,7 +48,7 @@ const _hopByHop = {
 class ProxyRoute {
   /// Forwards through [client]; `_log` gets failures (never a target URL,
   /// whose query can hold a credential such as RTDB's `?auth=`).
-  new(this.client, this._log, {this.cookieFor}) {
+  new(this.client, this._log, {this.cookieFor, this.faults}) {
     client
       ..userAgent = null
       ..connectionTimeout = const Duration(seconds: 20);
@@ -59,6 +60,9 @@ class ProxyRoute {
   /// Cookies of the engine profile for a target ("Open in WebView" hosts,
   /// docs/DOCS-contracts-webview.md §6); null when none apply.
   final Future<String?> Function(Uri target)? cookieFor;
+
+  /// Agent-only injected faults, answered instead of the upstream.
+  final ProxyFaults? faults;
 
   final void Function(String line) _log;
 
@@ -87,6 +91,21 @@ class ProxyRoute {
       return;
     }
     final body = await request.fold<List<int>>([], (a, b) => a..addAll(b));
+    if (faults?.match(target, body) case final fault?) {
+      response.statusCode = fault.status!;
+      if (fault.error case final error?) {
+        response.headers.set(proxyErrorHeader, error);
+      }
+      if (fault.body case final json?) {
+        response.headers.set('content-type', 'application/json');
+        response.headers.set(
+          '${responseHeaderPrefix}content-type',
+          'application/json',
+        );
+        response.write(json);
+      }
+      return;
+    }
     final HttpClientResponse upstream;
     try {
       final out = await client.openUrl(request.method, target);

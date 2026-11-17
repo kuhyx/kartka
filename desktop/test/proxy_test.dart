@@ -132,4 +132,17 @@ void main() {
     expect(ProxyRoute.forwards('x-real-ip'), isFalse);
     expect(ProxyRoute.forwards('host'), isFalse);
   });
+
+  test('a fault file (agent only) answers instead of the upstream', () async {
+    final f = await Harness.start(
+      faults: '{"127.0.0.1": "page-500", "a.invalid": "offline"}',
+    );
+    addTearDown(f.close);
+    final offline = await f.call('GET', proxied('https://a.invalid/x'));
+    expect(offline.status, 502);
+    expect(offline.headers.value(proxyErrorHeader), contains('Failed host'));
+    expect((await f.call('GET', proxied(up.url('/c/page/0')))).status, 500);
+    final through = await f.call('GET', proxied(up.url('/img')));
+    expect(through.status, 200, reason: 'other paths reach the upstream');
+  });
 }

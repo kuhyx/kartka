@@ -93,7 +93,10 @@ wrapper on 47392 and a headless chromium (CDP 9342) as `systemd-run --user`
 units, with data in `~/.local/share/kartka-agent/`. Other verbs pass through
 to `flutter_web_drive` (kuhyx/utils; README there): `tree`, `tap "<label>"`,
 `text --file`, `key`, `scroll`, `wait`, `shot`, `console`. It serves the
-existing `build/web`, so rebuild that first when lib/ changed. Flows in
+existing `build/web`, so rebuild that first when lib/ changed. `fault <host|*> <mode>` / `fault clear`
+injects `/proxy` faults (offline, abort-once, page-500, webview,
+upstream-dns; `desktop/lib/src/faults.dart`); `tools/agent/uploadable.dart`
+judges a diagnostics log by the app's upload rule. Flows in
 `tools/agent/flows/` log numbered steps and exit non-zero with the failing
 step and a screenshot: `f0_smoke.sh` (shell + tab switch + non-blank shot),
 `f3_sync.sh [title chapter [trigger_epoch]]` (signs in to the real /kartka
