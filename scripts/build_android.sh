@@ -84,6 +84,9 @@ dart_defines() {
     # The running app stamps these on every report (slow waits, errors).
     defs+=("$(b64 "KARTKA_VERSION_CODE=${KARTKA_VERSION_CODE}")")
     defs+=("$(b64 "KARTKA_VERSION_NAME=${version%%+*}-${KARTKA_BUILD}")")
+    # The shared app-errors reporter's stamp (crdt_sync_flutter installAppErrors).
+    defs+=("$(b64 "APP_BUILD=${KARTKA_VERSION_CODE}")")
+    defs+=("$(b64 "APP_VERSION=${version%%+*}-${KARTKA_BUILD}")")
     defs+=("$(b64 "FLUTTER_BUILD_NAME=${version%%+*}")")
     defs+=("$(b64 "FLUTTER_BUILD_NUMBER=${version##*+}")")
     defs+=("$(b64 "FLUTTER_VERSION=${sdk[frameworkVersion]}")")

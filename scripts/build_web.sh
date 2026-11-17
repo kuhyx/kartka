@@ -27,6 +27,9 @@ main() {
     version="$(sed -n 's/^version: *//p' "${ROOT}/pubspec.yaml")"
     defines+=("--dart-define=KARTKA_VERSION_CODE=${code}")
     defines+=("--dart-define=KARTKA_VERSION_NAME=${version%%+*}-${build}")
+    # The shared app-errors reporter's stamp (crdt_sync_flutter installAppErrors).
+    defines+=("--dart-define=APP_BUILD=${code}")
+    defines+=("--dart-define=APP_VERSION=${version%%+*}-${build}")
     if [[ -f "${OAUTH_DEFINES}" ]]; then
         defines+=("--dart-define-from-file=${OAUTH_DEFINES}")
     fi
