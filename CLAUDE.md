@@ -54,8 +54,9 @@ ceiling) and < 45 s: shards use `flutter test -j 2` (peak ~1.9 GiB; the default
   `/oauth`, on `127.0.0.1:47391` (plus a one-shot `/sync-credentials` only
   with `--sync-credentials`, the agent instance; contracts-runtime §17).
 - Browser engine + "Open in WebView": `docs/DOCS-contracts-webview.md`.
-- Error reports (every error shown or escaped → RTDB `/kartka/errors` →
-  `~/.local/state/kartka-errors/fixme.md` via `tools/errors`): `docs/DOCS-error-reports.md`.
+- Error reports (every error shown or escaped, every wait over 1 s → shared
+  crdt_sync_flutter reporter → RTDB `/kartka/errors` → utils `app-errors`
+  ingest → board ticket): `docs/DOCS-error-reports.md`.
 - Feature dirs (`lib/sources`, `lib/library`, `lib/reader`, ...) belong to
   their parts; foundation never imports them.
 
