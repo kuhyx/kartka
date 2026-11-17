@@ -38,6 +38,12 @@ the log (which rewrites its file on every append).
   entry's JSON, so a re-push is a no-op; ids pushed are kept in kv
   `errors.sent` (last 2500). `perf.slow` is uploaded; every other `perf.*`
   (`perf.jank`) stays on the device.
+- Environment states stay on the device, whatever kind logged them
+  (`isEnvironmentError`, `lib/core/net/network_errors.dart`): no DNS or
+  route, a dropped or refused connection, a 500/502/503/504 from our
+  server, its upstream site unknown or its WebView timing out, a manga the
+  server no longer has. The screens already show them (Retry, "not
+  checked", cached data); a ticket could not fix them.
 - PATCHed straight through the sync transport (`SyncRuntime.transport`):
   no `revs/` bump, no change-feed entry, so no peer fetches it, and the
   engine never reads `errors/` (it GETs per namespace, never the root).
