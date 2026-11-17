@@ -21,10 +21,10 @@ packages:
     dependency: transitive
     description:
       name: android_file_picker
-      sha256: "04c1306eda42c23ecbf449c909f4fa05c5e66fc48cf5f994d8d08b9d45e5396b"
+      sha256: ec3cf2a2c7a9b2bd56747e85f80efdd994e563049dfb0981a23903acfdd58cb5
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.5"
+    version: "2.2.0"
   app_links:
     dependency: "direct main"
     description:
@@ -174,11 +174,11 @@ packages:
     dependency: "direct main"
     description:
       path: crdt_sync_flutter
-      ref: "crdt_sync_flutter-v0.8.2"
-      resolved-ref: "1962d303336dfe260850466b8ee841033b9ad1ce"
+      ref: "crdt_sync_flutter-v0.9.1"
+      resolved-ref: "48dc28ad97b97c787aba4479c3ce51aade6e86b5"
       url: "https://github.com/kuhyx/utils"
     source: git
-    version: "0.8.2"
+    version: "0.9.1"
   cross_file:
     dependency: transitive
     description:
@@ -215,11 +215,11 @@ packages:
     dependency: transitive
     description:
       path: data_transfer_flutter
-      ref: "data_transfer_flutter-v0.2.2"
-      resolved-ref: eef7af4c86837ee82891493587ff3456297e5dea
+      ref: "data_transfer_flutter-v0.2.3"
+      resolved-ref: bb2f92f459283a29ad4864cf37704cc5f749cc6d
       url: "https://github.com/kuhyx/utils"
     source: git
-    version: "0.2.2"
+    version: "0.2.3"
   dbus:
     dependency: transitive
     description:
@@ -232,11 +232,11 @@ packages:
     dependency: "direct main"
     description:
       path: design_system
-      ref: "design_system-v0.4.0"
-      resolved-ref: db1ce8c378c4cd8b75558d71659cf773a8a778cd
+      ref: "design_system-v0.4.1"
+      resolved-ref: "422a5e53d975b7a1cbeadeb4e29ab0965bfc4bec"
       url: "https://github.com/kuhyx/utils"
     source: git
-    version: "0.4.0"
+    version: "0.4.1"
   fake_async:
     dependency: "direct dev"
     description:
@@ -273,10 +273,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: "079dc46b753abbddb7f77cd87e6ed9ecc62902580707514568321bdf8e050a86"
+      sha256: c3780977700b8962c3b9b6a9aa4e2c988956893d70d4a4fa2d7adf4ec9b9eaee
       url: "https://pub.dev"
     source: hosted
-    version: "13.3.3"
+    version: "13.4.0"
   file_picker_darwin:
     dependency: transitive
     description:
@@ -297,10 +297,10 @@ packages:
     dependency: "direct dev"
     description:
       name: file_picker_platform_interface
-      sha256: "336e7168306834a2b68e6168ed768e00d3fabeac23154d5793e277ca9f97cf20"
+      sha256: a2ef71c4628f92a4471d424576e3bf7042b40a2683c9f9a0e3033a7fc7f7763c
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.0"
+    version: "4.3.0"
   file_picker_web:
     dependency: transitive
     description:
@@ -693,10 +693,10 @@ packages:
     dependency: "direct main"
     description:
       name: material_ui
-      sha256: "474c135fd46b56ff1d35ca982155e8863d28fbc6464d1192acf4ee53a738680e"
+      sha256: a6b19012df437a356cbc01f8ea22a105e07194c47c9a6009da0032a0ce35c4ab
       url: "https://pub.dev"
     source: hosted
-    version: "1.11.0"
+    version: "1.11.1"
   meta:
     dependency: transitive
     description:
@@ -1050,11 +1050,11 @@ packages:
     dependency: "direct main"
     description:
       path: sync_settings_ui
-      ref: "sync_settings_ui-v0.8.2"
-      resolved-ref: "3225af8365481677d61a8cabec0c0ad4d0407567"
+      ref: "sync_settings_ui-v0.8.4"
+      resolved-ref: "15ef5b44f186cea0ab163cc88cb8743c51d58247"
       url: "https://github.com/kuhyx/utils"
     source: git
-    version: "0.8.2"
+    version: "0.8.4"
   synchronized:
     dependency: transitive
     description:
