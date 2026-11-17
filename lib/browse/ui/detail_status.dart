@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
+import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/core/redact.dart';
@@ -22,7 +23,9 @@ class DetailStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = controller;
     final error = c.error;
-    if (error == null) return const Center(child: CircularProgressIndicator());
+    if (error == null) {
+      return const WaitWatch.centered('details.load');
+    }
     final retry = _retry(c);
     if (error case final ChallengeRequired challenge) {
       return Center(

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:design_system/design_system.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/global_search_controller.dart';
@@ -90,7 +91,10 @@ class _SourceRow extends StatelessWidget {
     if (state.loading) {
       body = const Padding(
         padding: EdgeInsets.all(AppSpacing.md),
-        child: LinearProgressIndicator(),
+        child: WaitWatch(
+          operation: 'search.global',
+          child: LinearProgressIndicator(),
+        ),
       );
     } else if (state.error != null) {
       body = Padding(

@@ -84,7 +84,7 @@ def _valid(node: object) -> Entry | None:
         return None
     if not all(isinstance(node.get(k), str) for k in ("at", "kind", "error")):
         return None
-    entry = {k: v for k, v in node.items() if isinstance(v, str)}
+    entry = {k: v for k, v in node.items() if isinstance(v, str | int | bool)}
     stack = node.get("stack")
     if isinstance(stack, list):
         entry["stack"] = [str(f) for f in stack]  # type: ignore[assignment]

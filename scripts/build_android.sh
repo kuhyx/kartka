@@ -81,6 +81,9 @@ dart_defines() {
         cd "${ROOT}" && fvm flutter --version --machine 2>/dev/null |
             jq -r 'to_entries[] | "\(.key)\t\(.value)"')
     defs+=("$(b64 "KARTKA_BUILD=${KARTKA_BUILD}")")
+    # The running app stamps these on every report (slow waits, errors).
+    defs+=("$(b64 "KARTKA_VERSION_CODE=${KARTKA_VERSION_CODE}")")
+    defs+=("$(b64 "KARTKA_VERSION_NAME=${version%%+*}-${KARTKA_BUILD}")")
     defs+=("$(b64 "FLUTTER_BUILD_NAME=${version%%+*}")")
     defs+=("$(b64 "FLUTTER_BUILD_NUMBER=${version##*+}")")
     defs+=("$(b64 "FLUTTER_VERSION=${sdk[frameworkVersion]}")")

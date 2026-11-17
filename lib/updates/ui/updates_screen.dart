@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:kartka/app/fit_pages.dart';
+import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/ui/update_progress_strip.dart';
 import 'package:kartka/updates/state/updates_controller.dart';
@@ -41,7 +42,9 @@ class _UpdatesScreenState extends State<UpdatesScreen> {
   }
 
   Widget _list(BuildContext context, Widget? _) {
-    if (!_c.loaded) return const Center(child: CircularProgressIndicator());
+    if (!_c.loaded) {
+      return const WaitWatch.centered('updates.load');
+    }
     final rows = _c.rows;
     const physics = AlwaysScrollableScrollPhysics();
     if (rows.isEmpty) {

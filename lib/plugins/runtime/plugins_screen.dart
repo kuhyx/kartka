@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
+import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/confirm_mark.dart';
 import 'package:kartka/core/ui/section_mark.dart';
@@ -142,7 +143,12 @@ class _PluginsScreenState extends State<PluginsScreen> {
             ),
           // Before the first load the bar is the whole loading state.
           if (_loading)
-            const LinearProgressIndicator(semanticsLabel: 'Loading plugins…'),
+            const WaitWatch(
+              operation: 'plugins.load',
+              child: LinearProgressIndicator(
+                semanticsLabel: 'Loading plugins…',
+              ),
+            ),
           if (_loaded)
             AvailableList(
               result: AvailableResult(shown, _available.errors),

@@ -33,7 +33,7 @@ ErrorUploader startErrorUploads(
   return uploader;
 }
 
-/// Pushes every non-`perf.` entry of [log] to `errors/<device>/<id>`.
+/// Pushes every failure and `perf.slow` entry of [log] to `errors/<device>/<id>`.
 ///
 /// The log is the offline queue: an entry is pending until its id is in
 /// the sent set ([sentKey] in [kv]), so a crash, a lost connection or a
@@ -106,7 +106,9 @@ class ErrorUploader {
       .toString()
       .substring(0, 20);
 
-  static bool _reported(DiagnosticEntry e) => !e.kind.startsWith('perf.');
+  /// Failures and slow waits go up; the rest of `perf.*` (jank) stays local.
+  static bool _reported(DiagnosticEntry e) =>
+      e.kind == perfSlowKind || !e.kind.startsWith('perf.');
 
   /// Fixes the cutoff (now, unless one is stored) and starts flushing
   /// [debounce] after each reported append.

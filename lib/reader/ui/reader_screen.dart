@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:design_system/design_system.dart';
 import 'package:flutter/services.dart';
+import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/reader/logic/chapter_strip.dart';
@@ -219,7 +220,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
       autofocus: true,
       onKeyEvent: _onKey,
       child: switch (_session.phase) {
-        ReaderPhase.loading => const Center(child: CircularProgressIndicator()),
+        ReaderPhase.loading => const WaitWatch.centered('reader.open'),
         ReaderPhase.failed => _failed(context),
         ReaderPhase.ready => Stack(
           children: [

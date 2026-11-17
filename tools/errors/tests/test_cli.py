@@ -171,10 +171,38 @@ def test_default_out_is_outside_the_repo(
     monkeypatch.chdir(tmp_path)
     code = main(
         ["ingest", "--state", str(tmp_path / "state.json")],
-        open_rtdb=lambda: FakeRtdb({"phone": {"e1": ENTRY}}),  # type: ignore[arg-type,return-value]
+        open_rtdb=lambda: FakeRtdb({"phone": {"e1": ENTRY}}),
         now=lambda: "2026-10-29T12:00:00Z",
     )
     expected = home / ".local" / "state" / "kartka-errors" / "fixme.md"
     assert code == 0
     assert "count: 1" in expected.read_text()
     assert not (tmp_path / "fixme.md").exists()
+
+
+def test_ingest_keeps_numbers_flags_and_build_of_a_slow_report(
+    tmp_path: Path,
+) -> None:
+    slow = {
+        "at": "2026-11-17T10:00:00.000Z",
+        "kind": "perf.slow",
+        "error": "reader.open waited 2400 ms",
+        "route": "/reader/:id",
+        "operation": "reader.open",
+        "durationMs": 2400,
+        "waitId": "w1",
+        "still": True,
+        "build": 412,
+        "version": "0.1.0-abc1234",
+        "junk": [1, 2],
+        "flag": False,
+    }
+    assert run(tmp_path, FakeRtdb({"d": {"1": slow}}), "ingest")[0] == 0
+    state = json.loads((tmp_path / "state.json").read_text())
+    (rec,) = state["signatures"].values()
+    assert rec["build"] == 412
+    assert rec["version_name"] == "0.1.0-abc1234"
+    assert rec["detail"]["max_ms"] == 2400
+    assert rec["sample"]["still"] is True
+    assert "junk" not in rec["sample"]
+    assert "under 1 s" in (tmp_path / "fixme.md").read_text()

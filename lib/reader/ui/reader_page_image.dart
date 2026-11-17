@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:design_system/design_system.dart';
+import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/reader/ui/page_precache.dart';
 import 'package:kartka/reader/ui/zoomable_page.dart';
@@ -66,7 +67,10 @@ class ReaderPageImage extends StatelessWidget {
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const CircularProgressIndicator(),
+        const WaitWatch(
+          operation: 'reader.page',
+          child: CircularProgressIndicator(),
+        ),
         const SizedBox(height: AppSpacing.sm),
         Text('$pageNumber', style: Theme.of(context).textTheme.labelLarge),
       ],

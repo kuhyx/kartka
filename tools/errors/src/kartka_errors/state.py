@@ -16,7 +16,8 @@ from pathlib import Path
 import tempfile
 from typing import NotRequired, TypedDict, cast
 
-from kartka_errors.signature import signature
+from kartka_errors import slow
+from kartka_errors.signature import signature, top_frame
 
 
 class Entry(TypedDict):
@@ -30,6 +31,28 @@ class Entry(TypedDict):
     sourceId: NotRequired[str]
     mangaUrl: NotRequired[str]
     chapterUrl: NotRequired[str]
+    operation: NotRequired[str]
+    durationMs: NotRequired[int]
+    waitId: NotRequired[str]
+    still: NotRequired[bool]
+    build: NotRequired[int]
+    version: NotRequired[str]
+
+
+class Wait(TypedDict):
+    """One slow wait: ``id`` is ``device/waitId``, ``ms`` its longest report."""
+
+    id: str
+    ms: int
+    at: str
+
+
+class BuildSeen(TypedDict):
+    """The newest report of one device that named its build."""
+
+    at: str
+    build: int
+    version: str | None
 
 
 class SigRecord(TypedDict):
@@ -48,6 +71,22 @@ class SigRecord(TypedDict):
     sample: Entry
     resolved: str | None
     reopened: bool
+    # The fields the board reads (docs/DOCS-error-reports.md), derived from
+    # the ones above on every merge and on load, so an old state gains them.
+    app: str
+    signature: str
+    kind: str
+    message: str
+    top_frame: str | None
+    first_seen: str
+    last_seen: str
+    build: int | None
+    build_min: int | None
+    version_name: str | None
+    detail: dict[str, object]
+    builds: dict[str, BuildSeen]
+    #: The last ``slow.MAX_WAITS`` slow waits.
+    waits: list[Wait]
 
 
 class State(TypedDict):
@@ -70,7 +109,13 @@ def load_state(path: Path) -> State:
         return _empty()
     if not isinstance(data, dict) or data.get("version") != 1:
         return _empty()
-    return cast("State", data)
+    state = cast("State", data)
+    for rec in state["signatures"].values():
+        if "app" not in cast("dict[str, object]", rec):  # pre-board-fields state
+            rec["builds"], rec["waits"], rec["detail"] = {}, [], {}
+            rec["build"] = rec["build_min"] = rec["version_name"] = None
+            _derive(rec)
+    return state
 
 
 def save_state(path: Path, state: State) -> None:
@@ -86,6 +131,36 @@ def _add(values: list[str], value: object) -> None:
     if isinstance(value, str) and value and value not in values:
         values.append(value)
         values.sort()
+
+
+def _note_build(rec: SigRecord, device: str, entry: Entry) -> None:
+    """Track the newest build seen, and each device's latest one."""
+    build = entry.get("build")
+    if build is None or isinstance(build, bool):
+        return
+    version = entry.get("version")
+    top = rec["build"]
+    if top is None or build > top:
+        rec["build"], rec["version_name"] = build, version
+    mine = rec["builds"].get(device)
+    if mine is None or entry["at"] >= mine["at"]:
+        rec["builds"][device] = {"at": entry["at"], "build": build, "version": version}
+    rec["build_min"] = min(b["build"] for b in rec["builds"].values())
+
+
+def _derive(rec: SigRecord) -> None:
+    """Fill the board fields that follow from the rest of the record."""
+    sample = rec["sample"]
+    sig = signature(cast("dict[str, object]", sample))
+    rec["app"] = "kartka"
+    rec["signature"] = rec["id"]
+    rec["kind"] = sample["kind"]
+    rec["message"] = sig.message
+    rec["top_frame"] = top_frame(sample.get("stack", []))
+    rec["first_seen"] = rec["first"]
+    rec["last_seen"] = rec["last"]
+    if sample["kind"] != slow.KIND:
+        rec["detail"] = {"routes": rec["routes"], "sources": rec["sources"]}
 
 
 def merge(state: State, device: str, entry_id: str, entry: Entry) -> bool:
@@ -111,8 +186,24 @@ def merge(state: State, device: str, entry_id: str, entry: Entry) -> bool:
             "sample": entry,
             "resolved": None,
             "reopened": False,
+            "app": "kartka",
+            "signature": sig.id,
+            "kind": entry["kind"],
+            "message": sig.message,
+            "top_frame": None,
+            "first_seen": entry["at"],
+            "last_seen": entry["at"],
+            "build": None,
+            "build_min": None,
+            "version_name": None,
+            "detail": {},
+            "builds": {},
+            "waits": [],
         }
-    rec["count"] += 1
+    if entry["kind"] == slow.KIND:
+        slow.add_wait(rec, device, entry_id, entry)
+    else:
+        rec["count"] += 1
     rec["first"] = min(rec["first"], entry["at"])
     if entry["at"] >= rec["last"]:
         rec["last"] = entry["at"]
@@ -121,6 +212,8 @@ def merge(state: State, device: str, entry_id: str, entry: Entry) -> bool:
     _add(rec["devices"], device)
     _add(rec["routes"], entry.get("route"))
     _add(rec["sources"], entry.get("sourceId"))
+    _note_build(rec, device, entry)
+    _derive(rec)
     resolved = rec["resolved"]
     if resolved is not None and entry["at"] > resolved:
         rec["resolved"] = None

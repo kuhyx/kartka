@@ -21,6 +21,12 @@ readonly OAUTH_DEFINES="${HOME}/.config/kartka/oauth.json"
 main() {
     local build="${KARTKA_BUILD:-$(git -C "${ROOT}" rev-parse --short HEAD)}"
     local -a defines=("--dart-define=KARTKA_BUILD=${build}")
+    # versionCode = commit count, as on Android: reports name their build.
+    local code version
+    code="$(git -C "${ROOT}" rev-list --count "${build}" 2>/dev/null || echo 0)"
+    version="$(sed -n 's/^version: *//p' "${ROOT}/pubspec.yaml")"
+    defines+=("--dart-define=KARTKA_VERSION_CODE=${code}")
+    defines+=("--dart-define=KARTKA_VERSION_NAME=${version%%+*}-${build}")
     if [[ -f "${OAUTH_DEFINES}" ]]; then
         defines+=("--dart-define-from-file=${OAUTH_DEFINES}")
     fi

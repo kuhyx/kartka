@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
+import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/ui/section_mark.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
@@ -69,7 +70,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
             actions: [if (data != null) _pauseButton(data.paused)],
           ),
           body: data == null
-              ? const Center(child: CircularProgressIndicator())
+              ? const WaitWatch.centered('downloads.load')
               : _body(context, data, titles.data!),
         );
       },

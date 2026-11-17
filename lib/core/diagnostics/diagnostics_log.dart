@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:kartka/core/diagnostics/build_info.dart';
 import 'package:kartka/core/diagnostics/diagnostic_entry.dart';
 import 'package:kartka/platform/blob_store.dart';
 
@@ -45,6 +46,23 @@ class DiagnosticsLog {
   /// entry that names none. Set by the app's screen observer.
   String? route;
 
+  /// The running app's versionCode, stamped onto every appended entry that
+  /// names none (set once by `main`; absent for builds without the define).
+  int? build;
+
+  /// The running app's versionName, stamped like [build].
+  String? version;
+
+  /// Sets [build] and [version] from the build's dart-defines; a 0 code or
+  /// an empty name (a build without them) stays unset.
+  void stampBuild({
+    int code = kartkaVersionCode,
+    String name = kartkaVersionName,
+  }) {
+    if (code > 0) build = code;
+    if (name.isNotEmpty) version = name;
+  }
+
   final _appended = StreamController<DiagnosticEntry>.broadcast();
 
   /// Each entry once it is written to the store (so a reader sees it).
@@ -56,10 +74,7 @@ class DiagnosticsLog {
 
   /// Adds [entry]. Never throws: diagnostics must not break what failed.
   Future<void> append(DiagnosticEntry entry) {
-    final here = route;
-    final stamped = entry.route == null && here != null
-        ? entry.withRoute(here)
-        : entry;
+    final stamped = entry.stamped(route: route, build: build, version: version);
     return _tail = _tail.then((_) => _append(stamped));
   }
 

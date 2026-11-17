@@ -16,6 +16,12 @@ class DiagnosticEntry {
     this.chapterUrl,
     this.stack = const [],
     this.route,
+    this.operation,
+    this.durationMs,
+    this.waitId,
+    this.still = false,
+    this.build,
+    this.version,
   });
 
   /// An entry for a caught [error], keeping the top [maxFrames] of [stack]
@@ -53,6 +59,12 @@ class DiagnosticEntry {
     chapterUrl: readOptString(json, 'chapterUrl'),
     stack: [...?(json['stack'] as List<Object?>?)?.cast<String>()],
     route: readOptString(json, 'route'),
+    operation: readOptString(json, 'operation'),
+    durationMs: json['durationMs'] as int?,
+    waitId: readOptString(json, 'waitId'),
+    still: json['still'] == true,
+    build: json['build'] as int?,
+    version: readOptString(json, 'version'),
   );
 
   /// Stack frames kept by [DiagnosticEntry.failure].
@@ -85,17 +97,53 @@ class DiagnosticEntry {
   /// The go_router pattern on top when it happened (never a location).
   final String? route;
 
+  /// What a `perf.slow` entry waited on (`reader.open`), if it is one.
+  final String? operation;
+
+  /// How long a `perf.slow` entry waited, in milliseconds.
+  final int? durationMs;
+
+  /// Names one wait: a still-waiting report and its final one share it.
+  final String? waitId;
+
+  /// Whether a `perf.slow` report was written while the wait went on.
+  final bool still;
+
+  /// The app's versionCode (commit count) that wrote the entry, if known.
+  final int? build;
+
+  /// The app's versionName (`0.1.0-<sha>`) that wrote the entry, if known.
+  final String? version;
+
   /// This entry with [route] set.
-  DiagnosticEntry withRoute(String route) => DiagnosticEntry(
-    at: at,
-    kind: kind,
-    error: error,
-    sourceId: sourceId,
-    mangaUrl: mangaUrl,
-    chapterUrl: chapterUrl,
-    stack: stack,
-    route: route,
-  );
+  DiagnosticEntry withRoute(String route) => _with(route: route);
+
+  /// This entry with [route], [build] and [version] filled in where it
+  /// names none; never overwrites a value it already has.
+  DiagnosticEntry stamped({String? route, int? build, String? version}) =>
+      _with(
+        route: this.route ?? route,
+        build: this.build ?? build,
+        version: this.version ?? version,
+      );
+
+  DiagnosticEntry _with({String? route, int? build, String? version}) =>
+      DiagnosticEntry(
+        at: at,
+        kind: kind,
+        error: error,
+        sourceId: sourceId,
+        mangaUrl: mangaUrl,
+        chapterUrl: chapterUrl,
+        stack: stack,
+        route: route ?? this.route,
+        operation: operation,
+        durationMs: durationMs,
+        waitId: waitId,
+        still: still,
+        build: build ?? this.build,
+        version: version ?? this.version,
+      );
 
   static List<String> _frames(StackTrace? stack) => [
     for (final line in '${stack ?? ''}'.split('\n'))
@@ -112,5 +160,11 @@ class DiagnosticEntry {
     if (chapterUrl case final c?) 'chapterUrl': redactUrlQueries(c),
     if (stack.isNotEmpty) 'stack': [for (final f in stack) redactUrlQueries(f)],
     if (route case final r?) 'route': redactUrlQueries(r),
+    if (operation case final o?) 'operation': redactUrlQueries(o),
+    'durationMs': ?durationMs,
+    if (waitId case final w?) 'waitId': redactUrlQueries(w),
+    if (still) 'still': true,
+    'build': ?build,
+    if (version case final v?) 'version': redactUrlQueries(v),
   };
 }

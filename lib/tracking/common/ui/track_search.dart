@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:design_system/design_system.dart';
+import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/tracking/common/tracker.dart';
@@ -83,7 +84,11 @@ class _TrackSearchState extends State<TrackSearch> {
             ),
           ],
         ),
-        if (_busy) const LinearProgressIndicator(),
+        if (_busy)
+          const WaitWatch(
+            operation: 'tracking.search',
+            child: LinearProgressIndicator(),
+          ),
         if (hits != null && hits.isEmpty)
           const Padding(
             padding: EdgeInsets.all(AppSpacing.sm),

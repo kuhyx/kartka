@@ -5,6 +5,7 @@ library;
 
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/sync/decorators/sync_repository_decorator.dart';
@@ -108,7 +109,10 @@ class SyncAccountRoute extends StatelessWidget {
                       Text(redactUrlQueries('${snap.error}')),
                     ],
                   )
-                : const CircularProgressIndicator(),
+                : const WaitWatch(
+                    operation: 'sync.start',
+                    child: CircularProgressIndicator(),
+                  ),
           ),
         );
       }

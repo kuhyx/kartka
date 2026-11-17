@@ -13,9 +13,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   installRedactedLogging();
   final platform = await createPlatform();
-  installErrorReporting(
-    ErrorReporter.of(DiagnosticsLog.of(platform.diagnostics)),
-  );
+  final log = DiagnosticsLog.of(platform.diagnostics)..stampBuild();
+  installErrorReporting(ErrorReporter.of(log));
   final registry = KartkaRegistry.build(platform, kartkaFeatureFactories);
   runApp(KartkaApp(registry: registry, platform: platform));
 }

@@ -1,4 +1,5 @@
 import 'package:design_system/design_system.dart';
+import 'package:kartka/app/wait_watch.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The slot past either end of the loaded chapters.
@@ -70,10 +71,13 @@ class ChapterTransition extends StatelessWidget {
                 icon: const Icon(Icons.refresh, semanticLabel: 'Retry'),
               ),
             ] else if (target != null || loading) ...[
-              CircularProgressIndicator(
-                semanticsLabel: target == null
-                    ? 'Looking for the next chapter'
-                    : null,
+              WaitWatch(
+                operation: 'reader.chapter',
+                child: CircularProgressIndicator(
+                  semanticsLabel: target == null
+                      ? 'Looking for the next chapter'
+                      : null,
+                ),
               ),
               if (target != null) ...[
                 const SizedBox(height: AppSpacing.md),

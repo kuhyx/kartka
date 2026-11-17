@@ -83,9 +83,21 @@ def _strings(value: object) -> list[str]:
     return [str(v) for v in value] if isinstance(value, list) else []
 
 
+def _slow_signature(entry: Mapping[str, object]) -> Signature:
+    """A slow wait is its route + operation: never the time it took."""
+    operation = str(entry.get("operation") or "?")
+    where = f"route {entry.get('route') or '?'}"
+    digest = hashlib.sha1(  # noqa: S324 -- a grouping key, not security
+        f"perf.slow|{where}|{operation}".encode()
+    ).hexdigest()
+    return Signature(digest[:10], "perf.slow", f"slow wait: {operation}", where)
+
+
 def signature(entry: Mapping[str, object]) -> Signature:
     """The signature of one report (a decoded ``DiagnosticEntry``)."""
     kind = str(entry.get("kind", "?"))
+    if kind == "perf.slow":
+        return _slow_signature(entry)
     error = str(entry.get("error", ""))
     frame = top_frame(_strings(entry.get("stack")))
     route = entry.get("route")

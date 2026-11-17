@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:design_system/design_system.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
+import 'package:kartka/app/wait_watch.dart';
 import 'package:kartka/browse/state/paged_controller.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/browse/ui/cover_image.dart';
@@ -154,7 +155,10 @@ class _Footer extends StatelessWidget {
         ],
       );
     } else if (c.hasNext) {
-      child = const CircularProgressIndicator();
+      child = const WaitWatch(
+        operation: 'browse.nextpage',
+        child: CircularProgressIndicator(),
+      );
     } else {
       return const SizedBox(height: AppSpacing.lg);
     }
