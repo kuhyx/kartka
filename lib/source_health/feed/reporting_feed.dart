@@ -23,17 +23,28 @@ class ReportingHealthFeed implements SourceHealthFeed {
   /// Where read errors go.
   final DiagnosticsLog log;
 
+  /// An offline read after a ranking was shown is dropped, so the tab keeps
+  /// that ranking until a later poll (online again) replaces it.
   @override
-  Stream<List<SourceHealthRecord>> watch() => inner.watch().transform(
-    StreamTransformer.fromHandlers(
-      handleError: (error, stack, sink) {
-        if (!isEnvironmentError(error)) {
-          ErrorReporter.of(log).report('health.read', error, stack: stack);
-        }
-        sink.addError(error, stack);
-      },
-    ),
-  );
+  Stream<List<SourceHealthRecord>> watch() {
+    var shown = false;
+    return inner.watch().transform(
+      StreamTransformer.fromHandlers(
+        handleData: (records, sink) {
+          shown = true;
+          sink.add(records);
+        },
+        handleError: (error, stack, sink) {
+          final offline = isEnvironmentError(error);
+          if (offline && shown) return;
+          if (!offline) {
+            ErrorReporter.of(log).report('health.read', error, stack: stack);
+          }
+          sink.addError(error, stack);
+        },
+      ),
+    );
+  }
 
   @override
   Stream<SourceHealthMeta?> watchMeta() => inner.watchMeta();

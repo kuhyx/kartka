@@ -56,4 +56,25 @@ void main() {
     expect(seen, hasLength(1));
     expect(await log.entries(), isEmpty);
   });
+
+  test(
+    'offline after a ranking keeps it on screen; online refreshes it',
+    () async {
+      final inner = _Feed();
+      final log = DiagnosticsLog(MemoryBlobStore());
+      final seen = <Object>[];
+      ReportingHealthFeed(
+        inner,
+        log,
+      ).watch().listen((r) => seen.add(r.length), onError: seen.add);
+      inner.records
+        ..add(const [])
+        ..addError(StateError("network error: Failed host lookup: 'x'"))
+        ..addError(StateError('reading source_health failed: HTTP 401'))
+        ..add(const []);
+      await pumpEventQueue();
+      expect(seen, [0, isA<StateError>(), 0], reason: 'only the 401 shows');
+      expect((await log.entries()).single.error, contains('HTTP 401'));
+    },
+  );
 }
