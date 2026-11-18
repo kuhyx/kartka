@@ -56,7 +56,9 @@ void main() {
   test('reading on from Ch.11 of one group lands on Ch.12', () async {
     final s = make('/mm11');
     await s.open();
-    expect(s.nextChapter?.url, '/mm12');
+    // The chapter list follows page 1 (reader_session_open_fast_test).
+    await pumpEventQueue();
+    expect(s.neighbours.next?.url, '/mm12');
     s.onItem(2);
     await Future<void>.delayed(const Duration(milliseconds: 50));
     expect(s.segments.map((x) => x.url), ['/mm11', '/mm12']);

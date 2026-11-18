@@ -120,6 +120,8 @@ void main() {
         }, sessionChapters),
       );
       await s.open();
+      // The chapter list follows page 1 (reader_session_open_fast_test).
+      await pumpEventQueue();
       expect(s.chapterName, 'Ch. 2');
       expect(s.neighbours.next?.url, '/c/3');
       s.onItem(2);

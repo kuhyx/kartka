@@ -24,6 +24,8 @@ void main() {
     await f.prefs.setModeFor('fake|/m/1', ReaderMode.webtoon);
     final s = make();
     await s.open();
+    // The chapter list follows page 1 (reader_session_open_fast_test).
+    await pumpEventQueue();
     expect(s.phase, ReaderPhase.ready);
     expect(s.pages, hasLength(5));
     expect(s.offline, isFalse);

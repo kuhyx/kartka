@@ -3,19 +3,25 @@ part of 'reader_session.dart';
 /// Opening a chapter. reader.open used to wait for the source lookup (up to
 /// 5 s for a provider's first list), then the chapter list, then the pages
 /// (971debc8). Now a downloaded chapter needs neither, an online one only
-/// the source, and the list (Suwayomi fetches it from the site) runs
-/// alongside: when it comes after the first page, it names the neighbours
-/// and lets the next chapter load.
+/// the source, and the list (Suwayomi fetches it from the site) starts
+/// once page 1 is in: when it comes, it names the neighbours and lets the
+/// next chapter load.
 extension _Open on ReaderSession {
   Future<void> _openChapter() async {
     settings = await deps.prefs.settings();
     mode = await deps.prefs.effectiveMode(key);
     final found = deps.findSource(sourceId).then((s) => _source = s);
     var arrived = false;
-    final listReady = _listReady = _chapterList(found).then((list) {
-      arrived = true;
-      _chapters = list;
-    });
+    // The list starts once page 1 has arrived or failed: beside the open,
+    // Suwayomi's list refresh (same rate-limited source) slowed the page
+    // list from 0.12 s to 2.1 s and page 1 from 0.4 s to 1.3 s.
+    final firstPage = Completer<void>();
+    final listReady = _listReady = firstPage.future
+        .then((_) => _chapterList(found))
+        .then((list) {
+          arrived = true;
+          _chapters = list;
+        });
     final ChapterPages loaded;
     try {
       loaded = await loadChapterPages(
@@ -38,6 +44,17 @@ extension _Open on ReaderSession {
     _add(chapterUrl, loaded, landing: startAtEnd ? page : null);
     phase = ReaderPhase.ready;
     _prefetch();
+    if (_flat.isEmpty) {
+      firstPage.complete();
+    } else {
+      _cache!
+          .get(page)
+          .then<void>(
+            (_) => firstPage.complete(),
+            onError: (Object _) => firstPage.complete(),
+          )
+          .ignore();
+    }
     // Until the list is in, the next chapter is not known: "loading".
     if (!arrived) _nextLoad = _afterList(listReady);
     _maybeLoadNext();

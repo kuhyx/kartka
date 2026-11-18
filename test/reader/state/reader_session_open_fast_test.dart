@@ -11,6 +11,19 @@ import 'package:kartka/reader/state/reader_session.dart';
 import '../support/fakes.dart';
 import 'session_fixture.dart';
 
+/// A source that logs when the reader asks for its chapter list.
+class _LoggedList extends FakeSource {
+  new(this.log, {super.pageMap}) : super(chapterList: sessionChapters);
+
+  final List<String> log;
+
+  @override
+  Future<List<ChapterInfo>> chapters(String mangaUrl) {
+    log.add('list');
+    return super.chapters(mangaUrl);
+  }
+}
+
 /// A source whose chapter list waits on [gate] (Suwayomi fetching it from
 /// the site).
 class _SlowList extends FakeSource {
@@ -36,6 +49,7 @@ void main() {
     FakeSource src, {
     Future<void>? sourceReady,
     FakeDownloads? downloads,
+    Future<Uint8List> Function(PageRef)? loadImage,
   }) {
     progress = FakeProgress();
     return ReaderSession(
@@ -50,7 +64,7 @@ void main() {
         progress: progress,
         downloads: downloads,
         prefs: ReaderPrefs(MemoryKeyValueStore()),
-        loadImage: (_) async => Uint8List(1),
+        loadImage: loadImage ?? (_) async => Uint8List(1),
         now: () => DateTime.utc(2026, 10, 24),
       ),
     );
@@ -104,5 +118,43 @@ void main() {
     gate.complete();
     await pumpEventQueue();
     expect(s.neighbours.current, isNull);
+  });
+
+  // A chapter list refresh beside the open slowed Suwayomi's page list from
+  // 0.12 s to 2.1 s and page 1 from 0.4 s to 1.3 s (one rate-limited
+  // source): the list waits until page 1 has arrived or failed.
+  for (final fails in [false, true]) {
+    test('an online open asks for the chapter list only once page 1 has '
+        '${fails ? 'failed' : 'arrived'}', () async {
+      final log = <String>[];
+      final first = Completer<Uint8List>();
+      final s = make(
+        _LoggedList(log, pageMap: {'/c/2': fakePages('/c/2', 3)}),
+        loadImage: (p) {
+          log.add('image ${p.index}');
+          return p.index == 0 ? first.future : Future.value(Uint8List(1));
+        },
+      );
+      await s.open().timeout(const Duration(seconds: 1));
+      await pumpEventQueue();
+      expect(log, ['image 0'], reason: 'page 1 goes alone');
+      if (fails) {
+        first.completeError(StateError('500'));
+      } else {
+        first.complete(Uint8List(1));
+      }
+      await pumpEventQueue();
+      expect(log, contains('list'));
+      expect(s.nextChapter?.url, '/c/3');
+    });
+  }
+
+  test('a chapter with no pages asks for the list at once', () async {
+    final log = <String>[];
+    final s = make(_LoggedList(log, pageMap: {'/c/2': const []}));
+    await s.open().timeout(const Duration(seconds: 1));
+    await pumpEventQueue();
+    expect(log, ['list']);
+    expect(s.nextChapter?.url, '/c/3');
   });
 }
