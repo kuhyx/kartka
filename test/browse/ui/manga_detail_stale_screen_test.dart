@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show WaitWatch;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
@@ -56,10 +57,35 @@ void main() {
     expect(find.bySemanticsLabel('3 chapters'), findsOneWidget);
     expect(find.byType(LinearProgressIndicator), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
+    // The stored chapters can be read meanwhile: not a wait (2d26b6d5).
+    expect(find.byType(WaitWatch, skipOffstage: false), findsNothing);
     src.detailsGate!.complete();
     await t.pumpAndSettle();
     expect(find.text('Detail title'), findsOneWidget);
     expect(find.byType(LinearProgressIndicator), findsNothing);
+  });
+
+  testWidgets('a stored manga with no stored chapters times the bar', (
+    t,
+  ) async {
+    final src = FakeSource('mangadex');
+    final h = await _stored(t, src);
+    src.detailsGate = Completer<void>();
+    await h.pump(
+      t,
+      const SizedBox(),
+      at: mangaRoute('mangadex', _url),
+      settle: false,
+    );
+    await t.pump();
+    expect(find.text('Stored title'), findsOneWidget);
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
+    // Nothing to read until the list arrives: the reader waits on it.
+    final watch = find.byType(WaitWatch, skipOffstage: false);
+    expect(watch, findsOneWidget);
+    expect(t.widget<WaitWatch>(watch).operation, 'details.refresh');
+    src.detailsGate!.complete();
+    await t.pumpAndSettle();
   });
 
   testWidgets('a challenge over stored data still offers the prompt', (

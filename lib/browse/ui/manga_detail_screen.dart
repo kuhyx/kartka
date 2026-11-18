@@ -171,17 +171,19 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
     );
     // Stale content is on screen while the network refreshes it.
     if (!c.loading) return list;
+    const bar = LinearProgressIndicator();
     return Stack(
       children: [
         list,
-        const Positioned(
+        Positioned(
           top: 0,
           left: 0,
           right: 0,
-          child: ShownWaitWatch(
-            operation: 'details.refresh',
-            child: LinearProgressIndicator(),
-          ),
+          // With stored chapters to read and tap, the refresh is background
+          // work, not a wait (2d26b6d5); with none, the reader waits on it.
+          child: c.chapters.isNotEmpty
+              ? bar
+              : const ShownWaitWatch(operation: 'details.refresh', child: bar),
         ),
       ],
     );
