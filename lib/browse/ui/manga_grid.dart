@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:design_system/design_system.dart';
 import 'package:go_router/go_router.dart';
@@ -96,7 +97,11 @@ class _PagedMangaGridState extends State<PagedMangaGrid> {
     final c = widget.controller;
     if (!mounted || !_scroll.hasClients || c.error != null) return;
     final pos = _scroll.position;
-    if (pos.extentAfter < 600) unawaited(c.loadMore());
+    // Two screens ahead: a source page can take seconds (a WebView
+    // challenge, a slow server), so it is fetched while the reader still
+    // has tiles to look at, not when the footer spinner shows (89e1ec6e).
+    final ahead = math.max(600, pos.viewportDimension * 2);
+    if (pos.extentAfter < ahead) unawaited(c.loadMore());
   }
 
   @override
