@@ -22,23 +22,25 @@ class ReaderLoadException implements Exception {
 /// Loads the pages of [chapterUrl], downloaded copy first.
 ///
 /// Offline pages are tried first so a downloaded chapter opens without
-/// network; only when there are none is [source] asked.
+/// network; only when there are none is [source] asked, and waited for
+/// (a source still being looked up).
 Future<ChapterPages> loadChapterPages({
   required MangaKey key,
   required String chapterUrl,
   required DownloadRepository? downloads,
-  MangaSource? source,
+  FutureOr<MangaSource?> source,
 }) async {
   final offline = await downloads?.offlinePages(key, chapterUrl);
   if (offline != null && offline.isNotEmpty) {
     return (pages: _sorted(offline), offline: true);
   }
-  if (source == null) {
+  final found = await source;
+  if (found == null) {
     throw const ReaderLoadException(
       'This chapter is not downloaded and its source is not available.',
     );
   }
-  return (pages: _sorted(await source.pages(chapterUrl)), offline: false);
+  return (pages: _sorted(await found.pages(chapterUrl)), offline: false);
 }
 
 /// Loads the chapter the reader advances into, failing on [timeout] and on

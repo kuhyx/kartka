@@ -35,19 +35,6 @@ extension _Advance on ReaderSession {
     _fail(message);
   }
 
-  Future<List<ChapterInfo>> _chapterList(MangaSource? source) async {
-    try {
-      if (source != null) return await source.chapters(mangaUrl);
-    } on Object {
-      // Offline: fall back to what downloads knows.
-    }
-    try {
-      return await deps.downloads?.downloadedChapters(key) ?? const [];
-    } on Object {
-      return const [];
-    }
-  }
-
   Future<int> _resumePage(int last) async {
     final progress = deps.progress;
     if (progress == null) return 0;
@@ -81,6 +68,7 @@ extension _Advance on ReaderSession {
   /// Looks the chapter up at write time: a chapter list fetched again
   /// after a failure supplies the number the first one could not.
   Future<void> _record(String url, int page, int pageCount) async {
+    await _listReady;
     final n = neighboursOf(_chapters, url);
     final number = progressNumber(n.current, n.position);
     // Unknown chapter number (offline): only markRead may land.

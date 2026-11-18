@@ -17,6 +17,7 @@ import 'package:kartka/reader/state/chapter_segment.dart';
 import 'package:kartka/reader/state/reader_deps.dart';
 
 part 'reader_session_advance.dart';
+part 'reader_session_open.dart';
 
 /// Where a session is in its life.
 enum ReaderPhase {
@@ -93,6 +94,7 @@ class ReaderSession extends ChangeNotifier {
   String? nextError;
 
   List<ChapterInfo> _chapters = const [];
+  Future<void>? _listReady;
   MangaSource? _source;
   List<PageRef> _flat = const [];
   Future<void>? _nextLoad;
@@ -139,36 +141,9 @@ class ReaderSession extends ChangeNotifier {
   /// are being fetched.
   bool get nextLoading => _nextLoad != null;
 
-  /// Resolves settings, chapter list, pages and the start position.
-  Future<void> open() async {
-    settings = await deps.prefs.settings();
-    mode = await deps.prefs.effectiveMode(key);
-    final source = _source = await deps.findSource(sourceId);
-    _chapters = await _chapterList(source);
-    final ChapterPages loaded;
-    try {
-      loaded = await loadChapterPages(
-        key: key,
-        chapterUrl: chapterUrl,
-        downloads: deps.downloads,
-        source: source,
-      );
-    } on ReaderLoadException catch (e, stack) {
-      return _openFailed(e, stack, e.message);
-    } on Object catch (e, stack) {
-      return _openFailed(e, stack, '$e');
-    }
-    final last = loaded.pages.length - 1;
-    page = startAtEnd ? (last < 0 ? 0 : last) : await _resumePage(last);
-    // The reader may have been left while this was loading.
-    if (_disposed) return;
-    _cache = PageCache(fetch: (i) => deps.loadImage(_flat[i]));
-    _add(chapterUrl, loaded, landing: startAtEnd ? page : null);
-    phase = ReaderPhase.ready;
-    _prefetch();
-    _maybeLoadNext();
-    notifyListeners();
-  }
+  /// Resolves settings, pages and the start position. The chapter list
+  /// does not hold the first page; it names the neighbours when it comes.
+  Future<void> open() => _openChapter();
 
   /// The bytes of the page at [flat] among every loaded page. A failure
   /// shown here (the page's Retry) is logged as `reader.page`; a failed
