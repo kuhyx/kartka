@@ -26,10 +26,9 @@ extension _Open on ReaderSession {
       );
     } on ChapterUnavailable catch (e) {
       return _fail(e.message);
-    } on ReaderLoadException catch (e, stack) {
-      return _openFailed(e, stack, e.message);
     } on Object catch (e, stack) {
-      return _openFailed(e, stack, '$e');
+      final message = e is ReaderLoadException ? e.message : '$e';
+      return _openFailed(e, stack, message);
     }
     final last = loaded.pages.length - 1;
     page = startAtEnd ? (last < 0 ? 0 : last) : await _resumePage(last);
