@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/downloads/engine/download_engine.dart';
 import 'package:kartka/downloads/engine/retry.dart';
 import 'package:kartka/downloads/keys.dart';
@@ -125,7 +126,10 @@ void main() {
     );
     await expectLater(
       engine(FakeLoader()).download(orphan, onProgress: (_) {}),
-      throwsA(isA<StateError>()),
+      // Typed, so the reporter knows it for a known state (486ce453).
+      throwsA(
+        isA<UnknownSourceError>().having((e) => e.sourceId, 'id', 'gone'),
+      ),
     );
     source = FakeSource(pages: const []);
     await expectLater(

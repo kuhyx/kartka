@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/downloads/engine/host_limiter.dart';
 import 'package:kartka/downloads/engine/retry.dart';
 import 'package:kartka/downloads/keys.dart';
@@ -78,7 +79,9 @@ class DownloadEngine {
     bool Function() shouldStop = _never,
   }) async {
     final source = await sourceFor(task.sourceId);
-    if (source == null) throw StateError('source ${task.sourceId} missing');
+    // Nothing lists it: an uninstalled plugin, or (often) a Suwayomi
+    // server that could not be reached, whose provider lists no sources.
+    if (source == null) throw UnknownSourceError(task.sourceId);
     final url = task.chapter.url;
     final pages = await _guarded(
       'source:${task.sourceId}',

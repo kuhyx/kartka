@@ -13,9 +13,9 @@ The device log (`DOCS-contracts.md` §7) stays kartka's.
 |---|---|
 | `uncaught.flutter`, `uncaught.async` | crdt_sync_flutter `installAppErrors` (from `main`): chains `FlutterError.onError` and `PlatformDispatcher.onError`, skips `silent` details; queued straight for upload (not in the device log). |
 | `ui.snackbar` | `ReportingScaffoldMessenger`, mounted in `MaterialApp.builder` (`lib/app/app.dart`), so it is the nearest messenger of every route. An error is a snackbar with the danger hue (design_system `showError`) or failure text (`failed`, `Exception`, `unavailable`, ...). |
-| `reader.open` | `ReaderSession.open` (the reader's Retry screen). |
+| `reader.open` | `ReaderSession.open` (the reader's Retry screen); not a chapter neither downloaded nor fetchable (`ChapterUnavailable`). |
 | `reader.page` | `ReaderSession.image` (a page's Retry); background prefetch stays quiet. |
-| `downloads.failed` | `DownloadService.onFailure` (the queue's Retry), wired by `downloadsFeature`. |
+| `downloads.failed` | `DownloadService.onFailure` (the queue's Retry), wired by `downloadsFeature`; not a source nothing lists (`UnknownSourceError`). |
 | `downloads.offline` | `downloadFailureReporter`: a server that cannot be reached (`isOfflineError`), once per server per 10 min, not once per chapter. |
 | `plugins.repo` | `PluginManager.onRepoError` (the per-repo error list on More → Plugins). |
 | `health.read` | `ReportingHealthFeed`, around the Sources tab's feed only (not the badges). |
@@ -62,8 +62,11 @@ connects):
 ## Slow waits (`perf.slow`)
 
 Every wait the user sees for over 1 s is reported, so a ticket can drive it
-under 1 s. `WaitWatch(operation, child)` (crdt_sync_flutter) wraps a
-spinner; it times how long the spinner stays mounted.
+under 1 s. `ShownWaitWatch(operation, child)` (`lib/app/`) wraps a
+spinner in crdt_sync_flutter's `WaitWatch`, which times how long it stays
+mounted, but only while its tickers run: a page under a pushed route or
+in a hidden tab is not timed. A refresh bar over readable stored chapters
+is not a wait either.
 
 - A wait of 1 s or less writes nothing. A longer one writes an entry at its
   end: `kind` `perf.slow`, `route` (the pattern on top when it began),

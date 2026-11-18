@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/downloads/downloads_feature.dart';
 import 'package:kartka/downloads/queue/download_task.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
@@ -74,5 +75,15 @@ void main() {
       ('downloads.failed', 'suwayomi:1'),
       ('downloads.failed', 'suwayomi:1'),
     ]);
+  });
+
+  test('a source nothing lists (server down, or uninstalled) is not '
+      'reported: the chapter shows it failed (486ce453)', () async {
+    report(
+      _task('suwayomi:1', 1),
+      UnknownSourceError('suwayomi:1'),
+      StackTrace.empty,
+    );
+    expect(await kinds(), isEmpty);
   });
 }

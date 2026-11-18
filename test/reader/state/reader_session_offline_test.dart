@@ -141,6 +141,16 @@ void main() {
     expect(s.phase, ReaderPhase.ready);
     expect(s.neighbours.current, isNull);
   });
+
+  test('a chapter neither downloaded nor fetchable says so without a '
+      'reader.open report (23686cca)', () async {
+    final s = make(source: FakeSource(id: 'other'));
+    await s.open();
+    expect(s.phase, ReaderPhase.failed);
+    expect(s.error, contains('not downloaded'));
+    await pumpEventQueue();
+    expect(await f.diagnostics.entries(), isEmpty);
+  });
 }
 
 class _ThrowingChapters extends FakeDownloads {

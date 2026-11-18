@@ -7,6 +7,7 @@ import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/net/network_errors.dart';
 import 'package:kartka/core/source/source_provider.dart';
+import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/downloads/auto/auto_downloader.dart';
 import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/downloads/download_titles.dart';
@@ -92,13 +93,16 @@ const offlineReportWindow = Duration(minutes: 10);
 /// `downloads.offline` instead, once per server ([serverOf]) per
 /// [offlineReportWindow], so a queue failing chapter after chapter while
 /// offline reports one entry, not one per chapter. The chapters still end
-/// failed either way (Retry in the queue).
+/// failed either way (Retry in the queue). A source nothing lists
+/// ([UnknownSourceError]: an unreachable Suwayomi server lists none) is a
+/// known state the queue shows, never a report (486ce453).
 void Function(DownloadTask, Object, StackTrace) downloadFailureReporter(
   DiagnosticsLog log, {
   DateTime Function() now = DateTime.now,
 }) {
   final offlineSince = <String, DateTime>{};
   return (task, error, stack) {
+    if (error is UnknownSourceError) return;
     final sourceId = splitMangaKey(task.mangaKey).$1;
     var kind = 'downloads.failed';
     if (isOfflineError(error)) {

@@ -24,6 +24,8 @@ extension _Open on ReaderSession {
         downloads: deps.downloads,
         source: found,
       );
+    } on ChapterUnavailable catch (e) {
+      return _fail(e.message);
     } on ReaderLoadException catch (e, stack) {
       return _openFailed(e, stack, e.message);
     } on Object catch (e, stack) {

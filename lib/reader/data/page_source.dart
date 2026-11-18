@@ -19,6 +19,15 @@ class ReaderLoadException implements Exception {
   String toString() => 'ReaderLoadException: $message';
 }
 
+/// The chapter is not downloaded and no source can fetch it (an
+/// uninstalled plugin, or an unreachable Suwayomi server listing none): a
+/// known state the reader shows, never a `reader.open` report (23686cca).
+class ChapterUnavailable extends ReaderLoadException {
+  /// The error, with its fixed message.
+  const new()
+    : super('This chapter is not downloaded and its source is not available.');
+}
+
 /// Loads the pages of [chapterUrl], downloaded copy first.
 ///
 /// Offline pages are tried first so a downloaded chapter opens without
@@ -35,11 +44,7 @@ Future<ChapterPages> loadChapterPages({
     return (pages: _sorted(offline), offline: true);
   }
   final found = await source;
-  if (found == null) {
-    throw const ReaderLoadException(
-      'This chapter is not downloaded and its source is not available.',
-    );
-  }
+  if (found == null) throw const ChapterUnavailable();
   return (pages: _sorted(await found.pages(chapterUrl)), offline: false);
 }
 
