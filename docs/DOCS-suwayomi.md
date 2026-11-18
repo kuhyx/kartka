@@ -64,6 +64,14 @@ deploy/suwayomi/install.sh --verify-only  # end-to-end check, exit 0 = good
   no OutOfMemoryError). The evaluator's own instance
   (`tools/source_eval/systemd/kartka-suwayomi-eval.service`) keeps KCEF off,
   because "CEF is disabled" is how it detects a needs-browser-engine source.
+- **AllManga times out in v2.4.2366** (`Timed out waiting for WebView after
+  20s`, 971debc8). Its extension (v1.6.29+, keiyoushi `runWebView` helpers)
+  needs WebView glue the stable server lacks: the log shows `WebView
+  support library unavailable`, then an NPE in the looper, so the page
+  never loads. Upstream fixed it in #2357 ("Implement WebView boundary
+  glue", 2026-10-08), so far only in preview builds. The pin stays on
+  newest stable; bump `SUWAYOMI_VERSION` to the first stable after
+  v2.4.2366 and re-check `fetchChapterPages` on an AllManga chapter.
 - `--verify-only` checks these, all live:
   - unit active and enabled, version and settings read back (KCEF on,
     FlareSolverr and its fallback off);

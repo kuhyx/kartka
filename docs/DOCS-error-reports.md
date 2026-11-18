@@ -71,7 +71,8 @@ is not a wait either, nor the pager's neighbour pages built off screen.
 to 1.95 s each, one at a time 0.15 s; 28fffd0a), so `PageCache.focus`
 fetches the shown page alone, then the look-aheads one at a time.
 Opening a chapter online from a WebView source can wait ~20 s on the
-server's own upstream fetch (971debc8): a server limit, outside the app.
+server's own upstream fetch (971debc8): a server limit, outside the app
+(AllManga: `DOCS-suwayomi.md`, KCEF section).
 
 - A wait of 1 s or less writes nothing. A longer one writes an entry at its
   end: `kind` `perf.slow`, `route` (the pattern on top when it began),
