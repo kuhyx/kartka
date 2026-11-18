@@ -1,6 +1,6 @@
-import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show WaitWatch;
 import 'package:design_system/design_system.dart';
 import 'package:kartka/app/fit_pages.dart';
+import 'package:kartka/app/shown_wait_watch.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
@@ -87,7 +87,9 @@ class _SourcesTabState extends State<SourcesTab> {
       builder: (context, snap) {
         if (snap.hasError) return _ReadError(snap.error!);
         final records = snap.data;
-        if (records == null) return const WaitWatch.centered('sources.load');
+        if (records == null) {
+          return const ShownWaitWatch.centered('sources.load');
+        }
         if (records.isEmpty) {
           return const EmptyMark(
             icon: Icons.insights_outlined,

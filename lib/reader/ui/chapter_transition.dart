@@ -1,5 +1,5 @@
-import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show WaitWatch;
 import 'package:design_system/design_system.dart';
+import 'package:kartka/app/shown_wait_watch.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The slot past either end of the loaded chapters.
@@ -81,7 +81,7 @@ class ChapterTransition extends StatelessWidget {
               ),
             ] else if (target != null || loading) ...[
               if (onScreen)
-                WaitWatch(operation: 'reader.chapter', child: spinner)
+                ShownWaitWatch(operation: 'reader.chapter', child: spinner)
               else
                 spinner,
               if (target != null) ...[

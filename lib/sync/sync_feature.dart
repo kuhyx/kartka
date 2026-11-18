@@ -3,10 +3,10 @@
 /// settings, error reports, and More → Sync.
 library;
 
-import 'package:crdt_sync_flutter/crdt_sync_flutter.dart'
-    show AppErrors, WaitWatch;
+import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show AppErrors;
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/app/shown_wait_watch.dart';
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/sync/decorators/sync_repository_decorator.dart';
@@ -111,7 +111,7 @@ class SyncAccountRoute extends StatelessWidget {
                       Text(redactUrlQueries('${snap.error}')),
                     ],
                   )
-                : const WaitWatch(
+                : const ShownWaitWatch(
                     operation: 'sync.start',
                     child: CircularProgressIndicator(),
                   ),

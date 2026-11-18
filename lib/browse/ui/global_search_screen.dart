@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show WaitWatch;
 import 'package:design_system/design_system.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kartka/app/shown_wait_watch.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/global_search_controller.dart';
@@ -91,7 +91,7 @@ class _SourceRow extends StatelessWidget {
     if (state.loading) {
       body = const Padding(
         padding: EdgeInsets.all(AppSpacing.md),
-        child: WaitWatch(
+        child: ShownWaitWatch(
           operation: 'search.global',
           child: LinearProgressIndicator(),
         ),

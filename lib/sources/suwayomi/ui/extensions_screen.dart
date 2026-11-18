@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show WaitWatch;
 import 'package:design_system/design_system.dart';
 import 'package:flutter/services.dart';
+import 'package:kartka/app/shown_wait_watch.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/confirm_mark.dart';
@@ -170,7 +170,7 @@ class _ExtensionsState extends State<ExtensionsScreen> {
     }
     final items = _items;
     if (items == null) {
-      return const WaitWatch.centered('suwayomi.extensions');
+      return const ShownWaitWatch.centered('suwayomi.extensions');
     }
     if (items.isEmpty) {
       return const EmptyMark(

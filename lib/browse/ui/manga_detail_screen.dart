@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show WaitWatch;
 import 'package:design_system/design_system.dart';
+import 'package:kartka/app/shown_wait_watch.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
 import 'package:kartka/browse/state/manga_detail_controller.dart';
@@ -178,7 +178,7 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
           top: 0,
           left: 0,
           right: 0,
-          child: WaitWatch(
+          child: ShownWaitWatch(
             operation: 'details.refresh',
             child: LinearProgressIndicator(),
           ),
