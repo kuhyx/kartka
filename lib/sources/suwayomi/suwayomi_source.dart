@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/sources/suwayomi/legacy_urls.dart';
+import 'package:kartka/sources/suwayomi/search_slots.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_exceptions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_mappers.dart';
@@ -43,6 +46,11 @@ class SuwayomiSource implements MangaSource {
   static const searchPages = 3;
 
   final _mangaIds = <String, int>{};
+  final _lookups = <String, Future<int>>{};
+
+  /// Title searches for unseen manga, shared by every source of a server:
+  /// two at once leaves the browser connections for what is on screen.
+  static final _searches = <String, SearchSlots>{};
   final _chapterIds = <String, int>{};
   late final LegacyUrls? _legacy = legacyUrlsFor(info.serverId);
 
@@ -134,17 +142,30 @@ class SuwayomiSource implements MangaSource {
     );
   }
 
-  Future<int> _mangaId(String url) async {
+  /// One lookup per url at a time: calls made meanwhile (the reader's
+  /// chapters and pages, the details screen's details and chapters) share
+  /// it. A failed one is dropped, so Retry looks again.
+  Future<int> _mangaId(String url) {
+    final cached = _mangaIds[url] ?? _mangaIds[_serverUrl(url)];
+    if (cached != null) return Future.value(_mangaIds[url] = cached);
+    return _lookups[url] ??= _lookUp(url).whenComplete(() {
+      // A block: returning the removed future would make it wait on itself.
+      unawaited(_lookups.remove(url));
+    });
+  }
+
+  Future<int> _lookUp(String url) async {
     final server = _serverUrl(url);
-    final cached = _mangaIds[url] ?? _mangaIds[server];
-    if (cached != null) return _mangaIds[url] = cached;
     final data = await client.run(SuwayomiQueries.mangaId, {
       'source': info.serverId,
       'url': server,
     });
     final nodes = _maps((data['mangas']! as Map<String, Object?>)['nodes']);
     if (nodes.isNotEmpty) return _mangaIds[url] = nodes.first['id']! as int;
-    return _mangaIds[url] = await _searchForUnseen(url, server);
+    final slots = _searches[settings().base] ??= SearchSlots(2);
+    return _mangaIds[url] = await slots.run(
+      () => _searchForUnseen(url, server),
+    );
   }
 
   /// A title search registers its results server-side, which fills

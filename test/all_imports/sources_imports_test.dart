@@ -24,6 +24,7 @@ import 'package:kartka/sources/mangadex/mangadex_source.dart';
 import 'package:kartka/sources/mangadex/mangadex_urls.dart';
 import 'package:kartka/sources/mangadex/rate_limiter.dart';
 import 'package:kartka/sources/suwayomi/legacy_urls.dart';
+import 'package:kartka/sources/suwayomi/search_slots.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_exceptions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';

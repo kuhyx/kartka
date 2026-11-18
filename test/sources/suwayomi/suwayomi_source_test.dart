@@ -167,6 +167,18 @@ void main() {
       ]);
     });
 
+    test('one lookup serves calls made at the same time (the reader asks '
+        'for chapters and pages at once)', () async {
+      final s = source(titleOf: (_) async => 'Sousou no Frieren');
+      await Future.wait([s.details(unseen), s.details(unseen)]);
+      expect(
+        bodies(http)
+            .map((r) => r['operationName'])
+            .where((op) => op == 'KartkaMangaId' || op == 'KartkaSourceManga'),
+        ['KartkaMangaId', 'KartkaSourceManga'],
+      );
+    });
+
     test('throw when there is no title to search', () async {
       expect(
         () => source(titleOf: (_) async => null).details(unseen),
