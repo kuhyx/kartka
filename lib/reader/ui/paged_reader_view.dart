@@ -56,6 +56,11 @@ class _PagedReaderViewState extends State<PagedReaderView>
     initialPage: widget.initialItem,
   );
   bool _zoomed = false;
+
+  /// The item the pager settled on. Its neighbours are built off screen,
+  /// so their tickers stay off: a spinner nobody sees is no wait
+  /// (`ShownWaitWatch`; 28fffd0a timed one for 1.9 s).
+  late int _shown = widget.initialItem;
   late final void Function() _detach;
 
   @override
@@ -109,12 +114,18 @@ class _PagedReaderViewState extends State<PagedReaderView>
             : const PageScrollPhysics(),
         itemCount: widget.strip.itemCount,
         onPageChanged: (item) {
-          setState(() => _zoomed = false);
+          setState(() {
+            _zoomed = false;
+            _shown = item;
+          });
           widget.onItemChanged(item);
         },
         itemBuilder: (context, item) {
           final slot = widget.strip.slotAt(item);
-          final content = widget.slotBuilder(context, slot);
+          final content = TickerMode(
+            enabled: item == _shown,
+            child: widget.slotBuilder(context, slot),
+          );
           void tap(Offset p) => widget.onTap(p, size);
           if (!slot.isPage) {
             return GestureDetector(

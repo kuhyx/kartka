@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:typed_data';
 
 /// Loads the encoded bytes of the page at [index].
@@ -15,6 +16,9 @@ class PageCache {
   final PageFetcher _fetch;
   final Map<int, Future<Uint8List>> _entries = {};
   final Map<int, Uint8List> _loaded = {};
+  final ListQueue<int> _queue = ListQueue();
+  Future<Uint8List>? _gate;
+  bool _draining = false;
 
   /// Whether [index] is cached or being fetched.
   bool contains(int index) => _entries.containsKey(index);
@@ -47,12 +51,39 @@ class PageCache {
     return future;
   }
 
-  /// Starts fetching [indices] in the background.
-  void prefetch(Iterable<int> indices) {
-    for (final i in indices) {
-      get(i).ignore();
-    }
+  /// Fetches [current] at once and the [ahead] pages after it, one at a
+  /// time, once [current] has arrived or failed.
+  ///
+  /// The server rate-limits a source: four pages at once took up to 1.95 s
+  /// each, one at a time 0.15 s (28fffd0a). Each call replaces the queue,
+  /// so a jump goes first and the old look-aheads never start.
+  void focus(int current, Iterable<int> ahead) {
+    _gate = get(current);
+    _queue
+      ..clear()
+      ..addAll(ahead);
+    unawaited(_drain());
   }
+
+  Future<void> _drain() async {
+    if (_draining) return;
+    _draining = true;
+    while (true) {
+      final gate = _gate;
+      if (gate != null) {
+        await _settled(gate);
+        // A focus while waiting set a new current: wait for that one.
+        if (!identical(gate, _gate)) continue;
+        _gate = null;
+      }
+      if (_queue.isEmpty) break;
+      await _settled(get(_queue.removeFirst()));
+    }
+    _draining = false;
+  }
+
+  static Future<void> _settled(Future<Uint8List> f) =>
+      f.then<void>((_) {}, onError: (Object _) {});
 
   /// Drops every entry whose index is not in [keep].
   void retain(Set<int> keep) {
@@ -62,6 +93,8 @@ class PageCache {
 
   /// Drops every entry.
   void clear() {
+    _queue.clear();
+    _gate = null;
     _entries.clear();
     _loaded.clear();
   }

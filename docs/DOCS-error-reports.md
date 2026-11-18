@@ -66,7 +66,12 @@ under 1 s. `ShownWaitWatch(operation, child)` (`lib/app/`) wraps a
 spinner in crdt_sync_flutter's `WaitWatch`, which times how long it stays
 mounted, but only while its tickers run: a page under a pushed route or
 in a hidden tab is not timed. A refresh bar over readable stored chapters
-is not a wait either.
+is not a wait either, nor the pager's neighbour pages built off screen.
+`reader.page`: the server rate-limits a source (4 pages at once took up
+to 1.95 s each, one at a time 0.15 s; 28fffd0a), so `PageCache.focus`
+fetches the shown page alone, then the look-aheads one at a time.
+Opening a chapter online from a WebView source can wait ~20 s on the
+server's own upstream fetch (971debc8): a server limit, outside the app.
 
 - A wait of 1 s or less writes nothing. A longer one writes an entry at its
   end: `kind` `perf.slow`, `route` (the pattern on top when it began),

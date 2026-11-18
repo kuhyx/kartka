@@ -93,10 +93,10 @@ extension _Advance on ReaderSession {
     final current = strip.offsetOf(segment) + page;
     final ahead = settings.prefetchAhead;
     _cache
-      ?..prefetch([
+      ?..focus(
         current,
-        ...prefetchIndices(current: current, total: total, ahead: ahead),
-      ])
+        prefetchIndices(current: current, total: total, ahead: ahead),
+      )
       ..retain(retainWindow(current: current, total: total, ahead: ahead));
   }
 

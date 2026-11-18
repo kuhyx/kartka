@@ -1,4 +1,6 @@
+import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show WaitWatch;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/app/shown_wait_watch.dart';
 import 'package:kartka/reader/logic/chapter_strip.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/ui/paged_reader_view.dart';
@@ -98,5 +100,35 @@ void main() {
       ..step(1)
       ..jumpToItem(2);
     expect(items, isEmpty);
+  });
+
+  testWidgets('only the settled page times its spinner; the neighbours '
+      'built off screen do not (28fffd0a)', (tester) async {
+    final watches = find.byType(WaitWatch, skipOffstage: false);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PagedReaderView(
+          mode: ReaderMode.pagedLtr,
+          strip: const ChapterStrip(pageCounts: [3]),
+          initialItem: 2,
+          slotBuilder: (context, slot) =>
+              const ShownWaitWatch.centered('reader.page'),
+          onItemChanged: items.add,
+          controller: controller,
+          onTap: (p, s) => taps.add((p, s)),
+        ),
+      ),
+    );
+    // Items 1 and 3 are laid out off screen (allowImplicitScrolling).
+    expect(
+      find.byType(CircularProgressIndicator, skipOffstage: false),
+      findsNWidgets(3),
+    );
+    expect(watches, findsOneWidget);
+    controller.step(1);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    expect(items, [3]);
+    expect(watches, findsOneWidget);
   });
 }

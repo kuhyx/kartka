@@ -30,8 +30,9 @@ void main() {
     expect(c.contains(1), isTrue);
   });
 
-  test('prefetch starts fetches without awaiting', () async {
-    final c = make()..prefetch([2, 3]);
+  test('focus starts fetches without awaiting', () async {
+    final c = make()..focus(2, [3]);
+    await Future<void>.delayed(Duration.zero);
     await Future<void>.delayed(Duration.zero);
     expect(fetched, [2, 3]);
     expect(await c.get(2), [2]);
@@ -50,14 +51,15 @@ void main() {
 
   test('failed prefetches do not surface as unhandled errors', () async {
     fail = true;
-    make().prefetch([4]);
+    make().focus(4, [5]);
     await Future<void>.delayed(Duration.zero);
-    expect(fetched, [4]);
+    await Future<void>.delayed(Duration.zero);
+    expect(fetched, [4, 5]);
   });
 
   test('retain evicts everything outside the window', () async {
-    final c = make()..prefetch([0, 1, 2]);
-    await Future<void>.delayed(Duration.zero);
+    final c = make();
+    await Future.wait([c.get(0), c.get(1), c.get(2)]);
     c.retain({1});
     expect(c.contains(0), isFalse);
     expect(c.contains(1), isTrue);
