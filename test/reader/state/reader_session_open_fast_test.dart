@@ -99,11 +99,14 @@ void main() {
     await s.open().timeout(const Duration(seconds: 1));
     expect(s.phase, ReaderPhase.ready);
     expect(s.offline, isFalse);
+    // Unknown, not absent: the previous slot spins until the list says.
+    expect(s.previousLoading, isTrue);
     s.onItem(2); // Page 1 (item 0 is the previous chapter's slot).
     // Past the recorder's debounce, still without the list.
     await Future<void>.delayed(const Duration(milliseconds: 700));
     gate.complete();
     await pumpEventQueue();
+    expect(s.previousLoading, isFalse);
     expect(s.nextChapter?.url, '/c/3');
     expect(progress.recorded.map((p) => (p.chapterNumber, p.page)), [(2, 1)]);
   });

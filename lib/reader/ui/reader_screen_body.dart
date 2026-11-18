@@ -52,7 +52,7 @@ extension on _ReaderScreenState {
       targetName: (forward ? s.nextChapter : s.previousChapter)?.name,
       error: forward ? s.nextError : null,
       onRetry: s.retryNext,
-      loading: forward && s.nextLoading,
+      loading: forward ? s.nextLoading : s.previousLoading,
       // Backward, reaching the slot opens the previous chapter's route,
       // whose own reader.open times that wait.
       onScreen: forward && s.onTrailing,

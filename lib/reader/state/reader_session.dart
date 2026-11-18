@@ -99,6 +99,7 @@ class ReaderSession extends ChangeNotifier {
   List<PageRef> _flat = const [];
   Future<void>? _nextLoad;
   bool _onTrailing = false;
+  bool _listPending = false;
   PageCache? _cache;
   bool _disposed = false;
 
@@ -140,6 +141,10 @@ class ReaderSession extends ChangeNotifier {
   /// Whether the next chapter's pages, or the chapter list that names it,
   /// are being fetched.
   bool get nextLoading => _nextLoad != null;
+
+  /// Whether the chapter list that names the previous chapter is on its
+  /// way: the previous slot is unknown, not absent.
+  bool get previousLoading => _listPending;
 
   /// Resolves settings, pages and the start position. The chapter list
   /// does not hold the first page; it names the neighbours when it comes.

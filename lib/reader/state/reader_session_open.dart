@@ -56,7 +56,10 @@ extension _Open on ReaderSession {
           .ignore();
     }
     // Until the list is in, the next chapter is not known: "loading".
-    if (!arrived) _nextLoad = _afterList(listReady);
+    if (!arrived) {
+      _listPending = true;
+      _nextLoad = _afterList(listReady);
+    }
     _maybeLoadNext();
     notifyListeners();
   }
@@ -66,6 +69,7 @@ extension _Open on ReaderSession {
   Future<void> _afterList(Future<void> listReady) async {
     await listReady;
     _nextLoad = null;
+    _listPending = false;
     if (_disposed) return;
     for (var i = 0; i < segments.length; i++) {
       final s = segments[i];
