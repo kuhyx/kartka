@@ -52,3 +52,6 @@ app.*.map.json
 
 # fvm SDK symlink (version lives in .fvmrc)
 .fvm/
+
+# Claude Code agent worktrees
+.claude/worktrees/
