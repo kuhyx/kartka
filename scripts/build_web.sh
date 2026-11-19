@@ -34,7 +34,9 @@ main() {
         defines+=("--dart-define-from-file=${OAUTH_DEFINES}")
     fi
     cd "${ROOT}"
-    fvm flutter build web --release "${defines[@]}"
+    # No wasm dry run: it compiles a second (wasm) build beside the JS one,
+    # and that extra peak got the deploy OOM-killed in the shared capped slice.
+    fvm flutter build web --release --no-wasm-dry-run "${defines[@]}"
     local index="${ROOT}/build/web/index.html"
     sed -i '/<meta name="kartka-build"/d' "${index}"
     sed -i "0,/<head>/s||<head>\n  <meta name=\"kartka-build\" content=\"${build}\">|" "${index}"
