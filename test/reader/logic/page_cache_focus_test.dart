@@ -100,4 +100,45 @@ void main() {
     await settle();
     expect(started, [0]);
   });
+
+  test(
+    'waitFor starts nothing beside the queue, then takes its turn',
+    () async {
+      cache.focus(0, [1]);
+      final off = cache.waitFor(5);
+      final queued = cache.waitFor(1);
+      await settle();
+      expect(started, [0]);
+      land(0);
+      await settle();
+      expect(started, [0, 1]);
+      land(1);
+      expect(await queued, [1]);
+      await settle();
+      expect(started, [0, 1, 5]);
+      land(5);
+      expect(await off, [5]);
+      expect(identical(cache.waitFor(5), cache.get(5)), isTrue);
+    },
+  );
+
+  test('waitFor on an idle cache fetches the page', () async {
+    final page = cache.waitFor(2);
+    await settle();
+    expect(started, [2]);
+    pending[2]!.completeError(StateError('boom'));
+    await expectLater(page, throwsStateError);
+    cache.waitFor(2).ignore();
+    await settle();
+    expect(started, [2, 2], reason: 'a failure retries on the next ask');
+  });
+
+  test('clear drops pages still waiting for their turn', () async {
+    cache.focus(0, const []);
+    cache.waitFor(3).ignore();
+    cache.clear();
+    land(0);
+    await settle();
+    expect(started, [0]);
+  });
 }

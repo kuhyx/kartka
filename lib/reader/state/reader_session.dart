@@ -150,11 +150,12 @@ class ReaderSession extends ChangeNotifier {
   /// does not hold the first page; it names the neighbours when it comes.
   Future<void> open() => _openChapter();
 
-  /// The bytes of the page at [flat] among every loaded page. A failure
-  /// shown here (the page's Retry) is logged as `reader.page`; a failed
-  /// background prefetch is not.
+  /// The bytes of the page at [flat] among every loaded page, fetched in
+  /// the queue's turn, never beside it (28fffd0a). A failure shown here
+  /// (the page's Retry) is logged as `reader.page`; a failed background
+  /// prefetch is not.
   Future<Uint8List> image(int flat) =>
-      _cache!.get(flat).onError<Object>(_pageFailed);
+      _cache!.waitFor(flat).onError<Object>(_pageFailed);
 
   /// The bytes of the page at [flat] if they have arrived, else null.
   Uint8List? loadedImage(int flat) => _cache?.peek(flat);

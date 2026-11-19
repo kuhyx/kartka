@@ -17,6 +17,7 @@ class PageCache {
   final Map<int, Future<Uint8List>> _entries = {};
   final Map<int, Uint8List> _loaded = {};
   final ListQueue<int> _queue = ListQueue();
+  final Map<int, Completer<Uint8List>> _waiters = {};
   Future<Uint8List>? _gate;
   bool _draining = false;
 
@@ -35,6 +36,7 @@ class PageCache {
     if (cached != null) return cached;
     final future = _fetch(index);
     _entries[index] = future;
+    _waiters.remove(index)?.complete(future);
     unawaited(
       future.then<void>(
         (bytes) {
@@ -49,6 +51,18 @@ class PageCache {
       ),
     );
     return future;
+  }
+
+  /// The bytes of page [index] without starting a fetch beside the queue:
+  /// a page not yet fetched waits for its turn, after the shown page and
+  /// the look-aheads (the pager's off-screen neighbour, a webtoon page in
+  /// the list's cache extent, a page the decode plan wants).
+  Future<Uint8List> waitFor(int index) {
+    final cached = _entries[index];
+    if (cached != null) return cached;
+    final waiter = _waiters.putIfAbsent(index, Completer.new);
+    unawaited(_drain());
+    return waiter.future;
   }
 
   /// Fetches [current] at once and the [ahead] pages after it, one at a
@@ -76,8 +90,11 @@ class PageCache {
         if (!identical(gate, _gate)) continue;
         _gate = null;
       }
-      if (_queue.isEmpty) break;
-      await _settled(get(_queue.removeFirst()));
+      final next = _queue.isNotEmpty
+          ? _queue.removeFirst()
+          : _waiters.keys.firstOrNull;
+      if (next == null) break;
+      await _settled(get(next));
     }
     _draining = false;
   }
@@ -94,6 +111,7 @@ class PageCache {
   /// Drops every entry.
   void clear() {
     _queue.clear();
+    _waiters.clear();
     _gate = null;
     _entries.clear();
     _loaded.clear();

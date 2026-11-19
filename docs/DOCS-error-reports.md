@@ -69,8 +69,10 @@ in a hidden tab is not timed. A refresh bar over readable stored chapters
 is not a wait either, nor the pager's neighbour pages built off screen.
 `reader.page`: the server rate-limits a source (4 pages at once took up
 to 1.95 s each, one at a time 0.15 s; 28fffd0a), so `PageCache.focus`
-fetches the shown page alone, then the look-aheads one at a time. The
-reader asks for the chapter list only once page 1 is in (beside the open
+fetches the shown page alone, then the look-aheads one at a time. No page
+widget or decode plan starts a fetch beside it (`PageCache.waitFor`): the
+pager's off-screen neighbour and the webtoon cache extent made it 3-19 at
+once. The reader asks for the chapter list only once page 1 is in (beside the open
 it slowed page 1 from 0.3-0.8 s to 2.9-4.0 s).
 Opening a chapter online from a WebView source can wait ~20 s on the
 server's own upstream fetch (971debc8): a server limit, outside the app
