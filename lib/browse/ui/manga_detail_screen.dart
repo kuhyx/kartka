@@ -36,6 +36,9 @@ class MangaDetailScreen extends StatefulWidget {
 class _MangaDetailScreenState extends State<MangaDetailScreen> {
   MangaDetailController? _controller;
   late Stream<ReadMarks> _marks;
+
+  /// The newest read marks [_marks] delivered (the slots' first unread).
+  ReadMarks _lastMarks = ReadMarks.none;
   late Stream<ReadingProgress?> _progress;
 
   @override
@@ -49,7 +52,7 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
       mangaUrl: widget.mangaUrl,
     );
     _controller = c;
-    _marks = c.readMarks();
+    _marks = c.readMarks().map((m) => _lastMarks = m);
     _progress = c.progress();
     for (final slot in deps.detailSlots) {
       slot.opened(c.key);
@@ -58,8 +61,10 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
       // Also when the screen was left meanwhile: the slots' work is
       // background work, not this screen's.
       c.load().then((_) {
+        final read = readUrls(c.chapters, _lastMarks);
+        final next = firstUnread(c.chapters, read)?.url;
         for (final slot in deps.detailSlots) {
-          slot.loaded(c.key);
+          slot.loaded(c.key, firstUnread: next);
         }
       }),
     );

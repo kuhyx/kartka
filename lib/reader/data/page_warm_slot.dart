@@ -7,8 +7,9 @@ import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/reader/data/page_list_cache.dart';
 
-/// Fetches the Continue chapter's page list ahead once the manga's details
-/// screen has loaded, so tapping Continue opens from [cache] (971debc8).
+/// Fetches the Continue chapter's page list ahead (the progress chapter,
+/// else the first unread one) once the manga's details screen has loaded,
+/// so tapping Continue opens from [cache] (971debc8).
 ///
 /// Only after [loaded]: beside the details screen's own fetch (the same
 /// rate-limited source) it would slow that. Untimed and unreported: no one
@@ -38,16 +39,17 @@ class PageWarmSlot implements MangaDetailSlot {
   void opened(MangaKey key) {}
 
   @override
-  void loaded(MangaKey key) => unawaited(_warm(key));
+  void loaded(MangaKey key, {String? firstUnread}) =>
+      unawaited(_warm(key, firstUnread));
 
-  Future<void> _warm(MangaKey key) async {
+  Future<void> _warm(MangaKey key, String? firstUnread) async {
     try {
       final saved = await progress()
           ?.watch(key)
           .first
           .timeout(const Duration(seconds: 2));
-      if (saved == null) return;
-      final url = saved.chapterUrl;
+      final url = saved?.chapterUrl ?? firstUnread;
+      if (url == null) return;
       final offline = await downloads()?.offlinePages(key, url);
       if (offline != null && offline.isNotEmpty) return;
       final source = await findSource(splitMangaKey(key).$1);

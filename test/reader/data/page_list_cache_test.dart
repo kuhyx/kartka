@@ -9,10 +9,21 @@ import '../support/fakes.dart';
 
 /// A source whose page list fails like AllManga on Suwayomi v2.4.2366.
 class _WebViewSource extends FakeSource {
-  new({super.pageMap});
+  new({
+    super.id,
+    super.pageMap,
+    this.name = 'Fake',
+    this.origin = SourceOrigin.native,
+  });
 
+  final String name;
+  final SourceOrigin origin;
   bool broken = true;
   Completer<void>? gate;
+
+  @override
+  SourceRef get ref =>
+      SourceRef(id: id, name: name, lang: 'en', origin: origin);
 
   @override
   Future<List<PageRef>> pages(String chapterUrl) async {
@@ -100,15 +111,15 @@ void main() {
     expect(await kv.entries(prefix: PageListCache.markPrefix), isEmpty);
   });
 
-  test('the mark expires', () async {
+  test('the mark never lapses', () async {
     final src = _WebViewSource();
     await expectLater(cache.pages(src, '/c/1'), throwsException);
-    now = now.add(PageListCache.brokenFor + const Duration(seconds: 1));
+    now = now.add(const Duration(days: 400));
     await expectLater(
       cache.pages(src, '/c/1'),
-      throwsA(isNot(isA<SourceNeedsWebView>())),
+      throwsA(isA<SourceNeedsWebView>()),
     );
-    expect(src.pageCalls, hasLength(2));
+    expect(src.pageCalls, ['/c/1']);
   });
 
   test('other failures are not remembered', () async {
@@ -118,9 +129,56 @@ void main() {
     expect(src.pageCalls, hasLength(2));
   });
 
-  test('an unreadable mark counts as none', () async {
-    await kv.set('${PageListCache.markPrefix}fake', 'garbage');
-    final src = FakeSource(pageMap: {'/c/1': fakePages('/c/1', 1)});
-    expect(await cache.pages(src, '/c/1'), hasLength(1));
+  test('any stored mark counts, also a lapsed legacy expiry', () async {
+    for (final value in ['garbage', '2026-01-01T00:00:00.000Z']) {
+      await kv.set('${PageListCache.markPrefix}fake', value);
+      final src = FakeSource(pageMap: {'/c/1': fakePages('/c/1', 1)});
+      await expectLater(
+        cache.pages(src, '/c/1'),
+        throwsA(isA<SourceNeedsWebView>()),
+      );
+      expect(src.pageCalls, isEmpty);
+      await kv.remove('${PageListCache.markPrefix}fake');
+    }
   });
+
+  test('AllManga on Suwayomi starts marked, without a fetch', () async {
+    final src = _WebViewSource(name: 'AllManga', origin: SourceOrigin.suwayomi);
+    await expectLater(
+      cache.pages(src, '/c/1'),
+      throwsA(isA<SourceNeedsWebView>()),
+    );
+    expect(src.pageCalls, isEmpty);
+    // A native-origin AllManga with a working pageMap is not seeded.
+    final nat = _WebViewSource(
+      id: 'native-allmanga',
+      name: 'AllManga',
+      pageMap: {'/c/1': fakePages('/c/1', 1)},
+    )..broken = false;
+    expect(await cache.pages(nat, '/c/1'), hasLength(1));
+  });
+
+  test(
+    'a fresh success unseeds AllManga for good, also after a restart',
+    () async {
+      final src = _WebViewSource(
+        id: 'suwayomi-allmanga',
+        name: 'AllManga',
+        origin: SourceOrigin.suwayomi,
+        pageMap: {'/c/1': fakePages('/c/1', 2), '/c/2': fakePages('/c/2', 1)},
+      )..broken = false;
+      expect(await cache.pages(src, '/c/1', fresh: true), hasLength(2));
+      expect(
+        await kv.get('${PageListCache.okPrefix}suwayomi-allmanga'),
+        isNotNull,
+      );
+      expect(await cache.pages(src, '/c/2'), hasLength(1));
+      expect(
+        await kv.get('${PageListCache.markPrefix}suwayomi-allmanga'),
+        isNull,
+      );
+      final restarted = PageListCache(kv, now: () => now);
+      expect(await restarted.pages(src, '/c/2'), hasLength(1));
+    },
+  );
 }

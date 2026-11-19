@@ -72,8 +72,8 @@ deploy/suwayomi/install.sh --verify-only  # end-to-end check, exit 0 = good
   glue", 2026-10-08), so far only in preview builds. The pin stays on
   newest stable; bump `SUWAYOMI_VERSION` to the first stable after
   v2.4.2366 and re-check `fetchChapterPages` on an AllManga chapter.
-  Meanwhile the app marks AllManga after one timeout and fails its opens at
-  once (`PageListCache`, `DOCS-error-reports.md`).
+  Meanwhile AllManga is in `PageListCache.knownBroken` so it starts marked,
+  shows Retry at once, and stays marked until a Retry succeeds (`DOCS-error-reports.md`).
 - `--verify-only` checks these, all live:
   - unit active and enabled, version and settings read back (KCEF on,
     FlareSolverr and its fallback off);

@@ -84,7 +84,7 @@ class _MigrateSlot implements MangaDetailSlot {
   void opened(MangaKey key) {}
 
   @override
-  void loaded(MangaKey key) {}
+  void loaded(MangaKey key, {String? firstUnread}) {}
 
   @override
   Widget build(BuildContext context, MangaKey key, MangaDetails details) {

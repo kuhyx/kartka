@@ -67,9 +67,13 @@ class FakeSlot implements MangaDetailSlot {
   void opened(String key) => opens.add(key);
 
   final List<String> loads = [];
+  final List<String?> firstUnreads = [];
 
   @override
-  void loaded(String key) => loads.add(key);
+  void loaded(String key, {String? firstUnread}) {
+    loads.add(key);
+    firstUnreads.add(firstUnread);
+  }
 
   @override
   Widget build(BuildContext context, String key, MangaDetails details) =>

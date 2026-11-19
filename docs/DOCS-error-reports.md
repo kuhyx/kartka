@@ -76,11 +76,16 @@ once. The reader asks for the chapter list only once page 1 is in (beside the op
 it slowed page 1 from 0.3-0.8 s to 2.9-4.0 s).
 Opening a chapter online from a WebView source waited ~20 s on the
 server's own upstream fetch (971debc8; AllManga: `DOCS-suwayomi.md`, KCEF
-section). The reader pays that once: `PageListCache` marks a source whose
-page list timed out on a WebView for 7 days (kv, so restarts keep it), and
-later opens show the Retry screen at once, unreported; Retry asks again and
-a success clears the mark. Once a manga's details load, `PageWarmSlot`
-fetches its Continue chapter's page list ahead into the same cache.
+section). `PageListCache` marks a source whose page list timed out on a
+WebView in kv with no expiry (a marked source is never fetched, so a lapsing
+mark cost one more reported 20 s open per device), and later opens show the
+Retry screen at once, unreported; Retry asks again and a success clears the
+mark. Sources known broken on our server (`PageListCache.knownBroken`:
+AllManga) start marked, so even the first open pays nothing, until one
+Retry succeeds. Once a manga's details load, `PageWarmSlot` fetches the
+Continue chapter's page list (the progress chapter, else the first unread
+one) ahead into the same cache, so Continue opens without the 2-4 s
+upstream fetch.
 
 - A wait of 1 s or less writes nothing. A longer one writes an entry at its
   end: `kind` `perf.slow`, `route` (the pattern on top when it began),

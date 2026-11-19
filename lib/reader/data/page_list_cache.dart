@@ -22,9 +22,10 @@ class SourceNeedsWebView extends ReaderLoadException {
 ///
 /// AllManga's `fetchChapterPages` waits 20 s and fails on every chapter on
 /// Suwayomi v2.4.2366 (971debc8, `DOCS-suwayomi.md`). The first such
-/// failure marks the source in [KeyValueStore] for [brokenFor], so later
-/// opens of any of its chapters fail at once, also after a restart. Retry
-/// asks with `fresh`, and a success clears the mark.
+/// failure marks the source in [KeyValueStore] with no expiry (a marked
+/// source is never fetched, so an expiry would lapse and cost another
+/// reported 20 s open); Retry asks with `fresh`, and a success clears
+/// the mark. Known-broken Suwayomi sources start marked.
 class PageListCache {
   /// A cache that keeps its marks in [_kv].
   new(this._kv, {this._now = DateTime.now});
@@ -32,11 +33,17 @@ class PageListCache {
   /// How long a fetched page list is served again.
   static const keep = Duration(minutes: 10);
 
-  /// How long a WebView timeout keeps its source marked.
-  static const brokenFor = Duration(days: 7);
-
-  /// Key prefix of the marks: `<prefix><sourceId>` = expiry, UTC ISO-8601.
+  /// Key prefix of the marks: `<prefix><sourceId>` = when, UTC ISO-8601.
   static const markPrefix = 'reader.needsWebView.';
+
+  /// Key prefix of the sources that once fetched a page list fine;
+  /// `<prefix><sourceId>` = when, UTC ISO-8601.
+  static const okPrefix = 'reader.pagesOk.';
+
+  /// Names of Suwayomi sources whose page lists time out on a WebView
+  /// on Suwayomi v2.4.2366 (971debc8, `DOCS-suwayomi.md`): they start
+  /// marked, with no 20 s first fetch, until one fetch succeeds.
+  static const knownBroken = {'AllManga'};
 
   final KeyValueStore _kv;
   final DateTime Function() _now;
@@ -58,7 +65,7 @@ class PageListCache {
       if (_kept[id] case final k? when _now().difference(k.at) < keep) {
         return k.pages;
       }
-      if (await _marked(source.ref.id)) throw const SourceNeedsWebView();
+      if (await _marked(source)) throw const SourceNeedsWebView();
     }
     return await (_inFlight[id] ??= _fetch(source, chapterUrl, id).whenComplete(
       // A block: returning the removed future would make it wait on itself.
@@ -82,18 +89,27 @@ class PageListCache {
       final pages = await source.pages(chapterUrl);
       _kept[id] = (pages: pages, at: _now());
       await _kv.remove(mark);
+      if (source.ref.origin == SourceOrigin.suwayomi &&
+          knownBroken.contains(source.ref.name)) {
+        await _kv.set(
+          '$okPrefix${source.ref.id}',
+          _now().toUtc().toIso8601String(),
+        );
+      }
       return pages;
     } on Object catch (e) {
       if ('$e'.contains('Timed out waiting for WebView')) {
-        await _kv.set(mark, _now().add(brokenFor).toUtc().toIso8601String());
+        await _kv.set(mark, _now().toUtc().toIso8601String());
       }
       rethrow;
     }
   }
 
-  Future<bool> _marked(String sourceId) async {
-    final raw = await _kv.get('$markPrefix$sourceId');
-    final until = raw == null ? null : DateTime.tryParse(raw);
-    return until != null && _now().isBefore(until);
+  Future<bool> _marked(MangaSource source) async {
+    final raw = await _kv.get('$markPrefix${source.ref.id}');
+    if (raw != null) return true;
+    if (source.ref.origin != SourceOrigin.suwayomi) return false;
+    if (!knownBroken.contains(source.ref.name)) return false;
+    return await _kv.get('$okPrefix${source.ref.id}') == null;
   }
 }

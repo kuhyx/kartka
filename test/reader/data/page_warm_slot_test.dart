@@ -23,7 +23,9 @@ void main() {
 
   setUp(() {
     cache = PageListCache(MemoryKeyValueStore());
-    src = FakeSource(pageMap: {'/c/2': fakePages('/c/2', 4)});
+    src = FakeSource(
+      pageMap: {'/c/1': fakePages('/c/1', 3), '/c/2': fakePages('/c/2', 4)},
+    );
   });
 
   PageWarmSlot slot({ReadingProgress? saved, FakeDownloads? downloads}) =>
@@ -60,6 +62,19 @@ void main() {
     slot(saved: _at('/c/404')).loaded(mangaKeyOf('fake', '/m/1'));
     await pumpEventQueue();
     expect(src.pageCalls, ['/c/404']);
+  });
+
+  test('with no progress, the first unread chapter is fetched', () async {
+    slot().loaded(mangaKeyOf('fake', '/m/1'), firstUnread: '/c/1');
+    await pumpEventQueue();
+    expect(src.pageCalls, ['/c/1']);
+  });
+
+  test('progress wins over the first unread chapter', () async {
+    slot(saved: _at('/c/2'))
+        .loaded(mangaKeyOf('fake', '/m/1'), firstUnread: '/c/1');
+    await pumpEventQueue();
+    expect(src.pageCalls, ['/c/2']);
   });
 
   testWidgets('it shows nothing in the menu', (tester) async {

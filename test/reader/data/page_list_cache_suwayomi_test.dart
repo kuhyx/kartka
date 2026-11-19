@@ -42,7 +42,8 @@ final String _chapterId = jsonEncode({
 
 /// The mark is set from what the real client throws, not a test string.
 void main() {
-  test('a Suwayomi WebView timeout marks the source', () async {
+  test('AllManga starts marked; a Retry that times out on the WebView '
+      'keeps it marked', () async {
     final sent = <String>[];
     final source = SuwayomiSource(
       info: const SuwayomiSourceInfo(
@@ -66,12 +67,26 @@ void main() {
       ),
       settings: () => fixtureSettings,
     );
-    final cache = PageListCache(MemoryKeyValueStore());
-    await expectLater(cache.pages(source, '/chapter/1'), throwsException);
+    final kv = MemoryKeyValueStore();
+    final cache = PageListCache(kv);
     await expectLater(
-      cache.pages(source, '/chapter/2'),
+      cache.pages(source, '/chapter/1'),
       throwsA(isA<SourceNeedsWebView>()),
     );
+    expect(sent, isEmpty, reason: 'seeded: no 20 s first fetch');
+    await expectLater(
+      cache.pages(source, '/chapter/1', fresh: true),
+      throwsA(isNot(isA<SourceNeedsWebView>())),
+    );
     expect(sent.where((b) => b.contains('KartkaPages')), hasLength(1));
+    expect(
+      await kv.get('${PageListCache.markPrefix}suwayomi:$_allManga'),
+      isNotNull,
+      reason: 'the real client error text sets the mark',
+    );
+    expect(
+      await kv.get('${PageListCache.okPrefix}suwayomi:$_allManga'),
+      isNull,
+    );
   });
 }

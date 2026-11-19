@@ -31,7 +31,6 @@ void main() {
     expect(spokenIcon('ongoing'), findsOneWidget);
     expect(find.bySemanticsLabel('3 chapters'), findsOneWidget);
     expect(h.slot.opens, [_key]);
-    expect(h.slot.loads, [_key], reason: 'after the details fetch');
     // Newest first in the list.
     expect(
       t.getTopLeft(find.text('Ch. 3')).dy,
@@ -40,6 +39,8 @@ void main() {
     expect(find.byType(Image), findsWidgets);
     await t.tap(find.byKey(const ValueKey('detail-header')));
     await t.pumpAndSettle();
+    expect(h.slot.loads, [_key], reason: 'after the details fetch');
+    expect(h.slot.firstUnreads, ['/c/1'], reason: 'what Continue opens');
     expect(find.text('A long description.'), findsOneWidget);
     expect(find.text('Action'), findsOneWidget);
     await _menu(t);
