@@ -3,7 +3,7 @@ part of 'reader_session.dart';
 /// Opening helpers, loaded chapters, prefetch and advancing into the next
 /// chapter.
 extension _Advance on ReaderSession {
-  void _fail(String message) {
+  void _fail(String? message) {
     error = message;
     phase = ReaderPhase.failed;
     notifyListeners();

@@ -39,7 +39,7 @@ void main() {
     final s = f.make(source: src, pageLists: cache);
     await s.open().timeout(const Duration(seconds: 1));
     expect(s.phase, ReaderPhase.failed);
-    expect(s.error, contains('WebView'));
+    expect(s.error, isNull, reason: 'icon and Retry only, no text');
     expect(src.pageCalls, ['/c/9'], reason: 'the source is not asked');
     expect(await f.diagnostics.entries(), isEmpty);
   });

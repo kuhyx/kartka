@@ -34,9 +34,10 @@ extension _Open on ReaderSession {
       );
     } on ChapterUnavailable catch (e) {
       return _fail(e.message);
-    } on SourceNeedsWebView catch (e) {
-      // Known (971debc8): shown at once with Retry, never reported.
-      return _fail(e.message);
+    } on SourceNeedsWebView {
+      // Known (971debc8): the failed screen's icon and Retry at once, no
+      // text (textgate), never reported.
+      return _fail(null);
     } on Object catch (e, stack) {
       final message = e is ReaderLoadException ? e.message : '$e';
       return _openFailed(e, stack, message);

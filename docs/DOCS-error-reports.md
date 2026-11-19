@@ -91,7 +91,8 @@ fetches its Continue chapter's page list ahead into the same cache.
   `updates.load`, `details.load`, `details.refresh`, `suwayomi.extensions`,
   `downloads.load`, `sources.load`, `browse.nextpage`, `search.global`,
   `plugins.load`, `tracking.search`, `sync.start`. Not hooked: button and
-  tile spinners (an install or import is meant to take a while), determinate
+  tile spinners (an install or import is meant to take a while), the
+  reader's spinner after Retry (a probe of a source that just failed), determinate
   bars (downloads, update strip, import), the migration screens.
 - **Signature** = kind + route + operation only, never the time, so all slow
   waits of one operation are one ticket. A `still` report and its final

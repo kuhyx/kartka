@@ -6,7 +6,8 @@ import 'package:kartka/platform/key_value_store.dart';
 import 'package:kartka/reader/data/page_source.dart';
 
 /// The source's page lists need a WebView its server cannot run: a known
-/// state the reader shows at once with Retry, never a `reader.open` report.
+/// state the reader shows at once (icon and Retry, no text), never a
+/// `reader.open` report. The message is for logs only.
 class SourceNeedsWebView extends ReaderLoadException {
   /// The error, with its fixed message.
   const new()

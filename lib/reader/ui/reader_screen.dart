@@ -222,6 +222,12 @@ class _ReaderScreenState extends State<ReaderScreen> {
       autofocus: true,
       onKeyEvent: _onKey,
       child: switch (_session.phase) {
+        // Retry is a tapped probe of a source that just failed (a WebView
+        // one takes 20 s every time, 971debc8): a button's spinner, not a
+        // reported wait.
+        ReaderPhase.loading when _session.fresh => const Center(
+          child: CircularProgressIndicator(),
+        ),
         ReaderPhase.loading => const ShownWaitWatch.centered('reader.open'),
         ReaderPhase.failed => _failed(context),
         ReaderPhase.ready => Stack(
