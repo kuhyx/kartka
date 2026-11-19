@@ -31,6 +31,7 @@ void main() {
     expect(spokenIcon('ongoing'), findsOneWidget);
     expect(find.bySemanticsLabel('3 chapters'), findsOneWidget);
     expect(h.slot.opens, [_key]);
+    expect(h.slot.loads, [_key], reason: 'after the details fetch');
     // Newest first in the list.
     expect(
       t.getTopLeft(find.text('Ch. 3')).dy,

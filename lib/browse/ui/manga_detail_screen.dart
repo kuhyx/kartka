@@ -54,7 +54,15 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
     for (final slot in deps.detailSlots) {
       slot.opened(c.key);
     }
-    unawaited(c.load());
+    unawaited(
+      // Also when the screen was left meanwhile: the slots' work is
+      // background work, not this screen's.
+      c.load().then((_) {
+        for (final slot in deps.detailSlots) {
+          slot.loaded(c.key);
+        }
+      }),
+    );
   }
 
   @override

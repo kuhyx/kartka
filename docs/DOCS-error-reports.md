@@ -74,9 +74,13 @@ widget or decode plan starts a fetch beside it (`PageCache.waitFor`): the
 pager's off-screen neighbour and the webtoon cache extent made it 3-19 at
 once. The reader asks for the chapter list only once page 1 is in (beside the open
 it slowed page 1 from 0.3-0.8 s to 2.9-4.0 s).
-Opening a chapter online from a WebView source can wait ~20 s on the
-server's own upstream fetch (971debc8): a server limit, outside the app
-(AllManga: `DOCS-suwayomi.md`, KCEF section).
+Opening a chapter online from a WebView source waited ~20 s on the
+server's own upstream fetch (971debc8; AllManga: `DOCS-suwayomi.md`, KCEF
+section). The reader pays that once: `PageListCache` marks a source whose
+page list timed out on a WebView for 7 days (kv, so restarts keep it), and
+later opens show the Retry screen at once, unreported; Retry asks again and
+a success clears the mark. Once a manga's details load, `PageWarmSlot`
+fetches its Continue chapter's page list ahead into the same cache.
 
 - A wait of 1 s or less writes nothing. A longer one writes an entry at its
   end: `kind` `perf.slow`, `route` (the pattern on top when it began),

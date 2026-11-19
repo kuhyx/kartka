@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
+import 'package:kartka/reader/data/page_list_cache.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
 import 'package:kartka/reader/state/reader_deps.dart';
 import 'package:kartka/reader/state/reader_session.dart';
@@ -34,6 +35,8 @@ class SessionFixture {
     String chapter = '/c/2',
     bool startAtEnd = false,
     Duration advanceTimeout = const Duration(seconds: 30),
+    PageListCache? pageLists,
+    bool fresh = false,
   }) {
     progress = FakeProgress(initial: saved);
     final src =
@@ -47,7 +50,9 @@ class SessionFixture {
       mangaUrl: '/m/1',
       chapterUrl: chapter,
       startAtEnd: startAtEnd,
+      fresh: fresh,
       deps: ReaderDeps(
+        pageLists: pageLists,
         diagnostics: diagnostics,
         advanceTimeout: advanceTimeout,
         findSource: (id) async => id == src.id ? src : null,

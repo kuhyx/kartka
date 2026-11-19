@@ -94,8 +94,10 @@ class _ReaderScreenState extends State<ReaderScreen> {
     unawaited(widget.system.keepAwake(on: true));
   }
 
-  ReaderSession _open() {
+  /// A session; [fresh] (Retry) asks the source even when it is marked.
+  ReaderSession _open({bool fresh = false}) {
     final s = ReaderSession(
+      fresh: fresh,
       sourceId: widget.sourceId,
       mangaUrl: widget.mangaUrl,
       chapterUrl: widget.chapterUrl,
@@ -130,7 +132,7 @@ class _ReaderScreenState extends State<ReaderScreen> {
   void _retryOpen() {
     _session.dispose();
     _shownSegment = 0;
-    setState(() => _session = _open());
+    setState(() => _session = _open(fresh: true));
   }
 
   /// Reports the view's item; the leading edge opens the previous chapter

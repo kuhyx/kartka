@@ -124,6 +124,7 @@ extension _Advance on ReaderSession {
         chapterUrl: next.url,
         downloads: deps.downloads,
         source: _source,
+        cache: deps.pageLists,
         timeout: deps.advanceTimeout,
       );
       if (_disposed) return;

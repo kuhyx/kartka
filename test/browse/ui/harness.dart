@@ -66,6 +66,11 @@ class FakeSlot implements MangaDetailSlot {
   @override
   void opened(String key) => opens.add(key);
 
+  final List<String> loads = [];
+
+  @override
+  void loaded(String key) => loads.add(key);
+
   @override
   Widget build(BuildContext context, String key, MangaDetails details) =>
       Text('slot:$key');

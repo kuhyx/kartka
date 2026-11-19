@@ -12,6 +12,10 @@ abstract interface class MangaDetailSlot {
   /// Called once when the detail screen for [key] opens.
   void opened(MangaKey key);
 
+  /// Called once the detail screen for [key] has fetched its details and
+  /// chapters (or failed to): background work starts here, not beside it.
+  void loaded(MangaKey key);
+
   /// Builds the slot's widget for the manga [key] with loaded [details].
   Widget build(BuildContext context, MangaKey key, MangaDetails details);
 }

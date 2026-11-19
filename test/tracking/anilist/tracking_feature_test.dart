@@ -83,7 +83,9 @@ void main() {
       final fake = FakeTracker(id: 'mangaupdates')..remote['1'] = 4;
       final r = _registry(extra: [fake, FakeResolver()]);
       await r.maybe<TrackerBindingSink>()!.bind(_k, 'mangaupdates', '1');
-      r.maybe<MangaDetailSlot>()!.opened(_k);
+      r.maybe<MangaDetailSlot>()!
+        ..opened(_k)
+        ..loaded(_k); // Nothing more once the screen loaded.
       await pumpEvents();
       final progress = r.maybe<LibraryRepositories>()!.progress;
       expect((await progress.watch(_k).first)!.chapterNumber, 4);

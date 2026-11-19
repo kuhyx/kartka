@@ -127,6 +127,8 @@ void main() {
       ),
     );
     expect(find.byIcon(Icons.swap_horiz), findsNothing);
-    slot.opened(_key); // Nothing to do when the screen opens.
+    slot
+      ..opened(_key) // Nothing to do when the screen opens,
+      ..loaded(_key); // nor once it has loaded.
   });
 }

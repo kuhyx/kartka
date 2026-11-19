@@ -29,8 +29,13 @@ extension _Open on ReaderSession {
         chapterUrl: chapterUrl,
         downloads: deps.downloads,
         source: found,
+        cache: deps.pageLists,
+        fresh: fresh,
       );
     } on ChapterUnavailable catch (e) {
+      return _fail(e.message);
+    } on SourceNeedsWebView catch (e) {
+      // Known (971debc8): shown at once with Retry, never reported.
       return _fail(e.message);
     } on Object catch (e, stack) {
       final message = e is ReaderLoadException ? e.message : '$e';

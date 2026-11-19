@@ -18,6 +18,9 @@ class TrackingDetailSlot implements MangaDetailSlot {
   void opened(MangaKey key) => unawaited(_service.refresh(key));
 
   @override
+  void loaded(MangaKey key) {}
+
+  @override
   Widget build(BuildContext context, MangaKey key, MangaDetails details) =>
       TrackButton(service: _service, mangaKey: key, title: details.title);
 }

@@ -84,6 +84,9 @@ class _MigrateSlot implements MangaDetailSlot {
   void opened(MangaKey key) {}
 
   @override
+  void loaded(MangaKey key) {}
+
+  @override
   Widget build(BuildContext context, MangaKey key, MangaDetails details) {
     if (details.sourceId == atsumaruSourceId) return const SizedBox.shrink();
     return _MigrateButton(

@@ -5,6 +5,7 @@ import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/reader/data/page_list_cache.dart';
 import 'package:kartka/reader/data/page_source.dart';
 import 'package:kartka/reader/data/reader_settings.dart';
 import 'package:kartka/reader/logic/chapter_order.dart';
@@ -49,6 +50,7 @@ class ReaderSession extends ChangeNotifier {
     required this.chapterUrl,
     required this.deps,
     this.startAtEnd = false,
+    this.fresh = false,
   });
 
   /// Source id from the route.
@@ -65,6 +67,10 @@ class ReaderSession extends ChangeNotifier {
 
   /// Whether to open on the last page instead of the resume position.
   final bool startAtEnd;
+
+  /// Whether the open asks the source even for a kept or marked page list
+  /// (the failed screen's Retry).
+  final bool fresh;
 
   /// The library key of this manga.
   MangaKey get key => mangaKeyOf(sourceId, mangaUrl);

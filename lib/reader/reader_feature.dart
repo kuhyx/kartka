@@ -8,6 +8,8 @@ import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/platform/platform.dart';
+import 'package:kartka/reader/data/page_list_cache.dart';
+import 'package:kartka/reader/data/page_warm_slot.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
 import 'package:kartka/reader/data/source_lookup.dart';
 import 'package:kartka/reader/platform/reader_system.dart';
@@ -19,24 +21,36 @@ import 'package:material_ui/material_ui.dart';
 /// The reader part: the `/read/...` route and its settings tile.
 ///
 /// [system] is injectable for tests; the app uses the host platform's.
-KartkaFeature readerFeature(KartkaEnv env, {ReaderSystem? system}) =>
-    KartkaFeature(
-      id: 'reader',
-      routes: [
-        GoRoute(
-          path: readRoutePattern,
-          builder: (context, state) => _route(
-            context,
-            env,
-            state,
-            system ?? PlatformReaderSystem.host(),
-          ),
+KartkaFeature readerFeature(KartkaEnv env, {ReaderSystem? system}) {
+  // One per app run: a route's deps are rebuilt on every open.
+  final pageLists = PageListCache(env.platform.kv);
+  return KartkaFeature(
+    id: 'reader',
+    services: [
+      PageWarmSlot(
+        cache: pageLists,
+        findSource: (id) => findSource(env.registry.all<SourceProvider>(), id),
+        progress: () => env.registry.maybe<LibraryRepositories>()?.progress,
+        downloads: () => env.registry.maybe<DownloadRepository>(),
+      ),
+    ],
+    routes: [
+      GoRoute(
+        path: readRoutePattern,
+        builder: (context, state) => _route(
+          context,
+          env,
+          state,
+          system ?? PlatformReaderSystem.host(),
+          pageLists,
         ),
-      ],
-      settingsTiles: [
-        (context) => ReaderSettingsTile(prefs: ReaderPrefs(syncedKv(env))),
-      ],
-    );
+      ),
+    ],
+    settingsTiles: [
+      (context) => ReaderSettingsTile(prefs: ReaderPrefs(syncedKv(env))),
+    ],
+  );
+}
 
 /// Route `extra` that opens the chapter on its last page (a JSON value, so
 /// the web build's history state can hold it).
@@ -44,7 +58,7 @@ const readAtEndExtra = 'kartka.reader.atEnd';
 
 /// Wires the reader to the registry. Read at route build time because the
 /// registry (and therefore every service) is late in [KartkaEnv].
-ReaderDeps readerDeps(KartkaEnv env) {
+ReaderDeps readerDeps(KartkaEnv env, {PageListCache? pageLists}) {
   final registry = env.registry;
   final platform = env.platform;
   final images = PageImageLoader(
@@ -60,6 +74,7 @@ ReaderDeps readerDeps(KartkaEnv env) {
     prefs: ReaderPrefs(syncedKv(env)),
     loadImage: images.load,
     diagnostics: DiagnosticsLog.of(platform.diagnostics),
+    pageLists: pageLists,
   );
 }
 
@@ -68,6 +83,7 @@ Widget _route(
   KartkaEnv env,
   GoRouterState state,
   ReaderSystem system,
+  PageListCache pageLists,
 ) {
   final args = parseReadRoute(state.uri.toString());
   if (args == null) {
@@ -83,7 +99,7 @@ Widget _route(
     sourceId: args.sourceId,
     mangaUrl: args.mangaUrl,
     chapterUrl: args.chapterUrl,
-    deps: readerDeps(env),
+    deps: readerDeps(env, pageLists: pageLists),
     system: system,
     startAtEnd: state.extra == readAtEndExtra,
     onOpenChapter: (c, {atEnd = false}) => GoRouter.of(context).replace<void>(
