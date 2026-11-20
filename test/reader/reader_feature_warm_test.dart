@@ -16,7 +16,8 @@ void main() {
     final kv = MemoryKeyValueStore();
     final repos = LibraryRepositories(kv, decorators: () => []);
     final source = FakeSource(pageMap: {'/c/2': fakePages('/c/2', 2)});
-    final registry = KartkaRegistry.build(memoryPlatform(kv: kv), [
+    final http = FakeKartkaHttp();
+    final registry = KartkaRegistry.build(memoryPlatform(kv: kv, http: http), [
       readerFeature,
       (env) => KartkaFeature(
         id: 'test',
@@ -39,5 +40,11 @@ void main() {
     registry.all<MangaDetailSlot>().single.loaded(key);
     await pumpEventQueue();
     expect(source.pageCalls, ['/c/2']);
+    // Then its first page images, one at a time (28fffd0a); the fake's 404
+    // only drops each from the warmer.
+    expect(http.requests.map((r) => r.url.toString()), [
+      'https://img.test/c/2/0.png',
+      'https://img.test/c/2/1.png',
+    ]);
   });
 }

@@ -8,6 +8,7 @@ import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/platform/platform.dart';
+import 'package:kartka/reader/data/page_image_warmer.dart';
 import 'package:kartka/reader/data/page_list_cache.dart';
 import 'package:kartka/reader/data/page_warm_slot.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
@@ -24,6 +25,8 @@ import 'package:material_ui/material_ui.dart';
 KartkaFeature readerFeature(KartkaEnv env, {ReaderSystem? system}) {
   // One per app run: a route's deps are rebuilt on every open.
   final pageLists = PageListCache(env.platform.kv);
+  // The registry is late: the loader is built when an image is fetched.
+  final images = PageImageWarmer((page) => _imageLoader(env).load(page));
   return KartkaFeature(
     id: 'reader',
     services: [
@@ -32,6 +35,7 @@ KartkaFeature readerFeature(KartkaEnv env, {ReaderSystem? system}) {
         findSource: (id) => findSource(env.registry.all<SourceProvider>(), id),
         progress: () => env.registry.maybe<LibraryRepositories>()?.progress,
         downloads: () => env.registry.maybe<DownloadRepository>(),
+        images: images,
       ),
     ],
     routes: [
@@ -43,6 +47,7 @@ KartkaFeature readerFeature(KartkaEnv env, {ReaderSystem? system}) {
           state,
           system ?? PlatformReaderSystem.host(),
           pageLists,
+          images,
         ),
       ),
     ],
@@ -58,21 +63,20 @@ const readAtEndExtra = 'kartka.reader.atEnd';
 
 /// Wires the reader to the registry. Read at route build time because the
 /// registry (and therefore every service) is late in [KartkaEnv].
-ReaderDeps readerDeps(KartkaEnv env, {PageListCache? pageLists}) {
+ReaderDeps readerDeps(
+  KartkaEnv env, {
+  PageListCache? pageLists,
+  PageImageWarmer? images,
+}) {
   final registry = env.registry;
   final platform = env.platform;
-  final images = PageImageLoader(
-    http: platform.http,
-    blobs: platform.blobs,
-    imageHeaders: registry.all<ImageHeaders>(),
-  );
   return ReaderDeps(
     findSource: (id) => findSource(registry.all<SourceProvider>(), id),
     progress: registry.maybe<LibraryRepositories>()?.progress,
     downloads: registry.maybe<DownloadRepository>(),
     // The global settings sync (§16); per-manga modes are never listed.
     prefs: ReaderPrefs(syncedKv(env)),
-    loadImage: images.load,
+    loadImage: images?.load ?? _imageLoader(env).load,
     diagnostics: DiagnosticsLog.of(platform.diagnostics),
     pageLists: pageLists,
   );
@@ -84,6 +88,7 @@ Widget _route(
   GoRouterState state,
   ReaderSystem system,
   PageListCache pageLists,
+  PageImageWarmer images,
 ) {
   final args = parseReadRoute(state.uri.toString());
   if (args == null) {
@@ -99,7 +104,7 @@ Widget _route(
     sourceId: args.sourceId,
     mangaUrl: args.mangaUrl,
     chapterUrl: args.chapterUrl,
-    deps: readerDeps(env, pageLists: pageLists),
+    deps: readerDeps(env, pageLists: pageLists, images: images),
     system: system,
     startAtEnd: state.extra == readAtEndExtra,
     onOpenChapter: (c, {atEnd = false}) => GoRouter.of(context).replace<void>(
@@ -116,3 +121,10 @@ Widget _route(
     },
   );
 }
+
+/// Page images: offline blobs or the network, with the image headers.
+PageImageLoader _imageLoader(KartkaEnv env) => PageImageLoader(
+  http: env.platform.http,
+  blobs: env.platform.blobs,
+  imageHeaders: env.registry.all<ImageHeaders>(),
+);

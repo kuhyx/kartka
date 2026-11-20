@@ -85,7 +85,10 @@ AllManga) start marked, so even the first open pays nothing, until one
 Retry succeeds. Once a manga's details load, `PageWarmSlot` fetches the
 Continue chapter's page list (the progress chapter, else the first unread
 one) ahead into the same cache, so Continue opens without the 2-4 s
-upstream fetch.
+upstream fetch, then its first 3 page images from the saved page, one at
+a time, into `PageImageWarmer`: the reader loads every image through it,
+so the first pages draw at once (a MangaFire page costs 0.5-0.9 s on the
+server; 28fffd0a).
 
 - A wait of 1 s or less writes nothing. A longer one writes an entry at its
   end: `kind` `perf.slow`, `route` (the pattern on top when it began),

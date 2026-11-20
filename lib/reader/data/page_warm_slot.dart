@@ -5,6 +5,7 @@ import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/reader/data/page_image_warmer.dart';
 import 'package:kartka/reader/data/page_list_cache.dart';
 
 /// Fetches the Continue chapter's page list ahead (the progress chapter,
@@ -21,6 +22,7 @@ class PageWarmSlot implements MangaDetailSlot {
     required this.findSource,
     required this.progress,
     required this.downloads,
+    this.images,
   });
 
   /// Where the page list goes.
@@ -34,6 +36,9 @@ class PageWarmSlot implements MangaDetailSlot {
 
   /// Downloaded chapters, which need no warm-up.
   final DownloadRepository? Function() downloads;
+
+  /// Where the chapter's first page images go (28fffd0a); none: lists only.
+  final PageImageWarmer? images;
 
   @override
   void opened(MangaKey key) {}
@@ -53,7 +58,12 @@ class PageWarmSlot implements MangaDetailSlot {
       final offline = await downloads()?.offlinePages(key, url);
       if (offline != null && offline.isNotEmpty) return;
       final source = await findSource(splitMangaKey(key).$1);
-      if (source != null) cache.warm(source, url);
+      if (source == null) return;
+      final images = this.images;
+      if (images == null) return cache.warm(source, url);
+      final pages = await cache.pages(source, url);
+      final from = saved?.chapterUrl == url ? saved!.page : 0;
+      await images.warm(pages, from: from < pages.length ? from : 0);
     } on Object {
       // Background work: the reader asks again when it opens.
     }

@@ -2,6 +2,7 @@
 // file on the VM so `flutter test --coverage` reports it.
 // ignore_for_file: unused_import
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/reader/data/page_image_warmer.dart';
 import 'package:kartka/reader/data/page_list_cache.dart';
 import 'package:kartka/reader/data/page_source.dart';
 import 'package:kartka/reader/data/page_warm_slot.dart';

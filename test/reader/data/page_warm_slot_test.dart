@@ -1,17 +1,20 @@
+import 'dart:typed_data';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
+import 'package:kartka/reader/data/page_image_warmer.dart';
 import 'package:kartka/reader/data/page_list_cache.dart';
 import 'package:kartka/reader/data/page_warm_slot.dart';
 
 import '../support/fakes.dart';
 
-ReadingProgress _at(String chapterUrl) => ReadingProgress(
+ReadingProgress _at(String chapterUrl, {int page = 0}) => ReadingProgress(
   key: mangaKeyOf('fake', '/m/1'),
   chapterUrl: chapterUrl,
   chapterNumber: 2,
-  page: 0,
+  page: page,
   readAt: DateTime.utc(2026, 11, 19),
 );
 
@@ -20,8 +23,10 @@ ReadingProgress _at(String chapterUrl) => ReadingProgress(
 void main() {
   late PageListCache cache;
   late FakeSource src;
+  late List<String> images;
 
   setUp(() {
+    images = [];
     cache = PageListCache(MemoryKeyValueStore());
     src = FakeSource(
       pageMap: {'/c/1': fakePages('/c/1', 3), '/c/2': fakePages('/c/2', 4)},
@@ -34,6 +39,10 @@ void main() {
         findSource: (id) async => id == src.id ? src : null,
         progress: () => FakeProgress(initial: saved),
         downloads: () => downloads,
+        images: PageImageWarmer((p) async {
+          images.add(p.imageUrl);
+          return Uint8List(1);
+        }, count: 2),
       );
 
   test('the Continue chapter is fetched once details loaded', () async {
@@ -68,6 +77,19 @@ void main() {
     slot().loaded(mangaKeyOf('fake', '/m/1'), firstUnread: '/c/1');
     await pumpEventQueue();
     expect(src.pageCalls, ['/c/1']);
+  });
+
+  test('the first images are warmed from the saved page (28fffd0a)', () async {
+    slot(saved: _at('/c/2', page: 1)).loaded(mangaKeyOf('fake', '/m/1'));
+    await pumpEventQueue();
+    expect(images, [
+      'https://img.test/c/2/1.png',
+      'https://img.test/c/2/2.png',
+    ]);
+    slot().loaded(mangaKeyOf('fake', '/m/1'), firstUnread: '/c/1');
+    await pumpEventQueue();
+    expect(images.last, 'https://img.test/c/1/1.png');
+    expect(images[2], 'https://img.test/c/1/0.png');
   });
 
   test('progress wins over the first unread chapter', () async {
