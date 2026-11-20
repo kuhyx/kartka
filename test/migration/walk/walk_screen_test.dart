@@ -157,7 +157,9 @@ void main() {
     expect(_card('/good/op'), findsNothing);
   });
 
-  testWidgets('a spinner shows while the entry is searched', (t) async {
+  testWidgets('a slow source spins on its lane while the others show', (
+    t,
+  ) async {
     final w = WalkWorld();
     await w.library(['One Piece']);
     final gate = w.best.gate = Completer<void>();
@@ -166,6 +168,25 @@ void main() {
     await t.pumpWidget(MaterialApp(home: MigrationWalkScreen(controller: c)));
     await t.pump();
     await t.pump();
+    expect(find.bySemanticsLabel('Searching Best Site'), findsOneWidget);
+    gate.complete();
+    await t.pumpAndSettle();
+    expect(_card('/best/One Piece'), findsOneWidget);
+  });
+
+  testWidgets('the entry shows at once, before the sources are read', (
+    t,
+  ) async {
+    final w = WalkWorld();
+    await w.library(['One Piece']);
+    final gate = w.sourcesGate = Completer<void>();
+    addTearDown(w.world.tracking.dispose);
+    await t.pumpWidget(
+      MaterialApp(home: MigrationWalkScreen(controller: w.controller())),
+    );
+    await t.pump();
+    await t.pump();
+    expect(find.text('One Piece'), findsOneWidget);
     expect(find.bySemanticsLabel('Searching…'), findsOneWidget);
     gate.complete();
     await t.pumpAndSettle();

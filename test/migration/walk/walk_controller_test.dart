@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/migration/walk/walk_controller.dart';
+import 'package:kartka/source_health/model/source_health_record.dart';
 
 import '../fakes.dart';
 import 'walk_fakes.dart';
@@ -117,6 +121,81 @@ void main() {
         c.current!.found!.best.map((m) => m.manga.url),
         contains('/good/wp'),
       );
+    },
+  );
+
+  test(
+    'better scope also walks entries on a source rejected for good',
+    () async {
+      final w = WalkWorld();
+      await w.world.add('Fine', sourceId: 'good');
+      await w.world.add('Gone', sourceId: 'gone');
+      // Installed, its record deleted with the rejection.
+      w
+        ..rejected = const {'gone'}
+        ..installed = [...w.installed, ScriptedSource('gone')];
+      final c = w.controller(scope: WalkScope.better);
+      await c.load();
+      expect([for (final i in c.items) i.entry.title], ['Gone']);
+    },
+  );
+
+  test('with no keep source, the best-ranked other installed sources are '
+      'searched', () async {
+    final w = WalkWorld();
+    await w.library(['One Piece']);
+    final weeb = ScriptedSource('weeb', name: 'Weeb Central')
+      ..offer('One Piece', 'One Piece', '/weeb/op');
+    w
+      ..records = const [
+        SourceHealthRecord(
+          id: 'weeb',
+          name: 'Weeb Central',
+          rank: 4,
+          verdict: HealthVerdict.cut,
+        ),
+      ]
+      ..installed = [w.old, weeb];
+    final c = w.controller();
+    await c.load();
+    await _settle(c);
+    expect(c.current!.found!.best.single.manga.url, '/weeb/op');
+  });
+
+  test('the first entry shows before the source list settles', () async {
+    final w = WalkWorld();
+    await w.library(['One Piece']);
+    final gate = w.sourcesGate = Completer<void>();
+    final c = w.controller();
+    final loading = c.load();
+    await pumpEventQueue();
+    expect(c.loaded, isTrue);
+    expect(c.current!.entry.title, 'One Piece');
+    gate.complete();
+    await loading;
+    await _settle(c);
+    expect(c.current!.found!.best, isNotEmpty);
+  });
+
+  test(
+    'lanes fill as they arrive: a slow source does not hide the others',
+    () async {
+      final w = WalkWorld();
+      await w.library(['One Piece']);
+      w.good.offer('One Piece', 'One Piece', '/good/op');
+      final slow = w.best.gate = Completer<void>();
+      final c = w.controller();
+      await c.load();
+      await pumpEventQueue();
+      final partial = c.current!.found!;
+      expect(
+        {for (final l in partial.lanes) l.source.ref.id: l.state},
+        {'best': LaneState.searching, 'good': LaneState.found},
+      );
+      expect(partial.best.single.manga.url, '/good/op');
+      slow.complete();
+      await _settle(c);
+      expect(c.current!.found!.best, hasLength(2));
     },
   );
 }

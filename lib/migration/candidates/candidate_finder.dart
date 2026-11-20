@@ -69,61 +69,87 @@ class CandidateFinder {
   /// The alternatives of [entry], whose own source is [own] (null when not
   /// installed) and whose progress is at [readChapter]. A [query] (manual
   /// search) replaces the title and alt titles as the only search.
+  /// [onUpdate] hears a partial result each time a source's search ends
+  /// (title-only scores, no chapter counts yet), before the final one.
   Future<EntryCandidates> find(
     LibraryEntry entry, {
     MangaSource? own,
     double? readChapter,
     String? query,
+    void Function(EntryCandidates partial)? onUpdate,
   }) async {
-    // Both at once: the own source is often the slow or broken one.
-    final (ownDetails, ownChapters) = own == null
-        ? (null, null)
-        : await (
+    // In the background: the own source is often the slow or broken one,
+    // and only alt-title searches and the final scores need it.
+    final ownFacts = own == null
+        ? Future.value((null, null))
+        : (
             _detailsOf(own, entry.mangaUrl),
             _chaptersOf(own, entry.mangaUrl),
           ).wait;
-    var wanted = MangaFacts(
-      title: entry.title,
-      readChapter: readChapter,
-    ).withDetails(ownDetails, chapters: ownChapters?.length);
+    var wanted = MangaFacts(title: entry.title, readChapter: readChapter);
     if (query != null) wanted = wanted.withName(query);
-    final match = SameManga(wanted);
+    var match = SameManga(wanted);
     final picked = targets
         .where((s) => s.ref.id != entry.sourceId)
         .take(maxTargets)
         .toList();
-    final states = List.filled(picked.length, LaneState.empty);
+    final states = List.filled(picked.length, LaneState.searching);
     final hits = <_Hit>[];
-    final queries = query == null
-        ? {entry.title, ...wanted.altTitles.take(maxAltQueries)}.toList()
-        : [query];
+    List<Lane> lanes() => [
+      for (var i = 0; i < picked.length; i++)
+        (source: picked[i], state: states[i]),
+    ];
+    bool collect(int i, List<MangaSummary> found) {
+      var good = false;
+      for (final m in found) {
+        final t = match.titleScore(MangaFacts(title: m.title));
+        if (t < minTitleScore) continue;
+        if (hits.any((h) => h.rank == i && h.manga.url == m.url)) continue;
+        hits.add(_Hit(picked[i], i, m, t, hits.length));
+        good |= t >= closeTitleScore;
+      }
+      return good;
+    }
+
     await runPooled([for (var i = 0; i < picked.length; i++) i], concurrency, (
       i,
     ) async {
       final source = picked[i];
       try {
-        for (final q in queries) {
-          var good = false;
-          for (final m in await _search(source, q)) {
-            final t = match.titleScore(MangaFacts(title: m.title));
-            if (t < minTitleScore) continue;
-            if (hits.any((h) => h.rank == i && h.manga.url == m.url)) continue;
-            hits.add(_Hit(source, i, m, t, hits.length));
-            states[i] = LaneState.found;
-            good |= t >= closeTitleScore;
+        if (!collect(i, await _search(source, query ?? entry.title)) &&
+            query == null) {
+          final (details, _) = await ownFacts;
+          match = SameManga(wanted.withDetails(details));
+          for (final alt in match.wanted.altTitles.take(maxAltQueries)) {
+            if (collect(i, await _search(source, alt))) break;
           }
-          if (good) break;
         }
+        final any = hits.any((h) => h.rank == i);
+        states[i] = any ? LaneState.found : LaneState.empty;
       } on Object {
         states[i] = LaneState.failed;
       }
+      _sortHits(hits);
+      onUpdate?.call(
+        EntryCandidates(
+          wanted: wanted,
+          lanes: lanes(),
+          best: [
+            for (final h in hits.take(maxCandidates))
+              MigrationCandidate(
+                source: h.source,
+                manga: h.manga,
+                score: match.score(MangaFacts(title: h.manga.title)),
+                rank: h.rank,
+              ),
+          ],
+        ),
+      );
     });
-    hits.sort((a, b) {
-      final byTitle = b.title.compareTo(a.title);
-      if (byTitle != 0) return byTitle;
-      final byRank = a.rank.compareTo(b.rank);
-      return byRank != 0 ? byRank : a.order.compareTo(b.order);
-    });
+    final (ownDetails, ownChapters) = await ownFacts;
+    wanted = wanted.withDetails(ownDetails, chapters: ownChapters?.length);
+    match = SameManga(wanted);
+    _sortHits(hits);
     final kept = hits.take(maxCandidates).toList();
     final best = List<MigrationCandidate?>.filled(kept.length, null);
     await runPooled([for (var j = 0; j < kept.length; j++) j], concurrency, (
@@ -148,15 +174,19 @@ class CandidateFinder {
     });
     return EntryCandidates(
       wanted: wanted,
-      lanes: [
-        for (var i = 0; i < picked.length; i++)
-          (source: picked[i], state: states[i]),
-      ],
+      lanes: lanes(),
       best: best.nonNulls.toList()..sort(MigrationCandidate.compare),
       ownChapters: ownChapters?.length,
       ownNewest: newestOf(ownChapters),
     );
   }
+
+  static void _sortHits(List<_Hit> hits) => hits.sort((a, b) {
+    final byTitle = b.title.compareTo(a.title);
+    if (byTitle != 0) return byTitle;
+    final byRank = a.rank.compareTo(b.rank);
+    return byRank != 0 ? byRank : a.order.compareTo(b.order);
+  });
 
   static String _key(MangaSource s, String v) => '${s.ref.id}\u0000$v';
 

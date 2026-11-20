@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
-import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/migration/better/better_route.dart';
 import 'package:kartka/migration/first_value.dart';
 import 'package:kartka/migration/migration_deps.dart';
@@ -13,6 +13,7 @@ import 'package:kartka/migration/walk/walk_screen.dart';
 import 'package:kartka/platform/cover_cache.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
 import 'package:kartka/source_health/install/keep_reconciler.dart';
+import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -30,7 +31,8 @@ MigrationWalkScreen migrationWalk(
     deps,
     MigrationInputs(
       records: () => healthRecords(registry.maybe<SourceHealthFeed>()),
-      sources: () => settledSources(registry),
+      sources: () => installedSources(registry),
+      meta: () => healthMeta(registry.maybe<SourceHealthFeed>()),
       flagOf: (id) => registry.maybe<KeepReconciler>()?.flagOf(id),
     ),
     scope: scope,
@@ -73,21 +75,36 @@ Future<List<SourceHealthRecord>> healthRecords(
   }
 }
 
-/// Every installed source once the providers re-listed: a provider's first
-/// list can be empty while its server answers (contracts §15). A re-list
-/// still going after [timeout] (a hung server) is not waited for: the walk
-/// goes on with what is listed.
-Future<List<MangaSource>> settledSources(
+/// Every installed source: the current list of each provider (the
+/// Suwayomi one keeps its last fetch, so this is instant once the app has
+/// listed it), first id wins. No re-list: it queued behind every other
+/// request to the server. A provider that does not answer within [timeout]
+/// counts as empty.
+Future<List<MangaSource>> installedSources(
   KartkaRegistry registry, {
-  Duration timeout = const Duration(seconds: 20),
+  Duration timeout = const Duration(seconds: 5),
 }) async {
-  final sources = SourceRegistry.fromRegistry(registry);
+  final lists = await Future.wait([
+    for (final p in registry.all<SourceProvider>())
+      firstValue(p.watch()).timeout(timeout).onError<Object>((_, _) => []),
+  ]);
+  final byId = <String, MangaSource>{};
+  for (final s in lists.expand((l) => l)) {
+    byId.putIfAbsent(s.ref.id, () => s);
+  }
+  return byId.values.toList();
+}
+
+/// The published run's meta (its `rejectedIds`); null without a feed, on
+/// a read error or after [timeout].
+Future<SourceHealthMeta?> healthMeta(
+  SourceHealthFeed? feed, {
+  Duration timeout = const Duration(seconds: 15),
+}) async {
+  if (feed == null) return null;
   try {
-    await sources.refresh().timeout(timeout, onTimeout: () => const []);
-    // Re-listed sources reach the registry a turn of the event loop later.
-    await Future<void>.delayed(Duration.zero);
-    return sources.current;
-  } finally {
-    unawaited(sources.dispose());
+    return await firstValue(feed.watchMeta()).timeout(timeout);
+  } on Object {
+    return null;
   }
 }

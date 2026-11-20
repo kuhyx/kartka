@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:kartka/app/cached_cover.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/migration/candidates/migration_candidate.dart';
 import 'package:kartka/migration/same_manga.dart';
 import 'package:kartka/migration/walk/walk_item.dart';
@@ -167,6 +168,13 @@ class LaneStrip extends StatelessWidget {
         for (final l in lanes)
           Chip(
             avatar: switch (l.state) {
+              LaneState.searching => SpokenLabel(
+                semanticLabel: 'Searching ${l.source.ref.name}',
+                child: const SizedBox.square(
+                  dimension: AppSpacing.md,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
               LaneState.found => Icon(
                 Icons.check_circle_outline,
                 color: scheme.primary,

@@ -48,6 +48,9 @@ class MigrationCandidate {
 
 /// How one target source's search went.
 enum LaneState {
+  /// Its search is still running.
+  searching,
+
   /// It listed at least one usable hit.
   found,
 

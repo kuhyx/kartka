@@ -12,6 +12,7 @@ import 'package:kartka/migration/migrator.dart';
 import 'package:kartka/migration/walk/walk_inputs.dart';
 import 'package:kartka/migration/walk/walk_item.dart';
 
+export 'package:kartka/migration/candidates/candidate_finder.dart';
 export 'package:kartka/migration/walk/walk_inputs.dart';
 export 'package:kartka/migration/walk/walk_item.dart';
 
@@ -60,7 +61,7 @@ class MigrationWalkController extends ChangeNotifier {
   /// Why the backup failed (nothing moved; spoken, never painted).
   String? backupError;
 
-  late CandidateFinder _finder;
+  CandidateFinder? _finder;
   bool _disposed = false;
 
   /// The current entry; null when done or empty.
@@ -72,67 +73,99 @@ class MigrationWalkController extends ChangeNotifier {
   /// Entries whose migration failed this session.
   int get failed => items.where((i) => i.error != null).length;
 
-  /// Reads the sources and the library, then searches the first entry and
-  /// the next one.
+  /// Shows the library's entries at once (the whole-library scope), then
+  /// reads the health records, the run meta and the installed sources,
+  /// picks the targets and searches the first entry and the next one.
   Future<void> load() async {
-    final records = await _inputs.records();
-    final installed = {for (final s in await _inputs.sources()) s.ref.id: s};
+    final entries = await firstValue(_deps.library.watch());
+    final keys = onlyKeys;
+    if (keys != null || scope == WalkScope.library) {
+      items = [
+        for (final e in entries)
+          if (keys?.contains(e.key) ?? true) WalkItem(e),
+      ];
+      loaded = true;
+      _notify();
+    }
+    final (records, meta, sources) = await (
+      _inputs.records(),
+      _inputs.meta?.call() ?? Future.value(),
+      _inputs.sources(),
+    ).wait;
+    final rejected = meta?.rejectedIds ?? const <String>{};
+    final installed = {for (final s in sources) s.ref.id: s};
     final flagOf = _inputs.flagOf ?? (_) => null;
-    final keep = keepTargets(records, installed, flagOf: flagOf);
+    final ranked = rankedTargets(
+      records,
+      installed,
+      flagOf: flagOf,
+      rejected: rejected,
+    );
     MangaSource? atsumaru;
     for (final s in installed.values) {
       if (isAtsumaru(s.ref)) atsumaru = s;
     }
     _finder = CandidateFinder(
-      migrationTargets([for (final t in keep) t.source], atsumaru: atsumaru),
+      migrationTargets([for (final t in ranked) t.source], atsumaru: atsumaru),
       timeout: timeout,
     );
     final byId = {for (final r in records) r.id: r};
     final server = installed.keys.any((id) => id.startsWith('suwayomi:'));
     bool listed(String id) =>
         installed.containsKey(id) || (!server && id.startsWith('suwayomi:'));
-    final keys = onlyKeys;
-    items = [
-      for (final e in await firstValue(_deps.library.watch()))
-        if (keys?.contains(e.key) ??
-            (scope == WalkScope.library ||
-                moveReason(
-                      record: byId[e.sourceId],
-                      installed: listed(e.sourceId),
-                      flag: flagOf(e.sourceId),
-                    ) !=
-                    null))
-          WalkItem(
-            e,
-            own: installed[e.sourceId],
-            ownName: byId[e.sourceId]?.name,
-          ),
-    ];
-    loaded = true;
+    if (!loaded) {
+      items = [
+        for (final e in entries)
+          if (moveReason(
+                record: byId[e.sourceId],
+                installed: listed(e.sourceId),
+                flag: flagOf(e.sourceId),
+                rejected: rejected.contains(e.sourceId),
+              ) !=
+              null)
+            WalkItem(e),
+      ];
+      loaded = true;
+    }
+    for (final i in items) {
+      i
+        ..own = installed[i.entry.sourceId]
+        ..ownName = byId[i.entry.sourceId]?.name;
+    }
     _ahead();
     _notify();
   }
 
   /// Searches the current and the next entry when not searched yet.
   void _ahead() {
+    if (_finder == null) return;
     for (final i in [index, index + 1]) {
       if (i < items.length && items[i].pending == null) _search(items[i]);
     }
   }
 
   void _search(WalkItem item, {String? query}) {
+    final finder = _finder;
+    if (finder == null) return;
     item.found = null;
     late final Future<void> run;
     run = item.pending = () async {
       final progress = await firstValue(_deps.progress.watch(item.entry.key));
-      final found = await _finder.find(
-        item.entry,
-        own: item.own,
-        readChapter: progress?.chapterNumber,
-        query: query,
+      void show(EntryCandidates found) {
+        if (!identical(item.pending, run)) return;
+        item.found = found;
+        _notify();
+      }
+
+      show(
+        await finder.find(
+          item.entry,
+          own: item.own,
+          readChapter: progress?.chapterNumber,
+          query: query,
+          onUpdate: show,
+        ),
       );
-      if (identical(item.pending, run)) item.found = found;
-      _notify();
     }();
   }
 

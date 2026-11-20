@@ -13,6 +13,7 @@ import 'package:kartka/migration/better/better_wiring.dart';
 import 'package:kartka/migration/migration_feature.dart';
 import 'package:kartka/migration/walk/walk_screen.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
+import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/source_health_feature.dart';
 import 'package:kartka/sync/rtdb_reader.dart';
@@ -124,33 +125,44 @@ void main() {
       await healthRecords(ControlledFeed(), timeout: Duration.zero),
       isEmpty,
     );
+    expect(await healthMeta(null), isNull);
+    expect(await healthMeta(ControlledFeed(), timeout: Duration.zero), isNull);
+    final feed = ControlledFeed();
+    final meta = healthMeta(feed);
+    feed.meta.add(const SourceHealthMeta(rejectedIds: {'gone'}));
+    expect((await meta)!.rejectedIds, {'gone'});
   });
 
-  test('a provider that never finishes re-listing does not hold the walk '
-      'past the timeout', () async {
+  test('installed sources: the current list of each provider, no re-list; one '
+      'that never answers is not waited for past the timeout', () async {
     final hung = _Hung();
     final registry = KartkaRegistry([
       KartkaFeature(
         id: 'p',
         services: [
           hung,
-          StaticSourceProvider([ScriptedSource('fine')]),
+          StaticSourceProvider([ScriptedSource('fine'), ScriptedSource('a')]),
+          StaticSourceProvider([ScriptedSource('a'), ScriptedSource('b')]),
         ],
       ),
     ]);
-    final sources = await settledSources(
+    final sources = await installedSources(
       registry,
       timeout: const Duration(milliseconds: 20),
     );
-    expect([for (final s in sources) s.ref.id], ['fine']);
+    expect([for (final s in sources) s.ref.id], ['fine', 'a', 'b']);
+    expect(hung.refreshed, isFalse);
   });
 }
 
-/// A provider whose re-list never completes (a server that hangs).
+/// A provider that never lists (a server that hangs).
 class _Hung implements RefreshableSourceProvider {
-  @override
-  Stream<List<MangaSource>> watch() => Stream.value(const []);
+  bool refreshed = false;
 
   @override
-  Future<void> refresh() => Completer<void>().future;
+  Stream<List<MangaSource>> watch() =>
+      StreamController<List<MangaSource>>().stream;
+
+  @override
+  Future<void> refresh() async => refreshed = true;
 }

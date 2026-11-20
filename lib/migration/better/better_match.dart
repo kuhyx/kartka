@@ -62,21 +62,27 @@ MoveReason? moveReason({
 /// One source an entry can move to.
 typedef KeepTarget = ({SourceHealthRecord record, MangaSource source});
 
-/// The installed `keep` sources of [records] without an auto-install flag,
-/// best first: by rank (the scored feed's, rank tier included; unranked
-/// last), then id.
-List<KeepTarget> keepTargets(
+/// The sources an entry can move to: every installed source with a record
+/// in [records] that has no auto-install flag and is not [rejected] for
+/// good, `keep` ones first, then by rank (the scored feed's, rank tier
+/// included; unranked last), then id. With few keep sources, the next
+/// best (cut, pending) still serve as targets.
+List<KeepTarget> rankedTargets(
   List<SourceHealthRecord> records,
   Map<String, MangaSource> installed, {
   required String? Function(String id) flagOf,
+  Set<String> rejected = const {},
 }) {
   final targets = <KeepTarget>[
     for (final r in records)
-      if (r.verdict == HealthVerdict.keep && flagOf(r.id) == null)
+      if (flagOf(r.id) == null && !rejected.contains(r.id))
         if (installed[r.id] case final s?) (record: r, source: s),
   ];
+  int keepFirst(KeepTarget t) => t.record.verdict == HealthVerdict.keep ? 0 : 1;
   int rankOf(KeepTarget t) => t.record.rank ?? 1 << 30;
   return targets..sort((a, b) {
+    final byKeep = keepFirst(a).compareTo(keepFirst(b));
+    if (byKeep != 0) return byKeep;
     final byRank = rankOf(a).compareTo(rankOf(b));
     return byRank != 0 ? byRank : a.record.id.compareTo(b.record.id);
   });

@@ -64,24 +64,31 @@ void main() {
     });
   });
 
-  test('targets are installed, passing keep sources, best rank first', () {
+  test('targets: installed, unflagged, not rejected sources with a record, '
+      'keep first, then by rank', () {
     final sources = {
-      for (final id in ['k1', 'k2', 'k3', 'cut', 'flagged'])
+      for (final id in ['k1', 'k2', 'k3', 'cut', 'flagged', 'gone', 'cut9'])
         id: ScriptedSource(id),
     };
-    final targets = keepTargets(
+    final targets = rankedTargets(
       [
-        _r('k3'), // unranked: last
-        _r('k2', rank: 2),
+        _r('k3'), // unranked keep: after the ranked keeps
+        _r('k2', rank: 5),
         _r('missing', rank: 1), // not installed
+        _r('cut9', verdict: HealthVerdict.cut, rank: 9),
         _r('cut', verdict: HealthVerdict.cut, rank: 1),
         _r('flagged', rank: 1),
-        _r('k1', rank: 1),
+        _r('gone', rank: 2), // rejected for good
+        _r('k1', rank: 3),
       ],
       sources,
       flagOf: (id) => id == 'flagged' ? 'test failed' : null,
+      rejected: const {'gone'},
     );
-    expect([for (final t in targets) t.record.id], ['k1', 'k2', 'k3']);
+    expect(
+      [for (final t in targets) t.record.id],
+      ['k1', 'k2', 'k3', 'cut', 'cut9'],
+    );
     expect(targets.first.source, same(sources['k1']));
   });
 

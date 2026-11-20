@@ -14,17 +14,18 @@ enum WalkScope {
 
 /// One library entry on the walk.
 class WalkItem {
-  /// The step for [entry], on [own] (null when not installed).
+  /// The step for [entry]; [own] and [ownName] are filled in once the
+  /// installed sources and the health records are read.
   new(this.entry, {this.own, this.ownName});
 
   /// The entry to migrate.
   final LibraryEntry entry;
 
   /// Its source, when installed.
-  final MangaSource? own;
+  MangaSource? own;
 
   /// Its source's display name, when known.
-  final String? ownName;
+  String? ownName;
 
   /// The search under way, once started.
   Future<void>? pending;
