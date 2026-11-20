@@ -90,4 +90,20 @@ void main() {
     });
     expect(at(api, '{"operationName":"KartkaDetails"}'), isNull);
   });
+
+  test('slow-pages delays the page list, then lets it through', () {
+    file.writeAsStringSync('{"s.org": "slow-pages"}');
+    final pages = at(
+      'https://s.org/api/graphql',
+      '{"operationName":"KartkaPages"}',
+    )!;
+    expect(pages.delay, ProxyFaults.slowPages);
+    expect(pages.status, isNull, reason: 'forwarded after the delay');
+    expect(at('https://s.org/api/graphql', '{"operationName":"X"}'), isNull);
+    file.writeAsStringSync('{"s.org": "slow-pages:250"}');
+    expect(
+      at('https://s.org/api/graphql', '{"operationName":"KartkaPages"}')!.delay,
+      const Duration(milliseconds: 250),
+    );
+  });
 }

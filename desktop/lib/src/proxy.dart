@@ -91,7 +91,9 @@ class ProxyRoute {
       return;
     }
     final body = await request.fold<List<int>>([], (a, b) => a..addAll(b));
-    if (faults?.match(target, body) case final fault?) {
+    final fault = faults?.match(target, body);
+    if (fault?.delay case final delay?) await Future<void>.delayed(delay);
+    if (fault != null && fault.delay == null) {
       response.statusCode = fault.status!;
       if (fault.error case final error?) {
         response.headers.set(proxyErrorHeader, error);

@@ -2,14 +2,23 @@ import 'dart:convert';
 import 'dart:io';
 
 /// What `/proxy` answers instead of forwarding: a wrapper error ([error],
-/// sent as a 502 with `x-kartka-proxy-error`), or a canned [status] and
-/// [body].
+/// sent as a 502 with `x-kartka-proxy-error`), a canned [status] and
+/// [body], or the real answer after a [delay].
 class ProxyFault {
   /// A failure to reach the upstream at all.
-  const new error(String this.error) : status = 502, body = null;
+  const new error(String this.error) : status = 502, body = null, delay = null;
 
   /// A canned upstream answer.
-  const new answer(int this.status, [this.body]) : error = null;
+  const new answer(int this.status, [this.body]) : error = null, delay = null;
+
+  /// The request is forwarded as usual, [delay] late.
+  const new late(Duration this.delay)
+    : error = null,
+      status = null,
+      body = null;
+
+  /// How long to hold the request before forwarding it, or null.
+  final Duration? delay;
 
   /// The wrapper's error text, or null for a canned answer.
   final String? error;
@@ -31,10 +40,15 @@ class ProxyFault {
 /// answer 500), `webview` / `upstream-dns` (the page list / details call
 /// answers Suwayomi's GraphQL error for an upstream WebView timeout / DNS
 /// failure), `gone` (the server no longer has the manga: its id lookup and
-/// the title search come back empty).
+/// the title search come back empty), `slow-pages[:<ms>]` (the page list
+/// call is forwarded [slowPages] or `<ms>` late: a slow `reader.open` for
+/// `f4_reader_sweep.sh` to catch).
 class ProxyFaults {
   /// Faults read from [file].
   new(this.file);
+
+  /// The default hold of `slow-pages`.
+  static const slowPages = Duration(seconds: 3);
 
   /// The JSON rules file; missing or broken means no faults.
   final File file;
@@ -46,6 +60,16 @@ class ProxyFaults {
   ProxyFault? match(Uri target, List<int> body) {
     final mode = _modeFor(target.host);
     final host = target.host;
+    if (mode != null &&
+        (mode == 'slow-pages' || mode.startsWith('slow-pages:'))) {
+      if (_operation(body) != 'KartkaPages') return null;
+      final ms = int.tryParse(
+        mode.substring('slow-pages'.length).replaceFirst(':', ''),
+      );
+      return ProxyFault.late(
+        ms == null ? slowPages : Duration(milliseconds: ms),
+      );
+    }
     return switch (mode) {
       'offline' => ProxyFault.error(
         "SocketException: Failed host lookup: '$host' "

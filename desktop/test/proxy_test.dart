@@ -145,4 +145,17 @@ void main() {
     final through = await f.call('GET', proxied(up.url('/img')));
     expect(through.status, 200, reason: 'other paths reach the upstream');
   });
+
+  test('a delay fault forwards after waiting', () async {
+    final f = await Harness.start(faults: '{"127.0.0.1": "slow-pages:300"}');
+    addTearDown(f.close);
+    final watch = Stopwatch()..start();
+    final r = await f.call(
+      'POST',
+      proxied(up.url('/img')),
+      body: utf8.encode('{"operationName":"KartkaPages"}'),
+    );
+    expect(r.status, 200);
+    expect(watch.elapsedMilliseconds, greaterThanOrEqualTo(300));
+  });
 }

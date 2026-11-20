@@ -6,7 +6,8 @@
 #   kartka_agent.sh stop      # stop both units (data and profile kept)
 #   kartka_agent.sh status
 #   kartka_agent.sh fault <host|*> <mode>   # inject a /proxy fault: offline,
-#                             # abort-once, page-500, webview, upstream-dns, gone
+#                             # abort-once, page-500, webview, upstream-dns, gone,
+#                             # slow-pages[:<ms>]
 #   kartka_agent.sh fault clear             # back to the real network
 #   kartka_agent.sh <verb>    # any flutter_web_drive verb: tree, tap, text,
 #                             # key, scroll, wait, shot, eval, console, tap-xy

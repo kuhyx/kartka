@@ -68,7 +68,10 @@ for ((i = 0; i < 20 && ${#titles[@]} == 0; i++)); do
 done
 ((${#titles[@]} > 0)) || fail "Updates lists no manga"
 
-for title in "${titles[@]}"; do
+for ((n = 0; n < ${#titles[@]}; n++)); do
+  # Re-read the tile: reading a chapter changes its "N unread | " label.
+  title="$(update_titles | sed -n "$((n + 1))p")"
+  [[ -n "$title" ]] || fail "Updates tile $((n + 1)) is gone"
   step "open the newest chapter of \"$title\""
   check drive tap "$title" >/dev/null
   check drive wait "Open manga" --timeout 10 >/dev/null
