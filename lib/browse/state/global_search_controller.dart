@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:kartka/core/models/manga.dart';
 import 'package:kartka/core/models/source_ref.dart';
+import 'package:kartka/core/source/content_type.dart';
 import 'package:kartka/core/source/manga_source.dart';
 
 /// Page-1 search result of one source in a global search.
@@ -14,6 +15,7 @@ class SourceSearchState {
     this.loading = false,
     this.items = const [],
     this.error,
+    this.applied = true,
   });
 
   /// The searched source.
@@ -27,21 +29,32 @@ class SourceSearchState {
 
   /// Failure (including a timeout) for this source only.
   final Object? error;
+
+  /// Whether the content-type filter narrowed [items] (false: this source
+  /// has no usable type filter and listed everything).
+  final bool applied;
 }
 
 /// Searches every source at once and publishes each source's result as soon
 /// as it arrives. A slow or failing source never blocks or blanks the others:
 /// each has its own [timeout] and its own error.
 class GlobalSearchController extends ChangeNotifier {
-  /// Creates a controller over [sources] (display order is kept).
-  new(List<MangaSource> sources, {this.timeout = const Duration(seconds: 20)})
-    : _sources = List.unmodifiable(sources);
+  /// Creates a controller over [sources] (display order is kept); each
+  /// search reads [type] when it starts (none: [ContentType.all]).
+  new(
+    List<MangaSource> sources, {
+    this.timeout = const Duration(seconds: 20),
+    ContentType Function()? type,
+  }) : _sources = List.unmodifiable(sources),
+       _typeOf = type ?? (() => ContentType.all);
 
   List<MangaSource> _sources;
 
   /// Per-source deadline.
   final Duration timeout;
 
+  final ContentType Function() _typeOf;
+  ContentType _type = ContentType.all;
   final Map<String, SourceSearchState> _byId = {};
   String _query = '';
   int _generation = 0;
@@ -60,6 +73,7 @@ class GlobalSearchController extends ChangeNotifier {
   Future<void> search(String query) async {
     final generation = ++_generation;
     _query = query.trim();
+    _type = _typeOf();
     _byId.clear();
     if (_query.isEmpty) {
       notifyListeners();
@@ -97,8 +111,18 @@ class GlobalSearchController extends ChangeNotifier {
   Future<void> _searchOne(MangaSource source, int generation) async {
     SourceSearchState next;
     try {
-      final page = await source.search(_query, 1).timeout(timeout);
-      next = SourceSearchState(source.ref, items: page.items);
+      final r = await listContent(
+        source,
+        Listing.search,
+        _type,
+        1,
+        query: _query,
+      ).timeout(timeout);
+      next = SourceSearchState(
+        source.ref,
+        items: r.page.items,
+        applied: r.applied,
+      );
     } on Object catch (e) {
       next = SourceSearchState(source.ref, error: e);
     }

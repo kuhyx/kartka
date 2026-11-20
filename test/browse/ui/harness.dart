@@ -9,6 +9,7 @@ import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
+import 'package:kartka/browse/state/browse_content_type_store.dart';
 import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/state/browse_shown_store.dart';
 import 'package:kartka/browse/state/chapter_sort_store.dart';
@@ -91,6 +92,7 @@ class Harness {
     KartkaBrowser? browser,
     BrowseLanguageStore? languages,
     BrowseShownStore? shown,
+    BrowseContentTypeStore? contentType,
   }) : provider = FakeSourceProvider(),
        languages = languages ?? BrowseLanguageStore(MemoryKeyValueStore()) {
     final registry = SourceRegistry([
@@ -113,6 +115,7 @@ class Harness {
       diagnostics: diagnostics,
       chapterSort: ChapterSortStore(sortKv),
       shown: shown,
+      contentType: contentType,
     );
   }
 

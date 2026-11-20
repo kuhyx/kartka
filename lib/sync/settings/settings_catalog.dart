@@ -40,6 +40,10 @@ const Map<String, SyncedSetting> kSyncedSettings = {
     vault: SettingsVault.plain,
     semanticLabel: 'Browse languages',
   ),
+  'browse.contentType': (
+    vault: SettingsVault.plain,
+    semanticLabel: 'Browse content type',
+  ),
   kAutoDownloadSetting: (
     vault: SettingsVault.plain,
     semanticLabel: 'Auto-download',

@@ -183,15 +183,15 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
 - **Synced**: `suwayomi.serverUrl`, `suwayomi.username`, `suwayomi.password`,
   `mangadex.settings`, `reader.settings` (global default mode, tap zones,
   prefetch), `plugins.repos` (native and Mangayomi repos),
-  `browse.languages` (the Browse language filter, a JSON list of language
-  codes in display order; unset means `en`, `all`/`multi`, `ja`),
-  `downloads/auto_new_chapters`, `library.autoshelve` (auto-shelving's
-  memory, DOCS-spec), `sourceHealth.scoring` (scoring profile JSON, node
-  `settings/sourceHealth~2Escoring`, read by the evaluator, §5). Catalogue:
-  `lib/sync/settings/settings_catalog.dart`; other keys' peer nodes are
-  ignored. **Device-local**: the download queue, index and
-  baselines, per-manga reader modes, installed plugins and their prefs,
-  tracker tokens, the sync credentials, and the wrapper port.
+  `browse.languages` (Browse language filter, JSON list of codes in display
+  order; unset `en`, `all`/`multi`, `ja`), `browse.contentType` (`manga` |
+  `mangaManhwa` | `all`, unset `manga`; §2), `downloads/auto_new_chapters`,
+  `library.autoshelve` (auto-shelving's memory, DOCS-spec), `sourceHealth.scoring` (scoring
+  profile JSON, node `settings/sourceHealth~2Escoring`, read by the
+  evaluator, §5). Catalogue: `lib/sync/settings/settings_catalog.dart`;
+  other keys' peer nodes are ignored. **Device-local**: the download queue,
+  index, baselines, reader modes, plugins and prefs, tracker tokens, sync
+  credentials, the wrapper port.
 - **Port**: `SettingsSync` (lib/core/settings/) is supplied by sync as a
   service. Features hand their stores `syncedKv(env)` / `syncedSecrets(env)`
   (lib/app/settings_stores.dart), a `SyncedKeyValueStore` that writes

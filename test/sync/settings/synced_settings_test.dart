@@ -192,6 +192,7 @@ void main() {
       'reader.settings',
       'plugins.repos',
       'browse.languages',
+      'browse.contentType',
       kAutoDownloadSetting,
       'library.autoshelve',
       'sourceHealth.scoring',

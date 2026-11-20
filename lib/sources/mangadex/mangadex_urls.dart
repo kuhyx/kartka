@@ -1,3 +1,4 @@
+import 'package:kartka/core/source/content_type.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings.dart';
 
 /// Builds MangaDex API URLs from the current settings.
@@ -25,21 +26,31 @@ class MangadexUrls {
   /// Settings that decide languages and ratings.
   final MangadexSettings settings;
 
-  /// Most-followed manga.
-  Uri popular(int page) => _browse(page, {'order[followedCount]': 'desc'});
+  /// Most-followed manga. Every listing takes [original], the
+  /// `originalLanguage[]` list ([originalLanguagesOf]); empty sends none.
+  Uri popular(int page, {List<String> original = const []}) =>
+      _browse(page, original, {'order[followedCount]': 'desc'});
 
   /// Manga with the newest uploaded chapter first.
-  Uri latest(int page) =>
-      _browse(page, {'order[latestUploadedChapter]': 'desc'});
+  Uri latest(int page, {List<String> original = const []}) =>
+      _browse(page, original, {'order[latestUploadedChapter]': 'desc'});
 
   /// Title search ordered by relevance.
-  Uri search(String query, int page) =>
-      _browse(page, {'title': query, 'order[relevance]': 'desc'});
+  Uri search(String query, int page, {List<String> original = const []}) =>
+      _browse(page, original, {'title': query, 'order[relevance]': 'desc'});
+
+  /// Original languages of [type]: Japanese for manga, plus Korean for
+  /// manhwa; [ContentType.all] filters nothing.
+  static List<String> originalLanguagesOf(ContentType type) => switch (type) {
+    ContentType.manga => const ['ja'],
+    ContentType.mangaManhwa => const ['ja', 'ko'],
+    ContentType.all => const [],
+  };
 
   /// Offset of 1-based [page]; pages below 1 mean the first.
   static int offsetOf(int page) => (page < 1 ? 0 : page - 1) * pageSize;
 
-  Uri _browse(int page, Map<String, Object> extra) =>
+  Uri _browse(int page, List<String> original, Map<String, Object> extra) =>
       Uri.https(apiHost, '/manga', {
         'limit': '$pageSize',
         'offset': '${offsetOf(page)}',
@@ -47,6 +58,7 @@ class MangadexUrls {
         'contentRating[]': settings.ratingNames,
         'availableTranslatedLanguage[]': settings.languages,
         'hasAvailableChapters': 'true',
+        if (original.isNotEmpty) 'originalLanguage[]': original,
         ...extra,
       });
 

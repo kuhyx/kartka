@@ -19,6 +19,25 @@ abstract final class SuwayomiQueries {
       r'page: $page, query: $query}) '
       '{ hasNextPage mangas { id url title thumbnailUrl } } }';
 
+  /// [sourceManga] with `FilterChangeInput`s (the content-type filter).
+  static const sourceMangaFiltered =
+      r'mutation KartkaSourceMangaFiltered($source: LongString!, '
+      r'$type: FetchSourceMangaType!, $page: Int!, $query: String, '
+      r'$filters: [FilterChangeInput!]) '
+      r'{ fetchSourceManga(input: {source: $source, type: $type, '
+      r'page: $page, query: $query, filters: $filters}) '
+      '{ hasNextPage mangas { id url title thumbnailUrl } } }';
+
+  /// One source's filter list: every element (positions count them all),
+  /// with the names and options the content-type filter reads.
+  static const sourceFilters =
+      r'query KartkaSourceFilters($id: LongString!) { source(id: $id) '
+      '{ filters { __typename ... on GroupFilter { name filters '
+      '{ __typename ... on CheckBoxFilter { name } '
+      '... on TriStateFilter { name } } } '
+      '... on SelectFilter { name values } '
+      '... on SortFilter { name values } } } }';
+
   /// Server-side id of the manga at `url` of `source`, if registered.
   static const mangaId =
       r'query KartkaMangaId($source: LongString!, $url: String!) '

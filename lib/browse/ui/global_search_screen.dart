@@ -6,13 +6,15 @@ import 'package:kartka/app/shown_wait_watch.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/global_search_controller.dart';
+import 'package:kartka/browse/ui/content_type_toggle.dart';
 import 'package:kartka/browse/ui/manga_grid.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Searches every source at once; one row of hits per source, each row
-/// filling in as its source answers.
+/// filling in as its source answers. The content-type toggle re-runs the
+/// search; a source that cannot narrow its hits carries a mark.
 class GlobalSearchScreen extends StatefulWidget {
   /// Creates the screen, searching [query] immediately when non-empty.
   const new({this.query = '', super.key});
@@ -33,16 +35,23 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_search != null) return;
-    final registry = BrowseScope.of(context).sources;
-    final c = GlobalSearchController(registry.current);
+    final deps = BrowseScope.of(context);
+    final registry = deps.sources;
+    final type = _type = deps.contentType..addListener(_retype);
+    final c = GlobalSearchController(registry.current, type: () => type.value);
     _search = c;
     if (widget.query.trim().isNotEmpty) unawaited(c.search(widget.query));
     // Runtime sources (Suwayomi, plugins) join the running search live.
     _sources = registry.watch().listen((l) => unawaited(c.updateSources(l)));
   }
 
+  Listenable? _type;
+
+  void _retype() => unawaited(_search!.search(_search!.query));
+
   @override
   void dispose() {
+    _type?.removeListener(_retype);
     unawaited(_sources?.cancel());
     _search?.dispose();
     _field.dispose();
@@ -64,6 +73,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
           ),
           onSubmitted: (q) => unawaited(search.search(q)),
         ),
+        actions: [ContentTypeToggle(BrowseScope.of(context).contentType)],
       ),
       body: ListenableBuilder(
         listenable: search,
@@ -139,7 +149,13 @@ class _SourceRow extends StatelessWidget {
       children: [
         ListTile(
           title: Text(state.source.name),
-          trailing: const Icon(Icons.chevron_right),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!state.applied) const NotAppliedMark(),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
           onTap: () => unawaited(
             context.push(sourceRoute(state.source.id, query: query)),
           ),

@@ -45,6 +45,15 @@ abstract interface class MangaSource {
 }
 ```
 
+Optional capability (`lib/core/source/content_type.dart`): a source that can
+narrow listings to the `browse.contentType` setting (`ContentType` = `manga`
+| `mangaManhwa` | `all`) implements `ContentTypeFilterable.listTyped(listing,
+type, page, {query})` and returns `({SearchPage page, bool applied})`.
+Screens call `listContent(...)`: `all` is the plain call; any other source
+is listed unfiltered with `applied` false, and the UI shows a mark. MangaDex
+sends `originalLanguage[]` (`ja`, `ja`+`ko`); Suwayomi sources use their own
+filters (DOCS-suwayomi.md "Content-type filter").
+
 All HTTP goes through `lib/platform/http_client.dart` (`KartkaHttp`): Android
 uses a direct client; web routes through the desktop wrapper's `/proxy` (CORS).
 Sources never import `package:http` directly.

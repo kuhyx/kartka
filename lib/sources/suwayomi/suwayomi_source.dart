@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/content_type.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/sources/suwayomi/legacy_urls.dart';
 import 'package:kartka/sources/suwayomi/search_slots.dart';
@@ -8,6 +9,7 @@ import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_exceptions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_mappers.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_queries.dart';
+import 'package:kartka/sources/suwayomi/suwayomi_type_filter.dart';
 
 /// Looks up the title kartka knows for [key] (library entry), if any.
 typedef TitleLookup = Future<String?> Function(MangaKey key);
@@ -20,8 +22,9 @@ typedef TitleLookup = Future<String?> Function(MangaKey key);
 /// otherwise, and for manga the server has never seen, found by searching
 /// the library title on this source and matching the exact URL. URLs an
 /// older extension wrote ([LegacyUrls]) are mapped to the server's, and a
-/// legacy manga's chapters are listed under their legacy URLs.
-class SuwayomiSource implements MangaSource {
+/// legacy manga's chapters are listed under their legacy URLs. Content
+/// types are narrowed by the source's own filters ([SuwayomiTypeFilter]).
+class SuwayomiSource implements MangaSource, ContentTypeFilterable {
   /// Creates the source.
   new({
     required this.info,
@@ -52,6 +55,7 @@ class SuwayomiSource implements MangaSource {
   /// two at once leaves the browser connections for what is on screen.
   static final _searches = <String, SearchSlots>{};
   final _chapterIds = <String, int>{};
+  late final _types = TypeFilterCache(client, info.serverId);
   late final LegacyUrls? _legacy = legacyUrlsFor(info.serverId);
 
   String _serverUrl(String url) => _legacy?.mangaUrl(url) ?? url;
@@ -69,6 +73,25 @@ class SuwayomiSource implements MangaSource {
   @override
   Future<SearchPage> search(String query, int page) =>
       _list('SEARCH', page, query);
+
+  /// Popular / Latest narrowed become a SEARCH with an empty query and the
+  /// source's sort set; a failed filter read lists unfiltered this once.
+  @override
+  Future<TypedPage> listTyped(
+    Listing listing,
+    ContentType type,
+    int page, {
+    String query = '',
+  }) async {
+    final changes = await _types.changesFor(listing, type);
+    final typed = changes == null
+        ? null
+        : await _list('SEARCH', page, query, changes);
+    return (
+      page: typed ?? await plainListing(this, listing, page, query),
+      applied: typed != null,
+    );
+  }
 
   @override
   Future<MangaDetails> details(String mangaUrl) async {
@@ -123,12 +146,21 @@ class SuwayomiSource implements MangaSource {
     );
   }
 
-  Future<SearchPage> _list(String type, int page, [String? query]) async {
-    final data = await client.run(SuwayomiQueries.sourceManga, {
+  Future<SearchPage> _list(
+    String type,
+    int page, [
+    String? query,
+    List<FilterChange>? filters,
+  ]) async {
+    final document = filters == null
+        ? SuwayomiQueries.sourceManga
+        : SuwayomiQueries.sourceMangaFiltered;
+    final data = await client.run(document, {
       'source': info.serverId,
       'type': type,
       'page': page,
       'query': ?query,
+      'filters': ?filters,
     });
     final payload = data['fetchSourceManga']! as Map<String, Object?>;
     final rows = _maps(payload['mangas']);

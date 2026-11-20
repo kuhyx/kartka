@@ -199,6 +199,19 @@ Facts the Dart client depends on (all observed, not assumed):
   returns `image/jpeg` (or the source's format) with
   `cache-control: max-age=86400`.
 
+## Content-type filter (2026-11-21, `suwayomi_type_filter.dart`)
+
+`sourceFilters` reads `source(id) { filters }` once per source (a failed read
+is retried). `filters` positions count every element, separators and text
+fields included (MangaFire: Type group at 2, "Sort by" select at 16). Type
+filter: first group/select named /type|original language/ with a manga option
+(MangaDex: "Original language", "Japanese (Manga)"); every child is set, off or
+`IGNORE` for the rest. A select cannot say manga+manhwa: mark. Sort: first
+`SortFilter` (descending) or select /sort|order/; Popular takes the first
+option /popular|view|trend|follow/, Latest /latest|update|upload/. Narrowed
+Popular/Latest are SEARCH, empty query (`sourceMangaFiltered`); no sort option
+leaves them unfiltered. Fixtures: `test/fixtures/suwayomi/filters_*.json`.
+
 ## Source ids: does Suwayomi keep Tachiyomi's numeric ids? Yes, verified
 
 The check: decode the `backupSources` from the newest SY backup

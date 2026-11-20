@@ -35,6 +35,7 @@ import 'package:kartka/sources/suwayomi/suwayomi_queries.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_settings.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_source.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_source_provider.dart';
+import 'package:kartka/sources/suwayomi/suwayomi_type_filter.dart';
 import 'package:kartka/sources/suwayomi/ui/extension_tile.dart';
 import 'package:kartka/sources/suwayomi/ui/extensions_screen.dart';
 import 'package:kartka/sources/suwayomi/ui/suwayomi_settings_screen.dart';

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/content_type.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/sources/mangadex/mangadex_mapper.dart';
@@ -21,8 +22,9 @@ class MangadexApiException extends KartkaHttpException {
   String toString() => 'MangadexApiException($statusCode, $message, $url)';
 }
 
-/// Native source over MangaDex's official API (`api.mangadex.org`).
-class MangaDexSource implements MangaSource {
+/// Native source over MangaDex's official API (`api.mangadex.org`). Content
+/// types narrow by `originalLanguage[]`, so they always apply.
+class MangaDexSource implements MangaSource, ContentTypeFilterable {
   /// Creates the source; [limiter] defaults to MangaDex's documented limits.
   new({
     required this._http,
@@ -71,6 +73,25 @@ class MangaDexSource implements MangaSource {
   @override
   Future<SearchPage> search(String query, int page) =>
       _browse(page, (u) => u.search(query, page));
+
+  @override
+  Future<TypedPage> listTyped(
+    Listing listing,
+    ContentType type,
+    int page, {
+    String query = '',
+  }) async {
+    final original = MangadexUrls.originalLanguagesOf(type);
+    final narrowed = await _browse(
+      page,
+      (u) => switch (listing) {
+        Listing.popular => u.popular(page, original: original),
+        Listing.latest => u.latest(page, original: original),
+        Listing.search => u.search(query, page, original: original),
+      },
+    );
+    return (page: narrowed, applied: true);
+  }
 
   Future<SearchPage> _browse(int page, Uri Function(MangadexUrls) url) async {
     final (urls, map) = await _ctx();
