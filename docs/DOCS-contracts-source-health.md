@@ -157,9 +157,11 @@ under the line cap; same rules. Implementation notes:
   ```
 
   `candidates` = entries in `data/candidates.json`; `tested` = records in
-  this run. `rejected` (additive, 2026-11-20) = ids rejected for good: a
-  measured `cut` scoring <= 0.65 (`REJECT_SCORE`); their records are deleted
-  from `/kartka/source_health` and never measured again. `skipped` lists every index entry the candidate merge dropped,
+  this run. `rejected` / `rejectedIds` (additive, 2026-11-20) = count and
+  sorted ids rejected for good: a measured, non-native `cut` whose score
+  without the subset penalty is <= 0.65 (`REJECT_SCORE`). Their records are
+  deleted from `/kartka/source_health` and never measured again; the app's
+  "Migrate to better sources" moves their entries off them. `skipped` lists every index entry the candidate merge dropped,
   grouped by `index` (`keiyoushi`, `mangayomi`, `sy-backup`) and `reason`
   (`language`, `dart`, `domain-overlap`, `duplicate`; exactly one per entry,
   in that precedence), names sorted. RTDB drops empty lists, so readers must

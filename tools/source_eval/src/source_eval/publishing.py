@@ -140,7 +140,7 @@ def report_cmd(  # noqa: PLR0913, PLR0917 -- one argument per input it joins
         profile=profile,
     )
     known = rejected.load(app.s.state_dir)
-    gone = rejected.apply(report, known, run.run_id, app.clock.now())
+    gone = rejected.apply(report, known, run.run_id, app.clock.now(), profile)
     write_json_atomic(out, report)
     app.out(f"profile: {profile.name}")
     count = len(cast("list[object]", report["sources"]))

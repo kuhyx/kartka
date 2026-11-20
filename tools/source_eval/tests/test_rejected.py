@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import json
 from typing import TYPE_CHECKING, cast
 lazy from pathlib import Path
@@ -11,6 +12,7 @@ from source_eval import publishing, rejected, report
 from source_eval.candidates import catalog
 from source_eval.fsio import write_json_atomic
 from source_eval.models import Candidate, RefTitle
+from source_eval.profile import DEFAULT, Weights
 from source_eval.state import Manifest, RunDir, sha1
 from tests.app_helpers import make_app
 
@@ -23,12 +25,16 @@ STUB = Candidate("plugin:legacy-x", "X", "en", "plugin", "https://x.test")
 OLD = {"score": 0.1, "runId": "2026-W40", "rejectedAt": "2026-10-04T12:00:00Z"}
 
 
-def rec(rid: str, score: float, verdict: str = "cut", **extra: object) -> Record:
+def rec(rid: str, own: float, verdict: str = "cut", **extra: object) -> Record:
+    """A record whose own score (DEFAULT, no subset penalty) is ``own``."""
+    complete, up = (1.0, (own - 0.5) / 0.2) if own >= 0.5 else (own * 2, 0.0)
     return {
         "id": rid,
-        "score": score,
+        "origin": "suwayomi",
+        "score": own,
         "verdict": verdict,
-        "coverage": {"ratio": 0.1},
+        "coverage": {"ratio": 0.1, "completeRatio": complete},
+        "uptime": {"ratio": up},
         "flags": [],
         **extra,
     }
@@ -45,6 +51,19 @@ def test_only_a_measured_cut_at_or_below_the_bar_is_rejected() -> None:
     assert not rejected.eligible(rec("a", 0.2, flags=["reprobe-only"]))
 
 
+def test_the_own_score_decides_not_the_subset_penalty() -> None:
+    copy = {"sourceId": "big", "overlap": 1.0}
+    assert rejected.own_score(rec("s", 0.8, score=0.4, subsetOf=copy)) == 0.8
+    assert not rejected.eligible(rec("s", 0.8, score=0.4, subsetOf=copy))
+    assert rejected.eligible(rec("t", 0.6, score=0.3, subsetOf=copy))
+    speed = dataclasses.replace(DEFAULT, weights=Weights(0, 0, 0, 1))
+    assert rejected.eligible(rec("u", 0.9), speed)  # no speed measured: 0
+
+
+def test_a_native_source_is_never_rejected() -> None:
+    assert not rejected.eligible(rec("mangadex", 0.0, origin="native"))
+
+
 def test_apply_drops_rejected_records_renumbers_and_counts() -> None:
     sources = [rec("keep", 0.9, "keep"), rec("low", 0.3), rec("old", 0.8)]
     sources.append(rec("mid", 0.7))
@@ -52,6 +71,8 @@ def test_apply_drops_rejected_records_renumbers_and_counts() -> None:
         r["rank"] = rank
     meta: dict[str, object] = {"tested": 4, "verdicts": {}}
     out: dict[str, object] = {"sources": sources, "meta": meta}
+    sources[1]["subsetOf"] = {"sourceId": "keep", "overlap": 0.5}
+    sources[1]["score"] = 0.225  # stored: its own 0.3 is what counts
     merged = rejected.apply(out, {"old": OLD}, "2026-W44", 1_800_000_000.0)
     assert merged == {
         "old": OLD,  # never re-judged, even at a better score
@@ -68,6 +89,7 @@ def test_apply_drops_rejected_records_renumbers_and_counts() -> None:
         "tested": 2,
         "verdicts": {"keep": 1, "cut": 1, "pending": 0},
         "rejected": 2,
+        "rejectedIds": ["low", "old"],
     }
 
 
@@ -127,6 +149,7 @@ def test_publish_deletes_rejected_records_then_saves_them(tmp_path: Path) -> Non
     assert list(calls[0][1]) == [sha1(STUB.id)]
     assert calls[1][1] == {sha1(BAD.id): None, sha1("old"): None}
     assert calls[2][1]["rejected"] == 2
+    assert calls[2][1]["rejectedIds"] == ["old", BAD.id]
     saved = rejected.load(app.s.state_dir)
     assert saved["old"] == OLD
     assert saved[BAD.id]["runId"] == "W44"

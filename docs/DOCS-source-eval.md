@@ -67,8 +67,8 @@ measured as usual; failed → nothing else this run, record `reprobe:
 (`unreachable`, or `blocking>=0.50` for a challenge).
 
 **Reject** (kuhy, 2026-11-20, `rejected.py`): a measured `cut` (coverage not
-`null`, not `reprobe-only`) scoring <= 0.65 is gone for good: out of the
-report (ranks renumbered), never run, probed or re-probed again; `--publish`
+`null`, not `reprobe-only`, not native) whose own score (no subset penalty)
+is <= 0.65 is gone for good, hard cuts too: out of the report (renumbered), never run, probed or re-probed again; `--publish`
 deletes its RTDB record, then adds it to `rejected.json` in the state dir
 (`{id: {score, runId, rejectedAt}}`; never removed by code, undo = delete the
 id by hand). A dry `report` prints `rejected: N (M new); dry run, not saved`.
@@ -205,7 +205,7 @@ and FlareSolverr off (the local dev server and the live deploy both do).
   (or no sign-in) falls back to DEFAULT and prints a `warning:` line.
   `report` prints `profile: default|custom`.
 - **meta**: `{runId, generatedAt, candidates, tested, verdicts, skipped,
-  profile, rejected}` (contract §5 "Run meta"); `--publish` PATCHes it to
+  profile, rejected, rejectedIds}` (contract §5 "Run meta"); `--publish` PATCHes it to
   `/kartka/source_health_meta` after the records. `profile` is
   `{name: default|custom, weights, pagesLoadMultiplier, keepScore, cuts}`.
 - **availability** (additive): `native` (Kartka Dart source; today
