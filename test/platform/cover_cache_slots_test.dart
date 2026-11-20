@@ -28,7 +28,7 @@ void main() {
         for (var i = 0; i < 5; i++) cache.get('https://a.test/$i.jpg'),
       ];
       final failed = expectLater(done[1], throwsStateError);
-    final other = cache.get('https://b.test/x.jpg');
+      final other = cache.get('https://b.test/x.jpg');
       await pumpEventQueue();
       expect(started, [
         'https://a.test/0.jpg',
