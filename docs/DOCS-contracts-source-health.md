@@ -227,7 +227,7 @@ under the line cap; same rules. Implementation notes:
   installed, failed its test, is unreachable / re-probed only, cut, or
   hits a challenge: `moveReason`). Targets: installed passing keep sources
   by rank plus Atsumaru when installed (within the first 5), at most 5,
-  the entry's own excluded. `CandidateFinder` searches 2 at a time (15 s
+  the entry's own excluded; the source re-list waits at most 20 s. `CandidateFinder` searches 2 at a time (15 s
   per request, cached per source + query for the screen), the title, then
   up to 3 alt titles (`Alternative Titles:` lines of the own source's
   description) when no title scores 0.7; a failed source is an error icon

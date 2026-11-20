@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:design_system/design_system.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/migration/better/better_wiring.dart';
@@ -122,4 +125,32 @@ void main() {
       isEmpty,
     );
   });
+
+  test('a provider that never finishes re-listing does not hold the walk '
+      'past the timeout', () async {
+    final hung = _Hung();
+    final registry = KartkaRegistry([
+      KartkaFeature(
+        id: 'p',
+        services: [
+          hung,
+          StaticSourceProvider([ScriptedSource('fine')]),
+        ],
+      ),
+    ]);
+    final sources = await settledSources(
+      registry,
+      timeout: const Duration(milliseconds: 20),
+    );
+    expect([for (final s in sources) s.ref.id], ['fine']);
+  });
+}
+
+/// A provider whose re-list never completes (a server that hangs).
+class _Hung implements RefreshableSourceProvider {
+  @override
+  Stream<List<MangaSource>> watch() => Stream.value(const []);
+
+  @override
+  Future<void> refresh() => Completer<void>().future;
 }

@@ -74,11 +74,16 @@ Future<List<SourceHealthRecord>> healthRecords(
 }
 
 /// Every installed source once the providers re-listed: a provider's first
-/// list can be empty while its server answers (contracts §15).
-Future<List<MangaSource>> settledSources(KartkaRegistry registry) async {
+/// list can be empty while its server answers (contracts §15). A re-list
+/// still going after [timeout] (a hung server) is not waited for: the walk
+/// goes on with what is listed.
+Future<List<MangaSource>> settledSources(
+  KartkaRegistry registry, {
+  Duration timeout = const Duration(seconds: 20),
+}) async {
   final sources = SourceRegistry.fromRegistry(registry);
   try {
-    await sources.refresh();
+    await sources.refresh().timeout(timeout, onTimeout: () => const []);
     // Re-listed sources reach the registry a turn of the event loop later.
     await Future<void>.delayed(Duration.zero);
     return sources.current;

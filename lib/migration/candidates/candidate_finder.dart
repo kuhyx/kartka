@@ -75,12 +75,13 @@ class CandidateFinder {
     double? readChapter,
     String? query,
   }) async {
-    final ownDetails = own == null
-        ? null
-        : await _detailsOf(own, entry.mangaUrl);
-    final ownChapters = own == null
-        ? null
-        : await _chaptersOf(own, entry.mangaUrl);
+    // Both at once: the own source is often the slow or broken one.
+    final (ownDetails, ownChapters) = own == null
+        ? (null, null)
+        : await (
+            _detailsOf(own, entry.mangaUrl),
+            _chaptersOf(own, entry.mangaUrl),
+          ).wait;
     var wanted = MangaFacts(
       title: entry.title,
       readChapter: readChapter,
