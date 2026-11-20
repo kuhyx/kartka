@@ -107,8 +107,9 @@ class Candidate:
 class RefTitle:
     """One title of the reference set, with every name it is known by.
 
-    ``native`` is AniList's native-script title: ``None`` = not fetched yet,
-    ``""`` = AniList has none.
+    ``native`` is AniList's native-script title and ``country`` its
+    ``countryOfOrigin`` (``JP``, ``KR``, ``CN``, ...): ``None`` = not fetched
+    yet, ``""`` = AniList has none.
     """
 
     key: str
@@ -118,6 +119,7 @@ class RefTitle:
     anilist_id: int | None = None
     origins: tuple[str, ...] = ()
     native: str | None = None
+    country: str | None = None
 
     def to_json(self) -> dict[str, object]:
         """JSON-ready dict."""
@@ -129,6 +131,7 @@ class RefTitle:
             "anilistId": self.anilist_id,
             "origins": list(self.origins),
             "nativeTitle": self.native,
+            "countryOfOrigin": self.country,
         }
 
     @classmethod
@@ -144,6 +147,7 @@ class RefTitle:
             anilist_id=int(cast("int", anilist)) if anilist is not None else None,
             origins=tuple(cast("list[str]", data.get("origins", []))),
             native=cast("str | None", data.get("nativeTitle")),
+            country=cast("str | None", data.get("countryOfOrigin")),
         )
 
 

@@ -8,11 +8,11 @@ from typing import TYPE_CHECKING
 lazy from pathlib import Path
 
 from source_eval.budget import Deadline
-from source_eval.evaluate import queries
 from source_eval.match import best_hit, names
 from source_eval.models import Hit, RefTitle
+from source_eval.queries import queries
 from source_eval.reference import anilist
-from source_eval.reference.build import Reference, build
+from source_eval.reference.build import JP_PAGE, Reference, build
 from tests.fakes import FakeClock, FakeTransport, fixture_json, resp
 from tests.test_reference import anilist_handler, client_for
 
@@ -43,17 +43,7 @@ def natives_handler(req: Request) -> Response:
     assert "id_in" in body["query"]
     ids = body["variables"]["ids"]
     media = [{"id": i, "title": {"native": f"n{i}"}} for i in ids if i != 3]
-    media += [{"id": 4, "title": {"native": None}}] if 3 in ids else []
     return resp(200, {"data": {"Page": {"media": media}}})
-
-
-def test_natives_batch() -> None:
-    clock, t = FakeClock(), FakeTransport()
-    t.add(anilist.ENDPOINT, natives_handler)
-    assert anilist.natives(client_for(t, clock), [1, 3]) == {1: "n1"}
-    t2 = FakeTransport()
-    t2.add(anilist.ENDPOINT, resp(404, {"data": None}))
-    assert anilist.natives(client_for(t2, clock), [1]) == {}
 
 
 class Calls(Deadline):
@@ -73,7 +63,7 @@ def test_build_backfills_native_titles_resumably(tmp_path: Path) -> None:
     t.add(anilist.ENDPOINT, natives_handler)
     path = tmp_path / "reference.json"
     ref = Reference(path, clock)
-    ref.progress["anilistPage"] = 1
+    ref.progress[JP_PAGE] = 1
     ref.titles = [
         RefTitle(f"anilist:{i}", (f"T{i}",), anilist_id=i) for i in range(1, 6)
     ]

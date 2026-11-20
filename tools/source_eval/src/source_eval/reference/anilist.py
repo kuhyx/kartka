@@ -14,19 +14,21 @@ if TYPE_CHECKING:
     from source_eval.polite import PoliteClient
 
 ENDPOINT = "https://graphql.anilist.co"
-_FIELDS = "id title{romaji english native} synonyms chapters status format"
+_FIELDS = (
+    "id title{romaji english native} synonyms chapters status format countryOfOrigin"
+)
+#: Japanese manga only (kuhy, 2026-11-20): no manhwa (KR), no manhua (CN/TW).
 _TOP = (
     "query($page:Int,$perPage:Int){Page(page:$page,perPage:$perPage){"
-    "pageInfo{hasNextPage} media(type:MANGA,sort:POPULARITY_DESC,format_not:NOVEL){"
-    + _FIELDS
-    + "}}}"
+    "pageInfo{hasNextPage} media(type:MANGA,sort:POPULARITY_DESC,format_not:NOVEL,"
+    "countryOfOrigin:JP){" + _FIELDS + "}}}"
 )
 _SEARCH = (
     "query($q:String){Media(search:$q,type:MANGA,format_not:NOVEL){" + _FIELDS + "}}"
 )
-_NATIVES = (
+_DETAILS = (
     "query($ids:[Int]){Page(perPage:50){"
-    "media(id_in:$ids,type:MANGA){id title{native}}}}"
+    "media(id_in:$ids,type:MANGA){id countryOfOrigin title{native}}}}"
 )
 _OK, _NOT_FOUND = 200, 404
 
@@ -66,13 +68,14 @@ def to_ref(media: dict[str, object], origin: str) -> RefTitle:
         anilist_id=int(cast("int", media["id"])),
         origins=(origin,),
         native=names.get("native") or "",
+        country=str(media.get("countryOfOrigin") or ""),
     )
 
 
 def top_page(
     client: PoliteClient, page: int, per_page: int = 50
 ) -> tuple[list[RefTitle], bool]:
-    """One page of the most popular manga, and whether another follows."""
+    """One page of the most popular Japanese manga, and whether another follows."""
     data = _post(client, _TOP, {"page": page, "perPage": per_page})
     if data is None:
         return [], False
@@ -92,15 +95,18 @@ def search(client: PoliteClient, title: str) -> RefTitle | None:
     return ref if title_score(title, ref.titles) >= THRESHOLD else None
 
 
-def natives(client: PoliteClient, ids: list[int]) -> dict[int, str]:
-    """Native-script titles of up to 50 AniList ids (absent: AniList has none)."""
-    data = _post(client, _NATIVES, {"ids": ids})
+def details(client: PoliteClient, ids: list[int]) -> dict[int, tuple[str, str]]:
+    """``(native title, country)`` of up to 50 AniList ids (``""`` = none).
+
+    An id AniList does not return is absent.
+    """
+    data = _post(client, _DETAILS, {"ids": ids})
     if data is None:
         return {}
     page = cast("dict[str, object]", data["Page"])
-    out: dict[int, str] = {}
+    out: dict[int, tuple[str, str]] = {}
     for media in cast("list[dict[str, object]]", page["media"]):
         native = cast("dict[str, str | None]", media["title"]).get("native")
-        if native:
-            out[int(cast("int", media["id"]))] = native
+        country = cast("str | None", media.get("countryOfOrigin"))
+        out[int(cast("int", media["id"]))] = (native or "", country or "")
     return out

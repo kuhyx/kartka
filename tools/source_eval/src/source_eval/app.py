@@ -24,6 +24,7 @@ from source_eval.budget import (
 )
 from source_eval.cache import DiskCache
 from source_eval.candidates import catalog
+from source_eval.country import japanese
 from source_eval.gate import HostGate
 from source_eval.polite import USER_AGENT, PoliteClient
 from source_eval.profile import DEFAULT, Profile
@@ -165,7 +166,7 @@ class App:
         ramp: bool = False,
         reprobe: bool = False,
     ) -> int:
-        """Fix the run's reference sample (``sample`` titles, None = all).
+        """Fix the run's sample: ``sample`` Japanese titles (None = all).
 
         ``steps`` carries the per-step sizes; its own ``sample`` is ignored.
         ``ramp`` takes the size from ``ramp start``; ``reprobe`` lists the
@@ -179,7 +180,7 @@ class App:
                 return USAGE
         run = RunDir(self.s.state_dir, run_id)
         if Manifest.load(run.manifest_path) is None:
-            keys = stratified([t.key for t in self.reference().titles], sample)
+            keys = stratified(japanese(self.reference().titles), sample)
             ids, prev = previous_hard_cuts(self.s.state_dir, run_id, wanted=reprobe)
             replace(steps, sample=keys, reprobe=ids, reprobe_from=prev).save(
                 run.manifest_path

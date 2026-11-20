@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING, cast
 
 from source_eval.budget import MORE_WORK
 from source_eval.candidates import catalog
+from source_eval.country import jp_manifest
 from source_eval.fsio import read_json, write_json_atomic
 from source_eval.report import META_PATH, RTDB_PATH, build_report
 from source_eval.score import HARD_CODES
@@ -107,13 +108,20 @@ def report_cmd(  # noqa: PLR0913, PLR0917 -- one argument per input it joins
     profile: Profile,
     budget: float | None,
 ) -> int:
-    """Write the ranked report; with ``writer``, publish what is still due."""
+    """Write the ranked report; with ``writer``, publish what is still due.
+
+    The run is scored on its Japanese sample titles only (:mod:`country`).
+    """
     deadline, _ = app.limits(budget)
     cands = {c.id: c for c in catalog.load(app.candidates_path)}
+    jp = jp_manifest(manifest, app.reference().titles)
+    app.out(
+        f"reference: {len(jp.sample)} Japanese of {len(manifest.sample)} sample titles"
+    )
     report = build_report(
         cands,
         run,
-        manifest,
+        jp,
         app.uptime,
         app.clock.now(),
         skipped=catalog.load_skipped(app.skipped_path),

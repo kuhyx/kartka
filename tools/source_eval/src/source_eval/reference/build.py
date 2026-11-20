@@ -23,6 +23,11 @@ if TYPE_CHECKING:
     from source_eval.polite import PoliteClient
 
 
+#: Cursor of the Japan-only top list. An older unfiltered build's
+#: ``anilistPage`` is left as it was: its titles stay, the JP pages top up.
+JP_PAGE = "anilistJpPage"
+
+
 class Reference:
     """The reference file plus its resume cursor."""
 
@@ -31,7 +36,7 @@ class Reference:
         self.path = path
         self._clock = clock
         data = cast("dict[str, object]", read_json(path, {}))
-        self.progress = cast("dict[str, int]", data.get("progress", {"anilistPage": 0}))
+        self.progress = cast("dict[str, int]", data.get("progress", {JP_PAGE: 0}))
         # SY titles by normalised name, not list position: a newer backup can
         # reorder or insert titles and an index cursor would skip some.
         self.sy_done = set(cast("list[str]", data.get("syProcessed", [])))
@@ -88,16 +93,17 @@ def build(  # noqa: PLR0913 -- explicit knobs beat a config object here
 
     Never short-circuits on ``complete``: SY titles added after the AniList
     part finished (a new ``sy_titles.json``) are still picked up, and titles
-    stored before native titles existed are backfilled ``batch`` at a time.
+    stored before native titles or countries existed are backfilled
+    ``batch`` at a time.
     """
-    while ref.progress["anilistPage"] * per_page < top:
+    while ref.progress.get(JP_PAGE, 0) * per_page < top:
         if deadline.expired():
             return False
-        page = ref.progress["anilistPage"] + 1
+        page = ref.progress.get(JP_PAGE, 0) + 1
         titles, has_next = anilist.top_page(client, page, per_page)
         for entry in titles[: top - (page - 1) * per_page]:
             ref.add(entry)
-        ref.progress["anilistPage"] = page if has_next else top
+        ref.progress[JP_PAGE] = page if has_next else top
         ref.save()
     for title in sy_titles:
         if normalize(title) in ref.sy_done:
@@ -111,28 +117,38 @@ def build(  # noqa: PLR0913 -- explicit knobs beat a config object here
         )
         ref.sy_done.add(normalize(title))
         ref.save()
-    if not _backfill_natives(client, ref, deadline, batch):
+    if not _backfill_details(client, ref, deadline, batch):
         return False
     ref.complete = True
     ref.save()
     return True
 
 
-def _backfill_natives(
+def _backfill_details(
     client: PoliteClient, ref: Reference, deadline: Deadline, batch: int
 ) -> bool:
-    """Fill ``native`` for AniList titles that predate it; True when done."""
+    """Fill ``native`` and ``country`` where unfetched; True when done.
+
+    A title AniList does not return gets ``""`` for both, so it is not asked
+    for again; a native title already stored is kept.
+    """
     while todo := [
         i
         for i, t in enumerate(ref.titles)
-        if t.anilist_id is not None and t.native is None
+        if t.anilist_id is not None and (t.native is None or t.country is None)
     ][:batch]:
         if deadline.expired():
             return False
         ids = [cast("int", ref.titles[i].anilist_id) for i in todo]
-        found = anilist.natives(client, ids)
+        found = anilist.details(client, ids)
         for i, aid in zip(todo, ids, strict=True):
-            ref.titles[i] = replace(ref.titles[i], native=found.get(aid, ""))
+            native, country = found.get(aid, ("", ""))
+            have = ref.titles[i]
+            ref.titles[i] = replace(
+                have,
+                native=native if have.native is None else have.native,
+                country=country,
+            )
         ref.save()
     return True
 

@@ -91,7 +91,7 @@ def test_commands_log_and_feed_init_run(tmp_path: Path) -> None:
     assert app.cmd_init_run("W1", None, Manifest([], 1, 1, 1), ramp=True) == 0
     manifest = Manifest.load(RunDir(app.s.state_dir, "W1").manifest_path)
     assert manifest is not None
-    assert len(manifest.sample) == 3  # 200 asked, only 3 reference titles
+    assert len(manifest.sample) == 2  # 200 asked, only 2 Japanese reference titles
     clock.advance(42.0)
     assert app.cmd_ramp_finish("W1") == 0
     assert any("W1 took 42 s" in line for line in lines)

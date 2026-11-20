@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import copy
 from dataclasses import asdict, dataclass, field
 import hashlib
 from typing import TYPE_CHECKING, cast
@@ -78,6 +79,8 @@ class SourceState:
         self.images = cast("dict[str, dict[str, object]]", data.get("images", {}))
         self.observations = cast("list[list[object]]", data.get("observations", []))
         self.reprobe = cast("dict[str, object] | None", data.get("reprobe"))
+        #: Reference keys :meth:`found` counts (``None`` = all); see :meth:`only`.
+        self.keys: frozenset[str] | None = None
 
     def observe(self, obs: Observation) -> None:
         """Remember one live request (saved with the next checkpoint)."""
@@ -105,7 +108,22 @@ class SourceState:
 
     def found(self) -> dict[str, dict[str, object]]:
         """Title results that matched, keyed by reference key."""
-        return {k: v for k, v in self.titles.items() if v.get("status") == "found"}
+        return {
+            k: v
+            for k, v in self.titles.items()
+            if v.get("status") == "found" and (self.keys is None or k in self.keys)
+        }
+
+    def only(self, keys: list[str]) -> SourceState:
+        """A read-only view counting only ``keys`` (found titles, chapter lists).
+
+        ``titles`` (the hard filter reads the first searches) and ``images``
+        stay whole. Never saved.
+        """
+        view = copy.copy(self)
+        view.keys = frozenset(keys)
+        view.chapters = {k: v for k, v in self.chapters.items() if k in view.keys}
+        return view
 
 
 class RunDir:

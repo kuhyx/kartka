@@ -79,7 +79,7 @@ def test_reference_and_enrich_stop_in_budget(tmp_path: Path) -> None:
     assert "reference: 0 titles, complete=False" in lines
     transport.routes.pop(0)
     assert app.cmd_reference(None, 3) == 0
-    ref = {"titles": [{"key": "k1", "titles": ["Alpha"]}]}
+    ref = {"titles": [{"key": "k1", "titles": ["Alpha"], "countryOfOrigin": "JP"}]}
     (app.s.data_dir / "reference.json").write_text(json.dumps(ref))
     app.cmd_init_run("t", 1, Manifest([], 1, 1, 1))
     _throttled(transport, mangaupdates.API)

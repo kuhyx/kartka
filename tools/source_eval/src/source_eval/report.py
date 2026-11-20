@@ -84,7 +84,7 @@ def build_report(  # noqa: PLR0913 -- one argument per input the report joins
     """Ranked §5 records for every source the run touched, summary and meta.
 
     Scores, ranks and verdicts follow ``profile``; every record also carries
-    its ``defaultScore`` (DEFAULT profile).
+    its ``defaultScore`` (DEFAULT profile). Only ``manifest.sample`` counts.
     """
     records: list[Record] = []
     found: dict[str, set[str]] = {}
@@ -92,7 +92,7 @@ def build_report(  # noqa: PLR0913 -- one argument per input the report joins
         cand = cands.get(source_id)
         if cand is None:
             continue
-        state = run.source(source_id)
+        state = run.source(source_id).only(manifest.sample)
         records.append(metrics(cand, state, manifest, log.window(cand.id, now), now))
         found[source_id] = set(state.found())
     ranked = rank(records, found, profile)
