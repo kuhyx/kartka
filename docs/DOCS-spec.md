@@ -55,7 +55,7 @@ lib/sync/           crdt_sync_flutter wiring, RTDB mappers
 lib/tracking/       anilist/  mal/  common/
 lib/backup_import/  .tachibk decoder + mapper
 lib/source_health/  ranking screen, badges, RTDB reader
-lib/migration/      move library entries to Atsumaru or better Keep sources
+lib/migration/      walk the library one by one onto the best source
 lib/perf/           per-screen jank tracker → diagnostics log, More → Performance
 lib/updates/        Updates tab: new-chapter feed, shared "update all" run
 desktop/            local wrapper server (static web build + /proxy + files)

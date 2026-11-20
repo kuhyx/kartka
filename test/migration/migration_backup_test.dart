@@ -72,7 +72,6 @@ void main() {
       library: w.repos.library,
       categories: w.repos.categories,
       progress: w.repos.progress,
-      findTarget: () async => null,
       backups: w.backups,
       clock: () => DateTime.utc(2026, 1, 2, 3, 4, 5),
     );

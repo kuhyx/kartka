@@ -19,7 +19,7 @@ void main() {
   late LibraryEntry old;
 
   setUp(() async {
-    w = World()..install();
+    w = World();
     old = await w.add('One Piece');
     w.numbers.lists[old.key] = chaptersOf('/old', [1, 2, 3, 4, 5, 6, 7]);
   });
@@ -140,7 +140,6 @@ void main() {
       library: w.repos.library,
       categories: w.repos.categories,
       progress: w.repos.progress,
-      findTarget: () async => null,
       backups: w.backups,
     );
     await migrateEntry(bare, from: old, target: w.target, to: _to);

@@ -3,38 +3,49 @@ import 'dart:async';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/browse/source_registry.dart';
+import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
-import 'package:kartka/migration/better/better_controller.dart';
 import 'package:kartka/migration/better/better_route.dart';
-import 'package:kartka/migration/better/better_screen.dart';
 import 'package:kartka/migration/first_value.dart';
 import 'package:kartka/migration/migration_deps.dart';
+import 'package:kartka/migration/walk/walk_controller.dart';
+import 'package:kartka/migration/walk/walk_screen.dart';
+import 'package:kartka/platform/cover_cache.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
 import 'package:kartka/source_health/install/keep_reconciler.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The [betterSourcesRoute] screen over [registry], migrating with [deps].
-/// The source-health part supplies the scored feed and the auto-install's
-/// flags as services; without them nothing counts as cut or failing.
+/// The one-by-one migration over [registry], migrating with [deps]: the
+/// [scope] of the library, or only [onlyKeys]. The source-health part
+/// supplies the scored feed and the auto-install's flags as services;
+/// without them no source is a keep target, and nothing counts as cut.
+MigrationWalkScreen migrationWalk(
+  KartkaRegistry registry,
+  MigrationDeps deps, {
+  WalkScope scope = WalkScope.library,
+  Set<MangaKey>? onlyKeys,
+}) => MigrationWalkScreen(
+  controller: MigrationWalkController(
+    deps,
+    MigrationInputs(
+      records: () => healthRecords(registry.maybe<SourceHealthFeed>()),
+      sources: () => settledSources(registry),
+      flagOf: (id) => registry.maybe<KeepReconciler>()?.flagOf(id),
+    ),
+    scope: scope,
+    onlyKeys: onlyKeys,
+  ),
+  coverLoader: registry.maybe<CoverCache>()?.get,
+);
+
+/// The [betterSourcesRoute] walk: the entries whose source should be left.
 GoRoute betterSourcesGoRoute(
   KartkaRegistry Function() registry,
   MigrationDeps Function() deps,
 ) => GoRoute(
   path: betterSourcesRoute,
-  builder: (_, _) {
-    final r = registry();
-    return BetterSourcesScreen(
-      controller: BetterSourcesController(
-        deps(),
-        BetterSourcesInputs(
-          records: () => healthRecords(r.maybe<SourceHealthFeed>()),
-          sources: () => settledSources(r),
-          flagOf: (id) => r.maybe<KeepReconciler>()?.flagOf(id),
-        ),
-      ),
-    );
-  },
+  builder: (_, _) => migrationWalk(registry(), deps(), scope: WalkScope.better),
 );
 
 /// The More tile opening [betterSourcesRoute].

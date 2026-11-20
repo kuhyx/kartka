@@ -1,16 +1,21 @@
 import 'package:kartka/browse/source_health_lookup.dart';
+import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
-import 'package:kartka/migration/better/better_controller.dart';
+import 'package:kartka/migration/walk/walk_controller.dart';
+import 'package:kartka/platform/blob_store.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 
 import '../fakes.dart';
 
-/// A world for "Migrate to better sources": a library on a cut source
-/// (`old`), two installed keep sources (`best` rank 1, `good` rank 2) and
-/// one healthy keep source the library also reads (`fine`).
-class BetterWorld {
+/// A world for the walk: a library on a cut source (`old`) and two
+/// installed keep sources (`best` rank 1, `good` rank 2), plus the usual
+/// Atsumaru.
+class WalkWorld {
+  /// The world, its backups going to [backups].
+  new({BlobStore? backups}) : world = World(backups: backups);
+
   /// The usual migration world.
-  final world = World();
+  final World world;
 
   /// The cut source the library entries sit on.
   final old = ScriptedSource('old', name: 'Old Site');
@@ -21,10 +26,7 @@ class BetterWorld {
   /// The second keep source.
   final good = ScriptedSource('good', name: 'Good Site');
 
-  /// A keep source already used by the library.
-  final fine = ScriptedSource('fine', name: 'Fine Site');
-
-  /// Published records (scored feed order does not matter).
+  /// Published records.
   List<SourceHealthRecord> records = const [
     SourceHealthRecord(
       id: 'good',
@@ -39,12 +41,6 @@ class BetterWorld {
       verdict: HealthVerdict.keep,
     ),
     SourceHealthRecord(
-      id: 'fine',
-      name: 'Fine Site',
-      rank: 3,
-      verdict: HealthVerdict.keep,
-    ),
-    SourceHealthRecord(
       id: 'old',
       name: 'Old Site',
       rank: 9,
@@ -53,18 +49,31 @@ class BetterWorld {
   ];
 
   /// Installed sources.
-  late List<MangaSource> installed = [old, best, good, fine];
+  late List<MangaSource> installed = [old, best, good];
 
   /// Auto-install flags by source id.
   final flags = <String, String>{};
 
+  /// Adds [titles] on `old`, each offered by `best` under the same title.
+  Future<void> library(List<String> titles) async {
+    for (final t in titles) {
+      await world.add(t);
+      best.offer(t, t, '/best/$t');
+    }
+  }
+
   /// A controller over this world.
-  BetterSourcesController controller() => BetterSourcesController(
+  MigrationWalkController controller({
+    WalkScope scope = WalkScope.library,
+    Set<MangaKey>? onlyKeys,
+  }) => MigrationWalkController(
     world.deps,
-    BetterSourcesInputs(
+    MigrationInputs(
       records: () async => records,
       sources: () async => installed,
       flagOf: (id) => flags[id],
     ),
+    scope: scope,
+    onlyKeys: onlyKeys,
   );
 }

@@ -160,21 +160,16 @@ class World {
   final numbers = FakeNumbers();
   final BlobStore backups;
   final target = ScriptedSource(atsumaruSourceId, name: 'Atsumaru');
-  MangaSource? Function() lookup = () => null;
 
   late final deps = MigrationDeps(
     library: repos.library,
     categories: repos.categories,
     progress: repos.progress,
-    findTarget: () async => lookup(),
     backups: backups,
     tracking: tracking,
     chapterNumbers: numbers,
     clock: () => DateTime.utc(2026, 10, 25, 12, 30, 5),
   );
-
-  /// Makes [target] the available Atsumaru.
-  void install() => lookup = () => target;
 
   /// Adds an entry titled [title] on [sourceId] at [url].
   Future<LibraryEntry> add(

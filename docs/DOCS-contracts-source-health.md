@@ -219,10 +219,23 @@ under the line cap; same rules. Implementation notes:
   `hasUpdate` through `updateExtension` (`SuwayomiExtensionUpdater` port),
   one at a time, unawaited; logged as `sources.autoupdate`. Never in the
   agent instance (`isAgentInstance`): it reads the same shared server.
-- **Migrate to better sources** (`lib/migration/better/`, route
-  `/more/migrate-better`, also a More tile): every library entry whose
-  source is not installed, failed that test, is unreachable / re-probed
-  only, cut, or hits a challenge, with the best installed, passing keep
-  source (rank order, stopping at the first title match: exact, else a
-  fuzzy score >= 0.7 in both directions). Migrate (a row) and a confirmed
-  Migrate all write the library backup first, then use `migrateEntry`.
+- **Migration walk** (`lib/migration/walk/`, 2026-11-21; replaced the
+  Atsumaru review list and the better-sources list). One entry at a
+  time, library order: More → Migrate (`/more/migrate-atsumaru`, the whole
+  library; `?key=` = only those, the detail screen's button), "Migrate to
+  better sources" (`/more/migrate-better`, the entries whose source is not
+  installed, failed its test, is unreachable / re-probed only, cut, or
+  hits a challenge: `moveReason`). Targets: installed passing keep sources
+  by rank plus Atsumaru when installed (within the first 5), at most 5,
+  the entry's own excluded. `CandidateFinder` searches 2 at a time (15 s
+  per request, cached per source + query for the screen), the title, then
+  up to 3 alt titles (`Alternative Titles:` lines of the own source's
+  description) when no title scores 0.7; a failed source is an error icon
+  on its lane. `SameManga` (`lib/migration/same_manga.dart`, pure) scores
+  the top 3 hits with details: title 0.45, author 0.2, description word
+  overlap 0.25, chapter plausibility 0.1 (unknown = 0.5), so a same-title
+  manga by another author ranks below the real one. Up to 5 cards (cover,
+  title, source, chapters, newest date, match meter), ties by rank, then
+  chapters, then newest. A tap backs the library up (once per screen),
+  runs `migrateEntry`, shows the next entry (searched ahead). Icon buttons:
+  previous, manual search, skip. No exception text is painted.

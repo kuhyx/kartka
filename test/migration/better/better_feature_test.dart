@@ -6,9 +6,9 @@ import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
-import 'package:kartka/migration/better/better_screen.dart';
 import 'package:kartka/migration/better/better_wiring.dart';
 import 'package:kartka/migration/migration_feature.dart';
+import 'package:kartka/migration/walk/walk_screen.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/source_health_feature.dart';
@@ -100,8 +100,9 @@ void main() {
     await _pump(t, r, (c) => Column(children: [for (final b in tiles) b(c)]));
     await t.tap(find.byIcon(Icons.auto_fix_high));
     await _settle(t);
-    expect(find.byType(BetterSourcesScreen), findsOne);
-    expect(find.text('Old Site → Best Site'), findsOne);
+    expect(find.byType(MigrationWalkScreen), findsOne);
+    expect(find.text('Old Site'), findsOne);
+    expect(find.byKey(const ValueKey('candidate-/best/op')), findsOne);
   });
 
   testWidgets('the Sources tab links the screen', (t) async {
@@ -111,7 +112,7 @@ void main() {
     await _settle(t);
     await t.tap(find.byKey(const Key('migrate-better')));
     await _settle(t);
-    expect(find.byType(BetterSourcesScreen), findsOne);
+    expect(find.byType(MigrationWalkScreen), findsOne);
   });
 
   test('without a health feed the ranking reads as empty', () async {

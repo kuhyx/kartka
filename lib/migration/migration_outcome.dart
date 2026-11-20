@@ -63,14 +63,6 @@ class MigrationOutcome extends StatelessWidget {
       Row(spacing: AppSpacing.sm, children: children);
 }
 
-/// A filled tick for an exact title match, an outlined one for a close one
-/// ([closeLabel] names the latter for screen readers).
-Widget matchMark({required bool exact, String closeLabel = 'Close match'}) =>
-    Icon(
-      exact ? Icons.check_circle : Icons.check_circle_outline,
-      semanticLabel: exact ? 'Exact match' : closeLabel,
-    );
-
 /// An error glyph speaking [error]: exception text is never painted.
 Widget errorMark(String error) => Builder(
   builder: (context) => Icon(
@@ -79,15 +71,3 @@ Widget errorMark(String error) => Builder(
     semanticLabel: error,
   ),
 );
-
-/// A small spinner for one row's search or migration.
-class RowSpinner extends StatelessWidget {
-  /// Creates the spinner.
-  const new({super.key});
-
-  @override
-  Widget build(BuildContext context) => const SizedBox.square(
-    dimension: AppSpacing.lg,
-    child: CircularProgressIndicator(strokeWidth: 2),
-  );
-}

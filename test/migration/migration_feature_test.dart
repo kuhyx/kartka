@@ -7,8 +7,8 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/migration/migration_feature.dart';
-import 'package:kartka/migration/migration_screen.dart';
 import 'package:kartka/migration/migration_target.dart';
+import 'package:kartka/migration/walk/walk_screen.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -83,17 +83,17 @@ void main() {
     });
   });
 
-  testWidgets('the More tile opens a review of the whole library', (t) async {
+  testWidgets('the More tile walks the whole library', (t) async {
     final s = await _setup();
     await _pump(t, s.feature, Builder(builder: s.feature.settingsTiles.first));
     await t.tap(find.byIcon(Icons.swap_horiz));
     await t.pumpAndSettle();
-    expect(find.byType(MigrationScreen), findsOneWidget);
-    expect(find.text('One Piece'), findsNWidgets(2));
-    expect(find.text('Berserk'), findsOneWidget);
+    expect(find.byType(MigrationWalkScreen), findsOneWidget);
+    expect(find.text('1 / 2'), findsOneWidget);
+    expect(find.byKey(const ValueKey('candidate-/atsu/op')), findsOneWidget);
   });
 
-  testWidgets('the detail slot opens a review of that entry only', (t) async {
+  testWidgets('the detail slot walks that entry only', (t) async {
     final s = await _setup();
     final slot = s.feature.services.whereType<MangaDetailSlot>().single;
     await _pump(
@@ -103,12 +103,13 @@ void main() {
     );
     await t.tap(find.bySemanticsLabel('Migrate'));
     await t.pumpAndSettle();
-    expect(find.text('One Piece'), findsNWidgets(2));
-    expect(find.text('Berserk'), findsNothing);
+    expect(find.text('1 / 1'), findsOneWidget);
     expect(s.atsu.searched, ['One Piece']);
   });
 
-  testWidgets('no slot outside the library or on Atsumaru itself', (t) async {
+  testWidgets('the slot shows on library entries only, Atsumaru ones too', (
+    t,
+  ) async {
     final s = await _setup();
     final slot = s.feature.services.whereType<MangaDetailSlot>().single;
     await _pump(
@@ -126,7 +127,7 @@ void main() {
         ],
       ),
     );
-    expect(find.byIcon(Icons.swap_horiz), findsNothing);
+    expect(find.byIcon(Icons.swap_horiz), findsOneWidget);
     slot
       ..opened(_key) // Nothing to do when the screen opens,
       ..loaded(_key); // nor once it has loaded.
