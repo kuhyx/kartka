@@ -203,6 +203,35 @@ void main() {
     expect(await member(a), {autoShelfId(Shelf.abandoned)});
   });
 
+  test('a device that cannot judge an entry keeps its memory', () async {
+    await cat('fin', 'finished', 0);
+    facts.byKey[a.key] = fact(old);
+    await shelver.run();
+    // Device B shares the synced memory but never stored a's chapters.
+    final blind = AutoShelver(
+      repos: repos,
+      facts: _Facts.new,
+      memory: memory,
+      local: MemoryKeyValueStore(),
+      updater: () => null,
+    );
+    await blind.run();
+    await repos.categories.setMembership(a.key, 'fin', false);
+    expect(await make().run(), (finished: 0, abandoned: 0));
+    expect(await member(a), isEmpty);
+  });
+
+  test('an older stored list does not reset the memory', () async {
+    await cat('fin', 'finished', 0);
+    facts.byKey[a.key] = fact(old);
+    await shelver.run();
+    await repos.categories.setMembership(a.key, 'fin', false);
+    facts.byKey[a.key] = fact(DateTime.utc(2024, 5));
+    expect(await shelver.run(), (finished: 0, abandoned: 0));
+    expect(await member(a), isEmpty);
+    expect(await memory.get(autoShelveMemoryKey), contains('2024-06-26'));
+  });
+
   test('a corrupt memory forgets; a renamed rule shelf is reused', () async {
     await cat(autoShelfId(Shelf.finished), 'Done', 0);
     await memory.set(autoShelveMemoryKey, '{not json');

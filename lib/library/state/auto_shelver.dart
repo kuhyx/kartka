@@ -36,9 +36,10 @@ const shelveEvery = Duration(hours: 6);
 /// A stale entry (newest chapter older than [staleCutoff]) ends in exactly
 /// one category: [Shelf.finished] when every chapter is read, else
 /// [Shelf.abandoned]. The newest upload it was seen shelved at is
-/// remembered in [memory]; while that is unchanged the entry is never moved
-/// again, so a manual move-out sticks. An entry already in its shelf is
-/// left alone but remembered too, since another device may have moved it.
+/// remembered in [memory]; until a strictly later upload the entry is never
+/// moved again, so a manual move-out sticks. An entry already in its shelf
+/// is left alone but remembered too, since another device may have moved
+/// it. Entries this device cannot judge keep their memory.
 class AutoShelver {
   /// Creates the shelver; ports are read lazily (the registry is complete
   /// only after every feature factory ran).
@@ -135,16 +136,24 @@ class AutoShelver {
     var live = await repos.categories.watch().first;
     final members = await repos.categories.watchMembership().first;
     final raw = await memory.get(autoShelveMemoryKey);
-    final seen = _decode(raw);
-    final remembered = SplayTreeMap<String, String>();
+    // Seeded from the stored memory, never rebuilt: the node is synced, and
+    // a device that cannot judge an entry (no stored list, or an older one)
+    // must not erase what another device remembered.
+    final remembered = SplayTreeMap<String, String>.of(_decode(raw));
     final moved = {for (final s in Shelf.values) s: 0};
     final lookup = facts();
     for (final e in entries) {
       final f = await lookup.of(e.key);
       final newest = f?.newestUpload;
-      if (f == null || newest == null || !isStale(newest, now)) continue;
+      if (f == null || newest == null) continue;
+      if (!isStale(newest, now)) {
+        remembered.remove(e.key); // a recent chapter: a real reset
+        continue;
+      }
+      final last = DateTime.tryParse(remembered[e.key] ?? '');
+      // Only a strictly later upload is a new chapter.
+      if (last != null && !newest.isAfter(last)) continue;
       remembered[e.key] = writeDate(newest);
-      if (sameInstant(DateTime.tryParse(seen[e.key] ?? ''), newest)) continue;
       final shelf = f.allRead ? Shelf.finished : Shelf.abandoned;
       var target = shelfCategory(shelf, live);
       if (target == null) {
