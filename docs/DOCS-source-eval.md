@@ -180,7 +180,7 @@ and FlareSolverr off (the local dev server and the live deploy both do).
 - **verdict**: an enabled cut switch whose reason applies → `cut`; else
   ≥ `keepScore` → `keep`; `pending` only while nothing was measured
   (coverage ratio `null`); else `cut`. DEFAULT enables no switch, so there the
-  score alone decides (`KEEP_SCORE` 0.90). The cut reasons (`uptime<0.95`,
+  score alone decides (`KEEP_SCORE` 0.85; 0.90 until 2026-11-20). The cut reasons (`uptime<0.95`,
   `blocking`, `coverage<0.60`, `subset`) are always computed and published in
   `cutReasons`.
 - **scoring profile**: `report` reads the app's active profile from RTDB

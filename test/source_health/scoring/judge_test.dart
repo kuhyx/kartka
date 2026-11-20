@@ -81,8 +81,8 @@ void main() {
     const p = defaultScoringProfile;
 
     test('score decides under the default profile', () {
-      expect(verdictOf(rec(), 0.9, p), HealthVerdict.keep);
-      expect(verdictOf(rec(), 0.899, p), HealthVerdict.cut);
+      expect(verdictOf(rec(), 0.85, p), HealthVerdict.keep);
+      expect(verdictOf(rec(), 0.849, p), HealthVerdict.cut);
       expect(verdictOf(rec(coverage: null), 0.2, p), HealthVerdict.pending);
       expect(verdictOf(rec(coverage: null), 0.95, p), HealthVerdict.keep);
     });

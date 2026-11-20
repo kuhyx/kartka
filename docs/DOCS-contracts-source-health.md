@@ -58,7 +58,7 @@ under the line cap; same rules. Implementation notes:
   ```json
   {"weights": {"coverage": 0.30, "chapterCompleteness": 0.20, "uptime": 0.20,
                "imageQuality": 0.15, "speed": 0.15},
-   "pagesLoadMultiplier": true, "keepScore": 0.90,
+   "pagesLoadMultiplier": true, "keepScore": 0.85,
    "cuts": {"blocking": false, "subset": false, "coverage": false,
             "uptime": false, "needsBrowserEngine": false,
             "pagesNeverLoad": false}}

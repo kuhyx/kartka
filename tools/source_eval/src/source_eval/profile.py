@@ -90,7 +90,7 @@ class Profile:
 
     weights: Weights = field(default_factory=Weights)
     pages_load_multiplier: bool = True
-    keep_score: float = 0.90
+    keep_score: float = 0.85
     cuts: Cuts = field(default_factory=Cuts)
 
     @property

@@ -74,7 +74,7 @@ void main() {
     tester,
   ) async {
     await pumpCard(tester, _keptWithReasons);
-    expect(spokenIcon('Kept on score ≥ 0.90 despite'), findsOne);
+    expect(spokenIcon('Kept on score ≥ 0.85 despite'), findsOne);
     expect(find.byIcon(Icons.warning_amber_rounded), findsOne);
     expect(spokenContaining('Catalogue too small'), findsOne);
     await pumpCard(tester, _cut);
@@ -89,7 +89,7 @@ void main() {
   ) async {
     await pumpDetail(tester, _keptWithReasons);
     expect(spokenIcon('Why the score is low'), findsNothing);
-    expect(spokenIcon('Kept on score ≥ 0.90 despite'), findsOne);
+    expect(spokenIcon('Kept on score ≥ 0.85 despite'), findsOne);
     expect(pill('Lowers score'), findsNothing);
     expect(pill('Warns'), findsOne);
     expect(find.text('× 0.92'), findsOne);

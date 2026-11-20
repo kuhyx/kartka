@@ -12,7 +12,7 @@ import 'package:kartka/source_health/model/json_read.dart';
 import 'package:kartka/source_health/reason_filter.dart';
 
 /// The DEFAULT keep bar: a source scoring at least this is kept.
-const double kDefaultKeepScore = 0.90;
+const double kDefaultKeepScore = 0.85;
 
 /// Weights of the four score parts, each 0..1 (0 turns a part off). Only
 /// their ratios matter: scoring uses [normalised].

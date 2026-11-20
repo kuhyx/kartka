@@ -41,7 +41,7 @@ def with_pages(rec: Record, ratio: float | None, sampled: int = 4) -> Record:
 
 
 def test_keep_score_constant() -> None:
-    assert KEEP_SCORE == 0.90
+    assert KEEP_SCORE == 0.85
 
 
 def test_pages_never_loading_scores_zero() -> None:
@@ -89,19 +89,19 @@ def test_high_score_keeps_while_uptime_accrues() -> None:
 
 
 def test_measured_low_score_is_cut_not_pending() -> None:
-    accruing = record("a", status="accruing")  # no cut reason, score 0.869
+    accruing = record("a", status="accruing", coverage=0.6)  # no reason, 0.83
     out = rank([accruing], {})[0]
     assert out["cutReasons"] == []
     assert out["verdict"] == "cut"
-    plain = record("p")
+    plain = record("p", coverage=0.6)
     assert rank([plain], {})[0]["verdict"] == "cut"
 
 
 def test_just_below_keep_score_is_still_cut() -> None:
     rec = perfect("x", challenge=0.5, kinds=["403"])
-    with_pages(rec, 0.89)
+    with_pages(rec, 0.84)
     out = rank([rec], {})[0]
-    assert out["score"] == 0.89
+    assert out["score"] == 0.84
     assert out["verdict"] == "cut"
 
 

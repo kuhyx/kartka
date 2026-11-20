@@ -16,7 +16,7 @@ def test_default_merges_the_historic_coverage_weights() -> None:
     w = DEFAULT.weights
     assert (w.complete_coverage, w.uptime) == (0.30 + 0.20, 0.20)
     assert (w.image_quality, w.speed) == (0.15, 0.15)
-    assert DEFAULT.keep_score == 0.90
+    assert DEFAULT.keep_score == 0.85
     assert DEFAULT.pages_load_multiplier
     assert DEFAULT.cuts.enabled() == frozenset()
     assert DEFAULT.name == "default"

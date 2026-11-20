@@ -23,6 +23,11 @@ final _w43 = jsonDecode(
   File('test/fixtures/source_health/w43_schema.json').readAsStringSync(),
 ) as Map<String, Object?>;
 
+/// W43's DEFAULT: the keep bar was 0.90 until 2026-11-20 (now 0.85).
+final ScoringProfile _w43Default = defaultScoringProfile.copyWith(
+  keepScore: 0.90,
+);
+
 ScoringProfile? _setting(String key) =>
     ScoringProfile.fromJson(jsonDecode(_w43[key]! as String));
 
@@ -59,9 +64,9 @@ void main() {
   });
 
   group('W43', () {
-    test('the old and the new RTDB scoring values read as DEFAULT', () {
-      expect(_setting('oldProfile'), defaultScoringProfile);
-      expect(_setting('newProfile'), defaultScoringProfile);
+    test('the old and the new RTDB scoring values read as its DEFAULT', () {
+      expect(_setting('oldProfile'), _w43Default);
+      expect(_setting('newProfile'), _w43Default);
     });
 
     for (final run in ['old', 'new']) {
@@ -71,7 +76,7 @@ void main() {
         final meta = SourceHealthMeta.fromJson(part['meta'])!;
         expect(meta.runId, '2026-W43');
         expect(meta.tested, 585);
-        expect(meta.profile, defaultScoringProfile);
+        expect(meta.profile, _w43Default);
         expect(meta.skipped, isNotEmpty);
       });
 

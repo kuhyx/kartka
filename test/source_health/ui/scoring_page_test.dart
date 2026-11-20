@@ -50,8 +50,8 @@ void main() {
       expect(spokenIcon('$label: share of the score'), findsOne, reason: label);
     }
     expect(find.text('50 %'), findsOne);
-    expect(find.text('≥ 0.90'), findsOne);
-    expect(spokenContaining('Keep at score ≥ 0.90'), findsOne);
+    expect(find.text('≥ 0.85'), findsOne);
+    expect(spokenContaining('Keep at score ≥ 0.85'), findsOne);
     expect(find.byKey(const Key('only-3')), findsOne);
     expect(find.byKey(const Key('only-4')), findsNothing);
     for (final wire in [
@@ -137,6 +137,6 @@ void main() {
     await tapKey(tester, 'reset-scoring');
     expect(store.profile.value, defaultScoringProfile);
     expect(await stored(tester), isNull);
-    expect(find.text('≥ 0.90'), findsOne);
+    expect(find.text('≥ 0.85'), findsOne);
   });
 }

@@ -15,7 +15,7 @@
       "speed": 0.15
     },
     "pagesLoadMultiplier": true,
-    "keepScore": 0.90,
+    "keepScore": 0.85,
     "cuts": {
       "blocking": false, "coverage": false, "uptime": false,
       "needsBrowserEngine": false, "pagesNeverLoad": false
@@ -72,7 +72,7 @@
     {"name": "legacy coverage + completeness weights merge; cuts.subset is ignored",
      "input": {"weights": {"coverage": 0.30, "chapterCompleteness": 0.20,
                            "uptime": 0.20, "imageQuality": 0.15, "speed": 0.15},
-               "pagesLoadMultiplier": true, "keepScore": 0.90,
+               "pagesLoadMultiplier": true, "keepScore": 0.85,
                "cuts": {"blocking": false, "subset": true, "coverage": false,
                         "uptime": false, "needsBrowserEngine": false,
                         "pagesNeverLoad": false}},
@@ -198,7 +198,7 @@
       "order": ["dead", "oldwebview", "star", "legacy", "slow", "lowcover", "copy",
                 "unmeasured", "nopages", "webview", "soft", "walled", "browser", "both"],
       "judged": {
-        "star": [1.0, "keep"], "slow": [0.85, "cut"], "nopages": [0.0, "cut"],
+        "star": [1.0, "keep"], "slow": [0.85, "keep"], "nopages": [0.0, "cut"],
         "webview": [1.0, "keep"], "unmeasured": [0.0, "pending"],
         "lowcover": [0.75, "cut"], "legacy": [0.9, "keep"], "copy": [0.7, "cut"],
         "dead": [1.0, "cut"], "walled": [1.0, "cut"],

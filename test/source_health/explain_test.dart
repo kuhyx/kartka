@@ -20,7 +20,7 @@ void main() {
       expect(HealthThresholds.completeChapterRatio, 0.8);
       expect(HealthThresholds.legacyCoverageShare, 0.6);
       expect(HealthThresholds.fullWidthPx, 1067);
-      expect(defaultScoringProfile.keepScore, 0.90);
+      expect(defaultScoringProfile.keepScore, 0.85);
       expect(HealthThresholds.uptimeProbesTarget, 28);
       expect(HealthThresholds.staleAfter, const Duration(days: 8));
       expect(defaultScoringProfile.weights.total, closeTo(1, 1e-9));

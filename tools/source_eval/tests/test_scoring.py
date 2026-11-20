@@ -116,7 +116,7 @@ def test_rank_verdicts_and_the_graded_subset_penalty() -> None:
         {**strong("hard", coverage=0.9), "blocking": {"hardRate": 0.6}},
         strong("onhard", coverage=0.85),  # only on the hard-cut source
         strong("plugin", coverage=None, origin="plugin"),
-        record("blocked", coverage=0.95, challenge=0.5, complete=0.5, p95=0),
+        record("blocked", coverage=0.95, challenge=0.5, complete=0.3, p95=0),
     ]
     found = {
         "big": {"a", "b", "c", "d"},
@@ -145,7 +145,7 @@ def test_rank_verdicts_and_the_graded_subset_penalty() -> None:
         assert ranked[free]["subsetOf"] is None, free
         assert (ranked[free]["score"], ranked[free]["verdict"]) == (0.955, "keep")
     assert ranked["blocked"]["cutReasons"] == ["blocking"]
-    assert ranked["blocked"]["verdict"] == "cut"  # by score: 0.885
+    assert ranked["blocked"]["verdict"] == "cut"  # by score: 0.845
     assert ranked["plugin"]["verdict"] == "pending"  # nothing measured
     # The penalty re-ranks: "dup" (0.478) falls below "plugin" (0.5); the
     # challenged ones rank below every unchallenged one, whatever the score.
@@ -200,7 +200,7 @@ def test_webview_only_challenges_are_not_a_cut_reason() -> None:
     allmanga = record("a", challenge=0.06, kinds=["webview"], complete=1, p95=0)
     assert cut_reasons(allmanga) == []
     assert rank([allmanga], {})[0]["verdict"] == "keep"
-    weak = record("w", challenge=0.06, kinds=["webview"])  # score 0.869
+    weak = record("w", challenge=0.06, kinds=["webview"], coverage=0.6)  # 0.83
     out = rank([weak], {})[0]
     assert out["cutReasons"] == []
     assert out["verdict"] == "cut"  # no reason listed, yet the score is too low
