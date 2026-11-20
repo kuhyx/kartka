@@ -93,7 +93,9 @@ upstream fetch.
   once with `still: true`, and its end writes again under the same `waitId`.
   At most 30 entries a minute. Before `installAppErrors` (widget tests): no-op.
 - Hooked: `reader.open`, `reader.page`, `reader.chapter`, `library.load`,
-  `updates.load`, `details.load`, `details.refresh`, `suwayomi.extensions`,
+  `updates.load`, `details.load`, `details.refresh`, `details.chapters`
+  (fresh details shown, the chapter list still loading; 9f7cad2f),
+  `suwayomi.extensions`,
   `downloads.load`, `sources.load`, `browse.nextpage`, `search.global`,
   `plugins.load`, `tracking.search`, `sync.start`. Not hooked: button and
   tile spinners (an install or import is meant to take a while), the

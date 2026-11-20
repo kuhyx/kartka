@@ -49,17 +49,17 @@ class MangaDetailController extends ChangeNotifier {
 
   /// Whether a [load] is in flight.
   bool loading = false;
+
+  /// Whether fresh [details] show while the chapter list still loads.
+  bool listPending = false;
   bool _disposed = false;
 
-  /// Loads details and a fresh chapter list in parallel. After a
-  /// [SourceUnavailable] (the Retry button) it first asks every provider to
-  /// re-list its sources, so a server that was down at start is seen again.
+  /// Loads details and a fresh chapter list in parallel; after a
+  /// [SourceUnavailable] (Retry) every provider re-lists its sources first.
   /// A failure is logged as `details.load` (source id only, URLs stripped),
   /// except a missing source (`isMissingSource`): the screen says so.
-  ///
   /// Stale-while-revalidate: with nothing shown yet, a library entry (and
-  /// the stored chapter list) is shown at once while the network runs, so a
-  /// reopen never waits on the source. A failed refresh keeps it, in [error].
+  /// its stored chapters) shows at once; a failed refresh keeps it.
   Future<void> load() async {
     await _load();
     final failure = error;
@@ -93,25 +93,33 @@ class MangaDetailController extends ChangeNotifier {
     if (details == null) await _seed();
     try {
       final (d, list) = await fresh;
-      final shownCover = details?.coverUrl;
+      final shownCover = listPending ? null : details?.coverUrl;
       details = shownCover == null ? d : withCover(d, shownCover);
       _keep(d).ignore(); // A cache: a failed write only costs the next open.
       chapters = readingOrder(list);
     } on Object catch (e, stack) {
+      // Early details go again: the failure screen and Retry show as before.
+      if (listPending) details = null;
       error = e;
       _stack = stack;
     }
     loading = false;
+    listPending = false;
     _notify();
   }
 
+  /// With nothing shown, details show as they come ([listPending]): on
+  /// MangaFire 0.09 s, beside a 1-2.9 s chapter list (9f7cad2f).
   Future<(MangaDetails, List<ChapterInfo>)> _fetch() async {
     final source = await waitForSource(_deps.sources, sourceId, sourceWait);
-    final results = await Future.wait<Object>([
-      source.details(mangaUrl),
-      _deps.chapters.load(key, refresh: true),
-    ]);
-    return (results[0] as MangaDetails, results[1] as List<ChapterInfo>);
+    final list = _deps.chapters.load(key, refresh: true)..ignore();
+    final d = await source.details(mangaUrl);
+    if (details == null) {
+      details = d;
+      listPending = true;
+      _notify();
+    }
+    return (d, await list);
   }
 
   /// Stores [d] for the next open when the manga is in the library.
@@ -125,18 +133,17 @@ class MangaDetailController extends ChangeNotifier {
   Future<void> _seed() async {
     final stored = await storedDetail(_deps, key);
     if (stored == null) return;
+    listPending = false; // Stored data shows: a failed refresh keeps it.
     details = stored.$1;
     chapters = readingOrder(stored.$2);
     _notify();
   }
 
-  /// Re-fetches the chapter list through the shared checker
-  /// (`BrowseDeps.updates`), which diffs it against the stored list and
-  /// persists it; details stay as loaded. With no fresh details shown (a
-  /// failed first load, or stored data behind a failed load) it reloads
-  /// instead, reporting the chapters not shown before it. Any failure,
-  /// that reload's included, is logged once, as `details.refresh` (never
-  /// also `details.load`), with the source id only and URLs stripped.
+  /// Re-fetches the chapter list through `BrowseDeps.updates` (diffed
+  /// against the stored list and persisted); details stay. With no fresh
+  /// details shown it reloads instead, reporting the chapters not shown
+  /// before. Any failure is logged once, as `details.refresh` (never also
+  /// `details.load`), with the source id only and URLs stripped.
   Future<RefreshOutcome> refresh() async {
     if (details == null || error != null) return await _reload();
     switch (await _deps.updates.check(key)) {
@@ -224,14 +231,12 @@ class MangaDetailController extends ChangeNotifier {
   bool get canManageDownloads => _deps.downloadService != null;
 
   /// Drops [chapter] from the download queue (no-op without the service).
-  Future<void> cancelDownload(ChapterInfo chapter) async {
-    await _deps.downloadService?.cancel(key, chapter.url);
-  }
+  Future<void> cancelDownload(ChapterInfo chapter) async =>
+      await _deps.downloadService?.cancel(key, chapter.url);
 
   /// Deletes [chapter]'s offline pages (no-op without the service).
-  Future<void> deleteDownload(ChapterInfo chapter) async {
-    await _deps.downloadService?.deleteChapter(key, chapter.url);
-  }
+  Future<void> deleteDownload(ChapterInfo chapter) async =>
+      await _deps.downloadService?.deleteChapter(key, chapter.url);
 
   void _notify() {
     if (!_disposed) notifyListeners();

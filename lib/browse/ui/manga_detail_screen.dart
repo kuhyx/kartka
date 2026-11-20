@@ -193,10 +193,16 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
           left: 0,
           right: 0,
           // With stored chapters to read and tap, the refresh is background
-          // work, not a wait (2d26b6d5); with none, the reader waits on it.
+          // work, not a wait (2d26b6d5); with none, the reader waits on it:
+          // on fresh details, for the source's chapter list (9f7cad2f).
           child: c.chapters.isNotEmpty
               ? bar
-              : const ShownWaitWatch(operation: 'details.refresh', child: bar),
+              : ShownWaitWatch(
+                  operation: c.listPending
+                      ? 'details.chapters'
+                      : 'details.refresh',
+                  child: bar,
+                ),
         ),
       ],
     );

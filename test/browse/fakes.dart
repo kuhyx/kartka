@@ -41,6 +41,12 @@ class FakeSource implements MangaSource {
 
   /// When set, details and chapter listing wait for it (a slow network).
   Completer<void>? detailsGate;
+
+  /// When set, only the chapter listing waits for it (a slow list).
+  Completer<void>? chaptersGate;
+
+  /// When set, only the chapter listing throws it.
+  Exception? chaptersFail;
   final List<String> calls = [];
 
   SearchPage _page(String kind, int page) {
@@ -90,7 +96,9 @@ class FakeSource implements MangaSource {
   Future<List<ChapterInfo>> chapters(String mangaUrl) async {
     calls.add('chapters:$mangaUrl');
     await detailsGate?.future;
+    await chaptersGate?.future;
     if (failWith != null) throw failWith!;
+    if (chaptersFail != null) throw chaptersFail!;
     return chapterList;
   }
 
