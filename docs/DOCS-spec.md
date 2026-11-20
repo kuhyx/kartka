@@ -90,6 +90,35 @@ test/               mirrors lib/; test/e2e/ for on-device flows
 - Feedback: none on screen. A run that moved something logs one
   device-only `library.autoshelve` line, counts only.
 
+## Duplicate merging (kuhy, 2026-11-21; defaults logged here)
+
+`LibraryDeduper` (`lib/migration/dedupe/`) merges entries that are
+literally the same series onto the one on the best source, on its own:
+
+- Pair: two entries on different sources whose titles (alt titles too)
+  score >= 0.95 with the `SameManga` matcher (every word of each must
+  match the other, so "X 2" never pairs) and no evidence disagrees: authors
+  when both list some; stored chapter counts within 10 % or 3; descriptions
+  when both have one (`descriptionScore` under 0.2 vetoes). Neither side
+  with an author or a description: uncertain, skipped. Only entries whose
+  chapter list this device stored are judged (browse's `DupeFactsLookup`,
+  never fetching).
+- Winner: keep, then pending, then cut; a source not installed or with no
+  record last. Then evaluator rank (ranked tiers only), more chapters,
+  newer newest chapter, key. Three or more: each loser is checked against
+  the winner directly.
+- Merge: one `exportBackup` per run before the first merge (a failed backup
+  merges nothing). The winner keeps the earlier `addedAt` (fresh
+  `updatedAt`), gets every chapter number read on the loser marked read,
+  the further progress, the union of categories, and the loser's tracker
+  bindings for services it lacks. Downloads stay. Then the loser is removed.
+- When: after every finished update-all run, and once per launch on the
+  Library's first load (`LibraryStartTask`) unless a run ended under 6 h
+  ago (device-local `library.dedupe.lastRun`). No ranking or no installed
+  source: no run, gate left open. Never awaited by a screen; no dialog.
+- Feedback: none on screen. A run that merged logs one device-only
+  `library.dedupe` line, counts only.
+
 ## Commands
 
 - Run: `./run.sh` (desktop Chrome app), `./run.sh android`.

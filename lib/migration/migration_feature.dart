@@ -7,6 +7,7 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/migration/better/better_wiring.dart';
+import 'package:kartka/migration/dedupe/dedupe_wiring.dart';
 import 'package:kartka/migration/migration_deps.dart';
 import 'package:kartka/tracking/common/chapter_url_resolver.dart';
 import 'package:kartka/tracking/common/tracking_service.dart';
@@ -24,7 +25,8 @@ String migrateRouteFor(Iterable<MangaKey> keys) => Uri(
 
 /// The migration part: the one-by-one walk route, a More tile (the whole
 /// library) and a manga-detail slot (that one entry); plus "Migrate to
-/// better sources" (route and More tile: the entries that should move).
+/// better sources" (route and More tile: the entries that should move),
+/// and the automatic duplicate merging (a library start task).
 KartkaFeature migrationFeature(KartkaEnv env) => KartkaFeature(
   id: 'migration',
   routes: [
@@ -53,7 +55,7 @@ KartkaFeature migrationFeature(KartkaEnv env) => KartkaFeature(
     ),
     betterSourcesTile,
   ],
-  services: [_MigrateSlot(env)],
+  services: [_MigrateSlot(env), libraryDeduper(env, () => _deps(env))],
 );
 
 MigrationDeps _deps(KartkaEnv env) {

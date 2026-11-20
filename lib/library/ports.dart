@@ -52,6 +52,14 @@ class NoShelfFacts implements ShelfFactsLookup {
   Future<ShelfFacts?> of(MangaKey key) async => null;
 }
 
+/// A background pass over the library another part runs (duplicate
+/// merging). The Library starts every registered one on its first load,
+/// beside auto-shelving; never awaited by a screen.
+abstract interface class LibraryStartTask {
+  /// Runs the pass unless its own gate says it ran recently.
+  Future<void> start();
+}
+
 /// Default [UnreadCounts]: no badge.
 class NoUnreadCounts implements UnreadCounts {
   /// Creates the no-op port.

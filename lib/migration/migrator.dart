@@ -35,14 +35,16 @@ Future<void> migrateEntry(
       updatedAt: deps.clock(),
     ),
   );
-  await _moveProgress(deps, from.key, newKey, chapters);
+  await moveProgress(deps, from.key, newKey, chapters);
   await _moveMarks(deps, from.key, newKey, chapters);
-  await _moveCategories(deps, from.key, newKey);
+  await moveCategories(deps, from.key, newKey);
   await _moveTrackers(deps, from.key, newKey);
   await deps.library.remove(from.key);
 }
 
-Future<void> _moveProgress(
+/// Records [from]'s progress on [to] by chapter number among [chapters]
+/// (see [migrateEntry]); the repository ignores it unless it is further.
+Future<void> moveProgress(
   MigrationDeps deps,
   MangaKey from,
   MangaKey to,
@@ -101,7 +103,8 @@ Future<void> _moveMarks(
   }
 }
 
-Future<void> _moveCategories(
+/// Puts [to] in every category of [from] and takes [from] out of them.
+Future<void> moveCategories(
   MigrationDeps deps,
   MangaKey from,
   MangaKey to,

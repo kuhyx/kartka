@@ -2,8 +2,9 @@ import 'package:kartka/core/diagnostics/diagnostic_entry.dart';
 import 'package:kartka/core/net/network_errors.dart';
 
 /// Kinds that record what the app did, not a fault: they stay on the
-/// device (`library.autoshelve`: how many entries auto-shelving moved).
-const Set<String> deviceOnlyKinds = {'library.autoshelve'};
+/// device (`library.autoshelve`: how many entries auto-shelving moved;
+/// `library.dedupe`: how many duplicates were merged).
+const Set<String> deviceOnlyKinds = {'library.autoshelve', 'library.dedupe'};
 
 /// Kind of the extension auto-update's summary line
 /// (`lib/source_health/install/extension_autoupdate.dart`).

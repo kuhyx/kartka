@@ -39,20 +39,29 @@ class _Stale implements ShelfFactsLookup {
       (newestUpload: DateTime.utc(2024, 6, 26), allRead: true);
 }
 
+class _Task implements LibraryStartTask {
+  int starts = 0;
+
+  @override
+  Future<void> start() async => starts++;
+}
+
 void main() {
   late _Counting decorator;
+  late _Task task;
   late FakeKartkaHttp http;
   late KartkaRegistry registry;
   final unread = FakeUnread();
 
   setUp(() {
     decorator = _Counting();
+    task = _Task();
     http = FakeKartkaHttp(
       (_) => KartkaResponse(statusCode: 200, bodyBytes: Uint8List(0)),
     );
     registry = KartkaRegistry.build(memoryPlatform(http: http), [
       libraryFeature,
-      (_) => KartkaFeature(id: 'other', services: [decorator, unread]),
+      (_) => KartkaFeature(id: 'other', services: [decorator, unread, task]),
     ]);
   });
 
@@ -73,6 +82,7 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
     await tester.pumpAndSettle();
     expect(find.byType(LibraryScreen), findsOneWidget);
+    expect(task.starts, 1);
     final screen = tester.widget<LibraryScreen>(find.byType(LibraryScreen));
     expect(screen.deps.unread, same(unread));
     expect(screen.deps.repos, same(registry.maybe<LibraryRepositories>()));

@@ -80,6 +80,11 @@ LibraryDeps _deps(
     sourceProviders: registry.all<SourceProvider>(),
     coverLoader: covers.get,
     updater: registry.maybe<LibraryUpdater>(),
-    onFirstLoad: () => unawaited(shelver.start()),
+    onFirstLoad: () {
+      unawaited(shelver.start());
+      for (final task in registry.all<LibraryStartTask>()) {
+        unawaited(task.start());
+      }
+    },
   );
 }

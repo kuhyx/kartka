@@ -199,6 +199,10 @@ Stream<bool>` (tracking-anilist supplies from TrackingService bindings),
 updater hides the Library refresh action and pull), `ShelfFactsLookup.of(key)
 → Future<({newestUpload, allRead})?>` (browse supplies from stored chapters,
 never fetching; feeds auto-shelving, DOCS-spec "Auto-shelving").
+`LibraryStartTask.start()` (any part; the Library starts each on its first
+load: migration's duplicate merging). Migration's `DupeFactsLookup.of(key)
+→ Future<({details, chapters, readUrls})?>` (browse supplies from stored
+details and chapters, never fetching; DOCS-spec "Duplicate merging").
 
 Updates feed (`lib/updates/`, the Updates tab): browse's `ChapterStore`
 tells every `ChapterAdditionSink` (`lib/core/updates/`) the chapters a

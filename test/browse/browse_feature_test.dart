@@ -10,6 +10,7 @@ import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
+import 'package:kartka/migration/dedupe/dupe_facts.dart';
 import 'package:kartka/platform/cover_cache.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
@@ -146,6 +147,8 @@ void main() {
     expect(await counts.watch(key).first, 3);
     final facts = reg.maybe<ShelfFactsLookup>()!;
     expect(await facts.of(key), (newestUpload: null, allRead: false));
+    final dupes = reg.maybe<DupeFactsLookup>()!;
+    expect((await dupes.of(key))!.chapters, hasLength(3));
   });
 
   test('supplies the shared ChapterUpdateChecker', () async {

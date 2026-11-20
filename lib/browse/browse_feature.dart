@@ -7,6 +7,7 @@ import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/browse/ports/browse_chapter_url_resolver.dart';
+import 'package:kartka/browse/ports/browse_dupe_facts.dart';
 import 'package:kartka/browse/ports/browse_shelf_facts.dart';
 import 'package:kartka/browse/ports/browse_unread_counts.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
@@ -30,6 +31,7 @@ import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/downloads/download_service.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
+import 'package:kartka/migration/dedupe/dupe_facts.dart';
 import 'package:kartka/platform/cover_cache.dart';
 import 'package:kartka/platform/image_headers.dart';
 import 'package:kartka/platform/page_image.dart';
@@ -72,6 +74,7 @@ KartkaFeature browseFeature(KartkaEnv env) {
     services: [
       _LazyUnreadCounts(runtime),
       _LazyShelfFacts(runtime),
+      _LazyDupeFacts(runtime),
       BrowseResolverPort(runtime),
       _LazyUpdateChecker(runtime),
     ],
@@ -165,6 +168,13 @@ class BrowseRuntime {
   /// The auto-shelving facts port implementation.
   late final shelfFacts = BrowseShelfFacts(chapters, _repos.progress);
 
+  /// The duplicate-merging facts port implementation.
+  late final dupeFacts = BrowseDupeFacts(
+    chapters,
+    DetailStore(_env.platform.kv),
+    _repos.progress,
+  );
+
   /// The chapter-url port implementation.
   late final resolver = BrowseChapterUrlResolver(chapters);
 
@@ -188,6 +198,15 @@ class _LazyShelfFacts implements ShelfFactsLookup {
 
   @override
   Future<ShelfFacts?> of(MangaKey key) => _runtime.shelfFacts.of(key);
+}
+
+class _LazyDupeFacts implements DupeFactsLookup {
+  const new(this._runtime);
+
+  final BrowseRuntime _runtime;
+
+  @override
+  Future<DupeFacts?> of(MangaKey key) => _runtime.dupeFacts.of(key);
 }
 
 class _LazyUpdateChecker implements ChapterUpdateChecker {
