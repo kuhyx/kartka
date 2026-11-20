@@ -107,4 +107,18 @@ void main() {
     );
     expect(w, isA<SizedBox>());
   });
+
+  test('warmChapter warms any chapter from its first page (Updates)', () async {
+    final s = slot(saved: _at('/c/2', page: 3))
+      ..warmChapter(mangaKeyOf('fake', '/m/1'), '/c/1');
+    await pumpEventQueue();
+    expect(src.pageCalls, ['/c/1']);
+    expect(images, [
+      'https://img.test/c/1/0.png',
+      'https://img.test/c/1/1.png',
+    ], reason: 'from page 1, not the saved page');
+    s.warmChapter(mangaKeyOf('fake', '/m/1'), '/c/404');
+    await pumpEventQueue();
+    expect(src.pageCalls.last, '/c/404', reason: 'a failure is swallowed');
+  });
 }

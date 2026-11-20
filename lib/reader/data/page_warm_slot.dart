@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
+import 'package:kartka/core/source/chapter_warmer.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/reader/data/page_image_warmer.dart';
 import 'package:kartka/reader/data/page_list_cache.dart';
@@ -15,7 +16,10 @@ import 'package:kartka/reader/data/page_list_cache.dart';
 /// Only after [loaded]: beside the details screen's own fetch (the same
 /// rate-limited source) it would slow that. Untimed and unreported: no one
 /// waits on it, and a WebView timeout only marks the source.
-class PageWarmSlot implements MangaDetailSlot {
+///
+/// Also the app's [ChapterWarmer]: the Updates sheet warms the chapter a
+/// tap there most likely opens, the same way, from its first page.
+class PageWarmSlot implements MangaDetailSlot, ChapterWarmer {
   /// Warms through [cache]; the repositories are read late (registry).
   const new({
     required this.cache,
@@ -55,16 +59,24 @@ class PageWarmSlot implements MangaDetailSlot {
           .timeout(const Duration(seconds: 2));
       final url = saved?.chapterUrl ?? firstUnread;
       if (url == null) return;
-      final offline = await downloads()?.offlinePages(key, url);
-      if (offline != null && offline.isNotEmpty) return;
-      final source = await findSource(splitMangaKey(key).$1);
-      if (source == null) return;
-      final pages = await cache.pages(source, url);
-      final from = saved?.chapterUrl == url ? saved!.page : 0;
-      await images.warm(pages, from: from < pages.length ? from : 0);
+      await _warmChapter(key, url, saved?.chapterUrl == url ? saved!.page : 0);
     } on Object {
       // Background work: the reader asks again when it opens.
     }
+  }
+
+  @override
+  void warmChapter(MangaKey key, String chapterUrl) =>
+      unawaited(_warmChapter(key, chapterUrl, 0).catchError((Object _) {}));
+
+  /// The page list of [url], then its images from page [from].
+  Future<void> _warmChapter(MangaKey key, String url, int from) async {
+    final offline = await downloads()?.offlinePages(key, url);
+    if (offline != null && offline.isNotEmpty) return;
+    final source = await findSource(splitMangaKey(key).$1);
+    if (source == null) return;
+    final pages = await cache.pages(source, url);
+    await images.warm(pages, from: from < pages.length ? from : 0);
   }
 
   @override

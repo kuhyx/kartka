@@ -38,7 +38,9 @@ class _H {
   late final feed = UpdateFeed(kv, inLibrary: (_) async => true);
   final updater = FakeUpdater();
   final covers = <String>[];
+  final warmed = <String>[];
   late final deps = UpdatesDeps(
+    warmChapter: (key, url) => warmed.add('$key $url'),
     feed: feed,
     library: repos.library,
     progress: repos.progress,
@@ -118,6 +120,22 @@ void main() {
     expect(spokenIcon('Open manga'), findsOneWidget);
     expect(find.byKey(const ValueKey('unread /c/4')), findsOneWidget);
     expect(find.byKey(const ValueKey('unread /c/3')), findsNothing);
+  });
+
+  testWidgets('the sheet warms its newest unread chapter (971debc8)', (
+    t,
+  ) async {
+    final h = await _pump(t);
+    expect(h.warmed, isEmpty);
+    await t.tap(find.byType(UpdateTile));
+    await t.pumpAndSettle();
+    expect(h.warmed, ['${_a.key} /c/4']);
+    await h.repos.progress.markRead(_a.key, '/c/4');
+    Navigator.of(t.element(find.text('Ch. 4'))).pop();
+    await t.pumpAndSettle();
+    await t.tap(find.byType(UpdateTile));
+    await t.pumpAndSettle();
+    expect(h.warmed.last, '${_a.key} /c/4', reason: 'all read: the newest');
   });
 
   testWidgets('tapping a chapter in the sheet opens the reader', (t) async {

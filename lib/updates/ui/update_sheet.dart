@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:design_system/design_system.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
+import 'package:kartka/core/models/models.dart';
 import 'package:kartka/updates/state/update_rows.dart';
 import 'package:kartka/updates/state/updates_deps.dart';
 import 'package:kartka/updates/ui/update_groups.dart';
@@ -12,12 +13,22 @@ import 'package:material_ui/material_ui.dart';
 /// Opens the bottom sheet of [group]: its manga heading, an "Open manga"
 /// action and its new chapters by day. A tap closes the sheet, then goes to
 /// the reader or the detail page.
+///
+/// Opening it [warm]s the chapter a tap most likely opens (the newest
+/// unread one, else the newest): from Updates the reader skips the details
+/// screen and its warm-up, and a cold page list made `reader.open` 1.2 s
+/// (971debc8).
 Future<void> showUpdateSheet(
   BuildContext context,
   UpdateGroup group,
-  CoverBytes? covers,
-) {
+  CoverBytes? covers, {
+  void Function(MangaKey key, String chapterUrl)? warm,
+}) {
   final router = GoRouter.of(context);
+  final chapters = group.rows.whereType<ChapterRow>();
+  final likely =
+      chapters.where((r) => r.unread).firstOrNull ?? chapters.firstOrNull;
+  if (likely != null) warm?.call(likely.entry.key, likely.chapter.url);
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,

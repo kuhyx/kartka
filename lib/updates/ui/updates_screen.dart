@@ -78,7 +78,12 @@ class _UpdatesScreenState extends State<UpdatesScreen> {
               group: groups[i],
               covers: widget.deps.coverLoader,
               onTap: () => unawaited(
-                showUpdateSheet(context, groups[i], widget.deps.coverLoader),
+                showUpdateSheet(
+                  context,
+                  groups[i],
+                  widget.deps.coverLoader,
+                  warm: widget.deps.warmChapter,
+                ),
               ),
             ),
           ),

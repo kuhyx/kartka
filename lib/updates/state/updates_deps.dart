@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/library/data/lww.dart';
 import 'package:kartka/library/ports.dart';
@@ -17,6 +18,7 @@ class UpdatesDeps {
     required this.progress,
     this.updater,
     this.coverLoader,
+    this.warmChapter,
     this.clock = utcNow,
   });
 
@@ -34,6 +36,9 @@ class UpdatesDeps {
 
   /// Cover loader; `null` shows placeholders.
   final CoverBytes? coverLoader;
+
+  /// Warms a chapter for the reader (`ChapterWarmer`); `null` warms none.
+  final void Function(MangaKey key, String chapterUrl)? warmChapter;
 
   /// Clock deciding "Today" and "Yesterday".
   final DateTime Function() clock;

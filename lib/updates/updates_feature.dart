@@ -1,6 +1,7 @@
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/chapter_warmer.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/platform/platform.dart';
@@ -41,6 +42,8 @@ KartkaFeature updatesFeature(KartkaEnv env) {
       progress: repos().progress,
       updater: runner,
       coverLoader: (url) => images.load(PageRef(index: 0, imageUrl: url)),
+      warmChapter: (key, url) =>
+          env.registry.maybe<ChapterWarmer>()?.warmChapter(key, url),
     );
   }
 
