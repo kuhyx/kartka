@@ -113,7 +113,10 @@ void main() {
     await failed.open();
     await expectLater(failed.image(0), throwsStateError);
     await pumpEventQueue();
-    final e = (await f.diagnostics.entries()).single;
+    // The probe adds its own reader.open (reader_session_probe_test).
+    final e = (await f.diagnostics.entries())
+        .where((e) => e.kind == 'reader.page')
+        .single;
     expect(e.kind, 'reader.page');
     expect(e.error, 'Bad state: HTTP 404');
     expect(e.sourceId, 'fake');

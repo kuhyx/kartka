@@ -89,6 +89,19 @@ void main() {
     expect(src.pageCalls, ['/c/1'], reason: 'the marked source is not asked');
   });
 
+  test('a Retry in flight on a marked source: reopening fails at once, '
+      'never joins its 20 s fetch', () async {
+    final src = _WebViewSource()..gate = Completer<void>();
+    await kv.set('${PageListCache.markPrefix}fake', 'x');
+    final retry = cache.pages(src, '/c/1', fresh: true);
+    await expectLater(
+      cache.pages(src, '/c/1').timeout(const Duration(seconds: 1)),
+      throwsA(isA<SourceNeedsWebView>()),
+    );
+    src.gate!.complete();
+    await expectLater(retry, throwsException);
+  });
+
   test('a warm-up failure is swallowed but still marks the source', () async {
     final src = _WebViewSource()..gate = Completer<void>();
     cache.warm(src, '/c/1');

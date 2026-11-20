@@ -10,6 +10,7 @@ import 'package:kartka/reader/data/page_source.dart';
 import 'package:kartka/reader/data/reader_settings.dart';
 import 'package:kartka/reader/logic/chapter_order.dart';
 import 'package:kartka/reader/logic/chapter_strip.dart';
+import 'package:kartka/reader/logic/first_images_probe.dart';
 import 'package:kartka/reader/logic/page_cache.dart';
 import 'package:kartka/reader/logic/prefetch.dart';
 import 'package:kartka/reader/logic/progress_recorder.dart';

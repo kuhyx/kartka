@@ -42,11 +42,22 @@ extension _Open on ReaderSession {
       final message = e is ReaderLoadException ? e.message : '$e';
       return _openFailed(e, stack, message);
     }
+    if (loaded.pages.isEmpty && !loaded.offline) {
+      // Probe (971debc8): an empty chapter still opens (its end leads on to
+      // the next one), but nothing said why it was empty.
+      _logOpen(
+        ReaderLoadException('ReaderProbe: $sourceId listed no pages'),
+        StackTrace.current,
+      );
+    }
     final last = loaded.pages.length - 1;
     page = startAtEnd ? (last < 0 ? 0 : last) : await _resumePage(last);
     // The reader may have been left while this was loading.
     if (_disposed) return;
-    _cache = PageCache(fetch: (i) => deps.loadImage(_flat[i]));
+    final probe = FirstImagesProbe([
+      for (var i = page; i < page + 3 && i <= last; i++) i,
+    ], _firstImagesFailed);
+    _cache = PageCache(fetch: (i) => probe.watch(i, deps.loadImage(_flat[i])));
     _add(chapterUrl, loaded, landing: startAtEnd ? page : null);
     phase = ReaderPhase.ready;
     _prefetch();

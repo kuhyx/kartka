@@ -53,7 +53,8 @@ class PageListCache {
   /// The pages of [chapterUrl] on [source]: in flight, kept, or fetched.
   ///
   /// Throws [SourceNeedsWebView] for a marked source unless [fresh], which
-  /// also skips the kept list.
+  /// also skips the kept list; a marked source fails at once even while a
+  /// fresh fetch of it is in flight.
   Future<List<PageRef>> pages(
     MangaSource source,
     String chapterUrl, {
@@ -61,11 +62,14 @@ class PageListCache {
   }) async {
     final id = '${source.ref.id}\n$chapterUrl';
     if (!fresh) {
-      if (_inFlight[id] case final running?) return await running;
       if (_kept[id] case final k? when _now().difference(k.at) < keep) {
         return k.pages;
       }
+      // Before the in-flight join: a Retry's 20 s fetch of a marked source
+      // is still running when the user leaves and opens the chapter again,
+      // and joining it was a 20 s reader.open on build 591 (971debc8).
       if (await _marked(source)) throw const SourceNeedsWebView();
+      if (_inFlight[id] case final running?) return await running;
     }
     return await (_inFlight[id] ??= _fetch(source, chapterUrl, id).whenComplete(
       // A block: returning the removed future would make it wait on itself.

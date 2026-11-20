@@ -17,8 +17,20 @@ extension _Advance on ReaderSession {
     return Future.error(e, stack);
   }
 
-  /// Fails the open with [message], logging [e] as `reader.open`.
-  void _openFailed(Object e, StackTrace stack, String message) {
+  /// The probe's report: the pages the chapter opened on all failed.
+  void _firstImagesFailed(Object e) => _logOpen(
+    ReaderLoadException('ReaderProbe: first 3 images failed on $sourceId: $e'),
+    StackTrace.current,
+  );
+
+  /// Fails the open with [message] (null: icon only), logging [e] as
+  /// `reader.open`.
+  void _openFailed(Object e, StackTrace stack, String? message) {
+    _logOpen(e, stack);
+    _fail(message);
+  }
+
+  void _logOpen(Object e, StackTrace stack) {
     unawaited(
       deps.diagnostics?.append(
         DiagnosticEntry.failure(
@@ -32,7 +44,6 @@ extension _Advance on ReaderSession {
         ),
       ),
     );
-    _fail(message);
   }
 
   Future<int> _resumePage(int last) async {
