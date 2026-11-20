@@ -49,9 +49,45 @@ class ScriptedSource implements MangaSource {
   /// Thrown by [chapters] when set.
   Error? chaptersError;
 
+  /// Details by manga url (missing: [details] throws).
+  final Map<String, MangaDetails> detailMap = {};
+
+  /// Manga urls whose details were asked for, in order.
+  final List<String> detailed = [];
+
   /// A result titled [title] at [url] for [query].
   void offer(String query, String title, String url) => (results[query] ??= [])
       .add(MangaSummary(sourceId: ref.id, url: url, title: title));
+
+  /// Offers [title] at [url] for [query] with [authors], [description] and
+  /// [chapterCount] chapters (the newest uploaded on [newest]).
+  void offerFull(
+    String query,
+    String title,
+    String url, {
+    List<String> authors = const [],
+    String? description,
+    int chapterCount = 0,
+    DateTime? newest,
+  }) {
+    offer(query, title, url);
+    detailMap[url] = MangaDetails(
+      sourceId: ref.id,
+      url: url,
+      title: title,
+      authors: authors,
+      description: description,
+    );
+    chapterLists[url] = [
+      for (var n = chapterCount; n >= 1; n--)
+        ChapterInfo(
+          url: '$url/$n',
+          name: 'Ch. $n',
+          number: n.toDouble(),
+          uploadedAt: n == chapterCount ? newest : null,
+        ),
+    ];
+  }
 
   @override
   Future<SearchPage> search(String query, int page) async {
@@ -74,7 +110,10 @@ class ScriptedSource implements MangaSource {
   Future<SearchPage> latest(int page) => throw UnimplementedError();
 
   @override
-  Future<MangaDetails> details(String mangaUrl) => throw UnimplementedError();
+  Future<MangaDetails> details(String mangaUrl) async {
+    detailed.add(mangaUrl);
+    return detailMap[mangaUrl] ?? (throw StateError('no details'));
+  }
 
   @override
   Future<List<PageRef>> pages(String chapterUrl) => throw UnimplementedError();

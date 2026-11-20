@@ -2,14 +2,12 @@
 /// move, to which sources, and which search result is the same series.
 library;
 
-import 'dart:math' as math;
-
 import 'package:collection/collection.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/migration/migration_target.dart';
-import 'package:kartka/source_health/fuzzy_match.dart';
+import 'package:kartka/migration/same_manga.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 import 'package:kartka/source_health/score_breakdown.dart';
 
@@ -82,25 +80,6 @@ List<KeepTarget> keepTargets(
     final byRank = rankOf(a).compareTo(rankOf(b));
     return byRank != 0 ? byRank : a.record.id.compareTo(b.record.id);
   });
-}
-
-/// Lowest fuzzy score, in both directions, of a close title match.
-const double closeTitleScore = 0.7;
-
-final _punctuation = RegExp(r'[^\p{L}\p{N}]+', unicode: true);
-
-String _words(String title) => title.replaceAll(_punctuation, ' ').trim();
-
-/// How alike [a] and [b] are: the Sources search's fuzzy score of each as
-/// a query against the other, the lower one (so a title only contained in
-/// a longer one does not count); 0 when either misses.
-double titleSimilarity(String a, String b) {
-  final x = _words(a);
-  final y = _words(b);
-  if (x.isEmpty || y.isEmpty) return 0;
-  final there = FuzzyQuery(x).score([y], const []) ?? 0;
-  final back = FuzzyQuery(y).score([x], const []) ?? 0;
-  return math.min(there, back);
 }
 
 /// The result of [items] that is [title]: an exact title first (case and
