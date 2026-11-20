@@ -22,7 +22,7 @@ class PageWarmSlot implements MangaDetailSlot {
     required this.findSource,
     required this.progress,
     required this.downloads,
-    this.images,
+    required this.images,
   });
 
   /// Where the page list goes.
@@ -37,8 +37,8 @@ class PageWarmSlot implements MangaDetailSlot {
   /// Downloaded chapters, which need no warm-up.
   final DownloadRepository? Function() downloads;
 
-  /// Where the chapter's first page images go (28fffd0a); none: lists only.
-  final PageImageWarmer? images;
+  /// Where the chapter's first page images go (28fffd0a).
+  final PageImageWarmer images;
 
   @override
   void opened(MangaKey key) {}
@@ -59,8 +59,6 @@ class PageWarmSlot implements MangaDetailSlot {
       if (offline != null && offline.isNotEmpty) return;
       final source = await findSource(splitMangaKey(key).$1);
       if (source == null) return;
-      final images = this.images;
-      if (images == null) return cache.warm(source, url);
       final pages = await cache.pages(source, url);
       final from = saved?.chapterUrl == url ? saved!.page : 0;
       await images.warm(pages, from: from < pages.length ? from : 0);
