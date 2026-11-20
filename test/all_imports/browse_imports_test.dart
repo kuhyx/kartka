@@ -8,6 +8,7 @@ import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/language_filter.dart';
 import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/browse/ports/browse_chapter_url_resolver.dart';
+import 'package:kartka/browse/ports/browse_shelf_facts.dart';
 import 'package:kartka/browse/ports/browse_unread_counts.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_ordering.dart';

@@ -56,7 +56,11 @@ LibraryEntry entry(String url, {String? title, int addedDays = 0}) =>
 
 /// A deps bundle over a fresh store with fake ports and a settable clock.
 class Fakes {
-  new({DateTime? at, List<SourceProvider>? providers}) : now = at ?? t0 {
+  new({
+    DateTime? at,
+    List<SourceProvider>? providers,
+    void Function()? onFirstLoad,
+  }) : now = at ?? t0 {
     deps = LibraryDeps(
       sourceProviders: providers ?? [sources],
       repos: LibraryRepositories(kv, decorators: () => [], now: () => now),
@@ -64,6 +68,7 @@ class Fakes {
       downloaded: dl,
       tracked: tracked,
       clock: () => now,
+      onFirstLoad: onFirstLoad,
     );
   }
 

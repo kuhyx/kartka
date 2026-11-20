@@ -7,6 +7,7 @@ import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/browse/ports/browse_chapter_url_resolver.dart';
+import 'package:kartka/browse/ports/browse_shelf_facts.dart';
 import 'package:kartka/browse/ports/browse_unread_counts.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
@@ -69,6 +70,7 @@ KartkaFeature browseFeature(KartkaEnv env) {
     ],
     services: [
       _LazyUnreadCounts(runtime),
+      _LazyShelfFacts(runtime),
       BrowseResolverPort(runtime),
       _LazyUpdateChecker(runtime),
     ],
@@ -155,6 +157,9 @@ class BrowseRuntime {
   /// The unread-count port implementation.
   late final unreadCounts = BrowseUnreadCounts(chapters, _repos.progress);
 
+  /// The auto-shelving facts port implementation.
+  late final shelfFacts = BrowseShelfFacts(chapters, _repos.progress);
+
   /// The chapter-url port implementation.
   late final resolver = BrowseChapterUrlResolver(chapters);
 
@@ -169,6 +174,15 @@ class _LazyUnreadCounts implements UnreadCounts {
 
   @override
   Stream<int?> watch(String key) => _runtime.unreadCounts.watch(key);
+}
+
+class _LazyShelfFacts implements ShelfFactsLookup {
+  const new(this._runtime);
+
+  final BrowseRuntime _runtime;
+
+  @override
+  Future<ShelfFacts?> of(MangaKey key) => _runtime.shelfFacts.of(key);
 }
 
 class _LazyUpdateChecker implements ChapterUpdateChecker {

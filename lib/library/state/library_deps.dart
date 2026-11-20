@@ -20,6 +20,7 @@ class LibraryDeps {
     this.coverLoader,
     this.sourceProviders = const [],
     this.updater,
+    this.onFirstLoad,
   });
 
   /// Decorated repositories (always through the accessor, so sync sees UI
@@ -47,4 +48,8 @@ class LibraryDeps {
 
   /// "Update all" (updates); `null` hides the refresh action and the pull.
   final LibraryUpdater? updater;
+
+  /// Called after the first library load is painted, off the paint path
+  /// (auto-shelving's start-up run); `null` does nothing.
+  final void Function()? onFirstLoad;
 }

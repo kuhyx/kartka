@@ -187,7 +187,9 @@ Stream<bool>` (downloads supplies), `TrackedLookup.isTracked(key) →
 Stream<bool>` (tracking-anilist supplies from TrackingService bindings),
 `LibraryUpdater` (updates supplies: one shared "update all" run, a
 `Listenable` with `progress` and `updateAll() → UpdateSummary`; no
-updater hides the Library refresh action and pull).
+updater hides the Library refresh action and pull), `ShelfFactsLookup.of(key)
+→ Future<({newestUpload, allRead})?>` (browse supplies from stored chapters,
+never fetching; feeds auto-shelving, DOCS-spec "Auto-shelving").
 
 Updates feed (`lib/updates/`, the Updates tab): browse's `ChapterStore`
 tells every `ChapterAdditionSink` (`lib/core/updates/`) the chapters a

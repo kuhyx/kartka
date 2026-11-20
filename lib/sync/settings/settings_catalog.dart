@@ -44,6 +44,12 @@ const Map<String, SyncedSetting> kSyncedSettings = {
     vault: SettingsVault.plain,
     semanticLabel: 'Auto-download',
   ),
+  // Auto-shelving's memory (`autoShelveMemoryKey`): synced, so a manual
+  // move-out sticks on every device, not only the one that shelved it.
+  'library.autoshelve': (
+    vault: SettingsVault.plain,
+    semanticLabel: 'Auto-shelve memory',
+  ),
   // The source-health scoring profile; the evaluator reads it too.
   'sourceHealth.scoring': (
     vault: SettingsVault.plain,

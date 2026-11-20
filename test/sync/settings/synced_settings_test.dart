@@ -193,6 +193,7 @@ void main() {
       'plugins.repos',
       'browse.languages',
       kAutoDownloadSetting,
+      'library.autoshelve',
       'sourceHealth.scoring',
     });
     expect(kSyncedSettings['browse.languages']!.vault, SettingsVault.plain);

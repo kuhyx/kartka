@@ -7,7 +7,9 @@ import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/library/library_feature.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/library_routes.dart';
+import 'package:kartka/library/ports.dart';
 import 'package:kartka/library/repository_decorator.dart';
+import 'package:kartka/library/state/auto_shelver.dart';
 import 'package:kartka/library/ui/categories_screen.dart';
 import 'package:kartka/library/ui/library_screen.dart';
 import 'package:kartka/platform/cover_cache.dart';
@@ -29,6 +31,12 @@ class _Counting implements RepositoryDecorator {
   CategoryRepository categories(CategoryRepository inner) => inner;
   @override
   ProgressRepository progress(ProgressRepository inner) => inner;
+}
+
+class _Stale implements ShelfFactsLookup {
+  @override
+  Future<ShelfFacts?> of(String key) async =>
+      (newestUpload: DateTime.utc(2024, 6, 26), allRead: true);
 }
 
 void main() {
@@ -78,5 +86,21 @@ void main() {
     await tester.pumpAndSettle();
     final cats = tester.widget<CategoriesScreen>(find.byType(CategoriesScreen));
     expect(cats.deps, same(screen.deps));
+  });
+
+  test('shelves stale entries; the memory goes to the synced key', () async {
+    final kv = MemoryKeyValueStore();
+    final reg = KartkaRegistry.build(memoryPlatform(kv: kv), [
+      libraryFeature,
+      (_) => KartkaFeature(id: 'browse', services: [_Stale()]),
+    ]);
+    final repos = reg.maybe<LibraryRepositories>()!;
+    final e = entry('/old');
+    await repos.library.upsert(e);
+    await reg.maybe<AutoShelver>()!.start();
+    final members = await repos.categories.watchMembership().first;
+    expect(members[e.key], {autoShelfId(Shelf.finished)});
+    expect(await kv.get(autoShelveMemoryKey), contains(e.key));
+    expect(await kv.get(autoShelveLastRunKey), isNotNull);
   });
 }

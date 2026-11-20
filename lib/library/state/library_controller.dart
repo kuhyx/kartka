@@ -130,6 +130,7 @@ class LibraryController extends ChangeNotifier {
     if (_disposed) return;
     _factsOn = true;
     _facts.track(_entries.keys.toSet());
+    deps.onFirstLoad?.call();
   }
 
   void _onCategories(List<Category> categories) {

@@ -39,7 +39,8 @@ connects):
 
 - `bridgeDiagnostics` queues a device-log entry for upload only when
   `isUploadedEntry` (`lib/core/diagnostics/upload_rule.dart`) holds and it is
-  not `perf.*` / `uncaught.*` (the shared hooks' own). Environment states
+  not `perf.*` / `uncaught.*` (the shared hooks' own). `deviceOnlyKinds`
+  (`library.autoshelve`, a record of a move) never go up. Environment states
   (`isEnvironmentError`: no DNS or route, a dropped or refused connection, a
   500/502/503/504 from our server, its upstream unknown or its WebView
   timing out, a manga the server no longer has) stay on the device: the

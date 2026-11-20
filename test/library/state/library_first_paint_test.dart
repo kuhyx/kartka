@@ -9,8 +9,9 @@ import '../support/fakes.dart';
 /// chapter-list read) start after it, so a big library does not hold the
 /// `library.load` spinner past 1 s (perf.slow a133bbb8).
 void main() {
-  test('facts start only after the first paint', () async {
-    final f = Fakes();
+  test('facts and onFirstLoad start only after the first paint', () async {
+    var firstLoads = 0;
+    final f = Fakes(onFirstLoad: () => firstLoads++);
     for (var i = 0; i < 20; i++) {
       await f.deps.repos.library.upsert(entry('/m$i'));
     }
@@ -31,10 +32,12 @@ void main() {
     await pumpEventQueue();
     expect(f.unread.controllers, isEmpty);
     expect(painted, hasLength(1), reason: 'one deferred start');
+    expect(firstLoads, 0);
 
     painted.single();
     await pumpEventQueue();
     expect(f.unread.controllers, hasLength(21));
+    expect(firstLoads, 1);
     f.dl.emit(mangaKeyOf('mangadex', '/late'), true);
     await pumpEventQueue();
     final late = c.items.singleWhere((i) => i.mangaUrl == '/late');
@@ -44,6 +47,7 @@ void main() {
     await f.deps.repos.library.upsert(entry('/new'));
     await pumpEventQueue();
     expect(f.unread.controllers, hasLength(22));
+    expect(firstLoads, 1, reason: 'once per controller');
   });
 
   test('a dispose before the paint starts nothing', () async {

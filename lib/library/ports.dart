@@ -32,6 +32,26 @@ abstract interface class TrackedLookup {
   Stream<bool> isTracked(MangaKey key);
 }
 
+/// What auto-shelving reads of one entry: the newest chapter upload
+/// (`null` when no chapter is dated) and whether every chapter is read.
+typedef ShelfFacts = ({DateTime? newestUpload, bool allRead});
+
+/// [ShelfFacts] from the chapters this device stored. Supplied by browse.
+abstract interface class ShelfFactsLookup {
+  /// Facts of [key]; `null` when this device never stored its chapters.
+  /// Never fetches.
+  Future<ShelfFacts?> of(MangaKey key);
+}
+
+/// Default [ShelfFactsLookup]: nothing known, so nothing is shelved.
+class NoShelfFacts implements ShelfFactsLookup {
+  /// Creates the no-op port.
+  const new(); // coverage:ignore-line
+
+  @override
+  Future<ShelfFacts?> of(MangaKey key) async => null;
+}
+
 /// Default [UnreadCounts]: no badge.
 class NoUnreadCounts implements UnreadCounts {
   /// Creates the no-op port.

@@ -64,6 +64,31 @@ deploy/suwayomi/    server install
 test/               mirrors lib/; test/e2e/ for on-device flows
 ```
 
+## Auto-shelving (kuhy, 2026-11-21; defaults logged here)
+
+`AutoShelver` (`lib/library/state/`) moves stale entries on its own:
+
+- Stale: the newest stored chapter `uploadedAt` is over 18 calendar months
+  old (`staleCutoff`, day clamped). No stored list or no dated chapter: never
+  moved (`LibraryEntry.updatedAt` is a sync clock, not a chapter date).
+- All read: the category named `finished` (trimmed, any case), else one
+  created as `finished`. Some unread: the first by order whose name holds
+  `abandon` or `complet`, else one created as `abandoned`. Created ones get a
+  fixed id (`autoshelve.<shelf>`), so two devices make one category.
+- A move puts the entry in that category only. One already in it is left
+  alone (other categories kept).
+- Memory: synced setting `library.autoshelve` (contracts-runtime §16), key to
+  the newest upload seen shelved. While it is unchanged the entry is never
+  moved again, so a manual move-out sticks on every device. Entries found
+  already shelved are remembered too. A new upload date resets it. The node
+  is one LWW map: two devices writing in the same sync window can drop an
+  entry, which the next run re-adds while it is still shelved.
+- When: after every finished update-all run, and once per launch after the
+  Library's first paint unless a run ended under 6 h ago (device-local
+  `library.autoshelve.lastRun`). Never awaited by a screen.
+- Feedback: none on screen. A run that moved something logs one
+  device-only `library.autoshelve` line, counts only.
+
 ## Commands
 
 - Run: `./run.sh` (desktop Chrome app), `./run.sh android`.

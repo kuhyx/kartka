@@ -185,11 +185,11 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   prefetch), `plugins.repos` (native and Mangayomi repos),
   `browse.languages` (the Browse language filter, a JSON list of language
   codes in display order; unset means `en`, `all`/`multi`, `ja`),
-  `downloads/auto_new_chapters` and `sourceHealth.scoring` (the source-health
-  scoring profile as a JSON string, node `settings/sourceHealth~2Escoring`,
-  plain vault; the evaluator reads it too, contracts §5). The catalogue is
-  `lib/sync/settings/settings_catalog.dart`, and a peer's node for any
-  other key is ignored. **Device-local**: the download queue, index and
+  `downloads/auto_new_chapters`, `library.autoshelve` (auto-shelving's
+  memory, DOCS-spec), `sourceHealth.scoring` (scoring profile JSON, node
+  `settings/sourceHealth~2Escoring`, read by the evaluator, §5). Catalogue:
+  `lib/sync/settings/settings_catalog.dart`; other keys' peer nodes are
+  ignored. **Device-local**: the download queue, index and
   baselines, per-manga reader modes, installed plugins and their prefs,
   tracker tokens, the sync credentials, and the wrapper port.
 - **Port**: `SettingsSync` (lib/core/settings/) is supplied by sync as a

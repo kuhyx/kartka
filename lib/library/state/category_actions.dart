@@ -18,19 +18,24 @@ class CategoryActions {
   /// Id generator for new categories.
   final String Function() newId;
 
-  /// Adds a category named [name] after [existing]; blank names are ignored.
-  Future<void> create(String name, List<Category> existing) async {
+  /// Adds a category named [name] after [existing] and returns it; blank
+  /// names are ignored (`null`). [id] fixes the id instead of [newId].
+  Future<Category?> create(
+    String name,
+    List<Category> existing, {
+    String? id,
+  }) async {
     final trimmed = name.trim();
-    if (trimmed.isEmpty) return;
+    if (trimmed.isEmpty) return null;
     final order = existing.fold(-1, (m, c) => max(m, c.order)) + 1;
-    await deps.repos.categories.upsert(
-      Category(
-        id: newId(),
-        name: trimmed,
-        order: order,
-        updatedAt: deps.clock(),
-      ),
+    final c = Category(
+      id: id ?? newId(),
+      name: trimmed,
+      order: order,
+      updatedAt: deps.clock(),
     );
+    await deps.repos.categories.upsert(c);
+    return c;
   }
 
   /// Renames [c]; blank names are ignored.

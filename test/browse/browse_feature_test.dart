@@ -144,6 +144,8 @@ void main() {
     final port = reg.maybe<BrowseResolverPort>()!;
     expect(await port.numberOf(key, '/c/3'), 3);
     expect(await counts.watch(key).first, 3);
+    final facts = reg.maybe<ShelfFactsLookup>()!;
+    expect(await facts.of(key), (newestUpload: null, allRead: false));
   });
 
   test('supplies the shared ChapterUpdateChecker', () async {

@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/app/settings_stores.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/library_routes.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/library/repository_decorator.dart';
+import 'package:kartka/library/state/auto_shelver.dart';
 import 'package:kartka/library/state/library_deps.dart';
 import 'package:kartka/library/ui/categories_screen.dart';
 import 'package:kartka/library/ui/library_screen.dart';
@@ -27,12 +32,21 @@ KartkaFeature libraryFeature(KartkaEnv env) {
         (images ??= _images(env)).load(PageRef(index: 0, imageUrl: url)),
     store: platform.cache,
   );
+  // One per launch: the memory syncs (§16), the start-up gate does not.
+  final shelver = AutoShelver(
+    repos: repos,
+    facts: () => env.registry.maybe<ShelfFactsLookup>() ?? const NoShelfFacts(),
+    memory: syncedKv(env),
+    local: platform.kv,
+    updater: () => env.registry.maybe<LibraryUpdater>(),
+    log: DiagnosticsLog.of(platform.diagnostics),
+  );
   LibraryDeps? cached;
   // Built on first use: the registry is complete only after every factory.
-  LibraryDeps deps() => cached ??= _deps(env, repos, covers);
+  LibraryDeps deps() => cached ??= _deps(env, repos, covers, shelver);
   return KartkaFeature(
     id: 'library',
-    services: [repos, covers],
+    services: [repos, covers, shelver],
     tabs: {KartkaTab.library: (_) => LibraryScreen(deps: deps())},
     routes: [
       GoRoute(
@@ -50,7 +64,12 @@ PageImageLoader _images(KartkaEnv env) => PageImageLoader(
   imageHeaders: env.registry.all<ImageHeaders>(),
 );
 
-LibraryDeps _deps(KartkaEnv env, LibraryRepositories repos, CoverCache covers) {
+LibraryDeps _deps(
+  KartkaEnv env,
+  LibraryRepositories repos,
+  CoverCache covers,
+  AutoShelver shelver,
+) {
   final registry = env.registry;
   return LibraryDeps(
     repos: repos,
@@ -61,5 +80,6 @@ LibraryDeps _deps(KartkaEnv env, LibraryRepositories repos, CoverCache covers) {
     sourceProviders: registry.all<SourceProvider>(),
     coverLoader: covers.get,
     updater: registry.maybe<LibraryUpdater>(),
+    onFirstLoad: () => unawaited(shelver.start()),
   );
 }

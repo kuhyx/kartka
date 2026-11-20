@@ -15,6 +15,8 @@ import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/library_routes.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/library/repository_decorator.dart';
+import 'package:kartka/library/state/auto_shelve_rule.dart';
+import 'package:kartka/library/state/auto_shelver.dart';
 import 'package:kartka/library/state/category_actions.dart';
 import 'package:kartka/library/state/entry_facts.dart';
 import 'package:kartka/library/state/library_controller.dart';
