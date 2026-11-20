@@ -20,6 +20,7 @@ class SourceHealthMeta {
     this.verdicts,
     this.profile,
     this.skipped = const [],
+    this.rejectedIds = const {},
   });
 
   /// Parses the node; null unless [json] is a map (absent on older runs).
@@ -37,6 +38,7 @@ class SourceHealthMeta {
       skipped: skipped is List
           ? List.unmodifiable(skipped.map(SkippedGroup.fromJson).nonNulls)
           : const [],
+      rejectedIds: Set.unmodifiable(readStrings(m, 'rejectedIds')),
     );
   }
 
@@ -62,6 +64,10 @@ class SourceHealthMeta {
   /// Candidates left untested, grouped by index and reason.
   final List<SkippedGroup> skipped;
 
+  /// Sources the evaluator rejected for good (score <= 0.65): their records
+  /// are gone and they are never measured again.
+  final Set<String> rejectedIds;
+
   /// This summary with [verdicts] replaced (recounted after a re-score).
   SourceHealthMeta withVerdicts(VerdictCounts verdicts) => SourceHealthMeta(
     runId: runId,
@@ -71,6 +77,7 @@ class SourceHealthMeta {
     verdicts: verdicts,
     profile: profile,
     skipped: skipped,
+    rejectedIds: rejectedIds,
   );
 
   /// The JSON node, omitting missing fields.
@@ -84,6 +91,7 @@ class SourceHealthMeta {
         ? null
         : {'name': profile!.name, ...profile!.toJson()},
     'skipped': [for (final g in skipped) g.toJson()],
+    'rejectedIds': rejectedIds.isEmpty ? null : ([...rejectedIds]..sort()),
   });
 
   @override
@@ -95,7 +103,8 @@ class SourceHealthMeta {
       other.tested == tested &&
       other.verdicts == verdicts &&
       other.profile == profile &&
-      listEquals(other.skipped, skipped);
+      listEquals(other.skipped, skipped) &&
+      setEquals(other.rejectedIds, rejectedIds);
 
   @override
   int get hashCode => Object.hash(
@@ -106,6 +115,7 @@ class SourceHealthMeta {
     verdicts,
     profile,
     Object.hashAll(skipped),
+    Object.hashAllUnordered(rejectedIds),
   );
 }
 

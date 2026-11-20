@@ -32,7 +32,13 @@ void main() {
       SourceHealthRecord? r, {
       bool installed = true,
       String? flag,
-    }) => moveReason(record: r, installed: installed, flag: flag);
+      bool rejected = false,
+    }) => moveReason(
+      record: r,
+      installed: installed,
+      flag: flag,
+      rejected: rejected,
+    );
 
     test('a healthy keep source, or one without a record, stays', () {
       expect(reason(_r('a')), isNull);
@@ -49,6 +55,12 @@ void main() {
       expect(reason(_r('a', cutReasons: ['blocking'])), MoveReason.challenge);
       expect(reason(_r('a', flags: [reprobeOnlyFlag])), MoveReason.unreachable);
       expect(MoveReason.cut.label, 'its source is cut');
+    });
+
+    test('a source rejected for good moves, installed or not', () {
+      expect(reason(null, rejected: true), MoveReason.cut);
+      expect(reason(null, installed: false, rejected: true), MoveReason.cut);
+      expect(reason(_r('a'), rejected: true), MoveReason.cut);
     });
   });
 

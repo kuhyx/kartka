@@ -104,6 +104,22 @@ void main() {
     });
   });
 
+  test('meta rejectedIds parse, round-trip and take part in ==', () {
+    final m = SourceHealthMeta.fromJson(const {
+      'runId': 'r',
+      'rejected': 2,
+      'rejectedIds': ['b', 'a', 7],
+    })!;
+    expect(m.rejectedIds, {'a', 'b'});
+    expect(m.toJson()['rejectedIds'], ['a', 'b']);
+    expect(SourceHealthMeta.fromJson(m.toJson()), m);
+    final none = SourceHealthMeta.fromJson(const {'runId': 'r'})!;
+    expect(none.rejectedIds, isEmpty);
+    expect(none, isNot(m));
+    expect(none.hashCode, isNot(m.hashCode));
+    expect(m.withVerdicts(const VerdictCounts()).rejectedIds, m.rejectedIds);
+  });
+
   group('profile value semantics', () {
     test('equal profiles share a hash; weights and cuts take part', () {
       final a = defaultScoringProfile.copyWith(cuts: {HealthReason.uptime});

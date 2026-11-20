@@ -38,13 +38,17 @@ enum MoveReason {
 
 /// Why an entry on a source should move, or null when the source is fine:
 /// not installed, failing its auto-install [flag], unreachable (or only
-/// re-probed), cut, or hitting a challenge. A source without a [record]
-/// (local files, legacy ids that are installed) stays.
+/// re-probed), cut, or hitting a challenge. A source the evaluator
+/// [rejected] for good (`meta.rejectedIds`) is cut, installed or not. Any
+/// other source without a [record] (local files, installed legacy ids)
+/// stays.
 MoveReason? moveReason({
   required SourceHealthRecord? record,
   required bool installed,
   String? flag,
+  bool rejected = false,
 }) {
+  if (rejected) return MoveReason.cut;
   if (!installed) return MoveReason.notInstalled;
   if (flag != null) return MoveReason.failedTest;
   final r = record;
