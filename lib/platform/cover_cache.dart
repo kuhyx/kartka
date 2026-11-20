@@ -19,7 +19,12 @@ import 'package:kartka/platform/page_image.dart';
 /// and are kept in memory only.
 class CoverCache {
   /// A cache over [load], persisting into [store] (none: memory only).
-  new({required this.load, this.store, this.maxBytes = 48 << 20});
+  new({
+    required this.load,
+    this.store,
+    this.maxBytes = 48 << 20,
+    this.maxLoads = 2,
+  });
 
   /// Fetches a cover the cache does not have.
   final Future<Uint8List> Function(String url) load;
@@ -30,11 +35,23 @@ class CoverCache {
   /// Encoded bytes kept in memory before the least recent are dropped.
   final int maxBytes;
 
+  /// Network loads per host at once; the rest wait, newest first.
+  ///
+  /// A grid of uncached covers sent all at once filled the source's rate
+  /// limiter on the server (50 MangaFire thumbnails: up to 25 s each), and
+  /// the next browse page queued behind them for up to 41 s (89e1ec6e).
+  /// The limiter's throughput is the same either way; capped, a page waits
+  /// behind at most this many covers, and the covers just scrolled to go
+  /// first.
+  final int maxLoads;
+
   /// Key prefix in [store].
   static const prefix = 'cache/covers/';
 
   final _memory = <String, Uint8List>{}; // Insertion-ordered: LRU.
   final _inFlight = <String, Future<Uint8List>>{};
+  final _running = <String, int>{};
+  final _waiting = <String, List<Completer<void>>>{};
   int _bytes = 0;
 
   /// The cover of [url] when it is in memory (marking it recent), else null.
@@ -64,10 +81,33 @@ class CoverCache {
       final stored = await _read(key);
       if (stored != null) return _remember(url, stored);
     }
-    final bytes = await load(url);
+    final bytes = key == null ? await load(url) : await _slotted(url);
     // A challenge page served as 200 must not outlive this launch.
     if (key != null && looksLikeImage(bytes)) unawaited(_write(key, bytes));
     return _remember(url, bytes);
+  }
+
+  /// [load] of [url] once its host has a free slot.
+  Future<Uint8List> _slotted(String url) async {
+    final host = Uri.tryParse(url)?.host ?? '';
+    if ((_running[host] ?? 0) >= maxLoads) {
+      final turn = Completer<void>();
+      (_waiting[host] ??= []).add(turn);
+      await turn.future;
+    } else {
+      _running[host] = (_running[host] ?? 0) + 1;
+    }
+    try {
+      return await load(url);
+    } finally {
+      // The slot passes to the newest waiting cover, or frees.
+      final waiting = _waiting[host];
+      if (waiting != null && waiting.isNotEmpty) {
+        waiting.removeLast().complete();
+      } else {
+        _running[host] = _running[host]! - 1;
+      }
+    }
   }
 
   /// A store that fails costs only the persistence, never the cover.

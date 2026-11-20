@@ -93,6 +93,11 @@ so the first pages draw at once (a MangaFire page costs 0.5-0.9 s on the
 server; 28fffd0a). The Updates sheet skips the details screen, so opening
 it warms the same way (`ChapterWarmer`) the chapter a tap most likely
 opens: the newest unread one, else the newest (a cold open took 1.2 s).
+`browse.nextpage`: the server's source rate limiter is shared by its
+thumbnails and its pages, so a grid's 50 uncached covers (up to 25 s each
+on MangaFire) put the next page 8-41 s behind them (89e1ec6e).
+`CoverCache.maxLoads` runs 2 cover loads per host at once, newest first:
+a page then waits behind at most 2 (1.2-1.6 s, fetched a page ahead).
 `tools/agent/flows/f4_reader_sweep.sh` opens the newest chapters on
 Updates headless and fails on any open over 1 s.
 
