@@ -60,7 +60,12 @@ to_tabs
 check drive tap Updates >/dev/null
 check drive wait "Check for updates" --timeout 20 >/dev/null
 
-mapfile -t titles < <(update_titles)
+# The feed loads after the tab shows: give it up to ~10 s.
+titles=()
+for ((i = 0; i < 20 && ${#titles[@]} == 0; i++)); do
+  mapfile -t titles < <(update_titles)
+  ((${#titles[@]} > 0)) || sleep 0.5
+done
 ((${#titles[@]} > 0)) || fail "Updates lists no manga"
 
 for title in "${titles[@]}"; do

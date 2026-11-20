@@ -13,7 +13,7 @@ The device log (`DOCS-contracts.md` §7) stays kartka's.
 |---|---|
 | `uncaught.flutter`, `uncaught.async` | crdt_sync_flutter `installAppErrors` (from `main`): chains `FlutterError.onError` and `PlatformDispatcher.onError`, skips `silent` details; queued straight for upload (not in the device log). |
 | `ui.snackbar` | `ReportingScaffoldMessenger`, mounted in `MaterialApp.builder` (`lib/app/app.dart`), so it is the nearest messenger of every route. An error is a snackbar with the danger hue (design_system `showError`) or failure text (`failed`, `Exception`, `unavailable`, ...). |
-| `reader.open` | `ReaderSession.open` (the reader's Retry screen); not a chapter neither downloaded nor fetchable (`ChapterUnavailable`). |
+| `reader.open` | `ReaderSession.open` (the reader's Retry screen); not a chapter neither downloaded nor fetchable (`ChapterUnavailable`). The reader's probe adds the cause with the source id: `ReaderProbe: <sourceId> listed no pages`, or `first 3 images failed on <sourceId>: <error>` (`FirstImagesProbe`). |
 | `reader.page` | `ReaderSession.image` (a page's Retry); background prefetch stays quiet. |
 | `downloads.failed` | `DownloadService.onFailure` (the queue's Retry), wired by `downloadsFeature`; not a source nothing lists (`UnknownSourceError`). |
 | `downloads.offline` | `downloadFailureReporter`: a server that cannot be reached (`isOfflineError`), once per server per 10 min, not once per chapter. |
@@ -82,13 +82,19 @@ mark cost one more reported 20 s open per device), and later opens show the
 Retry screen at once, unreported; Retry asks again and a success clears the
 mark. Sources known broken on our server (`PageListCache.knownBroken`:
 AllManga) start marked, so even the first open pays nothing, until one
-Retry succeeds. Once a manga's details load, `PageWarmSlot` fetches the
+Retry succeeds. The mark is checked before an in-flight fetch is joined:
+on build 591 a Retry's 20 s fetch was still running when the chapter was
+opened again, and the open joined it. Once a manga's details load, `PageWarmSlot` fetches the
 Continue chapter's page list (the progress chapter, else the first unread
 one) ahead into the same cache, so Continue opens without the 2-4 s
 upstream fetch, then its first 3 page images from the saved page, one at
 a time, into `PageImageWarmer`: the reader loads every image through it,
 so the first pages draw at once (a MangaFire page costs 0.5-0.9 s on the
-server; 28fffd0a).
+server; 28fffd0a). The Updates sheet skips the details screen, so opening
+it warms the same way (`ChapterWarmer`) the chapter a tap most likely
+opens: the newest unread one, else the newest (a cold open took 1.2 s).
+`tools/agent/flows/f4_reader_sweep.sh` opens the newest chapters on
+Updates headless and fails on any open over 1 s.
 
 - A wait of 1 s or less writes nothing. A longer one writes an entry at its
   end: `kind` `perf.slow`, `route` (the pattern on top when it began),
