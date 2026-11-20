@@ -10,6 +10,7 @@ import 'package:kartka/source_health/feed/source_health_feed.dart';
 import 'package:kartka/source_health/format.dart';
 import 'package:kartka/source_health/fuzzy_match.dart';
 import 'package:kartka/source_health/install/auto_install_state.dart';
+import 'package:kartka/source_health/install/extension_autoupdate.dart';
 import 'package:kartka/source_health/install/install_ports.dart';
 import 'package:kartka/source_health/install/keep_plan.dart';
 import 'package:kartka/source_health/install/keep_reconciler.dart';

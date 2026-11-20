@@ -6,6 +6,7 @@ import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
 import 'package:kartka/source_health/install/auto_install_state.dart';
+import 'package:kartka/source_health/install/extension_autoupdate.dart';
 import 'package:kartka/source_health/install/keep_reconciler.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
@@ -72,5 +73,25 @@ void main() {
     expect(reconciler.status, 'Installed 1 source');
     expect(reconciler.state.publishId, '2026-W44');
     expect((await AutoInstallState.load(kv)).publishId, '2026-W44');
+  });
+
+  test('the first screen also updates the outdated extensions once', () async {
+    final updater = FakeUpdater({'pkg.atsumaru'});
+    final registry = KartkaRegistry.build(memoryPlatform(), [
+      sourceHealthFeature,
+      (_) => KartkaFeature(id: 'others', services: [updater]),
+    ]);
+    expect(registry.maybe<ExtensionAutoUpdater>(), isNotNull);
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(updater.calls, isEmpty);
+    for (final o in registry.all<ScreenObserver>()) {
+      o
+        ..screenChanged('/library')
+        ..screenChanged('/browse');
+    }
+    for (var i = 0; i < 50 && updater.calls.length < 2; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+    }
+    expect(updater.calls, ['list', 'update:pkg.atsumaru']);
   });
 }

@@ -23,6 +23,7 @@ The device log (`DOCS-contracts.md` §7) stays kartka's.
 | `browse.page` | `PagedController.onError`, wired by `SourceScreen` (the grid's Retry). |
 | `suwayomi.extensions` | `ExtensionsScreen._load` (its Retry screen). |
 | `perf.slow` | crdt_sync_flutter `WaitWatch`, wrapped around every page-level loader; see "Slow waits" below. |
+| `sources.autoupdate` | `ExtensionAutoUpdater` (`lib/source_health/install/`): one summary per run, counts and package names only (`updated 6 [..], failed 1 [..]`); a run with no failure stays on the device (`isUploadedEntry`). |
 | existing kinds | `reader.advance`, `sync.error`, source installs: already in the log. |
 
 Every entry is stamped with the go_router **pattern** on top

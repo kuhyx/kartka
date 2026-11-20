@@ -68,10 +68,14 @@ List<SuwayomiExtension> sortExtensions(Iterable<SuwayomiExtension> all) {
 }
 
 /// Lists, installs, updates and uninstalls the server's extensions; also
-/// the Sources tab's [SuwayomiExtensionInstaller] and the Keep
-/// auto-install's [InstalledExtensionLister].
+/// the Sources tab's [SuwayomiExtensionInstaller], the Keep auto-install's
+/// [InstalledExtensionLister] and the auto-update's
+/// [SuwayomiExtensionUpdater].
 class SuwayomiExtensionsApi
-    implements SuwayomiExtensionInstaller, InstalledExtensionLister {
+    implements
+        SuwayomiExtensionInstaller,
+        InstalledExtensionLister,
+        SuwayomiExtensionUpdater {
   /// Creates the API; [onChanged] runs after every successful change (the
   /// feature re-lists the sources there).
   new({required this.client, required this.settings, this.onChanged});
@@ -108,6 +112,15 @@ class SuwayomiExtensionsApi
     for (final e in await list())
       if (e.isInstalled) e.pkgName,
   };
+
+  @override
+  Future<List<String>> outdatedPackages() async => [
+    for (final e in await list())
+      if (e.isInstalled && e.hasUpdate) e.pkgName,
+  ];
+
+  @override
+  Future<void> updateExtension(String pkg) => update(pkg);
 
   /// Updates [pkgName] to the store's version.
   Future<SuwayomiExtension> update(String pkgName) => _patch(pkgName, 'update');

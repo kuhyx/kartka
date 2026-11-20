@@ -30,3 +30,15 @@ abstract interface class InstalledPluginLister {
   /// Ids of every installed plugin; throws when unreadable.
   Future<Set<String>> installedPluginIds();
 }
+
+/// Updates the Suwayomi-Server's outdated extensions (implemented by the
+/// same API as [SuwayomiExtensionInstaller]). Nothing else updates them,
+/// and a stale one can break: Atsumaru 1.6.25's search answered HTTP 400.
+abstract interface class SuwayomiExtensionUpdater {
+  /// Package names of the installed extensions the store has a newer build
+  /// of; throws when unreadable.
+  Future<List<String>> outdatedPackages();
+
+  /// Updates [pkg] to the store's build.
+  Future<void> updateExtension(String pkg);
+}

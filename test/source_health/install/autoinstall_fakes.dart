@@ -68,6 +68,47 @@ class FakeSuwayomi
   }
 }
 
+/// A Suwayomi side with [outdated] packages; logs every call.
+class FakeUpdater implements SuwayomiExtensionUpdater {
+  new(this.outdated);
+
+  /// Installed packages the store has a newer build of.
+  final Set<String> outdated;
+
+  /// Every call, in order (`list`, `update:<pkg>`).
+  final calls = <String>[];
+
+  /// Thrown by [outdatedPackages] when set.
+  Error? listError;
+
+  /// Packages whose update throws.
+  final failing = <String, Error>{};
+
+  /// Updates running right now, and the most seen at once.
+  int inFlight = 0;
+
+  /// The most updates seen running at once.
+  int maxInFlight = 0;
+
+  @override
+  Future<List<String>> outdatedPackages() async {
+    calls.add('list');
+    if (listError case final e?) throw e;
+    return outdated.toList()..sort();
+  }
+
+  @override
+  Future<void> updateExtension(String pkg) async {
+    calls.add('update:$pkg');
+    inFlight++;
+    if (inFlight > maxInFlight) maxInFlight = inFlight;
+    await Future<void>.delayed(Duration.zero);
+    inFlight--;
+    if (failing[pkg] case final e?) throw e;
+    outdated.remove(pkg);
+  }
+}
+
 /// A plugin side that installs into [installed]; logs every call.
 class FakePlugins implements PluginRepoInstaller, InstalledPluginLister {
   /// Installed plugin ids.

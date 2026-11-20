@@ -211,6 +211,14 @@ under the line cap; same rules. Implementation notes:
   test") and "Migrate to better sources". Not done in the
   evaluator: it refuses the live server (4567) by design, and the first
   device to reconcile installs on the shared server for all of them.
+- **Extension auto-update** (2026-11-21): nothing else updated extensions,
+  and a stale one broke (Atsumaru 1.6.25: search HTTP 400, popular fine).
+  From the first screen, once per app start and at most once per 24 h
+  (device kv `sourceHealth.autoUpdate.lastRun`, set once the list was
+  read), `ExtensionAutoUpdater` updates every installed extension with
+  `hasUpdate` through `updateExtension` (`SuwayomiExtensionUpdater` port),
+  one at a time, unawaited; logged as `sources.autoupdate`. Never in the
+  agent instance (`isAgentInstance`): it reads the same shared server.
 - **Migrate to better sources** (`lib/migration/better/`, route
   `/more/migrate-better`, also a More tile): every library entry whose
   source is not installed, failed that test, is unreachable / re-probed

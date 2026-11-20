@@ -122,7 +122,27 @@ void main() {
     expect(_spoken('Failed'), findsOneWidget);
     expect(find.descendant(of: outcome, matching: find.text('0')), findsOne);
     expect(find.descendant(of: outcome, matching: find.text('1')), findsOne);
-    expect(find.text('Bad state: gone'), findsOneWidget);
+    expect(find.textContaining('Bad state'), findsNothing);
+    expect(_spoken('Bad state: gone'), findsOneWidget);
+  });
+
+  testWidgets('a failed search shows an icon, never the exception', (t) async {
+    final w = await _world();
+    w.target.searchError = StateError(
+      'SuwayomiException: Exception while fetching data (/fetchSourceManga) '
+      ': HTTP error 400',
+    );
+    await _pump(t, w);
+    expect(find.textContaining('Exception'), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Icon &&
+            w.icon == Icons.error_outline &&
+            (w.semanticLabel ?? '').contains('HTTP error 400'),
+      ),
+      findsNWidgets(3),
+    );
   });
 
   testWidgets('without Atsumaru there is nothing to apply', (t) async {
@@ -153,7 +173,7 @@ void main() {
     await t.tap(_apply(1));
     await t.pumpAndSettle();
     expect(_spoken('Nothing changed: the backup failed'), findsOneWidget);
-    expect(find.text('Bad state: disk full'), findsOneWidget);
+    expect(find.textContaining('disk full'), findsNothing);
     expect((await t.runAsync(w.entries))!.keys, [
       mangaKeyOf('old', '/One Piece'),
     ]);

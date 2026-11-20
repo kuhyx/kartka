@@ -157,7 +157,7 @@ class _BetterSourcesScreenState extends State<BetterSourcesScreen> {
             ),
           },
           Icon(reasonIcon(row.reason), semanticLabel: row.reason.label),
-          if (row.error case final e?) Text(e),
+          if (row.error case final e?) errorMark(e),
         ],
       ),
       trailing: _action(c, row),

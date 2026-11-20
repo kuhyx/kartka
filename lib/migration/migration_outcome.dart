@@ -2,8 +2,9 @@ import 'package:design_system/design_system.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The result line of a migration run, word-free: a failed backup shows an
-/// error glyph plus the (redacted) error; a finished run shows the migrated
-/// count, the failed count when any, and the backup key.
+/// error glyph (the redacted error is spoken, never painted); a finished
+/// run shows the migrated count, the failed count when any, and the backup
+/// key.
 class MigrationOutcome extends StatelessWidget {
   /// The outcome of a run that moved [migrated] entries ([failed] failed)
   /// after backing up to [backupKey], or whose backup failed with [error].
@@ -39,7 +40,7 @@ class MigrationOutcome extends StatelessWidget {
           color: bad,
           semanticLabel: 'Nothing changed: the backup failed',
         ),
-        Flexible(child: Text(e, style: style)),
+        errorMark(e),
       ]);
     }
     return _line([
@@ -69,6 +70,15 @@ Widget matchMark({required bool exact, String closeLabel = 'Close match'}) =>
       exact ? Icons.check_circle : Icons.check_circle_outline,
       semanticLabel: exact ? 'Exact match' : closeLabel,
     );
+
+/// An error glyph speaking [error]: exception text is never painted.
+Widget errorMark(String error) => Builder(
+  builder: (context) => Icon(
+    Icons.error_outline,
+    color: Theme.of(context).colorScheme.error,
+    semanticLabel: error,
+  ),
+);
 
 /// A small spinner for one row's search or migration.
 class RowSpinner extends StatelessWidget {

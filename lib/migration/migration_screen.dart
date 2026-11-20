@@ -140,7 +140,7 @@ class _MigrationScreenState extends State<MigrationScreen> {
                 Flexible(child: Text(others.join(', '))),
               ],
             ),
-          if (row.error case final e?) Text(e),
+          if (row.error case final e?) errorMark(e),
         ],
       ),
       onChanged: candidate == null || c.phase != MigrationPhase.ready

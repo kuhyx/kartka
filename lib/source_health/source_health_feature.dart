@@ -9,9 +9,11 @@ import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/migration/better/better_route.dart';
+import 'package:kartka/platform/agent_probe.dart';
 import 'package:kartka/source_health/feed/reporting_feed.dart';
 import 'package:kartka/source_health/feed/rtdb_feed.dart';
 import 'package:kartka/source_health/feed/source_health_feed.dart';
+import 'package:kartka/source_health/install/extension_autoupdate.dart';
 import 'package:kartka/source_health/install/install_ports.dart';
 import 'package:kartka/source_health/install/keep_reconciler.dart';
 import 'package:kartka/source_health/install/source_installs.dart';
@@ -29,7 +31,8 @@ import 'package:kartka/sync/rtdb_reader.dart';
 /// `/kartka/source_health` and re-scored with the synced scoring profile
 /// (`sourceHealth.scoring`). Also installs every Keep source, and every
 /// source a library entry uses, on its own ([KeepReconciler], a service the
-/// migration part reads with the feed).
+/// migration part reads with the feed), and updates every outdated
+/// Suwayomi extension once a day ([ExtensionAutoUpdater]).
 KartkaFeature sourceHealthFeature(KartkaEnv env) {
   final store = ScoringProfileStore(syncedKv(env));
   final feed = ScoredHealthFeed(
@@ -51,12 +54,19 @@ KartkaFeature sourceHealthFeature(KartkaEnv env) {
     diagnostics: diagnostics,
     librarySources: () => librarySourceIds(env.registry),
   );
-  // Reconciles on start and on every new publish (DOCS-contracts-source-
-  // health §5 "Keep auto-install"), from the app's first screen on: a bare
-  // registry (tests, tools) never touches sync.
-  final startOnFirstScreen = _OnFirstScreen(
-    () => unawaited(autoInstall.start(feed)),
+  final autoUpdate = ExtensionAutoUpdater(
+    kv: env.platform.kv,
+    updater: () => env.registry.maybe<SuwayomiExtensionUpdater>(),
+    isAgent: isAgentInstance,
+    diagnostics: diagnostics,
   );
+  // Reconciles on start and on every new publish (DOCS-contracts-source-
+  // health §5 "Keep auto-install"), and updates stale extensions, from the
+  // app's first screen on: a bare registry (tests, tools) never starts.
+  final startOnFirstScreen = _OnFirstScreen(() {
+    unawaited(autoInstall.start(feed));
+    unawaited(autoUpdate.run());
+  });
   late final installs = SourceInstalls(
     sourceIds: sources.watch().map((all) => {for (final s in all) s.ref.id}),
     open: (context, id) => unawaited(context.push(sourceRoute(id))),
@@ -83,6 +93,7 @@ KartkaFeature sourceHealthFeature(KartkaEnv env) {
       FeedSourceHealthLookup(feed),
       feed,
       autoInstall,
+      autoUpdate,
       startOnFirstScreen,
     ],
   );

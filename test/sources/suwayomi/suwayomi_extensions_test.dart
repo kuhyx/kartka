@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
@@ -87,5 +89,30 @@ void main() {
       ext('y', inst: true, upd: true),
     ]);
     expect(sorted.map((e) => e.name), ['y', 'z', 'a', 'b']);
+  });
+
+  test('outdatedPackages lists installed extensions with an update, and '
+      'updateExtension patches one', () async {
+    final listed = fixture('extensions');
+    final exts =
+        ((((listed['response']! as Map)['data']! as Map)['fetchExtensions']!
+                    as Map)['extensions']!
+                as List)
+            .cast<Map<String, Object?>>();
+    exts.first['hasUpdate'] = true; // installed MangaDex
+    exts[1]['hasUpdate'] = true; // not installed: never "outdated"
+    final update = fixture('ext_update')['response'];
+    http = FakeKartkaHttp(
+      (request) => FakeKartkaHttp.text(
+        jsonEncode(
+          request.body!.contains('fetchExtensions')
+              ? listed['response']
+              : update,
+        ),
+      ),
+    );
+    expect(await api().outdatedPackages(), [_mangadex]);
+    await api().updateExtension(_mangadex);
+    expect(changes, 1);
   });
 }
