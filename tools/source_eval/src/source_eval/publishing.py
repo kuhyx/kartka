@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
+from source_eval import rejected
 from source_eval.budget import MORE_WORK
 from source_eval.candidates import catalog
 from source_eval.country import jp_manifest
@@ -56,14 +57,16 @@ def previous_hard_cuts(
 ) -> tuple[list[str], str | None]:
     """``(ids, run)`` hard-cut by the last published run, unless it is ``run_id``.
 
-    Nothing when not ``wanted`` (``init-run`` without ``--reprobe``).
+    Nothing when not ``wanted`` (``init-run`` without ``--reprobe``); a
+    rejected id is never re-probed.
     """
     data = read_json(state_dir / HARD_CUT_FILE, {}) if wanted else {}
     prev = data.get("runId") if isinstance(data, dict) else None
     if prev in (None, run_id):
         return [], None
-    ids = cast("dict[str, list[object]]", data)["ids"]
-    return [str(i) for i in ids], str(prev)
+    ids = [str(i) for i in cast("dict[str, list[object]]", data)["ids"]]
+    gone = rejected.load(state_dir)
+    return [i for i in ids if i not in gone], str(prev)
 
 
 def published_cmd(state_dir: Path, run_id: str, out: Callable[[str], None]) -> int:
@@ -83,7 +86,9 @@ def published_cmd(state_dir: Path, run_id: str, out: Callable[[str], None]) -> i
 def publish_steps(
     report: dict[str, object],
 ) -> list[tuple[str, str, dict[str, object]]]:
-    """``(name, path, data)`` RTDB writes: records in chunks, then the meta.
+    """``(name, path, data)`` RTDB writes: records, deletes, then the meta.
+
+    Every rejected id's record is deleted (``null``), in chunks too.
 
     Chunks of ``CHUNK`` records by RTDB key, so each write stays small (one
     ~0.7 MB PATCH could outlast ``RTDB_TIMEOUT`` on a slow uplink) and a
@@ -95,6 +100,13 @@ def publish_steps(
     steps: list[tuple[str, str, dict[str, object]]] = [
         (f"records-{n // CHUNK}", RTDB_PATH, dict(records[n : n + CHUNK]))
         for n in range(0, len(records), CHUNK)
+    ]
+    gone = sorted(
+        sha1(i) for i in cast("dict[str, object]", report.get("rejected", {}))
+    )
+    steps += [
+        (f"reject-{n // CHUNK}", RTDB_PATH, dict.fromkeys(gone[n : n + CHUNK]))
+        for n in range(0, len(gone), CHUNK)
     ]
     return [*steps, ("meta", META_PATH, cast("dict[str, object]", report["meta"]))]
 
@@ -127,10 +139,14 @@ def report_cmd(  # noqa: PLR0913, PLR0917 -- one argument per input it joins
         skipped=catalog.load_skipped(app.skipped_path),
         profile=profile,
     )
+    known = rejected.load(app.s.state_dir)
+    gone = rejected.apply(report, known, run.run_id, app.clock.now())
     write_json_atomic(out, report)
     app.out(f"profile: {profile.name}")
     count = len(cast("list[object]", report["sources"]))
     app.out(f"report: {count} sources -> {out}")
+    dry = "" if writer else "; dry run, not saved"
+    app.out(f"rejected: {len(gone)} ({len(gone) - len(known)} new){dry}")
     if writer is None:
         return 0
     progress_path = run.root / "publish.json"
@@ -145,6 +161,7 @@ def report_cmd(  # noqa: PLR0913, PLR0917 -- one argument per input it joins
         progress[name] = True
         write_json_atomic(progress_path, progress)
     progress_path.unlink(missing_ok=True)
+    rejected.save(app.s.state_dir, gone)  # before the "published" marker
     ids = hard_cut_ids(report)
     write_json_atomic(
         app.s.state_dir / HARD_CUT_FILE, {"runId": run.run_id, "ids": ids}

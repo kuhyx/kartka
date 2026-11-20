@@ -66,6 +66,13 @@ measured as usual; failed → nothing else this run, record `reprobe:
 {passed, kind, previousRun}`, `flags: ["reprobe-only"]`, the hard cut kept
 (`unreachable`, or `blocking>=0.50` for a challenge).
 
+**Reject** (kuhy, 2026-11-20, `rejected.py`): a measured `cut` (coverage not
+`null`, not `reprobe-only`) scoring <= 0.65 is gone for good: out of the
+report (ranks renumbered), never run, probed or re-probed again; `--publish`
+deletes its RTDB record, then adds it to `rejected.json` in the state dir
+(`{id: {score, runId, rejectedAt}}`; never removed by code, undo = delete the
+id by hand). A dry `report` prints `rejected: N (M new); dry run, not saved`.
+
 `--suwayomi-url` (or `KARTKA_SUWAYOMI_URL`, default the eval instance
 `http://127.0.0.1:4590`; the live 4567 is refused);
 basic auth from `KARTKA_SUWAYOMI_USER/PASS` or the deploy env file's
@@ -88,15 +95,18 @@ Timers (`systemd/`): probe 4x/day (`probe.sh`), full run weekly via
    Every dropped index entry goes to `data/candidates_skipped.json` with one
    reason (`language` > `dart` > `domain-overlap` > `duplicate`), grouped per
    index; it becomes the run meta's `skipped`.
-2. **Reference** (`reference/`): AniList top 500 manga by popularity
-   (`format_not: NOVEL`) with every alt title; plus `data/sy_titles.json` if
+2. **Reference** (`reference/`): AniList top 500 **Japanese** manga by
+   popularity (`format_not: NOVEL`, `countryOfOrigin: JP`; kuhy, 2026-11-20:
+   no manhwa or manhua) with every alt title; plus `data/sy_titles.json` if
    present (list of strings or `{title}`; gitignored), matched to AniList.
    Missing chapter counts (ongoing series) come from MangaUpdates. Each
    title stores AniList's native title (`nativeTitle`: `null` = not fetched,
-   `""` = none); titles stored before the field existed are backfilled by the
-   next `reference` call (batched `id_in`, 50 per request).
-3. **Run** (`evaluate.py`): one deterministic stratified sample per run, the
-   same for every source. Per source: install/prepare; search each title
+   `""` = none) and `countryOfOrigin` (same `null`/`""` rule); titles stored
+   before a field existed are backfilled by the next `reference` call
+   (batched `id_in`, 50 per request). Older non-JP titles stay in the file
+   (old runs name them); the JP cursor `anilistJpPage` tops it up to 500 JP.
+3. **Run** (`evaluate.py`): one deterministic stratified sample of the
+   Japanese titles per run, the same for every source. Per source: install/prepare; search each title
    (main title, then first alt; a `ja` source: native title, then the first
    other title; `queries.py` drops an alt that only differs by case/spacing) and fuzzy-match (rapidfuzz ratio ≥ 0.90 on normalised titles,
    any alt title, plus the native one for `ja`); chapter lists for the first N found;
@@ -144,7 +154,10 @@ and FlareSolverr off (the local dev server and the live deploy both do).
   `challengeRate` but **flagged, not cut**: the record gets
   `flags: ["needs-browser-engine"]`, and `webview` challenges neither cut the
   source nor abort its measurement. The evaluator still never runs a browser.
-- **coverage**: found / sample size; `referenceSize` is the run's sample size
+- **Japanese only** (`country.py`): `report` drops non-JP and unknown titles
+  from a stored run's sample (re-reports without re-measuring); found titles,
+  chapter lists and subsets count JP only (images, pagesLoad unchanged).
+- **coverage**: found / sample size; `referenceSize` is the run's JP sample size
   (30 in the sample run, 500 weekly).
 - **chapterCompleteness**: distinct chapter numbers / AniList (else
   MangaUpdates `latest_chapter`) count, capped at 1, median over sampled
@@ -180,7 +193,8 @@ and FlareSolverr off (the local dev server and the live deploy both do).
 - **verdict**: an enabled cut switch whose reason applies → `cut`; else
   ≥ `keepScore` → `keep`; `pending` only while nothing was measured
   (coverage ratio `null`); else `cut`. DEFAULT enables no switch, so there the
-  score alone decides (`KEEP_SCORE` 0.85; 0.90 until 2026-11-20). The cut reasons (`uptime<0.95`,
+  score alone decides (`KEEP_SCORE` 0.85; 0.90 until 2026-11-20). The cut
+  reasons (`uptime<0.95`,
   `blocking`, `coverage<0.60`, `subset`) are always computed and published in
   `cutReasons`.
 - **scoring profile**: `report` reads the app's active profile from RTDB
@@ -191,7 +205,7 @@ and FlareSolverr off (the local dev server and the live deploy both do).
   (or no sign-in) falls back to DEFAULT and prints a `warning:` line.
   `report` prints `profile: default|custom`.
 - **meta**: `{runId, generatedAt, candidates, tested, verdicts, skipped,
-  profile}` (contract §5 "Run meta"); `--publish` PATCHes it to
+  profile, rejected}` (contract §5 "Run meta"); `--publish` PATCHes it to
   `/kartka/source_health_meta` after the records. `profile` is
   `{name: default|custom, weights, pagesLoadMultiplier, keepScore, cuts}`.
 - **availability** (additive): `native` (Kartka Dart source; today

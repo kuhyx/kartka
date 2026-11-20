@@ -29,7 +29,9 @@ under the line cap; same rules. Implementation notes:
 ```
 
 - **Reference set**: titles in the SY backup + AniList top 500 manga by
-  popularity, stored at `tools/source_eval/data/reference.json`.
+  popularity, stored at `tools/source_eval/data/reference.json`. Only
+  Japanese titles (`countryOfOrigin` `JP`; 2026-11-20) are sampled and
+  counted; `referenceSize` is the JP sample size.
 - **Languages**: candidates are English, Japanese and multi-language (`all`)
   sources only. `langScope` says what was measured: `en+ja` for a
   single-language en/ja source (and native MangaDex, English feed);
@@ -155,7 +157,9 @@ under the line cap; same rules. Implementation notes:
   ```
 
   `candidates` = entries in `data/candidates.json`; `tested` = records in
-  this run. `skipped` lists every index entry the candidate merge dropped,
+  this run. `rejected` (additive, 2026-11-20) = ids rejected for good: a
+  measured `cut` scoring <= 0.65 (`REJECT_SCORE`); their records are deleted
+  from `/kartka/source_health` and never measured again. `skipped` lists every index entry the candidate merge dropped,
   grouped by `index` (`keiyoushi`, `mangayomi`, `sy-backup`) and `reason`
   (`language`, `dart`, `domain-overlap`, `duplicate`; exactly one per entry,
   in that precedence), names sorted. RTDB drops empty lists, so readers must

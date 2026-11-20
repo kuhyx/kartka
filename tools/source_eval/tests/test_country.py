@@ -7,6 +7,8 @@ import json
 from typing import TYPE_CHECKING, cast
 lazy from pathlib import Path
 
+import pytest
+
 from source_eval.budget import Deadline
 from source_eval.candidates import catalog
 from source_eval.country import JAPAN, japanese, jp_manifest
@@ -158,6 +160,7 @@ def test_init_run_samples_japanese_titles_only(tmp_path: Path) -> None:
     assert manifest.sample == ["a", "c"]
 
 
+@pytest.mark.usefixtures("no_rejects")
 def test_report_rescores_a_stored_run_on_japanese_titles(tmp_path: Path) -> None:
     app, _, _, lines = make_app(tmp_path)
     catalog.save(app.candidates_path, [CAND])

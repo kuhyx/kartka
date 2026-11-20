@@ -25,6 +25,7 @@ from tests.app_helpers import SUWA, make_app
 from tests.fakes import resp
 
 
+@pytest.mark.usefixtures("no_rejects")
 def test_end_to_end_commands(tmp_path: Path) -> None:
     app, _, clock, lines = make_app(tmp_path)
     assert app.cmd_candidates() == 0

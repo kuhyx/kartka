@@ -12,6 +12,8 @@ import json
 from typing import cast
 lazy from pathlib import Path
 
+import pytest
+
 from source_eval.budget import Deadline
 from source_eval.evaluate import Plan, evaluate
 from source_eval.metrics import metrics
@@ -127,6 +129,7 @@ def test_old_manifest_reads_without_reprobe(tmp_path: Path) -> None:
     assert loaded.reprobe_from is None
 
 
+@pytest.mark.usefixtures("no_rejects")
 def test_publish_records_hard_cuts_and_init_run_reprobes_them(tmp_path: Path) -> None:
     app, _, clock, _ = make_app(tmp_path)
     app.cmd_reference(None, 3)

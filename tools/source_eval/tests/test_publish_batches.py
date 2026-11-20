@@ -6,6 +6,8 @@ from __future__ import annotations
 import json
 lazy from pathlib import Path
 
+import pytest
+
 from source_eval import publishing, report
 from source_eval.app import MORE_WORK, App
 from source_eval.candidates import catalog
@@ -80,6 +82,7 @@ def test_probe_skips_fresh_sources_and_stops_in_budget(tmp_path: Path) -> None:
     assert len(transport.sent) == first
 
 
+@pytest.mark.usefixtures("no_rejects")
 def test_report_progress_file_is_per_run(tmp_path: Path) -> None:
     app, clock, _ = _published_run(tmp_path)
 

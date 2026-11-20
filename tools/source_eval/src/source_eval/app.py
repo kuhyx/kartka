@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import TYPE_CHECKING
 
-from source_eval import runner
+from source_eval import rejected, runner
 from source_eval.backends.mangadex import MangaDexBackend
 from source_eval.backends.plugin import PluginBackend
 from source_eval.backends.suwayomi import SuwayomiBackend
@@ -124,8 +124,8 @@ class App:
         return Reference(self.s.data_dir / "reference.json", self.clock)
 
     def select(self, ids: list[str], *, installed: bool) -> list[Candidate]:
-        """Candidates by id, plus kuhy's installed set when asked; [] = all."""
-        cands = catalog.load(self.candidates_path)
+        """Candidates by id, plus kuhy's installed set; [] = all; never rejected."""
+        cands = rejected.without(catalog.load(self.candidates_path), self.s.state_dir)
         if not ids and not installed:
             return cands
         return [c for c in cands if c.id in ids or (installed and c.installed)]

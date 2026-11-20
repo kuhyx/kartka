@@ -126,6 +126,7 @@ def run_report(tmp_path: Path, profile: Profile) -> tuple[dict[str, Any], list[s
     return json.loads(out.read_text()), lines
 
 
+@pytest.mark.usefixtures("no_rejects")
 def test_cmd_report_scores_with_the_profile_and_keeps_the_default_score(
     tmp_path: Path,
 ) -> None:
