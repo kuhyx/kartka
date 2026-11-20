@@ -33,6 +33,9 @@ class PagedController<T> extends ChangeNotifier {
   /// Items loaded so far, in source order.
   List<T> get items => List.unmodifiable(_items);
 
+  /// Pages loaded so far (0 before the first one lands).
+  int get pagesLoaded => _nextPage - 1;
+
   /// Whether another page may exist.
   bool get hasNext => _hasNext;
 

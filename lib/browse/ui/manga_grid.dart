@@ -97,10 +97,13 @@ class _PagedMangaGridState extends State<PagedMangaGrid> {
     final c = widget.controller;
     if (!mounted || !_scroll.hasClients || c.error != null) return;
     final pos = _scroll.position;
-    // Two screens ahead: a source page can take seconds (a WebView
-    // challenge, a slow server), so it is fetched while the reader still
-    // has tiles to look at, not when the footer spinner shows (89e1ec6e).
-    final ahead = math.max(600, pos.viewportDimension * 2);
+    // One whole page ahead: a source page can take seconds (MangaFire up to
+    // 1.2 s on the server, more on the phone) and a fling covers two screens
+    // in under a second, so the next page is asked for as soon as the user is
+    // inside the last loaded one (89e1ec6e, bf7e99dc).
+    final pages = math.max(1, c.pagesLoaded);
+    final onePage = (pos.maxScrollExtent + pos.viewportDimension) / pages;
+    final ahead = math.max(math.max(600, pos.viewportDimension * 2), onePage);
     if (pos.extentAfter < ahead) unawaited(c.loadMore());
   }
 

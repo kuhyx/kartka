@@ -42,4 +42,47 @@ void main() {
     // fetched before the reader gets near the footer.
     expect(asked, containsAllInOrder([1, 2]));
   });
+
+  testWidgets(
+    'the next page loads as soon as the user is inside the last loaded '
+    'page, one whole page ahead (bf7e99dc)',
+    (tester) async {
+      tester.view.physicalSize = const Size(800, 600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final asked = <int>[];
+      final c = PagedController<MangaSummary>((page) async {
+        asked.add(page);
+        return (
+          items: [
+            for (var i = 0; i < 50; i++)
+              MangaSummary(sourceId: 's', url: '/$page/$i', title: 't$i'),
+          ],
+          hasNext: page < 5,
+        );
+      }, keyOf: (m) => m.url);
+      addTearDown(c.dispose);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: BrowseScope(
+            deps: Harness(withCovers: false).deps,
+            child: Scaffold(body: PagedMangaGrid(c)),
+          ),
+        ),
+      );
+      for (var i = 0; i < 4; i++) {
+        await tester.pump();
+      }
+      expect(asked, [1, 2]);
+      expect(asked, isNot(contains(3)));
+      final scrollable = tester.state<ScrollableState>(find.byType(Scrollable));
+      final pos = scrollable.position;
+      final jumpTo = pos.maxScrollExtent / 2 + 10;
+      pos.jumpTo(jumpTo);
+      for (var i = 0; i < 4; i++) {
+        await tester.pump();
+      }
+      expect(asked, contains(3));
+    },
+  );
 }

@@ -26,11 +26,12 @@ void main() {
       settle: false,
     );
     await t.pump();
-    expect(src.calls, ['popular:1']);
+    // One whole page ahead: page 2 is asked for while page 1 is on screen.
+    expect(src.calls, ['popular:1', 'popular:2']);
     await t.drag(find.byType(CustomScrollView), const Offset(0, -2400));
     await t.pump();
     await t.pump();
-    expect(src.calls, contains('popular:2'));
+    expect(src.calls, contains('popular:3'));
   });
 
   testWidgets('latest tab and search tab', (t) async {
