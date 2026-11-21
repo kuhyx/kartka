@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
+import 'package:kartka/core/diagnostics/upload_rule.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/downloads/downloads_feature.dart';
 import 'package:kartka/downloads/queue/download_task.dart';
+import 'package:kartka/platform/extension_runtime.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 
 const _lookup =
@@ -64,6 +66,22 @@ void main() {
     expect(await kinds(), hasLength(2));
   });
 
+  test('an extension chapter failing on Java DNS reports its source once, '
+      'and the entry stays on the device (aac6514f)', () async {
+    for (var i = 0; i < 3; i++) {
+      report(
+        _task('ext:atsu', i),
+        const ExtensionRuntimeException(
+          'Unable to resolve host "cdn.atsu.moe": No address associated '
+          'with hostname',
+        ),
+        StackTrace.empty,
+      );
+    }
+    expect(await kinds(), [('downloads.offline', 'ext:atsu')]);
+    expect(isUploadedEntry((await log.entries()).single), isFalse);
+  });
+
   test('a failure that is not the network stays downloads.failed', () async {
     report(
       _task('suwayomi:1', 1),
@@ -71,10 +89,17 @@ void main() {
       StackTrace.empty,
     );
     report(_task('suwayomi:1', 2), StateError('HTTP 503'), StackTrace.empty);
+    report(
+      _task('ext:atsu', 3),
+      const ExtensionRuntimeException('Chapter not found'),
+      StackTrace.empty,
+    );
     expect(await kinds(), [
       ('downloads.failed', 'suwayomi:1'),
       ('downloads.failed', 'suwayomi:1'),
+      ('downloads.failed', 'ext:atsu'),
     ]);
+    expect(isUploadedEntry((await log.entries()).last), isTrue);
   });
 
   test('a source nothing lists (server down, or uninstalled) is not '

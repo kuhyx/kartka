@@ -16,7 +16,7 @@ The device log (`DOCS-contracts.md` §7) stays kartka's.
 | `reader.open` | `ReaderSession.open` (the reader's Retry screen); not a chapter neither downloaded nor fetchable (`ChapterUnavailable`). The reader's probe adds the cause with the source id: `ReaderProbe: <sourceId> listed no pages`, or `first 3 images failed on <sourceId>: <error>` (`FirstImagesProbe`). |
 | `reader.page` | `ReaderSession.image` (a page's Retry); background prefetch stays quiet. |
 | `downloads.failed` | `DownloadService.onFailure` (the queue's Retry), wired by `downloadsFeature`; not a source nothing lists (`UnknownSourceError`). |
-| `downloads.offline` | `downloadFailureReporter`: a server that cannot be reached (`isOfflineError`), once per server per 10 min, not once per chapter. |
+| `downloads.offline` | `downloadFailureReporter`: a server that cannot be reached (`isOfflineError`: Dart's `Failed host lookup` or an Android extension's Java `Unable to resolve host`), once per server per 10 min, not once per chapter. |
 | `plugins.repo` | `PluginManager.onRepoError` (the per-repo error list on More → Plugins). |
 | `health.read` | `ReportingHealthFeed`, around the Sources tab's feed only (not the badges). |
 | `details.load`, `details.refresh` | `MangaDetailController.load` / `refresh`. |

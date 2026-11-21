@@ -3,20 +3,25 @@
 ///
 /// Matched on the error's text: only `lib/platform` may import `dart:io` or
 /// `package:http` (import boundaries), and their exceptions reach here
-/// wrapped (`ClientException with SocketException: ...`) anyway.
+/// wrapped (`ClientException with SocketException: ...`) anyway. Android
+/// extension chapters fetch in Java (OkHttp), and only its message comes
+/// back (`ExtensionRuntimeException`), so Java's texts are matched too:
+/// `Unable to resolve host "<h>"` is its failed DNS lookup.
 library;
 
 import 'dart:async';
 
 final _transient = RegExp(
-  'Failed host lookup|Network is unreachable|No route to host|'
-  'Connection reset|connection abort|Connection closed|Connection refused|'
+  'Failed host lookup|Unable to resolve host|Network is unreachable|'
+  'No route to host|Connection reset|connection abort|Connection closed|'
+  'Connection refused|'
   r'Connection timed out|timed out|: timeout\b|HandshakeException',
   caseSensitive: false,
 );
 
 final _offline = RegExp(
-  'Failed host lookup|Network is unreachable|No route to host',
+  'Failed host lookup|Unable to resolve host|Network is unreachable|'
+  'No route to host',
   caseSensitive: false,
 );
 
@@ -30,7 +35,8 @@ bool isTransientNetworkError(Object error) =>
 bool isOfflineError(Object error) => _offline.hasMatch('$error');
 
 final _environment = RegExp(
-  'Failed host lookup|Network is unreachable|No route to host|'
+  'Failed host lookup|Unable to resolve host|Network is unreachable|'
+  'No route to host|'
   'Name or service not known|connection abort|Connection reset|'
   'Connection refused|Timed out waiting for WebView|'
   r'KartkaHttpException\(50[0234],|not on the server for ',

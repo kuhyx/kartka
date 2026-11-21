@@ -7,6 +7,7 @@ import 'package:kartka/core/net/network_errors.dart';
 import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/library/ports.dart';
+import 'package:kartka/platform/extension_runtime.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/updates/state/update_runner.dart';
 
@@ -39,6 +40,17 @@ void main() {
     expect(isOfflineError(Exception('Network is unreachable')), isTrue);
     expect(isTransientNetworkError(StateError('Unknown source x')), isFalse);
     expect(isOfflineError(StateError('Unknown source x')), isFalse);
+  });
+
+  test("the Android extension runtime's Java DNS failure is offline "
+      '(aac6514f)', () {
+    const java = ExtensionRuntimeException(
+      'Unable to resolve host "cdn.atsu.moe": No address associated with '
+      'hostname',
+    );
+    expect(isTransientNetworkError(java), isTrue);
+    expect(isOfflineError(java), isTrue);
+    expect(isEnvironmentError(java), isTrue);
   });
 
   test('a transient failure is retried with backoff, then works', () async {
