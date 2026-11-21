@@ -27,12 +27,14 @@ KartkaFeature readerFeature(KartkaEnv env, {ReaderSystem? system}) {
   final pageLists = PageListCache(env.platform.kv);
   // The registry is late: the loader is built when an image is fetched.
   final images = PageImageWarmer((page) => _imageLoader(env).load(page));
+  // One per app run too: it keeps every provider's list between opens.
+  final sources = SourceLookup(() => env.registry.all<SourceProvider>());
   return KartkaFeature(
     id: 'reader',
     services: [
       PageWarmSlot(
         cache: pageLists,
-        findSource: (id) => findSource(env.registry.all<SourceProvider>(), id),
+        findSource: sources.find,
         progress: () => env.registry.maybe<LibraryRepositories>()?.progress,
         downloads: () => env.registry.maybe<DownloadRepository>(),
         images: images,
@@ -48,6 +50,7 @@ KartkaFeature readerFeature(KartkaEnv env, {ReaderSystem? system}) {
           system ?? PlatformReaderSystem.host(),
           pageLists,
           images,
+          sources,
         ),
       ),
     ],
@@ -67,11 +70,12 @@ ReaderDeps readerDeps(
   KartkaEnv env, {
   PageListCache? pageLists,
   PageImageWarmer? images,
+  SourceLookup? sources,
 }) {
   final registry = env.registry;
   final platform = env.platform;
   return ReaderDeps(
-    findSource: (id) => findSource(registry.all<SourceProvider>(), id),
+    findSource: (sources ?? SourceLookup(registry.all<SourceProvider>)).find,
     progress: registry.maybe<LibraryRepositories>()?.progress,
     downloads: registry.maybe<DownloadRepository>(),
     // The global settings sync (§16); per-manga modes are never listed.
@@ -89,6 +93,7 @@ Widget _route(
   ReaderSystem system,
   PageListCache pageLists,
   PageImageWarmer images,
+  SourceLookup sources,
 ) {
   final args = parseReadRoute(state.uri.toString());
   if (args == null) {
@@ -104,7 +109,12 @@ Widget _route(
     sourceId: args.sourceId,
     mangaUrl: args.mangaUrl,
     chapterUrl: args.chapterUrl,
-    deps: readerDeps(env, pageLists: pageLists, images: images),
+    deps: readerDeps(
+      env,
+      pageLists: pageLists,
+      images: images,
+      sources: sources,
+    ),
     system: system,
     startAtEnd: state.extra == readAtEndExtra,
     onOpenChapter: (c, {atEnd = false}) => GoRouter.of(context).replace<void>(

@@ -18,68 +18,91 @@ class _Broken implements SourceProvider {
   Stream<List<MangaSource>> watch() => Stream.error(StateError('down'));
 }
 
+class _Throws implements SourceProvider {
+  @override
+  Stream<List<MangaSource>> watch() => throw StateError('no runtime');
+}
+
+/// Lists what [stream] emits and counts the subscriptions.
+class _Of implements SourceProvider {
+  new(this.stream);
+
+  final Stream<List<MangaSource>> stream;
+  int watches = 0;
+
+  @override
+  Stream<List<MangaSource>> watch() {
+    watches++;
+    return stream;
+  }
+}
+
+SourceLookup _lookup(List<SourceProvider> providers) =>
+    SourceLookup(() => providers);
+
 void main() {
   test('finds a source by id across providers', () async {
     final a = FakeSource(id: 'a');
     final b = FakeSource(id: 'b');
-    final providers = [
+    final lookup = _lookup([
       StaticSourceProvider([a]),
       _Broken(),
       StaticSourceProvider([b]),
-    ];
-    expect(await findSource(providers, 'b'), same(b));
-    expect(await findSource(providers, 'a'), same(a));
-    expect(await findSource(providers, 'zzz'), isNull);
+      _Of(const Stream.empty()),
+    ]);
+    expect(await lookup.find('b'), same(b));
+    expect(await lookup.find('a'), same(a));
+    expect(await lookup.find('zzz'), isNull);
   });
 
   test('a provider that never emits does not hang the reader', () async {
-    final found = await findSource(
-      [
-        _Silent(),
-        StaticSourceProvider([FakeSource(id: 'x')]),
-      ],
-      'x',
-      wait: const Duration(milliseconds: 10),
-    );
-    expect(found?.ref.id, 'x');
+    final lookup = _lookup([_Silent()]);
+    final found = lookup.find('x', wait: const Duration(milliseconds: 10));
+    expect(await found, isNull);
   });
 
   test('a slow provider does not delay the one that has the source '
       '(971debc8)', () async {
-    final found = await findSource([
+    final found = await _lookup([
       _Silent(),
       StaticSourceProvider([FakeSource(id: 'x')]),
-    ], 'x').timeout(const Duration(seconds: 1));
+    ]).find('x').timeout(const Duration(seconds: 1));
     expect(found?.ref.id, 'x');
   });
 
   test('no providers, or one that throws, is a miss', () async {
-    expect(await findSource(const [], 'x'), isNull);
-    expect(await findSource([_Throws()], 'x'), isNull);
+    expect(await _lookup(const []).find('x'), isNull);
+    expect(await _lookup([_Throws()]).find('x'), isNull);
   });
 
   test('a later provider is found once it emits, before a miss is '
       'decided', () async {
     final late = StreamController<List<MangaSource>>();
     final source = FakeSource(id: 'y');
-    final found = findSource([
+    final found = _lookup([
       StaticSourceProvider([FakeSource(id: 'x')]),
       _Of(late.stream),
-    ], 'y');
+    ]).find('y');
     late.add([source]);
     expect(await found, same(source));
     await late.close();
   });
-}
 
-class _Throws implements SourceProvider {
-  @override
-  Stream<List<MangaSource>> watch() => throw StateError('no runtime');
-}
-
-class _Of implements SourceProvider {
-  const new(this._stream);
-  final Stream<List<MangaSource>> _stream;
-  @override
-  Stream<List<MangaSource>> watch() => _stream;
+  test('lists are kept: later lookups subscribe to nothing new and see '
+      'changes (971debc8)', () async {
+    // Each open re-listed every provider: a cold miss took 0.83 s on the
+    // web build, and the extension host lists all its sources per call.
+    final lists = StreamController<List<MangaSource>>.broadcast();
+    final provider = _Of(lists.stream);
+    final lookup = _lookup([provider]);
+    final first = lookup.find('a');
+    lists.add([FakeSource(id: 'a')]);
+    expect((await first)?.ref.id, 'a');
+    expect(await lookup.find('b'), isNull, reason: 'every list is in');
+    lists.add([FakeSource(id: 'b')]);
+    await pumpEventQueue();
+    expect((await lookup.find('b'))?.ref.id, 'b');
+    expect(provider.watches, 1);
+    await lists.close();
+  });
 }
