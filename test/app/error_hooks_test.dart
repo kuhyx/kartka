@@ -7,7 +7,9 @@ import 'package:kartka/browse/state/refresh_outcome.dart';
 import 'package:kartka/browse/state/source_wait.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/source/unknown_source_error.dart';
+import 'package:kartka/core/ui/snack_mark.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
+import 'package:kartka/source_health/ui/health_icons.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../helpers/fake_platform.dart';
@@ -86,6 +88,18 @@ void main() {
         ),
       ),
     );
+    // IconValue through showMark (the failing /sources case)
+    await show(
+      (c) => showMark(
+        c,
+        const IconValue(
+          Icons.error_outline,
+          'HTTP 502',
+          semanticLabel: 'Install failed',
+        ),
+        error: true,
+      ),
+    );
     // A missing source is a known state, not an error to report.
     for (final missing in [
       UnknownSourceError('suwayomi:1'),
@@ -110,6 +124,7 @@ void main() {
       'Install failed: HTTP 500',
       'Sync failed: 401',
       'Download failed: timeout',
+      'Install failed: HTTP 502',
     ]);
     expect(entries.every((e) => e.kind == 'ui.snackbar'), isTrue);
     expect(entries.first.route, '/probe/:id');

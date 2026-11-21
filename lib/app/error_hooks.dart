@@ -6,7 +6,9 @@ library;
 import 'package:design_system/design_system.dart';
 import 'package:kartka/app/screen_observer.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
+import 'package:kartka/core/ui/snack_mark.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
+import 'package:kartka/source_health/ui/health_icons.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Keeps [log]'s route current, so every entry names its screen (a
@@ -77,14 +79,20 @@ String? _snackText(Widget content) => switch (content) {
   Text(:final data, :final textSpan) => data ?? textSpan?.toPlainText(),
   Icon(:final semanticLabel) => semanticLabel,
   SpokenLabel(:final semanticLabel) => semanticLabel,
+  SnackMark(:final mark) => _snackText(mark),
+  IconValue(:final semanticLabel, :final value) => '$semanticLabel: $value',
   _ => null,
 };
 
-/// The current stack minus this file's own frames, so its first kartka
-/// frame is the screen that showed the snackbar.
+/// The current stack minus this file's and snack_mark's own frames, so its
+/// first kartka frame is the screen that showed the snackbar.
 StackTrace _callerStack() => StackTrace.fromString(
   '${StackTrace.current}'
       .split('\n')
-      .where((f) => !f.contains('app/error_hooks.dart'))
+      .where(
+        (f) =>
+            !f.contains('app/error_hooks.dart') &&
+            !f.contains('core/ui/snack_mark.dart'),
+      )
       .join('\n'),
 );
