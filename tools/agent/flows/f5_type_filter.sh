@@ -22,6 +22,15 @@ tick() {
   check drive wait "$1" --flag checked "${gone[@]}" --timeout 5 >/dev/null
 }
 
+# Opens the type sheet and lets its slide-in finish: a tap during the
+# animation lands where the row was a frame ago and misses.
+open_sheet() {
+  check drive wait "Content types" --timeout 15 >/dev/null
+  check drive tap "Content types" >/dev/null
+  check drive wait Manhua --timeout 5 >/dev/null
+  sleep 0.5
+}
+
 step "start the isolated agent instance"
 check "$AGENT" start
 drive key Escape >/dev/null 2>&1 || true # a sheet left open by a failed run
@@ -34,7 +43,7 @@ check drive tap "$SOURCE" >/dev/null
 check drive wait "Content types" --timeout 20 >/dev/null
 
 step "the sheet lists the three types; tick any unticked one"
-check drive tap "Content types" >/dev/null
+open_sheet
 check drive wait Manga --timeout 5 >/dev/null
 for t in "${TYPES[@]}"; do
   # A stored older choice (e.g. manga only) shows fewer ticks.
@@ -48,13 +57,13 @@ check drive key Escape >/dev/null
 check drive wait "No content type ticked" --timeout 10 >/dev/null
 
 step "tick Manga again: the hint goes"
-check drive tap "Content types" >/dev/null
+open_sheet
 tick Manga on
 check drive key Escape >/dev/null
 check drive wait "No content type ticked" --gone --timeout 20 >/dev/null
 
 step "restore every type for the next run"
-check drive tap "Content types" >/dev/null
+open_sheet
 tick Manhwa on
 tick Manhua on
 check drive key Escape >/dev/null
