@@ -28,6 +28,16 @@ class SessionFixture {
   final MemoryBlobStore diagnosticsStore = MemoryBlobStore();
   late final DiagnosticsLog diagnostics = DiagnosticsLog(diagnosticsStore);
 
+  /// Settable clock for tests that need to simulate slow steps.
+  DateTime _now = DateTime.utc(2026, 10, 24);
+  DateTime Function() get now =>
+      () => _now;
+  void advance(Duration d) => _now = _now.add(d);
+
+  /// Optional callback invoked with each step name from loadChapterPages.
+  /// Can be used to advance the clock during specific steps.
+  void Function(String step)? onStep;
+
   ReaderSession make({
     FakeSource? source,
     FakeDownloads? downloads,
@@ -37,6 +47,7 @@ class SessionFixture {
     Duration advanceTimeout = const Duration(seconds: 30),
     PageListCache? pageLists,
     bool fresh = false,
+    void Function(String step)? onStep,
   }) {
     progress = FakeProgress(initial: saved);
     final src =
@@ -45,6 +56,10 @@ class SessionFixture {
           chapterList: sessionChapters,
           pageMap: {'/c/2': fakePages('/c/2', 5)},
         );
+
+    // Wrap findSource to inject onStep into loadChapterPages
+    // The session's _openChapter calls loadChapterPages with onStep: recordStep
+    // We need to combine the test's onStep with the session's recordStep
     return ReaderSession(
       sourceId: 'fake',
       mangaUrl: '/m/1',
@@ -64,7 +79,8 @@ class SessionFixture {
           if (imageError case final e?) throw e;
           return Uint8List(1);
         },
-        now: () => DateTime.utc(2026, 10, 24),
+        now: now,
+        onStep: onStep ?? this.onStep,
       ),
     );
   }

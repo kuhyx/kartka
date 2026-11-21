@@ -1,9 +1,38 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/diagnostics/upload_rule.dart';
+import 'package:kartka/core/models/models.dart';
 import 'package:kartka/reader/state/reader_session.dart';
 
 import '../support/fakes.dart';
 import 'session_fixture.dart';
+
+/// A source whose pages call waits on [gate] to simulate a slow page list fetch.
+class _SlowPagesSource extends FakeSource {
+  _SlowPagesSource({required this.gate, super.pageMap})
+    : super(chapterList: sessionChapters);
+
+  final Completer<void> gate;
+
+  @override
+  Future<List<PageRef>> pages(String chapterUrl) {
+    return gate.future.then((_) => super.pages(chapterUrl));
+  }
+}
+
+/// A source whose lookup waits on [gate] to simulate a slow source lookup.
+class _SlowLookupSource extends FakeSource {
+  _SlowLookupSource({required this.gate, super.pageMap})
+    : super(chapterList: sessionChapters);
+
+  final Completer<void> gate;
+
+  @override
+  Future<List<ChapterInfo>> chapters(String mangaUrl) {
+    return gate.future.then((_) => super.chapters(mangaUrl));
+  }
+}
 
 /// The reader's probe (971debc8): a chapter that opens with no pages, or
 /// whose first images all fail, sends its cause up as one `reader.open`
@@ -55,5 +84,98 @@ void main() {
     await pumpEventQueue();
     final kinds = [for (final e in await f.diagnostics.entries()) e.kind];
     expect(kinds, isNot(contains('reader.open')));
+  });
+
+  group('slow open step probe', () {
+    test('a slow page list step logs the slowest step', () async {
+      final gate = Completer<void>();
+      final src = _SlowPagesSource(
+        gate: gate,
+        pageMap: {'/c/2': fakePages('/c/2', 3)},
+      );
+
+      f = SessionFixture();
+
+      // Advance clock by 2s when 'pages' step is called
+      f.onStep = (step) {
+        if (step == 'pages') {
+          f.advance(const Duration(seconds: 2));
+        }
+      };
+
+      final s = f.make(source: src);
+
+      // Start open - it will block on the gate
+      final openFuture = s.open().timeout(const Duration(seconds: 5));
+
+      // Wait a bit for it to reach the gate
+      await Future<void>.delayed(Duration.zero);
+
+      // Complete the gate so pages can proceed
+      gate.complete();
+
+      // Wait for open to complete
+      await openFuture;
+
+      await pumpEventQueue();
+
+      final entries = await f.diagnostics.entries();
+      final probes = [
+        for (final e in entries)
+          if (e.kind == 'reader.open') e,
+      ];
+      expect(probes, hasLength(1));
+      expect(probes.single.error, contains('open waited on pages'));
+      expect(probes.single.error, contains('fake'));
+      expect(isUploadedEntry(probes.single), isTrue);
+    });
+
+    test('a slow source lookup step logs the slowest step', () async {
+      final gate = Completer<void>();
+      final src = _SlowLookupSource(
+        gate: gate,
+        pageMap: {'/c/2': fakePages('/c/2', 3)},
+      );
+
+      f = SessionFixture();
+
+      // Advance clock by 2s when 'source' step is called
+      f.onStep = (step) {
+        if (step == 'source') {
+          f.advance(const Duration(seconds: 2));
+        }
+      };
+
+      final s = f.make(source: src);
+
+      final openFuture = s.open().timeout(const Duration(seconds: 5));
+      await Future<void>.delayed(Duration.zero);
+      gate.complete();
+      await openFuture;
+      await pumpEventQueue();
+
+      final entries = await f.diagnostics.entries();
+      final probes = [
+        for (final e in entries)
+          if (e.kind == 'reader.open') e,
+      ];
+      expect(probes, hasLength(1));
+      expect(probes.single.error, contains('open waited on source'));
+      expect(probes.single.error, contains('fake'));
+      expect(isUploadedEntry(probes.single), isTrue);
+    });
+
+    test('a fast open logs no reader.open entry', () async {
+      final src = FakeSource(
+        chapterList: sessionChapters,
+        pageMap: {'/c/2': fakePages('/c/2', 3)},
+      );
+
+      final s = f.make(source: src);
+      await s.open();
+
+      final kinds = [for (final e in await f.diagnostics.entries()) e.kind];
+      expect(kinds, isNot(contains('reader.open')));
+    });
   });
 }

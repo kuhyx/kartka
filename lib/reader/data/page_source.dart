@@ -35,6 +35,9 @@ class ChapterUnavailable extends ReaderLoadException {
 /// network; only when there are none is [source] asked, and waited for
 /// (a source still being looked up), through [cache] when there is one
 /// ([fresh]: Retry, which asks the source even if it is marked).
+///
+/// [onStep] is called after each major step finishes, for timing probes.
+/// Steps: 'offline', 'source', 'pages'.
 Future<ChapterPages> loadChapterPages({
   required MangaKey key,
   required String chapterUrl,
@@ -42,16 +45,20 @@ Future<ChapterPages> loadChapterPages({
   FutureOr<MangaSource?> source,
   PageListCache? cache,
   bool fresh = false,
+  void Function(String step)? onStep,
 }) async {
   final offline = await downloads?.offlinePages(key, chapterUrl);
+  onStep?.call('offline');
   if (offline != null && offline.isNotEmpty) {
     return (pages: _sorted(offline), offline: true);
   }
   final found = await source;
+  onStep?.call('source');
   if (found == null) throw const ChapterUnavailable();
   final pages = cache == null
       ? await found.pages(chapterUrl)
       : await cache.pages(found, chapterUrl, fresh: fresh);
+  onStep?.call('pages');
   return (pages: _sorted(pages), offline: false);
 }
 
