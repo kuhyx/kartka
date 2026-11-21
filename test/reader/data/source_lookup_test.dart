@@ -37,6 +37,30 @@ class _Of implements SourceProvider {
   }
 }
 
+/// Lists nothing first (a failed load), then [later] on refresh.
+class _Recovers implements RefreshableSourceProvider {
+  new(this.later, {this.fails = false, this.silent = false});
+
+  final List<MangaSource> later;
+  final bool fails;
+  final bool silent;
+  final _lists = StreamController<List<MangaSource>>.broadcast();
+  int refreshes = 0;
+
+  @override
+  Stream<List<MangaSource>> watch() async* {
+    yield const [];
+    yield* _lists.stream;
+  }
+
+  @override
+  Future<void> refresh() async {
+    refreshes++;
+    if (fails) throw StateError('still down');
+    if (!silent) _lists.add(later);
+  }
+}
+
 SourceLookup _lookup(List<SourceProvider> providers) =>
     SourceLookup(() => providers);
 
@@ -104,5 +128,29 @@ void main() {
     expect((await lookup.find('b'))?.ref.id, 'b');
     expect(provider.watches, 1);
     await lists.close();
+  });
+
+  test('a miss asks a provider that listed nothing again (Retry, a '
+      'runtime that failed to start)', () async {
+    final source = FakeSource(id: 'x');
+    final recovers = _Recovers([source]);
+    final lookup = _lookup([
+      StaticSourceProvider([FakeSource(id: 'a')]),
+      recovers,
+    ]);
+    expect(await lookup.find('x'), same(source));
+    expect(await lookup.find('x'), same(source));
+    expect(recovers.refreshes, 1, reason: 'a hit asks nothing again');
+  });
+
+  test('a refresh that fails or lists nothing new is a quick miss', () async {
+    for (final p in [
+      _Recovers(const [], fails: true),
+      _Recovers(const [], silent: true),
+    ]) {
+      final found = _lookup([p]).find('x');
+      expect(await found.timeout(const Duration(seconds: 1)), isNull);
+      expect(p.refreshes, 1);
+    }
   });
 }

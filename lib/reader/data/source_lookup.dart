@@ -23,12 +23,43 @@ class SourceLookup {
   /// The source with [id], or null once every provider has listed without
   /// it. A provider that has not listed within [wait] or fails counts as a
   /// miss, so one slow runtime cannot keep a downloaded chapter from
-  /// opening.
+  /// opening. On a miss, a refreshable provider that listed nothing (its
+  /// load failed: no server, a runtime that did not start) is asked once
+  /// more, as re-listing it on every open used to.
   Future<MangaSource?> find(
     String id, {
     Duration wait = const Duration(seconds: 5),
   }) async {
     final kept = _kept ??= [for (final p in _providers()) _keep(p)];
+    if (await _settle(kept, id, wait) case final s?) return s;
+    final stale = [
+      for (final k in kept)
+        if (k.sources.isEmpty && k.provider is RefreshableSourceProvider) k,
+    ];
+    if (stale.isEmpty) return null;
+    for (final k in stale) {
+      k.listed = false;
+      unawaited(
+        (k.provider as RefreshableSourceProvider)
+            .refresh()
+            .catchError((Object _) {})
+            // After the lists it sent (delivered in microtasks): a refresh
+            // that sent none is a miss, not a 5 s wait.
+            .then((_) => Future<void>.delayed(Duration.zero))
+            .then((_) => k.listed = true)
+            .whenComplete(() => _changed.add(null)),
+      );
+    }
+    return await _settle(kept, id, wait);
+  }
+
+  /// The source with [id] once it is listed, or null once every provider
+  /// has listed (or [wait] is up) without it.
+  Future<MangaSource?> _settle(
+    List<_Kept> kept,
+    String id,
+    Duration wait,
+  ) async {
     MangaSource? hit() {
       for (final k in kept) {
         for (final s in k.sources) {
@@ -54,7 +85,7 @@ class SourceLookup {
   }
 
   _Kept _keep(SourceProvider provider) {
-    final kept = _Kept();
+    final kept = _Kept(provider);
     void listed([List<MangaSource>? sources]) {
       if (sources != null) kept.sources = sources;
       kept.listed = true;
@@ -76,6 +107,9 @@ class SourceLookup {
 
 /// One provider's latest list, and whether it has listed (or failed) yet.
 class _Kept {
+  new(this.provider);
+
+  final SourceProvider provider;
   List<MangaSource> sources = const [];
   bool listed = false;
 }
