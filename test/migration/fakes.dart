@@ -49,6 +49,9 @@ class ScriptedSource implements MangaSource {
   /// Thrown by [chapters] when set.
   Error? chaptersError;
 
+  /// Thrown by [pages] when set.
+  Error? pagesError;
+
   /// Details by manga url (missing: [details] throws).
   final Map<String, MangaDetails> detailMap = {};
 
@@ -116,7 +119,10 @@ class ScriptedSource implements MangaSource {
   }
 
   @override
-  Future<List<PageRef>> pages(String chapterUrl) => throw UnimplementedError();
+  Future<List<PageRef>> pages(String chapterUrl) async => [
+    if (pagesError case final e?) throw e,
+    for (var i = 0; i < 5; i++) PageRef(index: i, imageUrl: '$chapterUrl#$i'),
+  ];
 }
 
 /// Old chapter numbers per key, the way browse's chapter cache answers.

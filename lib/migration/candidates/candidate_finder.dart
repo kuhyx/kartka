@@ -170,6 +170,8 @@ class CandidateFinder {
         rank: h.rank,
         chapters: chapters?.length,
         newest: newestOf(chapters),
+        description: details?.description,
+        previewChapterUrl: firstOf(chapters)?.url,
       );
     });
     return EntryCandidates(

@@ -27,3 +27,19 @@ Limit: when the entry's own source returns no details, author and
 description count as unknown and the best score is 0.775 (0.725 when its
 chapter list fails too), so the pass leaves entries on dead sources for
 manual review.
+
+## Descriptions (4b)
+
+Each candidate card shows its source's description (user content, at most
+3 lines) when the finder fetched details for it (the `detailedHits` best
+hits), the same text `SameManga` scored.
+
+## Page previews (4c)
+
+A card whose chapter list is known shows a page-previews icon (spoken
+"Page previews"). A tap toggles `PagePreviews`
+(`lib/migration/walk/page_previews.dart`): the first 3 pages of the
+candidate's lowest-numbered chapter (`firstOf`; the last listed when none
+is numbered), loaded on demand through `PageImageLoader` (the reader's
+loader, so image headers apply). A page or page list that fails shows a
+broken-image icon. Nothing is fetched until the icon is tapped.

@@ -8,6 +8,7 @@ import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/migration/better/better_route.dart';
 import 'package:kartka/migration/first_value.dart';
 import 'package:kartka/migration/migration_deps.dart';
+import 'package:kartka/migration/walk/page_previews.dart';
 import 'package:kartka/migration/walk/walk_controller.dart';
 import 'package:kartka/migration/walk/walk_screen.dart';
 import 'package:kartka/platform/cover_cache.dart';
@@ -26,6 +27,7 @@ MigrationWalkScreen migrationWalk(
   MigrationDeps deps, {
   WalkScope scope = WalkScope.library,
   Set<MangaKey>? onlyKeys,
+  PageBytes? pages,
 }) => MigrationWalkScreen(
   controller: MigrationWalkController(
     deps,
@@ -39,15 +41,18 @@ MigrationWalkScreen migrationWalk(
     onlyKeys: onlyKeys,
   ),
   coverLoader: registry.maybe<CoverCache>()?.get,
+  pageLoader: pages,
 );
 
 /// The [betterSourcesRoute] walk: the entries whose source should be left.
 GoRoute betterSourcesGoRoute(
   KartkaRegistry Function() registry,
-  MigrationDeps Function() deps,
-) => GoRoute(
+  MigrationDeps Function() deps, {
+  PageBytes? pages,
+}) => GoRoute(
   path: betterSourcesRoute,
-  builder: (_, _) => migrationWalk(registry(), deps(), scope: WalkScope.better),
+  builder: (_, _) =>
+      migrationWalk(registry(), deps(), scope: WalkScope.better, pages: pages),
 );
 
 /// The More tile opening [betterSourcesRoute].

@@ -9,6 +9,9 @@ import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/migration/better/better_wiring.dart';
 import 'package:kartka/migration/dedupe/dedupe_wiring.dart';
 import 'package:kartka/migration/migration_deps.dart';
+import 'package:kartka/migration/walk/page_previews.dart';
+import 'package:kartka/platform/image_headers.dart';
+import 'package:kartka/platform/page_image.dart';
 import 'package:kartka/tracking/common/chapter_url_resolver.dart';
 import 'package:kartka/tracking/common/tracking_service.dart';
 import 'package:material_ui/material_ui.dart';
@@ -38,10 +41,15 @@ KartkaFeature migrationFeature(KartkaEnv env) => KartkaFeature(
           env.registry,
           _deps(env),
           onlyKeys: keys.isEmpty ? null : keys.toSet(),
+          pages: _pages(env),
         );
       },
     ),
-    betterSourcesGoRoute(() => env.registry, () => _deps(env)),
+    betterSourcesGoRoute(
+      () => env.registry,
+      () => _deps(env),
+      pages: _pages(env),
+    ),
   ],
   settingsTiles: [
     (context) => ListTile(
@@ -121,3 +129,13 @@ class _MigrateButtonState extends State<_MigrateButton> {
         : const SizedBox.shrink(),
   );
 }
+
+/// Page bytes for the walk's previews, as the reader loads them (headers
+/// read from the finished registry at each load).
+PageBytes _pages(KartkaEnv env) =>
+    (page) => PageImageLoader(
+      http: env.platform.http,
+      blobs: env.platform.blobs,
+      imageHeaders: env.registry.all<ImageHeaders>(),
+      extensions: env.platform.extensions,
+    ).load(page);

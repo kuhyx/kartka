@@ -5,6 +5,7 @@ import 'package:kartka/app/cached_cover.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/migration/migration_outcome.dart';
 import 'package:kartka/migration/walk/candidate_card.dart';
+import 'package:kartka/migration/walk/page_previews.dart';
 import 'package:kartka/migration/walk/walk_auto.dart';
 import 'package:kartka/migration/walk/walk_controller.dart';
 import 'package:kartka/migration/walk/walk_parts.dart';
@@ -18,13 +19,21 @@ import 'package:material_ui/material_ui.dart';
 /// titles, source names, numbers, dates.
 class MigrationWalkScreen extends StatefulWidget {
   /// Creates the screen; it loads and disposes [controller].
-  const new({required this.controller, this.coverLoader, super.key});
+  const new({
+    required this.controller,
+    this.coverLoader,
+    this.pageLoader,
+    super.key,
+  });
 
   /// Drives the walk.
   final MigrationWalkController controller;
 
   /// Cover bytes (the library's cover cache).
   final CoverBytes? coverLoader;
+
+  /// Page bytes for the candidates' previews; none without one.
+  final PageBytes? pageLoader;
 
   @override
   State<MigrationWalkScreen> createState() => _MigrationWalkScreenState();
@@ -167,6 +176,7 @@ class _MigrationWalkScreenState extends State<MigrationWalkScreen> {
               CandidateCard(
                 candidate: c,
                 loader: loader,
+                pageLoader: widget.pageLoader,
                 onTap: _c.busy || _auto.running
                     ? null
                     : () => unawaited(_c.migrateTo(c)),

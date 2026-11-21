@@ -132,4 +132,20 @@ void main() {
       ..opened(_key) // Nothing to do when the screen opens,
       ..loaded(_key); // nor once it has loaded.
   });
+
+  testWidgets('a candidate previews its first pages through the platform', (
+    t,
+  ) async {
+    final s = await _setup();
+    s.atsu.chapterLists['/atsu/op'] = const [
+      ChapterInfo(url: '/atsu/op/1', name: '1', number: 1),
+    ];
+    await _pump(t, s.feature, Builder(builder: s.feature.settingsTiles.first));
+    await t.tap(find.byIcon(Icons.swap_horiz));
+    await t.pumpAndSettle();
+    await t.tap(find.byIcon(Icons.photo_library_outlined));
+    await t.pumpAndSettle();
+    // Fake page urls have no scheme the loader knows: each is a broken page.
+    expect(find.byIcon(Icons.broken_image_outlined), findsNWidgets(3));
+  });
 }

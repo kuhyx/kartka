@@ -43,6 +43,7 @@ ScriptedSource _own({String? alt}) {
 }
 
 void main() {
+  _firstOfTests();
   test('the same title by another author ranks below the real series, '
       'even from a better source and listed first', () async {
     final best = ScriptedSource('best', name: 'Best')
@@ -71,6 +72,8 @@ void main() {
     expect(top.source, same(good));
     expect(top.chapters, 39);
     expect(top.newest, DateTime.utc(2026, 11, 20));
+    expect(top.description, _knight);
+    expect(top.previewChapterUrl, '/right/1');
     expect(found.ownChapters, 40);
     expect(found.lanes.map((l) => l.state), [LaneState.found, LaneState.found]);
   });
@@ -191,5 +194,16 @@ void main() {
       migrationTargets(keep.take(2).toList(), atsumaru: null),
       keep.take(2),
     );
+  });
+}
+
+void _firstOfTests() {
+  ChapterInfo ch(String url, [double? n]) =>
+      ChapterInfo(url: url, name: url, number: n);
+  test('firstOf: lowest number, else the last listed, else none', () {
+    expect(firstOf([ch('/3', 3), ch('/x'), ch('/1', 1)])?.url, '/1');
+    expect(firstOf([ch('/b'), ch('/a')])?.url, '/a');
+    expect(firstOf(const []), isNull);
+    expect(firstOf(null), isNull);
   });
 }

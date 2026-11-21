@@ -12,6 +12,8 @@ class MigrationCandidate {
     required this.rank,
     this.chapters,
     this.newest,
+    this.description,
+    this.previewChapterUrl,
   });
 
   /// The source it is on.
@@ -31,6 +33,12 @@ class MigrationCandidate {
 
   /// Upload time of its newest chapter; null when unknown.
   final DateTime? newest;
+
+  /// Its source's description (only the best few hits fetch details).
+  final String? description;
+
+  /// Url of its lowest-numbered chapter, whose first pages preview it.
+  final String? previewChapterUrl;
 
   /// Best first: by [score], then [rank], then more [chapters], then the
   /// newer [newest].
@@ -99,4 +107,16 @@ DateTime? newestOf(List<ChapterInfo>? chapters) {
     if (at != null && (newest == null || at.isAfter(newest))) newest = at;
   }
   return newest;
+}
+
+/// The lowest-numbered of [chapters]; the last listed (sources list newest
+/// first) when none is numbered; null when there are none.
+ChapterInfo? firstOf(List<ChapterInfo>? chapters) {
+  if (chapters == null || chapters.isEmpty) return null;
+  ChapterInfo? first;
+  for (final c in chapters) {
+    final n = c.number;
+    if (n != null && (first == null || n < first.number!)) first = c;
+  }
+  return first ?? chapters.last;
 }
