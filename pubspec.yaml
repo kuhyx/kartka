@@ -64,6 +64,12 @@ dependencies:
   http: 1.6.0
   # IndexedDB on web (KeyValueStore); the in-memory backend keeps tests fast.
   idb_shim: 2.11.3
+  # Shared kuhy credit logo: tap opens a "Created by kuhy" panel.
+  kuhy_credit:
+    git:
+      url: https://github.com/kuhyx/utils
+      ref: kuhy-credit-v0.3.0
+      path: kuhy_credit/flutter
   # Flutter 3.50 moved the Material widgets out of the framework.
   material_ui: 1.11.1
   path: 1.9.1

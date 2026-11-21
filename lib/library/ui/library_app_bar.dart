@@ -1,4 +1,5 @@
 import 'package:kartka/library/state/library_controller.dart';
+import 'package:kuhy_credit/kuhy_credit.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The Library app bar in its three modes: normal, searching, selecting.
@@ -125,6 +126,10 @@ class LibraryAppBar extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           icon: const Icon(Icons.label, semanticLabel: 'Edit categories'),
           onPressed: onEditCategories,
+        ),
+        const Padding(
+          padding: EdgeInsets.only(right: 12),
+          child: KuhyCredit(size: 32, below: true),
         ),
       ],
       bottom: bottom,

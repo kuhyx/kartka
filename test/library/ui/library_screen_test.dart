@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kuhy_credit/kuhy_credit.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../support/fakes.dart';
@@ -202,5 +203,10 @@ void main() {
     await tester.tap(find.bySemanticsLabel('Edit categories'));
     await tester.pumpAndSettle();
     expect(find.bySemanticsLabel('Categories'), findsOneWidget);
+  });
+
+  testWidgets('shows KuhyCredit in normal app bar', (tester) async {
+    await pumpLibrary(tester, (await _seed()).deps);
+    expect(find.byType(KuhyCredit), findsOneWidget);
   });
 }
