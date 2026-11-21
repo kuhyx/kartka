@@ -64,6 +64,13 @@ void main() {
     expect(scoreText(null), notMeasured);
   });
 
+  test('a score just under a bar never shows at the bar', () {
+    expect(scoreText(0.846), '0.84');
+    expect(scoreText(0.85), '0.85');
+    expect(scoreText(0.876), '0.87');
+    expect(scoreText(1), '1.00');
+  });
+
   test('instant formats in UTC', () {
     expect(instant(DateTime.utc(2026, 10, 4, 9, 5)), '2026-10-04 09:05 UTC');
   });

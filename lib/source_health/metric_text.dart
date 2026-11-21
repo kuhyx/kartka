@@ -57,9 +57,12 @@ String jpegQualityText(ImageQualityMetric? q) {
   return v == null ? notMeasured : 'q$v';
 }
 
-/// `0.81`.
-String scoreText(double? score) =>
-    score == null ? notMeasured : score.toStringAsFixed(2);
+/// `0.81`, cut (not rounded) to 2 places, so a score just under the keep
+/// bar (0.846) never reads as the bar itself (0.85). The 1e-9 absorbs
+/// binary noise (0.29 * 100 = 28.999...).
+String scoreText(double? score) => score == null
+    ? notMeasured
+    : ((score * 100 + 1e-9).floor() / 100).toStringAsFixed(2);
 
 /// `native · JS plugin · Suwayomi`: the implementations that exist; `none`
 /// when every reported flag is false.
