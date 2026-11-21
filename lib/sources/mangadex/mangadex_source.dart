@@ -77,17 +77,17 @@ class MangaDexSource implements MangaSource, ContentTypeFilterable {
   @override
   Future<TypedPage> listTyped(
     Listing listing,
-    ContentType type,
+    ContentTypes types,
     int page, {
     String query = '',
   }) async {
-    final original = MangadexUrls.originalLanguagesOf(type);
+    final origin = MangadexUrls.originOf(types);
     final narrowed = await _browse(
       page,
       (u) => switch (listing) {
-        Listing.popular => u.popular(page, original: original),
-        Listing.latest => u.latest(page, original: original),
-        Listing.search => u.search(query, page, original: original),
+        Listing.popular => u.popular(page, origin: origin),
+        Listing.latest => u.latest(page, origin: origin),
+        Listing.search => u.search(query, page, origin: origin),
       },
     );
     return (page: narrowed, applied: true);

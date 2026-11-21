@@ -57,10 +57,13 @@ class MangaTile extends StatelessWidget {
 /// focus alike). Failures show a Retry button instead of the spinner.
 class PagedMangaGrid extends StatefulWidget {
   /// Creates the grid; loads the first page if nothing is loaded yet.
-  const new(this.controller, {super.key});
+  const new(this.controller, {this.empty, super.key});
 
   /// Paging state.
   final PagedController<MangaSummary> controller;
+
+  /// Shown when the listing is empty; null: a plain "nothing here" mark.
+  final Widget? empty;
 
   @override
   State<PagedMangaGrid> createState() => _PagedMangaGridState();
@@ -111,10 +114,11 @@ class _PagedMangaGridState extends State<PagedMangaGrid> {
   Widget build(BuildContext context) {
     final c = widget.controller;
     if (c.items.isEmpty && !c.hasNext && c.error == null) {
-      return const EmptyMark(
-        icon: Icons.search_off,
-        semanticLabel: 'Nothing here',
-      );
+      return widget.empty ??
+          const EmptyMark(
+            icon: Icons.search_off,
+            semanticLabel: 'Nothing here',
+          );
     }
     return CustomScrollView(
       controller: _scroll,

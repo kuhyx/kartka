@@ -14,43 +14,66 @@ class _Typed extends FakeSource implements ContentTypeFilterable {
   @override
   Future<TypedPage> listTyped(
     Listing listing,
-    ContentType type,
+    ContentTypes types,
     int page, {
     String query = '',
   }) async {
-    asked.add('${listing.name}/${type.name}/$page/$query');
+    asked.add('${listing.name}/${types.toJson().join('+')}/$page/$query');
     return (page: SearchPage.empty, applied: true);
   }
 }
 
+const _manga = ContentTypes({ContentType.manga});
+
 void main() {
-  test('the toggle cycles manga, manga+manhwa, all, then manga again', () {
-    expect(ContentType.manga.next, ContentType.mangaManhwa);
-    expect(ContentType.mangaManhwa.next, ContentType.all);
-    expect(ContentType.all.next, ContentType.manga);
+  test('ticking toggles one type; all three is all, none is none', () {
+    expect(ContentTypes.all.isAll, isTrue);
+    final two = ContentTypes.all.toggled(ContentType.manhua);
+    expect(two.isAll, isFalse);
+    expect(two.contains(ContentType.manhua), isFalse);
+    expect(two.toggled(ContentType.manhua), ContentTypes.all);
+    expect(_manga.toggled(ContentType.manga).isNone, isTrue);
+    expect(two.hashCode, ContentTypes.all.toggled(ContentType.manhua).hashCode);
+    expect(two == two.toggled(ContentType.manga), isFalse);
   });
 
-  test('stored names parse back; anything else is null', () {
-    for (final t in ContentType.values) {
-      expect(ContentType.tryParse(t.name), t);
-    }
-    expect(ContentType.tryParse('manhua'), isNull);
-    expect(ContentType.tryParse(null), isNull);
+  test('stored as a list in a fixed order; old names still read', () {
+    final two = ContentTypes.all.toggled(ContentType.manhua);
+    expect(two.toJson(), ['manga', 'manhwa']);
+    expect(ContentTypes.parse('["manhwa","manga"]'), two);
+    expect(ContentTypes.parse('[]'), ContentTypes.none);
+    expect(ContentTypes.parse('["manga","webtoon",1]'), _manga);
+    expect(ContentTypes.parse('manga'), _manga);
+    expect(ContentTypes.parse('mangaManhwa'), two);
+    expect(ContentTypes.parse('all'), ContentTypes.all);
+    expect(ContentTypes.parse('webtoon'), isNull);
+    expect(ContentTypes.parse('{"a": 1}'), isNull);
+    expect(ContentTypes.parse(null), isNull);
   });
 
   test('all asks the plain listing and counts as applied', () async {
     final s = FakeSource('plain');
     for (final l in Listing.values) {
-      final r = await listContent(s, l, ContentType.all, 2, query: 'q');
+      final r = await listContent(s, l, ContentTypes.all, 2, query: 'q');
       expect(r.applied, isTrue);
     }
     expect(s.calls, ['popular:2', 'latest:2', 'search(q):2']);
   });
 
+  test('none lists nothing and asks no source', () async {
+    final s = _Typed();
+    final r = await listContent(s, Listing.popular, ContentTypes.none, 1);
+    expect(r.page.items, isEmpty);
+    expect(r.page.hasNext, isFalse);
+    expect(r.applied, isTrue);
+    expect(s.asked, isEmpty);
+    expect(s.calls, isEmpty);
+  });
+
   test('a source without a type filter lists unfiltered, not applied', () {
     final s = FakeSource('plain');
     return expectLater(
-      listContent(s, Listing.popular, ContentType.manga, 1),
+      listContent(s, Listing.popular, _manga, 1),
       completion(isA<TypedPage>().having((r) => r.applied, 'applied', isFalse)),
     ).then((_) => expect(s.calls, ['popular:1']));
   });
@@ -60,15 +83,15 @@ void main() {
     final r = await listContent(
       s,
       Listing.search,
-      ContentType.mangaManhwa,
+      ContentTypes.all.toggled(ContentType.manga),
       3,
       query: 'gate',
     );
     expect(r.applied, isTrue);
-    expect(s.asked, ['search/mangaManhwa/3/gate']);
+    expect(s.asked, ['search/manhwa+manhua/3/gate']);
     expect(s.calls, isEmpty);
     // `all` never reaches the source's narrowed path.
-    await listContent(s, Listing.latest, ContentType.all, 1);
+    await listContent(s, Listing.latest, ContentTypes.all, 1);
     expect(s.asked, hasLength(1));
     expect(s.calls, ['latest:1']);
   });

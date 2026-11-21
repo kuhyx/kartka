@@ -79,11 +79,11 @@ class SuwayomiSource implements MangaSource, ContentTypeFilterable {
   @override
   Future<TypedPage> listTyped(
     Listing listing,
-    ContentType type,
+    ContentTypes types,
     int page, {
     String query = '',
   }) async {
-    final changes = await _types.changesFor(listing, type);
+    final changes = await _types.changesFor(listing, types);
     final typed = changes == null
         ? null
         : await _list('SEARCH', page, query, changes);

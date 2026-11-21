@@ -15,7 +15,7 @@ class TypedListings {
   final MangaSource source;
 
   /// The content-type setting.
-  final ValueListenable<ContentType> type;
+  final ValueListenable<ContentTypes> type;
 
   /// Whether the last page of each listing was narrowed; a listing not
   /// fetched yet is absent.

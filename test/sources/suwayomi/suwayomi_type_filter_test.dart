@@ -21,6 +21,9 @@ Map<String, Object?> _tick(int group, int child, {required bool on}) => {
   'groupChange': {'position': child, 'checkBoxState': on},
 };
 
+const _manga = ContentTypes({ContentType.manga});
+const _mangaManhwa = ContentTypes({ContentType.manga, ContentType.manhwa});
+
 void main() {
   test('fixtures were recorded with the client document', () {
     for (final name in ['mangafire', 'mangadex']) {
@@ -32,27 +35,37 @@ void main() {
   group('MangaFire (Type group, "Sort by" select)', () {
     final f = _parsed('mangafire');
 
-    test('search ticks only manga', () {
-      expect(f.changesFor(Listing.search, ContentType.manga), [
+    test('manga ticks manga and "Other" (unknown counts as manga)', () {
+      expect(f.changesFor(Listing.search, _manga), [
         _tick(2, 0, on: true),
         _tick(2, 1, on: false),
         _tick(2, 2, on: false),
-        _tick(2, 3, on: false),
+        _tick(2, 3, on: true),
       ]);
     });
 
     test('manga+manhwa ticks both', () {
-      final changes = f.changesFor(Listing.search, ContentType.mangaManhwa)!;
+      final changes = f.changesFor(Listing.search, _mangaManhwa)!;
       expect(changes.take(2), [_tick(2, 0, on: true), _tick(2, 1, on: true)]);
-      expect(changes.skip(2), [_tick(2, 2, on: false), _tick(2, 3, on: false)]);
+      expect(changes.skip(2), [_tick(2, 2, on: false), _tick(2, 3, on: true)]);
+    });
+
+    test('manhwa+manhua leaves manga and "Other" out', () {
+      final types = ContentTypes.all.toggled(ContentType.manga);
+      expect(f.changesFor(Listing.search, types), [
+        _tick(2, 0, on: false),
+        _tick(2, 1, on: true),
+        _tick(2, 2, on: true),
+        _tick(2, 3, on: false),
+      ]);
     });
 
     test('popular sorts by most viewed, latest by latest update', () {
-      expect(f.changesFor(Listing.popular, ContentType.manga)!.last, {
+      expect(f.changesFor(Listing.popular, _manga)!.last, {
         'position': 16,
         'selectState': 8,
       });
-      expect(f.changesFor(Listing.latest, ContentType.manga)!.last, {
+      expect(f.changesFor(Listing.latest, _manga)!.last, {
         'position': 16,
         'selectState': 0,
       });
@@ -60,14 +73,15 @@ void main() {
 
     test('all sends no filters', () {
       for (final l in Listing.values) {
-        expect(f.changesFor(l, ContentType.all), isNull);
+        expect(f.changesFor(l, ContentTypes.all), isNull);
+        expect(f.changesFor(l, ContentTypes.none), isNull);
       }
     });
   });
 
   test('MangaDex: "Original language" group, Sort filter descending', () {
     final f = _parsed('mangadex');
-    final popular = f.changesFor(Listing.popular, ContentType.mangaManhwa)!;
+    final popular = f.changesFor(Listing.popular, _mangaManhwa)!;
     expect(popular, [
       _tick(1, 0, on: true),
       _tick(1, 1, on: false),
@@ -77,7 +91,7 @@ void main() {
         'sortState': {'index': 2, 'ascending': false},
       },
     ]);
-    expect(f.changesFor(Listing.latest, ContentType.manga)!.last, {
+    expect(f.changesFor(Listing.latest, _manga)!.last, {
       'position': 5,
       'sortState': {'index': 1, 'ascending': false},
     });
@@ -100,7 +114,7 @@ void main() {
       },
     ]);
     for (final l in Listing.values) {
-      expect(f.changesFor(l, ContentType.manga), isNull);
+      expect(f.changesFor(l, _manga), isNull);
     }
   });
 
@@ -116,7 +130,7 @@ void main() {
         ],
       },
     ]);
-    expect(f.changesFor(Listing.search, ContentType.manga), [
+    expect(f.changesFor(Listing.search, _manga), [
       {
         'position': 0,
         'groupChange': {'position': 0, 'triState': 'IGNORE'},
@@ -127,10 +141,10 @@ void main() {
       },
     ]);
     // No sort filter: Popular and Latest stay unfiltered.
-    expect(f.changesFor(Listing.popular, ContentType.manga), isNull);
+    expect(f.changesFor(Listing.popular, _manga), isNull);
   });
 
-  test('a type select picks manga, but cannot express manga+manhwa', () {
+  test('a type select picks one type, but cannot express two', () {
     final f = SuwayomiTypeFilter.parse(const [
       {
         '__typename': 'SelectFilter',
@@ -143,13 +157,19 @@ void main() {
         'values': ['Name', 'Trending'],
       },
     ]);
-    expect(f.changesFor(Listing.search, ContentType.manga), [
+    expect(f.changesFor(Listing.search, _manga), [
       {'position': 0, 'selectState': 2},
     ]);
-    expect(f.changesFor(Listing.search, ContentType.mangaManhwa), isNull);
+    expect(
+      f.changesFor(Listing.search, const ContentTypes({ContentType.manhwa})),
+      [
+        {'position': 0, 'selectState': 3},
+      ],
+    );
+    expect(f.changesFor(Listing.search, _mangaManhwa), isNull);
     // A sort without a latest option leaves Latest unfiltered.
-    expect(f.changesFor(Listing.latest, ContentType.manga), isNull);
-    expect(f.changesFor(Listing.popular, ContentType.manga)!.last, {
+    expect(f.changesFor(Listing.latest, _manga), isNull);
+    expect(f.changesFor(Listing.popular, _manga)!.last, {
       'position': 1,
       'sortState': {'index': 1, 'ascending': false},
     });
@@ -163,6 +183,6 @@ void main() {
         'values': ['Ongoing', 'Completed'],
       },
     ]);
-    expect(f.changesFor(Listing.search, ContentType.manga), isNull);
+    expect(f.changesFor(Listing.search, _manga), isNull);
   });
 }

@@ -184,8 +184,8 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   `mangadex.settings`, `reader.settings` (global default mode, tap zones,
   prefetch), `plugins.repos` (native and Mangayomi repos),
   `browse.languages` (Browse language filter, JSON list of codes in display
-  order; unset `en`, `all`/`multi`, `ja`), `browse.contentType` (`manga` |
-  `mangaManhwa` | `all`, unset `manga`; §2), `downloads/auto_new_chapters`,
+  order; unset `en`, `all`/`multi`, `ja`), `browse.contentType` (JSON list of
+  `manga`/`manhwa`/`manhua`, unset all; old `manga`/`mangaManhwa`/`all` read; §2), `downloads/auto_new_chapters`,
   `library.autoshelve` (auto-shelving's memory, DOCS-spec), `sourceHealth.scoring` (scoring
   profile JSON, node `settings/sourceHealth~2Escoring`, read by the
   evaluator, §5). Catalogue: `lib/sync/settings/settings_catalog.dart`;

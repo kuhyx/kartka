@@ -1,6 +1,13 @@
 import 'package:kartka/core/source/content_type.dart';
 import 'package:kartka/sources/mangadex/mangadex_settings.dart';
 
+/// A listing's original-language narrowing: `originalLanguage[]` and
+/// `excludedOriginalLanguage[]`.
+typedef MangadexOrigin = ({List<String> only, List<String> excluded});
+
+/// No narrowing.
+const MangadexOrigin anyOrigin = (only: [], excluded: []);
+
 /// Builds MangaDex API URLs from the current settings.
 ///
 /// Stored urls follow the Keiyoushi MangaDex extension (`/manga/<uuid>`,
@@ -26,31 +33,42 @@ class MangadexUrls {
   /// Settings that decide languages and ratings.
   final MangadexSettings settings;
 
-  /// Most-followed manga. Every listing takes [original], the
-  /// `originalLanguage[]` list ([originalLanguagesOf]); empty sends none.
-  Uri popular(int page, {List<String> original = const []}) =>
-      _browse(page, original, {'order[followedCount]': 'desc'});
+  /// Most-followed manga. Every listing takes [origin] ([originOf]): its
+  /// `originalLanguage[]` and `excludedOriginalLanguage[]` lists; empty
+  /// lists send nothing.
+  Uri popular(int page, {MangadexOrigin origin = anyOrigin}) =>
+      _browse(page, origin, {'order[followedCount]': 'desc'});
 
   /// Manga with the newest uploaded chapter first.
-  Uri latest(int page, {List<String> original = const []}) =>
-      _browse(page, original, {'order[latestUploadedChapter]': 'desc'});
+  Uri latest(int page, {MangadexOrigin origin = anyOrigin}) =>
+      _browse(page, origin, {'order[latestUploadedChapter]': 'desc'});
 
   /// Title search ordered by relevance.
-  Uri search(String query, int page, {List<String> original = const []}) =>
-      _browse(page, original, {'title': query, 'order[relevance]': 'desc'});
+  Uri search(String query, int page, {MangadexOrigin origin = anyOrigin}) =>
+      _browse(page, origin, {'title': query, 'order[relevance]': 'desc'});
 
-  /// Original languages of [type]: Japanese for manga, plus Korean for
-  /// manhwa; [ContentType.all] filters nothing.
-  static List<String> originalLanguagesOf(ContentType type) => switch (type) {
-    ContentType.manga => const ['ja'],
-    ContentType.mangaManhwa => const ['ja', 'ko'],
-    ContentType.all => const [],
-  };
+  /// The original languages of [types]. Manga counts every language but
+  /// Korean and Chinese (unknown counts as manga), so with manga ticked the
+  /// unticked rest is excluded; without it only the ticked are listed.
+  static MangadexOrigin originOf(ContentTypes types) {
+    if (types.isAll) return anyOrigin;
+    final langs = {
+      ContentType.manhwa: const ['ko'],
+      ContentType.manhua: const ['zh', 'zh-hk'],
+    };
+    List<String> where(bool Function(ContentType) test) => [
+      for (final MapEntry(:key, :value) in langs.entries)
+        if (test(key)) ...value,
+    ];
+    return types.contains(ContentType.manga)
+        ? (only: const [], excluded: where((t) => !types.contains(t)))
+        : (only: where(types.contains), excluded: const []);
+  }
 
   /// Offset of 1-based [page]; pages below 1 mean the first.
   static int offsetOf(int page) => (page < 1 ? 0 : page - 1) * pageSize;
 
-  Uri _browse(int page, List<String> original, Map<String, Object> extra) =>
+  Uri _browse(int page, MangadexOrigin origin, Map<String, Object> extra) =>
       Uri.https(apiHost, '/manga', {
         'limit': '$pageSize',
         'offset': '${offsetOf(page)}',
@@ -58,7 +76,9 @@ class MangadexUrls {
         'contentRating[]': settings.ratingNames,
         'availableTranslatedLanguage[]': settings.languages,
         'hasAvailableChapters': 'true',
-        if (original.isNotEmpty) 'originalLanguage[]': original,
+        if (origin.only.isNotEmpty) 'originalLanguage[]': origin.only,
+        if (origin.excluded.isNotEmpty)
+          'excludedOriginalLanguage[]': origin.excluded,
         ...extra,
       });
 

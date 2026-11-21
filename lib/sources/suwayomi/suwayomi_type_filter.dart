@@ -12,8 +12,9 @@ enum _Kind { manga, manhwa, manhua, other }
 ///
 /// The type filter is the first group or select named like "type" or
 /// "original language" with an option naming manga (manhwa / manhua
-/// options are told apart by name). A select holds one choice, so it can
-/// express [ContentType.manga] but not manga+manhwa. The sort filter is the
+/// options are told apart by name; any other option, e.g. "Other", counts
+/// as manga). A select holds one choice, so it can express one ticked type
+/// but not two. The sort filter is the
 /// first `SortFilter`, or a select named like "sort" / "order"; Popular
 /// picks its first option like popular / view / trend / follow, Latest its
 /// first like latest / update / upload. Positions count every element of
@@ -56,16 +57,20 @@ class SuwayomiTypeFilter {
     'data': await client.run(SuwayomiQueries.sourceFilters, {'id': serverId}),
   });
 
-  /// The filters that narrow [listing] to [type]; null when this source
+  /// The filters that narrow [listing] to [types]; null when this source
   /// cannot (no type filter, or no sort option for Popular / Latest) and
-  /// for [ContentType.all], which sends none.
-  List<FilterChange>? changesFor(Listing listing, ContentType type) {
-    final allowed = switch (type) {
-      ContentType.manga => const {_Kind.manga},
-      ContentType.mangaManhwa => const {_Kind.manga, _Kind.manhwa},
-      ContentType.all => null,
+  /// for [ContentTypes.all] / [ContentTypes.none], which send none.
+  List<FilterChange>? changesFor(Listing listing, ContentTypes types) {
+    if (types.isAll || types.isNone) return null;
+    final allowed = {
+      for (final t in types.ticked)
+        ...switch (t) {
+          ContentType.manga => const [_Kind.manga, _Kind.other],
+          ContentType.manhwa => const [_Kind.manhwa],
+          ContentType.manhua => const [_Kind.manhua],
+        },
     };
-    final narrowed = allowed == null ? null : _type?.changes(allowed);
+    final narrowed = _type?.changes(allowed);
     if (narrowed == null) return null;
     return switch ((listing, _popular, _latest)) {
       (Listing.search, _, _) => narrowed,
@@ -148,8 +153,10 @@ class _TypeFilter {
 
   List<FilterChange>? changes(Set<_Kind> allowed) {
     if (!isGroup) {
-      if (allowed.length > 1) return null;
-      final index = kinds.indexWhere((k) => k!.$1 == _Kind.manga);
+      final named = allowed.difference(const {_Kind.other});
+      if (named.length != 1) return null;
+      final index = kinds.indexWhere((k) => k!.$1 == named.single);
+      if (index < 0) return null;
       return [
         {'position': position, 'selectState': index},
       ];
@@ -185,10 +192,10 @@ class TypeFilterCache {
   Future<SuwayomiTypeFilter>? _filter;
 
   /// [SuwayomiTypeFilter.changesFor], null as well when the read failed.
-  Future<List<FilterChange>?> changesFor(Listing listing, ContentType type) {
+  Future<List<FilterChange>?> changesFor(Listing listing, ContentTypes types) {
     final filter = _filter ??= SuwayomiTypeFilter.fetch(client, serverId);
     return filter.then(
-      (f) => f.changesFor(listing, type),
+      (f) => f.changesFor(listing, types),
       onError: (Object _) => _filter = null,
     );
   }

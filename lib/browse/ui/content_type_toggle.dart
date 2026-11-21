@@ -2,25 +2,23 @@ import 'dart:async';
 
 import 'package:kartka/browse/state/browse_content_type_store.dart';
 import 'package:kartka/core/source/content_type.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:material_ui/material_ui.dart';
 
-const Map<ContentType, IconData> _icons = {
-  ContentType.manga: Icons.looks_one_outlined,
-  ContentType.mangaManhwa: Icons.looks_two_outlined,
-  ContentType.all: Icons.all_inclusive,
+/// The checkbox words: kuhy's one allowed word per type (textgate, Q
+/// 2026-11-21).
+const Map<ContentType, String> _words = {
+  ContentType.manga: 'Manga',
+  ContentType.manhwa: 'Manhwa',
+  ContentType.manhua: 'Manhua',
 };
 
-const Map<ContentType, String> _labels = {
-  ContentType.manga: 'Manga only',
-  ContentType.mangaManhwa: 'Manga and manhwa',
-  ContentType.all: 'All types',
-};
-
-/// The content-type toggle (textgate: icons only): one type, two types,
-/// everything; a tap moves to the next. When [applied] is false and the
-/// setting narrows anything, a [NotAppliedMark] sits before it.
+/// The content-type button: a filter icon badged with the number of
+/// ticked types; a tap opens a sheet of labelled checkboxes that change the
+/// setting at once. When [applied] is false and the setting narrows
+/// anything, a [NotAppliedMark] sits before it.
 class ContentTypeToggle extends StatelessWidget {
-  /// Creates the toggle over [store].
+  /// Creates the button over [store].
   const new(this.store, {this.applied = true, super.key});
 
   /// The synced setting.
@@ -30,18 +28,76 @@ class ContentTypeToggle extends StatelessWidget {
   final bool applied;
 
   @override
-  Widget build(BuildContext context) => ValueListenableBuilder<ContentType>(
+  Widget build(BuildContext context) => ValueListenableBuilder<ContentTypes>(
     valueListenable: store,
-    builder: (context, type, _) => Row(
+    builder: (context, types, _) => Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (!applied && type != ContentType.all) const NotAppliedMark(),
+        if (!applied && !types.isAll) const NotAppliedMark(),
         IconButton(
-          icon: Icon(_icons[type], semanticLabel: _labels[type]),
-          onPressed: () => unawaited(store.cycle()),
+          icon: Badge.count(
+            count: types.ticked.length,
+            isLabelVisible: !types.isNone,
+            child: const Icon(
+              Icons.category_outlined,
+              semanticLabel: 'Content types',
+            ),
+          ),
+          onPressed: () => showModalBottomSheet<void>(
+            context: context,
+            builder: (_) => _TypeSheet(store),
+          ),
         ),
       ],
     ),
+  );
+}
+
+class _TypeSheet extends StatelessWidget {
+  const new(this.store);
+
+  final BrowseContentTypeStore store;
+
+  @override
+  Widget build(BuildContext context) => SafeArea(
+    child: ValueListenableBuilder<ContentTypes>(
+      valueListenable: store,
+      builder: (_, types, _) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final t in ContentType.values)
+            CheckboxListTile(
+              value: types.contains(t),
+              title: Text(_words[t]!),
+              onChanged: (_) => unawaited(store.toggle(t)),
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// A listing's empty state: a hint icon when no type is ticked (the sheet
+/// is the way out), else [orElse].
+class TypedEmptyMark extends StatelessWidget {
+  /// Creates the mark over [store].
+  const new(this.store, {required this.orElse, super.key});
+
+  /// The synced setting.
+  final BrowseContentTypeStore store;
+
+  /// The plain "nothing here" mark.
+  final Widget orElse;
+
+  @override
+  Widget build(BuildContext context) => ValueListenableBuilder<ContentTypes>(
+    valueListenable: store,
+    builder: (_, types, _) => types.isNone
+        ? const EmptyMark(
+            icon: Icons.category_outlined,
+            semanticLabel: 'No content type ticked',
+          )
+        : orElse,
   );
 }
 

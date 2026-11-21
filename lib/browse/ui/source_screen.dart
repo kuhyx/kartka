@@ -184,8 +184,8 @@ class _SourceTabsState extends State<_SourceTabs> {
         ),
         body: TabBarView(
           children: [
-            PagedMangaGrid(_popular),
-            PagedMangaGrid(_latest),
+            PagedMangaGrid(_popular, empty: _empty(context)),
+            PagedMangaGrid(_latest, empty: _empty(context)),
             Column(
               children: [
                 Padding(
@@ -206,7 +206,7 @@ class _SourceTabsState extends State<_SourceTabs> {
                 Expanded(
                   child: _active == null
                       ? const SizedBox.shrink()
-                      : PagedMangaGrid(_search),
+                      : PagedMangaGrid(_search, empty: _empty(context)),
                 ),
               ],
             ),
@@ -216,3 +216,12 @@ class _SourceTabsState extends State<_SourceTabs> {
     );
   }
 }
+
+/// A listing's empty state: the no-type hint, else "nothing here".
+Widget _empty(BuildContext context) => TypedEmptyMark(
+  BrowseScope.of(context).contentType,
+  orElse: const EmptyMark(
+    icon: Icons.search_off,
+    semanticLabel: 'Nothing here',
+  ),
+);

@@ -206,7 +206,7 @@ is retried). `filters` positions count every element, separators and text
 fields included (MangaFire: Type group at 2, "Sort by" select at 16). Type
 filter: first group/select named /type|original language/ with a manga option
 (MangaDex: "Original language", "Japanese (Manga)"); every child is set, off or
-`IGNORE` for the rest. A select cannot say manga+manhwa: mark. Sort: first
+`IGNORE` for the rest; "Other" follows manga. A select says one type: mark. Sort: first
 `SortFilter` (descending) or select /sort|order/; Popular takes the first
 option /popular|view|trend|follow/, Latest /latest|update|upload/. Narrowed
 Popular/Latest are SEARCH, empty query (`sourceMangaFiltered`); no sort option

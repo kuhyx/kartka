@@ -29,6 +29,9 @@ Object? _filtersResponse() => (jsonDecode(
   File('test/fixtures/suwayomi/filters_mangafire.json').readAsStringSync(),
 ) as Map<String, Object?>)['response'];
 
+const _manga = ContentTypes({ContentType.manga});
+const _mangaManhwa = ContentTypes({ContentType.manga, ContentType.manhwa});
+
 void main() {
   late FakeKartkaHttp http;
   var filtersFail = 0;
@@ -60,7 +63,7 @@ void main() {
   );
 
   test('popular with manga is a SEARCH with type and sort', () async {
-    final r = await source().listTyped(Listing.popular, ContentType.manga, 2);
+    final r = await source().listTyped(Listing.popular, _manga, 2);
     expect(r.applied, isTrue);
     expect(r.page.items, isNotEmpty);
     final sent = bodies(http);
@@ -75,7 +78,7 @@ void main() {
     expect(vars['query'], '');
     expect(vars['page'], 2);
     expect(vars['filters'], [
-      for (final (i, on) in [true, false, false, false].indexed)
+      for (final (i, on) in [true, false, false, true].indexed)
         {
           'position': 2,
           'groupChange': {'position': i, 'checkBoxState': on},
@@ -86,8 +89,8 @@ void main() {
 
   test('search keeps the query; the filter list is read once', () async {
     final s = source();
-    await s.listTyped(Listing.search, ContentType.mangaManhwa, 1, query: 'x');
-    await s.listTyped(Listing.latest, ContentType.manga, 1);
+    await s.listTyped(Listing.search, _mangaManhwa, 1, query: 'x');
+    await s.listTyped(Listing.latest, _manga, 1);
     final sent = bodies(http);
     expect(
       sent.where((b) => b['operationName'] == 'KartkaSourceFilters'),
@@ -106,17 +109,17 @@ void main() {
   test('a failed filter read lists unfiltered and is retried', () async {
     filtersFail = 1;
     final s = source();
-    final r = await s.listTyped(Listing.popular, ContentType.manga, 1);
+    final r = await s.listTyped(Listing.popular, _manga, 1);
     expect(r.applied, isFalse);
     expect(bodies(http).last['query'], SuwayomiQueries.sourceManga);
     expect((bodies(http).last['variables']! as Map)['type'], 'POPULAR');
-    final again = await s.listTyped(Listing.popular, ContentType.manga, 1);
+    final again = await s.listTyped(Listing.popular, _manga, 1);
     expect(again.applied, isTrue);
   });
 
   test('no type filter: the plain request, not applied', () async {
     noFilters = true;
-    final r = await source().listTyped(Listing.latest, ContentType.manga, 1);
+    final r = await source().listTyped(Listing.latest, _manga, 1);
     expect(r.applied, isFalse);
     expect(bodies(http).last['query'], SuwayomiQueries.sourceManga);
     expect(bodies(http).last['variables'], {

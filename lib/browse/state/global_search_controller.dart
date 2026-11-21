@@ -40,21 +40,21 @@ class SourceSearchState {
 /// each has its own [timeout] and its own error.
 class GlobalSearchController extends ChangeNotifier {
   /// Creates a controller over [sources] (display order is kept); each
-  /// search reads [type] when it starts (none: [ContentType.all]).
+  /// search reads [type] when it starts (none: [ContentTypes.all]).
   new(
     List<MangaSource> sources, {
     this.timeout = const Duration(seconds: 20),
-    ContentType Function()? type,
+    ContentTypes Function()? type,
   }) : _sources = List.unmodifiable(sources),
-       _typeOf = type ?? (() => ContentType.all);
+       _typeOf = type ?? (() => ContentTypes.all);
 
   List<MangaSource> _sources;
 
   /// Per-source deadline.
   final Duration timeout;
 
-  final ContentType Function() _typeOf;
-  ContentType _type = ContentType.all;
+  final ContentTypes Function() _typeOf;
+  ContentTypes _type = ContentTypes.all;
   final Map<String, SourceSearchState> _byId = {};
   String _query = '';
   int _generation = 0;
