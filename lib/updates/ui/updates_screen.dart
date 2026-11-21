@@ -29,6 +29,21 @@ class UpdatesScreen extends StatefulWidget {
 class _UpdatesScreenState extends State<UpdatesScreen> {
   late final UpdatesController _c = UpdatesController(widget.deps)..start();
 
+  /// Tiles warmed ahead: the sheet's own warm-up starts when it opens, and
+  /// a tap there soon after still waited on the cold page list (1.7 s on
+  /// the f4 sweep, 971debc8), so the first tiles warm as the feed shows.
+  static const warmAhead = 3;
+  final _warmed = <String>{};
+
+  void _warmFirst(List<UpdateGroup> groups) {
+    for (final g in groups.take(warmAhead)) {
+      final r = likelyChapter(g);
+      if (r != null && _warmed.add('${r.entry.key}\n${r.chapter.url}')) {
+        widget.deps.warmChapter?.call(r.entry.key, r.chapter.url);
+      }
+    }
+  }
+
   @override
   void dispose() {
     _c.dispose();
@@ -65,6 +80,7 @@ class _UpdatesScreenState extends State<UpdatesScreen> {
       );
     }
     final groups = groupByManga(rows);
+    _warmFirst(groups);
     // Scrollable (but never scrolling) so the grid can be pulled too.
     return LayoutBuilder(
       builder: (context, box) => SingleChildScrollView(

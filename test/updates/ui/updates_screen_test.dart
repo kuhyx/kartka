@@ -126,7 +126,7 @@ void main() {
     t,
   ) async {
     final h = await _pump(t);
-    expect(h.warmed, isEmpty);
+    h.warmed.clear();
     await t.tap(find.byType(UpdateTile));
     await t.pumpAndSettle();
     expect(h.warmed, ['${_a.key} /c/4']);
@@ -136,6 +136,15 @@ void main() {
     await t.tap(find.byType(UpdateTile));
     await t.pumpAndSettle();
     expect(h.warmed.last, '${_a.key} /c/4', reason: 'all read: the newest');
+  });
+
+  testWidgets('the feed warms its first tiles before any tap (971debc8)', (
+    t,
+  ) async {
+    final h = await _pump(t);
+    expect(h.warmed, ['${_a.key} /c/4']);
+    await t.pump();
+    expect(h.warmed, hasLength(1), reason: 'a rebuild warms nothing again');
   });
 
   testWidgets('tapping a chapter in the sheet opens the reader', (t) async {

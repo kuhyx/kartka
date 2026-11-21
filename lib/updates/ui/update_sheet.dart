@@ -25,9 +25,7 @@ Future<void> showUpdateSheet(
   void Function(MangaKey key, String chapterUrl)? warm,
 }) {
   final router = GoRouter.of(context);
-  final chapters = group.rows.whereType<ChapterRow>();
-  final likely =
-      chapters.where((r) => r.unread).firstOrNull ?? chapters.firstOrNull;
+  final likely = likelyChapter(group);
   if (likely != null) warm?.call(likely.entry.key, likely.chapter.url);
   return showModalBottomSheet<void>(
     context: context,
@@ -72,4 +70,11 @@ Future<void> showUpdateSheet(
       );
     },
   );
+}
+
+/// The chapter a tap on [group] most likely opens: the newest unread one,
+/// else the newest; null when it lists no chapter.
+ChapterRow? likelyChapter(UpdateGroup group) {
+  final chapters = group.rows.whereType<ChapterRow>();
+  return chapters.where((r) => r.unread).firstOrNull ?? chapters.firstOrNull;
 }
