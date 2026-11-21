@@ -96,6 +96,12 @@ so the first pages draw at once (a MangaFire page costs 0.5-0.9 s on the
 server; 28fffd0a). The Updates sheet skips the details screen, so opening
 it warms the same way (`ChapterWarmer`) the chapter a tap most likely
 opens: the newest unread one, else the newest (a cold open took 1.2 s).
+The feed warms its first 3 tiles the same way as it shows: a tap soon
+after the sheet opened still joined a cold page list (1.7 s on f4).
+`SourceLookup` subscribes to every provider once and keeps their lists:
+each open re-listed every provider one after another, so a slow runtime
+added up to 5 s (build 615) and a cold miss took 0.83 s. The reader's two
+synced-kv prefs reads (0.33 s on web) run beside the page list.
 `browse.nextpage`: the server's source rate limiter is shared by its
 thumbnails and its pages, so a grid's 50 uncached covers (up to 25 s each
 on MangaFire) put the next page 8-41 s behind them (89e1ec6e).
