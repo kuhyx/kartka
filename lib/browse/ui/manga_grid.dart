@@ -167,10 +167,15 @@ class _Footer extends StatelessWidget {
         ],
       );
     } else if (c.hasNext) {
-      child = const ShownWaitWatch(
-        operation: 'browse.nextpage',
-        child: CircularProgressIndicator(),
-      );
+      if (c.loading) {
+        child = ShownWaitWatch(
+          key: ValueKey(c.pagesLoaded),
+          operation: 'browse.nextpage',
+          child: const CircularProgressIndicator(),
+        );
+      } else {
+        child = const SizedBox.square(dimension: 36);
+      }
     } else {
       return const SizedBox(height: AppSpacing.lg);
     }
