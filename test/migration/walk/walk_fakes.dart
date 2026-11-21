@@ -71,6 +71,29 @@ class WalkWorld {
     }
   }
 
+  /// Makes `best`'s hit for [title] (already in the library) a strong
+  /// match: the same authors, description and chapter count on both sides.
+  void strong(String title) {
+    const about = 'A pirate crew sails the grand line hunting treasure';
+    old
+      ..detailMap['/$title'] = MangaDetails(
+        sourceId: 'old',
+        url: '/$title',
+        title: title,
+        authors: const ['Oda'],
+        description: about,
+      )
+      ..chapterLists['/$title'] = chaptersOf('/$title', [1, 2, 3]);
+    best.offerFull(
+      title,
+      title,
+      '/best/$title',
+      authors: const ['Oda'],
+      description: about,
+      chapterCount: 3,
+    );
+  }
+
   /// A controller over this world.
   MigrationWalkController controller({
     WalkScope scope = WalkScope.library,

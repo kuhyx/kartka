@@ -22,6 +22,7 @@ import 'package:kartka/migration/migration_target.dart';
 import 'package:kartka/migration/migrator.dart';
 import 'package:kartka/migration/same_manga.dart';
 import 'package:kartka/migration/walk/candidate_card.dart';
+import 'package:kartka/migration/walk/walk_auto.dart';
 import 'package:kartka/migration/walk/walk_controller.dart';
 import 'package:kartka/migration/walk/walk_inputs.dart';
 import 'package:kartka/migration/walk/walk_item.dart';
