@@ -76,7 +76,7 @@ void main() {
     );
   });
 
-  test('the same source is never a duplicate pair', () {
+  test('one entry is never a pair with itself', () {
     expect(isDuplicate(_dupe('a'), _dupe('a')), isFalse);
   });
 

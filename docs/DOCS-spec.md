@@ -102,10 +102,13 @@ literally the same series onto the one on the best source, on its own:
   when both have one (`descriptionScore` under 0.2 vetoes). Neither side
   with an author or a description: uncertain, skipped. Only entries whose
   chapter list this device stored are judged (browse's `DupeFactsLookup`,
-  never fetching).
+  never fetching). One source counts too when its two urls name the same
+  manga (`sameListing`: every path segment and query value of one, generic
+  words like `manga` aside, is among the other's), e.g. a bare id `abc`
+  next to `/manga/abc/slug`; other urls on one source never pair.
 - Winner: keep, then pending, then cut; a source not installed or with no
   record last. Then evaluator rank (ranked tiers only), more chapters,
-  newer newest chapter, key. Three or more: each loser is checked against
+  newer newest chapter, stored details, key. Three or more: each loser is checked against
   the winner directly.
 - Merge: one `exportBackup` per run before the first merge (a failed backup
   merges nothing). The winner keeps the earlier `addedAt` (fresh

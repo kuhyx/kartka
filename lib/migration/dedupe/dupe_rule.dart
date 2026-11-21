@@ -20,13 +20,18 @@ const double sameTitleScore = 0.95;
 /// A [SameManga.descriptionScore] below this is "clearly different".
 const double differentDescription = 0.2;
 
-/// Whether [a] and [b] are the same series on two sources: the title
-/// matches at [sameTitleScore], no evidence disagrees (authors when both
-/// list some, chapter counts within 10 % or 3, descriptions when both have
+/// Whether [a] and [b] are the same series: on two sources, or on one
+/// source under two urls that [sameListing] holds for; the title matches
+/// at [sameTitleScore], no evidence disagrees (authors when both list
+/// some, chapter counts within 10 % or 3, descriptions when both have
 /// one), and some evidence exists (an author or a description on either
 /// side; none at all is uncertain, so skipped).
 bool isDuplicate(Dupe a, Dupe b) {
-  if (a.entry.sourceId == b.entry.sourceId) return false;
+  if (a.entry.key == b.entry.key) return false;
+  if (a.entry.sourceId == b.entry.sourceId &&
+      !sameListing(a.entry.mangaUrl, b.entry.mangaUrl)) {
+    return false;
+  }
   final x = a.manga;
   final y = b.manga;
   final match = SameManga(x);
@@ -38,6 +43,34 @@ bool isDuplicate(Dupe a, Dupe b) {
     return false;
   }
   return _hasEvidence(x) || _hasEvidence(y);
+}
+
+/// Whether two urls of one source name the same manga: every path
+/// segment and query value of one (generic words like `manga` aside) is
+/// one of the other's, as a bare id `abc` is of `/manga/abc/its-slug`.
+/// Two listings of one title on one source (a colour edition, another
+/// language) have urls of their own, so they never pair.
+bool sameListing(String a, String b) {
+  final x = _urlParts(a);
+  final y = _urlParts(b);
+  if (x.isEmpty || y.isEmpty) return false;
+  return x.containsAll(y) || y.containsAll(x);
+}
+
+const _genericParts = {
+  'manga', 'mangas', 'title', 'titles', 'comic', 'comics', 'series', //
+  'book', 'books', 'webtoon', 'webtoons', 'g', 'm', 'read',
+};
+
+Set<String> _urlParts(String url) {
+  final uri = Uri.tryParse(url);
+  return {
+    for (final p in [
+      ...(uri?.path ?? url).split('/'),
+      ...?uri?.queryParameters.values,
+    ])
+      if (p.isNotEmpty && !_genericParts.contains(p.toLowerCase())) p,
+  };
 }
 
 bool _closeCounts(int a, int b) {
@@ -64,8 +97,9 @@ int _tier(Dupe d) => switch (d) {
 
 /// Best first: keep before pending before cut before no record or not
 /// installed, then the evaluator rank (ranked tiers only), then more
-/// chapters, then the newer newest chapter, then the key. A total order,
-/// so every device picks the same winner from the same facts.
+/// chapters, then the newer newest chapter, then stored details over
+/// none, then the key. A total order, so every device picks the same
+/// winner from the same facts.
 int compareSuperior(Dupe a, Dupe b) {
   final ta = _tier(a);
   final tb = _tier(b);
@@ -85,6 +119,8 @@ int compareSuperior(Dupe a, Dupe b) {
     if (nb == null) return -1;
     return nb.compareTo(na);
   }
+  final da = a.facts.details != null;
+  if (da != (b.facts.details != null)) return da ? -1 : 1;
   return a.entry.key.compareTo(b.entry.key);
 }
 
