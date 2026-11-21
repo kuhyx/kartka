@@ -1,4 +1,5 @@
 import 'package:kartka/library/state/library_controller.dart';
+import 'package:kartka/platform/open_link.dart';
 import 'package:kuhy_credit/kuhy_credit.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -129,7 +130,8 @@ class LibraryAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         const Padding(
           padding: EdgeInsets.only(right: 12),
-          child: KuhyCredit(size: 32, below: true),
+          // kuhy_credit's own launcher throws when no browser is installed.
+          child: KuhyCredit(size: 32, below: true, launcher: openLinkQuietly),
         ),
       ],
       bottom: bottom,

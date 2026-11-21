@@ -30,6 +30,7 @@ import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/platform/oauth_impls.dart';
 import 'package:kartka/platform/oauth_redirect.dart';
+import 'package:kartka/platform/open_link.dart';
 import 'package:kartka/platform/page_image.dart';
 import 'package:kartka/platform/platform.dart';
 import 'package:kartka/platform/plugin_file_picker.dart';

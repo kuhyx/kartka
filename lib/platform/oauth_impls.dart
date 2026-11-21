@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:kartka/platform/oauth_redirect.dart';
 import 'package:kartka/platform/wrapper_protocol.dart';
@@ -27,7 +28,15 @@ class DeepLinkOAuthRedirect implements OAuthRedirect {
     final back = links
         .firstWhere((u) => u.scheme == 'kartka' && u.host == 'oauth')
         .timeout(timeout);
-    if (!await launch(authorizationUrl)) {
+    // No browser (ACTIVITY_NOT_FOUND) cancels like a refused launch; the
+    // unused wait is observed so its timeout never errors uncaught.
+    bool opened;
+    try {
+      opened = await launch(authorizationUrl);
+    } on PlatformException {
+      opened = false;
+    }
+    if (!opened) {
       unawaited(back.then((_) {}, onError: (_) {}));
       throw const OAuthCancelled();
     }

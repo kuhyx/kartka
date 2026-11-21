@@ -209,4 +209,25 @@ void main() {
     await pumpLibrary(tester, (await _seed()).deps);
     expect(find.byType(KuhyCredit), findsOneWidget);
   });
+
+  testWidgets('the credit link fails quietly with no browser', (tester) async {
+    // kuhy's phone has no browser: launchUrl throws (ACTIVITY_NOT_FOUND on
+    // Android; no plugin in tests). It must not escape as uncaught.async.
+    final calls = <String>[];
+    const channel = MethodChannel('plugins.flutter.io/url_launcher');
+    final messenger = tester.binding.defaultBinaryMessenger;
+    addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call.method);
+      throw PlatformException(code: 'ACTIVITY_NOT_FOUND');
+    });
+    await pumpLibrary(tester, (await _seed()).deps);
+    await tester.tap(find.byKey(KuhyCredit.logoKey));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(KuhyCredit.panelKey));
+    await tester.pumpAndSettle();
+    expect(calls, contains('launch'));
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(KuhyCredit.panelKey), findsNothing);
+  });
 }

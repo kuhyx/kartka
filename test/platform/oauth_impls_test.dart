@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:fake_async/fake_async.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -29,6 +31,29 @@ void main() {
       expect(back.queryParameters['code'], 'abc');
       expect(opened, [auth]);
       await links.close();
+    });
+
+    test('a launch that throws cancels and leaves no timer behind', () {
+      fakeAsync((async) {
+        final links = StreamController<Uri>.broadcast();
+        final oauth = DeepLinkOAuthRedirect(
+          launch: (_) async =>
+              throw PlatformException(code: 'ACTIVITY_NOT_FOUND'),
+          links: links.stream,
+        );
+        Object? error;
+        unawaited(
+          oauth.authorize(Uri.parse('https://a/')).catchError((Object e) {
+            error = e;
+            return Uri();
+          }),
+        );
+        async.flushMicrotasks();
+        expect(error, isA<OAuthCancelled>());
+        // Past the 5-minute timeout: the unused wait must not error uncaught.
+        async.elapse(const Duration(minutes: 6));
+        unawaited(links.close());
+      });
     });
 
     test('a failed launch or a timeout cancels', () async {
