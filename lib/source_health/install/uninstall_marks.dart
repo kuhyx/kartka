@@ -2,15 +2,16 @@ import 'dart:convert';
 
 import 'package:kartka/platform/key_value_store.dart';
 
-/// Extension packages the user uninstalled, stored per device (installs are
-/// per device, like `AutoInstallState`). The Keep auto-install skips them,
-/// even when the library still uses one; installing one by hand clears its
-/// mark. Auto-update never sees them: it only updates installed packages.
+/// Extension packages the user uninstalled, a synced setting (every desktop
+/// shares one Suwayomi server, and the choice holds on the phone too; read
+/// through the plain store, which sync fills). The Keep auto-install skips
+/// them, even when the library still uses one; installing one by hand clears
+/// its mark. Auto-update never sees them: it only updates installed packages.
 class UninstallMarks {
   /// Marks kept in [kv].
   const new(this.kv);
 
-  /// Device-local storage.
+  /// The store (writes go through the synced one, `syncedKv`).
   final KeyValueStore kv;
 
   /// Key in [kv]: a JSON list of package names.

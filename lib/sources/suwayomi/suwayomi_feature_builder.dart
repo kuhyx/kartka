@@ -52,7 +52,7 @@ KartkaFeature buildSuwayomiFeature(
     client: client,
     settings: current,
     onChanged: provider.refresh,
-    marks: UninstallMarks(platform.kv),
+    marks: UninstallMarks(kv),
   );
   return KartkaFeature(
     id: 'source-suwayomi',

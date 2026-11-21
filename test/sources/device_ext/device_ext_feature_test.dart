@@ -1,8 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/platform/memory/memory_extension_runtime.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
+import 'package:kartka/source_health/install/uninstall_marks.dart';
 import 'package:kartka/sources/device_ext/device_ext_api.dart';
 import 'package:kartka/sources/device_ext/device_ext_feature.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_feature.dart';
@@ -24,7 +26,35 @@ Map<String, Object?> inventory(List<String> ids) => {
   ],
 };
 
+/// Records the synced keys written.
+class _Sync implements SettingsSync {
+  final keys = <String>[];
+
+  @override
+  Future<void> changed(String key, String? value, SettingsVault vault) async =>
+      keys.add(key);
+
+  @override
+  Stream<String> get remoteChanges => const Stream.empty();
+
+  @override
+  Stream<Map<String, String>> watchProblems() => const Stream.empty();
+}
+
 void main() {
+  test('uninstall marks are a synced setting on the phone too', () async {
+    final sync = _Sync();
+    final registry = KartkaRegistry.build(
+      memoryPlatform(extensions: FakeExtensionRuntime()),
+      [
+        suwayomiFeature,
+        (_) => KartkaFeature(id: 'sync', services: [sync]),
+      ],
+    );
+    await registry.maybe<DeviceExtensionsApi>()!.marks!.mark('p');
+    expect(sync.keys, [UninstallMarks.kvKey]);
+  });
+
   test('Android (a runtime) gets the in-app part, never a server', () {
     final runtime = FakeExtensionRuntime();
     final registry = KartkaRegistry.build(memoryPlatform(extensions: runtime), [

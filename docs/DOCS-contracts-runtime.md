@@ -186,9 +186,9 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   `browse.languages` (Browse language filter, JSON list of codes in display
   order; unset `en`, `all`/`multi`, `ja`), `browse.contentType` (JSON list of
   `manga`/`manhwa`/`manhua`, unset all; old `manga`/`mangaManhwa`/`all` read; §2), `downloads/auto_new_chapters`,
-  `library.autoshelve` (auto-shelving's memory, DOCS-spec), `sourceHealth.scoring` (scoring
-  profile JSON, node `settings/sourceHealth~2Escoring`, read by the
-  evaluator, §5). Catalogue: `lib/sync/settings/settings_catalog.dart`;
+  `library.autoshelve` (auto-shelving's memory, DOCS-spec), `sourceHealth.userUninstalled`
+  (packages the user uninstalled; Keep skips them), `sourceHealth.scoring` (scoring profile
+  JSON, node `settings/sourceHealth~2Escoring`, read by the evaluator, §5). Catalogue: `lib/sync/settings/settings_catalog.dart`;
   other keys' peer nodes are ignored. **Device-local**: the download queue,
   index, baselines, reader modes, plugins and prefs, tracker tokens, sync
   credentials, the wrapper port.

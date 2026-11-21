@@ -53,6 +53,13 @@ const Map<String, SyncedSetting> kSyncedSettings = {
     vault: SettingsVault.plain,
     semanticLabel: 'Auto-shelve memory',
   ),
+  // Extensions the user uninstalled (`UninstallMarks`): synced, because
+  // every desktop drives one Suwayomi server, and kuhy's "keep only these"
+  // holds on the phone too; the Keep auto-install skips them everywhere.
+  'sourceHealth.userUninstalled': (
+    vault: SettingsVault.plain,
+    semanticLabel: 'Uninstalled extensions',
+  ),
   // The source-health scoring profile; the evaluator reads it too.
   'sourceHealth.scoring': (
     vault: SettingsVault.plain,

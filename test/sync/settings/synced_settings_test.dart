@@ -195,6 +195,7 @@ void main() {
       'browse.contentType',
       kAutoDownloadSetting,
       'library.autoshelve',
+      'sourceHealth.userUninstalled',
       'sourceHealth.scoring',
     });
     expect(kSyncedSettings['browse.languages']!.vault, SettingsVault.plain);

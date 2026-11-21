@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
@@ -62,7 +63,7 @@ KartkaFeature buildDeviceExtFeature(
   final api = DeviceExtensionsApi(
     runtime: runtime,
     http: env.platform.http,
-    marks: UninstallMarks(env.platform.kv),
+    marks: UninstallMarks(syncedKv(env)),
   );
   final provider = DeviceExtSourceProvider(api: api, runtime: runtime);
   return KartkaFeature(

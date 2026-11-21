@@ -8,9 +8,11 @@ import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/platform/image_headers.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
 import 'package:kartka/source_health/install/install_ports.dart';
+import 'package:kartka/source_health/install/uninstall_marks.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_feature_builder.dart';
 import 'package:kartka/sources/suwayomi/ui/extensions_screen.dart';
+import 'package:kartka/sync/settings/settings_catalog.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'fakes.dart';
@@ -19,8 +21,11 @@ const _url = 'http://127.0.0.1:4599/';
 
 /// Sync with one Suwayomi problem and one for another feature.
 class _Sync implements SettingsSync {
+  static final keys = <String>[];
+
   @override
-  Future<void> changed(String key, String? value, SettingsVault vault) async {}
+  Future<void> changed(String key, String? value, SettingsVault vault) async =>
+      keys.add(key);
 
   @override
   Stream<String> get remoteChanges => const Stream.empty();
@@ -124,5 +129,14 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(ExtensionsScreen), findsOneWidget);
     expect(find.text('MangaDex'), findsOneWidget);
+  });
+
+  test('uninstall marks sync, so every desktop skips them (Suwayomi is '
+      'one server)', () async {
+    final api = registry().maybe<SuwayomiExtensionsApi>()!;
+    _Sync.keys.clear();
+    await api.marks!.mark('eu.kanade.tachiyomi.extension.all.mangadex');
+    expect(_Sync.keys, [UninstallMarks.kvKey]);
+    expect(kSyncedSettings.keys, contains(UninstallMarks.kvKey));
   });
 }

@@ -197,8 +197,8 @@ under the line cap; same rules. Implementation notes:
   `InstalledExtensionLister` / `InstalledPluginLister` ports, never the
   live source list (empty while a server is slow). It never uninstalls,
   and skips a package the user uninstalled (2026-11-21, `UninstallMarks`,
-  device-local `sourceHealth.userUninstalled`) even when the library uses
-  it; installing it by hand clears the mark. The extensions screen has a
+  synced `sourceHealth.userUninstalled`: the desktops share one Suwayomi
+  server) even when the library uses it; installing it by hand clears the mark. The extensions screen has a
   per-row uninstall and a one-off "uninstall all but ticked" sheet
   (MangaFire and Atsumaru pre-ticked, nothing stored); the confirm badges
   the number of library titles left without their source.
