@@ -160,8 +160,8 @@ under the line cap; same rules. Implementation notes:
   this run. `rejected` / `rejectedIds` (additive, 2026-11-20) = count and
   sorted ids rejected for good: a measured, non-native `cut` whose score
   without the subset penalty is <= 0.65 (`REJECT_SCORE`). Their records are
-  deleted from `/kartka/source_health` and never measured again; the app's
-  "Migrate to better sources" moves their entries off them. `skipped` lists every index entry the candidate merge dropped,
+  deleted; the app migrates entries off them and uninstalls an extension
+  whose sources are all rejected and unused (`pruneRejected`, 2026-11-21). `skipped` lists every index entry the candidate merge dropped,
   grouped by `index` (`keiyoushi`, `mangayomi`, `sy-backup`) and `reason`
   (`language`, `dart`, `domain-overlap`, `duplicate`; exactly one per entry,
   in that precedence), names sorted. RTDB drops empty lists, so readers must

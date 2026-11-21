@@ -53,6 +53,10 @@ void main() {
     expect(all[fire]!.sourceIds, ['suwayomi:1']);
     expect(all['x.gone']!.sourceIds, ['suwayomi:9']);
     expect(all[atsu]!.sourceIds, isEmpty);
+    expect(await api.packageSources(), {
+      fire: {'suwayomi:1'},
+      'x.gone': {'suwayomi:9'},
+    });
     expect(await api.installedPackages(), {fire, 'x.gone'});
     expect(await api.outdatedPackages(), [fire]);
     expect([for (final s in await api.sources()) s.id], ['1', '9']);
@@ -144,6 +148,10 @@ void main() {
     );
     await api.uninstall(fire);
     expect(await marks.load(), {fire});
+    // A rejected source's removal is not the user's: no mark.
+    await marks.clear(fire);
+    await api.removeExtension(fire);
+    expect(await marks.load(), isEmpty);
     await api.install(fire);
     expect(await marks.load(), isEmpty);
   });

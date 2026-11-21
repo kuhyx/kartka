@@ -8,6 +8,7 @@ import 'package:kartka/source_health/feed/source_health_feed.dart';
 import 'package:kartka/source_health/install/auto_install_state.dart';
 import 'package:kartka/source_health/install/install_ports.dart';
 import 'package:kartka/source_health/install/keep_plan.dart';
+import 'package:kartka/source_health/install/rejected_pruner.dart';
 import 'package:kartka/source_health/install/source_installs.dart';
 import 'package:kartka/source_health/install/source_probe.dart';
 import 'package:kartka/source_health/install/uninstall_marks.dart';
@@ -17,17 +18,15 @@ import 'package:kartka/source_health/model/source_health_record.dart';
 /// Installs every `keep` source, and every source a library entry uses,
 /// that is not installed yet ([installTargets]), without asking, once per
 /// published evaluation and again when the library starts using a source,
-/// then tests each one it installed. A library source without a record
-/// carrying `pkg` / `plugin` cannot be installed: "Migrate to better
-/// sources" lists its entries.
+/// then tests each one it installed. A library source without `pkg` /
+/// `plugin` cannot be installed: "Migrate to better sources" lists it.
 ///
-/// Installs only, never uninstalls (the ports cannot). A source carrying
-/// `pkg` installs on the Suwayomi server (one install per package, however
-/// many sources it serves), else one carrying `plugin` through the plugin
-/// manager. "Installed" is read from each side's lister, never from the
-/// live source list. A side that cannot be read is skipped and the publish
-/// is not remembered, so the next start tries again. Failures are flagged
-/// ([flagOf]) and logged as `sources.autoinstall`, URLs stripped.
+/// Uninstalls only extensions whose sources were all rejected for good and
+/// are unused ([pruneRejected]). `pkg` installs on the Suwayomi side (one
+/// install per package), else `plugin` through the plugin manager.
+/// "Installed" is read from each side's lister, never the live source list.
+/// An unreadable side is skipped and the publish not remembered, so the
+/// next start retries. Failures are flagged ([flagOf]) and logged.
 class KeepReconciler extends ChangeNotifier {
   /// Creates the reconciler; it does nothing until [start] or [reconcile].
   new({
@@ -79,9 +78,8 @@ class KeepReconciler extends ChangeNotifier {
   /// The flag shown for source [id] after a failed install or test.
   String? flagOf(String id) => state.failures[id]?.flag;
 
-  /// Whether the publish [id] with the library's source ids [library]
-  /// still needs a reconcile: a new publish, or a source the last one did
-  /// not see in the library.
+  /// Whether publish [id] with library sources [library] needs a run: a
+  /// new publish, or a library source the last run did not see.
   bool needsRun(String id, [Set<String> library = const {}]) =>
       id != state.publishId ||
       !state.librarySources.toSet().containsAll(library);
@@ -92,8 +90,7 @@ class KeepReconciler extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Loads the state, then reconciles every new publish of [feed] (the
-  /// scored feed: verdicts under the active profile).
+  /// Loads the state, then reconciles every new publish of [feed].
   Future<void> start(SourceHealthFeed feed) async {
     await load();
     _subs
@@ -149,12 +146,14 @@ class KeepReconciler extends ChangeNotifier {
 
   /// Installs and tests the [installTargets] of [records] and [library]
   /// that are missing, re-tests the ones flagged last time, and remembers
-  /// [publishId] and [library] when both sides could be read. A publish
-  /// already reconciled with these library sources is a no-op.
+  /// [publishId] and [library] when both sides could be read, then removes
+  /// [rejected] (default: the meta's) extensions ([pruneRejected]). A
+  /// publish already reconciled with these library sources is a no-op.
   Future<void> reconcile(
     List<SourceHealthRecord> records,
     String publishId, {
     Set<String> library = const {},
+    Set<String>? rejected,
   }) async {
     if (!needsRun(publishId, library)) return;
     final keep = installTargets(records, library);
@@ -237,6 +236,8 @@ class KeepReconciler extends ChangeNotifier {
     );
     await state.save(kv);
     notifyListeners();
+    final gone = rejected ?? _meta?.rejectedIds ?? const {};
+    await pruneRejected(suwayomi, rejected: gone, library: library);
   }
 
   @override

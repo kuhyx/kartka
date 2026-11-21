@@ -67,7 +67,9 @@ class DeviceExtensionsApi
         ExtensionCatalog,
         SuwayomiExtensionInstaller,
         InstalledExtensionLister,
-        SuwayomiExtensionUpdater {
+        SuwayomiExtensionUpdater,
+        ExtensionSourceLister,
+        ExtensionRemover {
   /// Creates the API.
   new({required this.runtime, required this.http, this.indexUrl, this.marks});
 
@@ -183,6 +185,17 @@ class DeviceExtensionsApi
     await marks?.mark(pkgName);
     return await _changed(pkgName);
   }
+
+  @override
+  Future<void> removeExtension(String pkg) async {
+    await runtime.invoke('uninstall', {'pkg': pkg});
+    await _changed(pkg);
+  }
+
+  @override
+  Future<Map<String, Set<String>>> packageSources() async => {
+    for (final e in await _installed()) e.pkg: {..._ids(e)},
+  };
 
   Future<SuwayomiExtension> _changed(String pkg) async {
     _loaded = _read(runtime.invoke('installed'));

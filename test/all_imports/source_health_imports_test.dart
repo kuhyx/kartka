@@ -14,6 +14,7 @@ import 'package:kartka/source_health/install/extension_autoupdate.dart';
 import 'package:kartka/source_health/install/install_ports.dart';
 import 'package:kartka/source_health/install/keep_plan.dart';
 import 'package:kartka/source_health/install/keep_reconciler.dart';
+import 'package:kartka/source_health/install/rejected_pruner.dart';
 import 'package:kartka/source_health/install/source_action_button.dart';
 import 'package:kartka/source_health/install/source_installs.dart';
 import 'package:kartka/source_health/install/source_probe.dart';

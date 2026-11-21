@@ -42,3 +42,17 @@ abstract interface class SuwayomiExtensionUpdater {
   /// Updates [pkg] to the store's build.
   Future<void> updateExtension(String pkg);
 }
+
+/// Each installed extension package's source ids (the in-app store knows
+/// them; a Suwayomi server's list does not).
+abstract interface class ExtensionSourceLister {
+  /// Package name to its sources' kartka ids.
+  Future<Map<String, Set<String>>> packageSources();
+}
+
+/// Removes an extension on its own (a rejected source), unlike a user
+/// uninstall, which marks it.
+abstract interface class ExtensionRemover {
+  /// Uninstalls [pkg].
+  Future<void> removeExtension(String pkg);
+}
