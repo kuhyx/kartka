@@ -2,6 +2,10 @@
 // file on the VM so `flutter test --coverage` reports it.
 // ignore_for_file: unused_import
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/sources/device_ext/device_ext_api.dart';
+import 'package:kartka/sources/device_ext/device_ext_feature.dart';
+import 'package:kartka/sources/device_ext/device_ext_source.dart';
+import 'package:kartka/sources/device_ext/keiyoushi_index.dart';
 import 'package:kartka/sources/local/archive_scan.dart';
 import 'package:kartka/sources/local/comic_info.dart';
 import 'package:kartka/sources/local/import_local_tile.dart';

@@ -67,12 +67,29 @@ List<SuwayomiExtension> sortExtensions(Iterable<SuwayomiExtension> all) {
   });
 }
 
+/// What the extensions screen drives: the Suwayomi server's store, or the
+/// in-app runtime's (`DeviceExtensionsApi`, Android).
+abstract interface class ExtensionCatalog {
+  /// Every extension in the store, installed ones marked, sorted.
+  Future<List<SuwayomiExtension>> list();
+
+  /// Installs [pkgName].
+  Future<SuwayomiExtension> install(String pkgName);
+
+  /// Updates [pkgName] to the store's build.
+  Future<SuwayomiExtension> update(String pkgName);
+
+  /// Uninstalls [pkgName].
+  Future<SuwayomiExtension> uninstall(String pkgName);
+}
+
 /// Lists, installs, updates and uninstalls the server's extensions; also
 /// the Sources tab's [SuwayomiExtensionInstaller], the Keep auto-install's
 /// [InstalledExtensionLister] and the auto-update's
 /// [SuwayomiExtensionUpdater].
 class SuwayomiExtensionsApi
     implements
+        ExtensionCatalog,
         SuwayomiExtensionInstaller,
         InstalledExtensionLister,
         SuwayomiExtensionUpdater {
@@ -90,6 +107,7 @@ class SuwayomiExtensionsApi
   final Future<void> Function()? onChanged;
 
   /// Every extension in the server's stores, refreshed from the stores.
+  @override
   Future<List<SuwayomiExtension>> list() async {
     final data = await client.run(SuwayomiQueries.extensions);
     final payload = data['fetchExtensions']! as Map<String, Object?>;
@@ -101,6 +119,7 @@ class SuwayomiExtensionsApi
   }
 
   /// Installs [pkgName].
+  @override
   Future<SuwayomiExtension> install(String pkgName) =>
       _patch(pkgName, 'install');
 
@@ -123,9 +142,11 @@ class SuwayomiExtensionsApi
   Future<void> updateExtension(String pkg) => update(pkg);
 
   /// Updates [pkgName] to the store's version.
+  @override
   Future<SuwayomiExtension> update(String pkgName) => _patch(pkgName, 'update');
 
   /// Uninstalls [pkgName].
+  @override
   Future<SuwayomiExtension> uninstall(String pkgName) =>
       _patch(pkgName, 'uninstall');
 

@@ -1,0 +1,4 @@
+Files under eu/kanade/tachiyomi are adapted from Mihon (https://github.com/mihonapp/mihon,
+commit 1ed58f5, source-api and core/common network), Apache License 2.0,
+Copyright the Mihon and Tachiyomi open source projects. KDoc was removed and
+the host wiring (NetworkHelper, AppInfo, awaitSingle) rewritten for Kartka.

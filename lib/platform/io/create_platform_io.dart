@@ -12,6 +12,7 @@ import 'package:kartka/platform/caching_key_value_store.dart';
 import 'package:kartka/platform/coalescing_saver.dart';
 import 'package:kartka/platform/cookie_http.dart';
 import 'package:kartka/platform/http_kartka.dart';
+import 'package:kartka/platform/io/channel_extension_runtime.dart';
 import 'package:kartka/platform/io/directory_files.dart';
 import 'package:kartka/platform/io/file_stores.dart';
 import 'package:kartka/platform/io/secure_key_value_store.dart';
@@ -64,6 +65,7 @@ Future<KartkaPlatform> createPlatform() async {
       links: AppLinks().uriLinkStream,
     ),
     browser: WebViewBrowser(hosts),
+    extensions: const ChannelExtensionRuntime(),
     // Covers: the OS may clear this dir, and then they are fetched again.
     cache: FileBlobStore(Directory(p.join(cacheDir.path, 'blobs'))),
   );

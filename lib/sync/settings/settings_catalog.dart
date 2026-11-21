@@ -14,11 +14,10 @@ typedef SyncedSetting = ({SettingsVault vault, String semanticLabel});
 const String kAutoDownloadSetting = 'downloads/auto_new_chapters';
 
 /// Synced settings by store key. A peer's node for any other key is ignored.
+///
+/// `suwayomi.serverUrl` stays on its device (todo ff807202): the phone runs
+/// extensions in-app and must never point at the desktop's server.
 const Map<String, SyncedSetting> kSyncedSettings = {
-  'suwayomi.serverUrl': (
-    vault: SettingsVault.plain,
-    semanticLabel: 'Suwayomi server URL',
-  ),
   'suwayomi.username': (
     vault: SettingsVault.secret,
     semanticLabel: 'Suwayomi username',

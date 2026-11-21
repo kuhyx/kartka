@@ -41,7 +41,7 @@ readonly FOCUS_CONFIG="${FOCUS_MODE_CONFIG:-${HOME}/src/phone-focus-mode/config.
 readonly CAPPED="${KARTKA_CAPPED-${HOME}/.claude/scripts/capped.sh}"
 readonly WAIT_SECS="${KARTKA_WAIT_SECS:-120}"
 readonly APK="${SRC}/build/app/outputs/flutter-apk/app-release.apk"
-readonly ANDROID_STEPS=(kernel aot java r8 apk)
+readonly ANDROID_STEPS=(kernel aot java r8 apk extapi)
 
 log() { printf '==> %s\n' "$1"; }
 die() { printf 'deploy: %s\n' "$1" >&2; exit 1; }

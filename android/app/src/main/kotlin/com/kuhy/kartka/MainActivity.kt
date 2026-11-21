@@ -1,6 +1,7 @@
 package com.kuhy.kartka
 
 import android.webkit.CookieManager
+import com.kuhy.kartka.ext.ExtChannel
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -11,6 +12,8 @@ class MainActivity : FlutterActivity() {
     // which webview_flutter's own getCookies mangles (it splits values on '=').
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        // In-app Keiyoushi extensions: no Suwayomi server needed on Android.
+        ExtChannel(application, flutterEngine.dartExecutor.binaryMessenger)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "kartka/webview_cookies")
             .setMethodCallHandler { call, result ->
                 when (call.method) {

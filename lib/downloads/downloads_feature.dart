@@ -42,6 +42,7 @@ KartkaFeature downloadsFeature(KartkaEnv env) {
         http: p.http,
         blobs: p.blobs,
         imageHeaders: env.registry.all<ImageHeaders>(),
+        extensions: p.extensions,
       ).load(page),
     ),
     onLoaded: () => unawaited(auto.checkIfDue()),

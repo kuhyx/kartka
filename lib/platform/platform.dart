@@ -1,5 +1,6 @@
 import 'package:kartka/platform/blob_store.dart';
 import 'package:kartka/platform/browser_engine.dart';
+import 'package:kartka/platform/extension_runtime.dart';
 import 'package:kartka/platform/file_picker.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/key_value_store.dart';
@@ -7,6 +8,7 @@ import 'package:kartka/platform/oauth_redirect.dart';
 
 export 'blob_store.dart';
 export 'browser_engine.dart';
+export 'extension_runtime.dart';
 export 'file_picker.dart';
 export 'http_client.dart';
 export 'image_headers.dart';
@@ -31,6 +33,7 @@ class KartkaPlatform {
     required this.diagnostics,
     this.browser = const UnavailableBrowser(),
     this.cache,
+    this.extensions,
   });
 
   /// Network client (direct on Android, `/proxy` on web).
@@ -70,4 +73,8 @@ class KartkaPlatform {
   /// (`CoverCache`). Android: the app cache dir, which the OS may clear.
   /// Web: the wrapper's `/files/` root, under `cache/`. Null: memory only.
   final BlobStore? cache;
+
+  /// The in-app Tachiyomi extension runtime (contracts-runtime §18).
+  /// Android only; null on web, where the desktop keeps Suwayomi.
+  final ExtensionRuntime? extensions;
 }

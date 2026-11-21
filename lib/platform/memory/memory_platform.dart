@@ -20,6 +20,7 @@ KartkaPlatform memoryPlatform({
   KartkaBrowser? browser,
   MemoryBlobStore? diagnostics,
   MemoryBlobStore? cache,
+  ExtensionRuntime? extensions,
 }) => KartkaPlatform(
   http: http ?? FakeKartkaHttp(),
   blobs: blobs ?? MemoryBlobStore(),
@@ -30,4 +31,5 @@ KartkaPlatform memoryPlatform({
   browser: browser ?? const UnavailableBrowser(),
   diagnostics: diagnostics ?? MemoryBlobStore(),
   cache: cache ?? MemoryBlobStore(),
+  extensions: extensions,
 );

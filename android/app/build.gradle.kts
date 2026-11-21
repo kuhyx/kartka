@@ -2,6 +2,8 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
+    // @Serializable in the vendored Tachiyomi source API (eu.kanade.tachiyomi).
+    id("org.jetbrains.kotlin.plugin.serialization")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -28,7 +30,8 @@ android {
             }
         }
     }
-    compileSdk = flutter.compileSdkVersion
+    // 37: okhttp 5.5 (extension host) requires it.
+    compileSdk = maxOf(flutter.compileSdkVersion, 37)
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -41,7 +44,9 @@ android {
         applicationId = "com.kuhy.kartka"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // 28: DelegateLastClassLoader + signing certificates for the in-app
+        // extension loader (com.kuhy.kartka.ext).
+        minSdk = maxOf(flutter.minSdkVersion, 28)
         targetSdk = flutter.targetSdkVersion
         // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
         // is added automatically by Flutter. (https://developer.android.com/studio/build/configure-apk-splits#configure-APK-versions)
@@ -58,6 +63,7 @@ android {
 
     buildTypes {
         release {
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.findByName("release")
                 ?: signingConfigs.getByName("debug")
         }
@@ -72,4 +78,21 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+// The host side of the Tachiyomi extension API that loaded Keiyoushi APKs
+// link against (extensions-lib 1.6; versions follow Mihon's catalogue).
+dependencies {
+    implementation("com.squareup.okhttp3:okhttp:5.5.1")
+    implementation("com.squareup.okhttp3:okhttp-brotli:5.5.1")
+    // Keiyoushi lib 1.6 calls okhttp3.zstd.Zstd (Mihon ships it too).
+    implementation("com.squareup.okhttp3:okhttp-zstd:5.5.1")
+    implementation("org.jsoup:jsoup:1.24.1")
+    implementation("io.reactivex:rxjava:1.3.8")
+    implementation("uy.kohesive.injekt:injekt-core:1.16.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.13.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-okio:1.13.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
+    implementation("androidx.preference:preference-ktx:1.2.1")
+    implementation("androidx.webkit:webkit:1.18.0")
 }

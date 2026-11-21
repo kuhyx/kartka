@@ -16,6 +16,8 @@
 #   apk      package + sign (Gradle :app:assemble<Mode>); the default step.
 #            It runs whatever earlier step is out of date, so on a warm tree
 #            (or uncapped, as ./run.sh android does) it is the whole build.
+#   extapi   release only: R8 left the extension host API open
+#            (scripts/check_ext_api_open.py, needs baksmali)
 #   gradle <args>   any Gradle task with the same props (e.g. `-m <task>`)
 #
 # Output: build/app/outputs/flutter-apk/app-<mode>.apk. Only arm64 is built
@@ -157,6 +159,17 @@ run_step() {
                 local apk="${ROOT}/build/app/outputs/flutter-apk/app-release.apk"
                 sign_rotated "$apk" || die "rotation signing failed"
                 check_apk_signer "$apk" || die "release APK signer check failed"
+            fi
+            ;;
+        extapi)
+            # Release only: R8 must leave the extension host API open
+            # (android/app/proguard-rules.pro). Own step: ~18 s.
+            if [[ "$MODE" == release ]]; then
+                command -v baksmali >/dev/null || die "baksmali missing (pacman: smali)"
+                python3 "${ROOT}/scripts/check_ext_api_open.py" \
+                    "${ROOT}/build/app/outputs/flutter-apk/app-release.apk" \
+                    "${ROOT}/build/app/tmp/kotlin-classes/release" ||
+                    die "R8 sealed the extension host API"
             fi
             ;;
         gradle) shift; gradle "$@" ;;

@@ -17,7 +17,8 @@ extension on Any {
   );
 }
 
-const _url = 'suwayomi.serverUrl';
+// Any plain synced key; the server URL stays on its device.
+const _url = 'plugins.repos';
 const _pass = 'suwayomi.password';
 
 void main() {

@@ -89,7 +89,15 @@ void main() {
       username: 'kuhy',
       password: 'Secret-Pass-1',
     );
-    final announced = expectLater(phone.suwayomi.changes, emitsThrough(server));
+    // The login syncs; the server URL stays on the desktop (todo ff807202).
+    const onPhone = SuwayomiSettings(
+      username: 'kuhy',
+      password: 'Secret-Pass-1',
+    );
+    final announced = expectLater(
+      phone.suwayomi.changes,
+      emitsThrough(onPhone),
+    );
     await desktop.suwayomi.save(server);
     final dex = desktop.env.registry.maybe<MangadexSettingsStore>()!;
     await dex.save(dex.value.copyWith(languages: ['pl'], dataSaver: true));
@@ -106,7 +114,7 @@ void main() {
     await phone.poll();
 
     await announced;
-    expect(phone.suwayomi.current, server);
+    expect(phone.suwayomi.current, onPhone);
     final phoneDex = phone.env.registry.maybe<MangadexSettingsStore>()!.value;
     expect(phoneDex.languages, ['pl']);
     expect(phoneDex.dataSaver, isTrue);

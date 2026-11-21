@@ -35,6 +35,7 @@ KartkaFeature updatesFeature(KartkaEnv env) {
       http: env.platform.http,
       blobs: env.platform.blobs,
       imageHeaders: env.registry.all<ImageHeaders>(),
+      extensions: env.platform.extensions,
     );
     return UpdatesDeps(
       feed: feed,

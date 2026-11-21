@@ -180,7 +180,7 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
 
 ## 16. Synced settings (2026-10-24, kuhy's decision)
 
-- **Synced**: `suwayomi.serverUrl`, `suwayomi.username`, `suwayomi.password`,
+- **Synced**: `suwayomi.username`, `suwayomi.password`,
   `mangadex.settings`, `reader.settings` (global default mode, tap zones,
   prefetch), `plugins.repos` (native and Mangayomi repos),
   `browse.languages` (Browse language filter, JSON list of codes in display

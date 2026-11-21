@@ -25,7 +25,8 @@ class _WrapperLikeSecrets extends MemoryKeyValueStore {
   Future<void> set(String key, String value) => super.set(_checked(key), value);
 }
 
-const _url = 'suwayomi.serverUrl';
+// Any plain synced key; the server URL stays on its device.
+const _url = 'plugins.repos';
 
 void main() {
   test('setting the passphrase on desktop never reads plain settings from '

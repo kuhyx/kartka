@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/platform/blob_store.dart';
+import 'package:kartka/platform/extension_runtime.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/platform/image_headers.dart';
 
@@ -27,6 +28,7 @@ class PageImageLoader {
     required this.http,
     required this.blobs,
     this.imageHeaders = const [],
+    this.extensions,
   });
 
   /// Network client for `http(s)` pages.
@@ -37,6 +39,10 @@ class PageImageLoader {
 
   /// Header providers merged in order before the page's own headers.
   final List<ImageHeaders> imageHeaders;
+
+  /// Serves `kartka-ext` pages and covers (in-app extensions); null when
+  /// the platform has no runtime.
+  final ExtensionRuntime? extensions;
 
   /// Request headers for [url]: every provider in order, then [own] wins.
   Map<String, String> headersFor(String url, Map<String, String> own) => {
@@ -58,6 +64,13 @@ class PageImageLoader {
       return bytes;
     }
     final url = Uri.parse(page.imageUrl);
+    if (url.scheme == kartkaExtScheme) {
+      final runtime = extensions;
+      if (runtime == null) {
+        throw ArgumentError.value(page.imageUrl, 'imageUrl', 'no runtime');
+      }
+      return await loadExtImage(runtime, url);
+    }
     if (url.scheme != 'http' && url.scheme != 'https') {
       throw ArgumentError.value(page.imageUrl, 'imageUrl', 'unknown scheme');
     }

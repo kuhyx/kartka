@@ -127,4 +127,5 @@ PageImageLoader _imageLoader(KartkaEnv env) => PageImageLoader(
   http: env.platform.http,
   blobs: env.platform.blobs,
   imageHeaders: env.registry.all<ImageHeaders>(),
+  extensions: env.platform.extensions,
 );

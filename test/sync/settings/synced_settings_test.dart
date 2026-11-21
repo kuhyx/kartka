@@ -9,7 +9,8 @@ import 'package:kartka/sync/settings/settings_catalog.dart';
 import '../fakes.dart';
 import 'settings_harness.dart';
 
-const _url = 'suwayomi.serverUrl';
+// Any plain synced key; the server URL stays on its device.
+const _url = 'plugins.repos';
 const _user = 'suwayomi.username';
 const _pass = 'suwayomi.password';
 
@@ -185,7 +186,6 @@ void main() {
 
   test('the catalogue is exactly the settings kuhy chose to sync', () {
     expect(kSyncedSettings.keys.toSet(), {
-      _url,
       _user,
       _pass,
       'mangadex.settings',
@@ -198,6 +198,8 @@ void main() {
       'sourceHealth.scoring',
     });
     expect(kSyncedSettings['browse.languages']!.vault, SettingsVault.plain);
+    // The phone runs extensions itself; a desktop's server URL never syncs.
+    expect(kSyncedSettings, isNot(contains('suwayomi.serverUrl')));
     for (final key in [_user, _pass]) {
       expect(kSyncedSettings[key]!.vault, SettingsVault.secret);
     }

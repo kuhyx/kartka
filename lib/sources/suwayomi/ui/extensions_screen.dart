@@ -21,7 +21,7 @@ class ExtensionsScreen extends StatefulWidget {
   const new({required this.api, this.diagnostics, super.key});
 
   /// The server's extension API.
-  final SuwayomiExtensionsApi api;
+  final ExtensionCatalog api;
 
   /// Where a failed listing (the Retry screen) is logged.
   final DiagnosticsLog? diagnostics;

@@ -125,6 +125,7 @@ class BrowseRuntime {
           http: _env.platform.http,
           blobs: _env.platform.blobs,
           imageHeaders: _env.registry.all<ImageHeaders>(),
+          extensions: _env.platform.extensions,
         ).load(PageRef(index: 0, imageUrl: url)),
         store: _env.platform.cache,
       );
