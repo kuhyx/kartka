@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/reader/data/page_list_cache.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
@@ -28,15 +29,8 @@ class SessionFixture {
   final MemoryBlobStore diagnosticsStore = MemoryBlobStore();
   late final DiagnosticsLog diagnostics = DiagnosticsLog(diagnosticsStore);
 
-  /// Settable clock for tests that need to simulate slow steps.
-  DateTime _now = DateTime.utc(2026, 10, 24);
-  DateTime Function() get now =>
-      () => _now;
-  void advance(Duration d) => _now = _now.add(d);
-
-  /// Optional callback invoked with each step name from loadChapterPages.
-  /// Can be used to advance the clock during specific steps.
-  void Function(String step)? onStep;
+  /// The clock the session reads; tests advance it to make a step slow.
+  DateTime clock = DateTime.utc(2026, 10, 24);
 
   ReaderSession make({
     FakeSource? source,
@@ -47,7 +41,7 @@ class SessionFixture {
     Duration advanceTimeout = const Duration(seconds: 30),
     PageListCache? pageLists,
     bool fresh = false,
-    void Function(String step)? onStep,
+    Future<MangaSource?> Function(String id)? findSource,
   }) {
     progress = FakeProgress(initial: saved);
     final src =
@@ -57,9 +51,6 @@ class SessionFixture {
           pageMap: {'/c/2': fakePages('/c/2', 5)},
         );
 
-    // Wrap findSource to inject onStep into loadChapterPages
-    // The session's _openChapter calls loadChapterPages with onStep: recordStep
-    // We need to combine the test's onStep with the session's recordStep
     return ReaderSession(
       sourceId: 'fake',
       mangaUrl: '/m/1',
@@ -70,7 +61,7 @@ class SessionFixture {
         pageLists: pageLists,
         diagnostics: diagnostics,
         advanceTimeout: advanceTimeout,
-        findSource: (id) async => id == src.id ? src : null,
+        findSource: findSource ?? (id) async => id == src.id ? src : null,
         progress: progress,
         downloads: downloads,
         prefs: prefs,
@@ -79,8 +70,7 @@ class SessionFixture {
           if (imageError case final e?) throw e;
           return Uint8List(1);
         },
-        now: now,
-        onStep: onStep ?? this.onStep,
+        now: () => clock,
       ),
     );
   }

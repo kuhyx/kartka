@@ -22,7 +22,6 @@ class ReaderDeps {
     this.advanceTimeout = const Duration(seconds: 30),
     this.precache = precacheQuietly,
     this.pageLists,
-    this.onStep,
   });
 
   /// The source with this id, or null when it is not installed.
@@ -57,8 +56,4 @@ class ReaderDeps {
   /// Page lists fetched ahead and sources marked as needing a WebView;
   /// one per app run, so it outlives a reader route.
   final PageListCache? pageLists;
-
-  /// Optional callback for test instrumentation: invoked on each step of
-  /// loadChapterPages ('offline', 'source', 'pages').
-  final void Function(String step)? onStep;
 }

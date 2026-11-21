@@ -8,6 +8,7 @@ part of 'reader_session.dart';
 /// next chapter load.
 extension _Open on ReaderSession {
   Future<void> _openChapter() async {
+    final openStart = deps.now();
     var stepStart = deps.now();
     var slowestStep = '';
     var slowestDuration = Duration.zero;
@@ -26,7 +27,6 @@ extension _Open on ReaderSession {
     mode = await deps.prefs.effectiveMode(key);
     recordStep('prefs');
     final found = deps.findSource(sourceId).then((s) => _source = s);
-    recordStep('source');
     var arrived = false;
     // The list starts once page 1 has arrived or failed: beside the open,
     // Suwayomi's list refresh (same rate-limited source) slowed the page
@@ -40,13 +40,6 @@ extension _Open on ReaderSession {
         });
     final ChapterPages loaded;
     try {
-      // Combine session's recordStep with test's onStep for instrumentation
-      // Call onStep FIRST so tests can advance clock before recordStep measures
-      void combinedOnStep(String step) {
-        deps.onStep?.call(step);
-        recordStep(step);
-      }
-
       loaded = await loadChapterPages(
         key: key,
         chapterUrl: chapterUrl,
@@ -54,7 +47,7 @@ extension _Open on ReaderSession {
         source: found,
         cache: deps.pageLists,
         fresh: fresh,
-        onStep: combinedOnStep,
+        onStep: recordStep,
       );
     } on ChapterUnavailable catch (e) {
       return _fail(e.message);
@@ -85,9 +78,8 @@ extension _Open on ReaderSession {
     _add(chapterUrl, loaded, landing: startAtEnd ? page : null);
     phase = ReaderPhase.ready;
     // Probe: log the single slowest step if the whole open up to ready
-// took >= 1 s.
-    final total = deps.now().difference(stepStart).abs()
-        + slowestDuration;
+    // took >= 1 s.
+    final total = deps.now().difference(openStart);
     if (total >= const Duration(seconds: 1) && slowestStep.isNotEmpty) {
       _logOpen(
         ReaderLoadException(
