@@ -22,10 +22,9 @@ extension _Open on ReaderSession {
       stepStart = deps.now();
     }
 
-    settings = await deps.prefs.settings();
-    recordStep('prefs');
-    mode = await deps.prefs.effectiveMode(key);
-    recordStep('prefs');
+    // Beside the page list: before it, two synced-kv reads took 0.33 s of
+    // every open on the web build (971debc8).
+    final prefs = (deps.prefs.settings(), deps.prefs.modeFor(key)).wait;
     final found = deps.findSource(sourceId).then((s) => _source = s);
     var arrived = false;
     // The list starts once page 1 has arrived or failed: beside the open,
@@ -59,6 +58,10 @@ extension _Open on ReaderSession {
       final message = e is ReaderLoadException ? e.message : '$e';
       return _openFailed(e, stack, message);
     }
+    final (stored, chosen) = await prefs;
+    settings = stored;
+    mode = chosen ?? stored.defaultMode;
+    recordStep('prefs');
     if (loaded.pages.isEmpty && !loaded.offline) {
       // Probe (971debc8): an empty chapter still opens (its end leads on to
       // the next one), but nothing said why it was empty.

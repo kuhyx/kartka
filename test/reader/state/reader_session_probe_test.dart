@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/diagnostics/diagnostic_entry.dart';
 import 'package:kartka/core/diagnostics/upload_rule.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
+import 'package:kartka/reader/data/reader_prefs.dart';
 import 'package:kartka/reader/state/reader_session.dart';
 
 import '../support/fakes.dart';
@@ -59,6 +63,25 @@ void main() {
     expect(kinds, isNot(contains('reader.open')));
   });
 
+  test('the page list is asked for while the prefs load (971debc8)', () async {
+    // Two synced-kv reads before the page list took 0.33 s of each open on
+    // the web build; they now run beside it.
+    final kv = _HeldKv();
+    f.prefs = ReaderPrefs(kv);
+    final src = FakeSource(
+      chapterList: sessionChapters,
+      pageMap: {'/c/2': fakePages('/c/2', 3)},
+    );
+    final s = f.make(source: src);
+    final opened = s.open();
+    await pumpEventQueue();
+    expect(src.pageCalls, ['/c/2']);
+    expect(s.phase, ReaderPhase.loading, reason: 'ready waits for the prefs');
+    kv.gate.complete();
+    await opened;
+    expect(s.phase, ReaderPhase.ready);
+  });
+
   group('slow open step probe', () {
     test('a slow page list names pages', () async {
       final s = f.make(source: _SlowPages(f, const Duration(seconds: 2)));
@@ -97,6 +120,17 @@ void main() {
       expect(await _probes(f), isEmpty);
     });
   });
+}
+
+/// A store whose reads wait for [gate].
+class _HeldKv extends MemoryKeyValueStore {
+  final gate = Completer<void>();
+
+  @override
+  Future<String?> get(String key) async {
+    await gate.future;
+    return await super.get(key);
+  }
 }
 
 /// A source whose page list takes [delay] on the fixture's clock.

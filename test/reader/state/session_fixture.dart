@@ -25,7 +25,7 @@ class SessionFixture {
 
   /// When set, every page image load throws it.
   Error? imageError;
-  final ReaderPrefs prefs = ReaderPrefs(MemoryKeyValueStore());
+  ReaderPrefs prefs = ReaderPrefs(MemoryKeyValueStore());
   final MemoryBlobStore diagnosticsStore = MemoryBlobStore();
   late final DiagnosticsLog diagnostics = DiagnosticsLog(diagnosticsStore);
 
