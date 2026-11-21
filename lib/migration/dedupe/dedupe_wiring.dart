@@ -4,6 +4,7 @@ import 'package:kartka/app/feature.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_registry.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
+import 'package:kartka/core/updates/chapter_backfill.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/migration/dedupe/library_deduper.dart';
 import 'package:kartka/migration/first_value.dart';
@@ -20,6 +21,7 @@ LibraryDeduper libraryDeduper(KartkaEnv env, MigrationDeps Function() deps) =>
       local: env.platform.kv,
       updater: () => env.registry.maybe<LibraryUpdater>(),
       log: DiagnosticsLog.of(env.platform.diagnostics),
+      backfill: () => env.registry.maybe<ChapterBackfill>(),
     );
 
 /// The first ranking [lookup] emits; null without one, on a read error or

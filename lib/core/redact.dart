@@ -33,3 +33,13 @@ final _userInfo = RegExp(
 String redactUrlQueries(String text) => text
     .replaceAllMapped(_urlTail, (m) => '${m[1]}${m[2]}<redacted>')
     .replaceAllMapped(_userInfo, (m) => '${m[1]}<redacted>@');
+
+/// [text] with every URL and query string removed, for diagnostics entries
+/// (which must carry neither): http(s) URLs become `<url>`, and any other
+/// `?query` (a relative source path) becomes `?<redacted>`.
+String stripUrls(String text) => text
+    .replaceAll(
+      RegExp(r'''https?://[^\s"'<>]*''', caseSensitive: false),
+      '<url>',
+    )
+    .replaceAll(RegExp(r'''\?[^\s"'<>]+'''), '?<redacted>');

@@ -4,6 +4,8 @@ import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/source/manga_gone_error.dart';
 import 'package:kartka/core/source/unknown_source_error.dart';
 
+export 'package:kartka/core/redact.dart' show stripUrls;
+
 /// What a manga-detail refresh (pull-to-refresh or the app-bar action) did.
 sealed class RefreshOutcome {
   const new();
@@ -73,13 +75,3 @@ String _label(ChapterInfo c) => switch (c.number) {
   final n when n == n.truncateToDouble() => '${n.toInt()}',
   final n => '$n',
 };
-
-/// [text] with every URL and query string removed, for diagnostics entries
-/// (which must carry neither): http(s) URLs become `<url>`, and any other
-/// `?query` (a relative source path) becomes `?<redacted>`.
-String stripUrls(String text) => text
-    .replaceAll(
-      RegExp(r'''https?://[^\s"'<>]*''', caseSensitive: false),
-      '<url>',
-    )
-    .replaceAll(RegExp(r'''\?[^\s"'<>]+'''), '?<redacted>');

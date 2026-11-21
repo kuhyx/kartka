@@ -69,8 +69,11 @@ test/               mirrors lib/; test/e2e/ for on-device flows
 `AutoShelver` (`lib/library/state/`) moves stale entries on its own:
 
 - Stale: the newest stored chapter `uploadedAt` is over 18 calendar months
-  old (`staleCutoff`, day clamped). No stored list or no dated chapter: never
-  moved (`LibraryEntry.updatedAt` is a sync clock, not a chapter date).
+  old (`staleCutoff`, day clamped). No dated chapter: never moved
+  (`LibraryEntry.updatedAt` is a sync clock, not a chapter date). No stored
+  list: each run first fetches the lists of the 20 oldest-added such entries
+  (`ChapterBackfill`, `lib/core/updates/`: 2 at a time, 1 per source; a failed
+  one waits behind the untried and logs device-only `library.backfill`).
 - All read: the category named `finished` (trimmed, any case), else one
   created as `finished`. Some unread: the first by order whose name holds
   `abandon` or `complet`, else one created as `abandoned`. Created ones get a
@@ -100,9 +103,9 @@ literally the same series onto the one on the best source, on its own:
   match the other, so "X 2" never pairs) and no evidence disagrees: authors
   when both list some; stored chapter counts within 10 % or 3; descriptions
   when both have one (`descriptionScore` under 0.2 vetoes). Neither side
-  with an author or a description: uncertain, skipped. Only entries whose
-  chapter list this device stored are judged (browse's `DupeFactsLookup`,
-  never fetching). One source counts too when its two urls name the same
+  with an author or a description: uncertain, skipped. Entries are judged
+  on the chapter list this device stored (browse's `DupeFactsLookup`); the
+  shared `ChapterBackfill` first fetches missing ones, as above. One source counts too when its two urls name the same
   manga (`sameListing`: every path segment and query value of one, generic
   words like `manga` aside, is among the other's), e.g. a bare id `abc`
   next to `/manga/abc/slug`; other urls on one source never pair.

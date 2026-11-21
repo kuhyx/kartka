@@ -6,7 +6,6 @@ import 'package:kartka/updates/data/update_feed.dart';
 import 'package:kartka/updates/state/library_keys.dart';
 import 'package:kartka/updates/state/update_rows.dart';
 import 'package:kartka/updates/state/update_runner.dart';
-import 'package:kartka/updates/state/update_scheduler.dart';
 import 'package:kartka/updates/state/updates_controller.dart';
 import 'package:kartka/updates/state/updates_deps.dart';
 import 'package:kartka/updates/ui/update_cover.dart';

@@ -40,7 +40,9 @@ import 'package:kartka/core/ui/section_mark.dart';
 import 'package:kartka/core/ui/snack_mark.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/core/updates/chapter_addition_sink.dart';
+import 'package:kartka/core/updates/chapter_backfill.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
+import 'package:kartka/core/updates/check_all.dart';
 
 void main() {
   test('every lib/core file loads', () {});

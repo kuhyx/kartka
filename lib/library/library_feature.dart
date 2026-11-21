@@ -6,6 +6,9 @@ import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
+import 'package:kartka/core/updates/chapter_backfill.dart';
+import 'package:kartka/core/updates/chapter_update_checker.dart';
+import 'package:kartka/library/data/lww.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/library_routes.dart';
 import 'package:kartka/library/ports.dart';
@@ -32,6 +35,13 @@ KartkaFeature libraryFeature(KartkaEnv env) {
         (images ??= _images(env)).load(PageRef(index: 0, imageUrl: url)),
     store: platform.cache,
   );
+  // Shared by auto-shelving and duplicate merging (audit 53c9b0fa, 5a + 6).
+  final backfill = ChapterBackfill(
+    checker: () => env.registry.maybe<ChapterUpdateChecker>(),
+    local: platform.kv,
+    log: DiagnosticsLog.of(platform.diagnostics),
+    clock: utcNow,
+  );
   // One per launch: the memory syncs (§16), the start-up gate does not.
   final shelver = AutoShelver(
     repos: repos,
@@ -40,13 +50,14 @@ KartkaFeature libraryFeature(KartkaEnv env) {
     local: platform.kv,
     updater: () => env.registry.maybe<LibraryUpdater>(),
     log: DiagnosticsLog.of(platform.diagnostics),
+    backfill: () => backfill,
   );
   LibraryDeps? cached;
   // Built on first use: the registry is complete only after every factory.
   LibraryDeps deps() => cached ??= _deps(env, repos, covers, shelver);
   return KartkaFeature(
     id: 'library',
-    services: [repos, covers, shelver],
+    services: [repos, covers, shelver, backfill],
     tabs: {KartkaTab.library: (_) => LibraryScreen(deps: deps())},
     routes: [
       GoRoute(

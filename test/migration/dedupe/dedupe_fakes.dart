@@ -1,6 +1,7 @@
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/updates/chapter_backfill.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/migration/dedupe/library_deduper.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
@@ -38,16 +39,18 @@ class DedupeWorld {
   DateTime now = dedupeNow;
 
   /// A deduper over this world.
-  LibraryDeduper make({LibraryUpdater? updater}) => LibraryDeduper(
-    deps: () => w.deps,
-    facts: () => facts,
-    health: () async => health,
-    installed: () async => installed,
-    local: local,
-    updater: () => updater,
-    log: DiagnosticsLog(diag),
-    clock: () => now,
-  );
+  LibraryDeduper make({LibraryUpdater? updater, ChapterBackfill? backfill}) =>
+      LibraryDeduper(
+        deps: () => w.deps,
+        facts: () => facts,
+        health: () async => health,
+        installed: () async => installed,
+        local: local,
+        updater: () => updater,
+        log: DiagnosticsLog(diag),
+        clock: () => now,
+        backfill: () => backfill,
+      );
 
   /// Adds [title] on [source] (installed, ranked [rank] when given) with
   /// [count] stored chapters, the first [read] of them read.

@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/json_fields.dart';
+import 'package:kartka/core/updates/chapter_backfill.dart';
 import 'package:kartka/library/data/lww.dart';
 import 'package:kartka/library/library_repositories.dart';
 import 'package:kartka/library/ports.dart';
@@ -52,7 +53,14 @@ class AutoShelver {
     required this.updater,
     this.log,
     this.clock = utcNow,
+    this.backfill = _none,
   });
+
+  static ChapterBackfill? _none() => null;
+
+  /// Fetches the chapter lists of entries this device never stored, so
+  /// they are judged too (null: judge only the stored ones).
+  final ChapterBackfill? Function() backfill;
 
   /// Decorated repositories, so sync sees the membership writes.
   final LibraryRepositories repos;
@@ -142,9 +150,9 @@ class AutoShelver {
     // must not erase what another device remembered.
     final remembered = SplayTreeMap<String, String>.of(_decode(raw));
     final moved = {for (final s in Shelf.values) s: 0};
-    final lookup = facts();
+    final known = await knownFacts(entries, facts().of, backfill());
     for (final e in entries) {
-      final f = await lookup.of(e.key);
+      final f = known[e.key];
       final newest = f?.newestUpload;
       if (f == null || newest == null) continue;
       if (!isStale(newest, now)) {

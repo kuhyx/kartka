@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/json_fields.dart';
+import 'package:kartka/core/updates/chapter_backfill.dart';
 import 'package:kartka/library/data/lww.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/migration/dedupe/dupe_merger.dart';
@@ -28,7 +29,8 @@ const dedupeEvery = Duration(hours: 6);
 /// on the best source (DOCS-spec "Duplicate merging"; rules in
 /// `dupe_rule.dart`, the merge in `dupe_merger.dart`).
 ///
-/// Judges only what this device stored (never fetches). Without a ranking
+/// Judges what this device stored, after [backfill] fetched the lists it
+/// lacked (audit 53c9b0fa gap 6). Without a ranking
 /// or with no installed source it does nothing and keeps its gate open:
 /// a winner picked blind could delete the better entry. One backup
 /// (`exportBackup`) precedes the first merge of a run; a failed backup
@@ -45,7 +47,11 @@ class LibraryDeduper implements LibraryStartTask {
     required this.updater,
     this.log,
     this.clock = utcNow,
+    required this.backfill,
   });
+
+  /// Fetches the chapter lists of entries this device never stored.
+  final ChapterBackfill? Function() backfill;
 
   /// Repositories and the backup store.
   final MigrationDeps Function() deps;
@@ -114,8 +120,10 @@ class LibraryDeduper implements LibraryStartTask {
       }
       final d = deps();
       final dupes = <Dupe>[];
-      for (final e in await firstValue(d.library.watch())) {
-        final f = await lookup.of(e.key);
+      final entries = await firstValue(d.library.watch());
+      final known = await knownFacts(entries, lookup.of, backfill());
+      for (final e in entries) {
+        final f = known[e.key];
         if (f == null) continue;
         dupes.add(
           Dupe(

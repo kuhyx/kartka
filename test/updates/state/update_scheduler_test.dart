@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/net/network_errors.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
-import 'package:kartka/updates/state/update_scheduler.dart';
+import 'package:kartka/core/updates/check_all.dart';
 
 /// A checker whose checks finish only when the test completes them, and
 /// which records how many run at once, overall and per source.

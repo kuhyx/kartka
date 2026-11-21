@@ -8,7 +8,7 @@ import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/library/data/lww.dart';
 import 'package:kartka/library/ports.dart';
-import 'package:kartka/updates/state/update_scheduler.dart';
+import 'package:kartka/core/updates/check_all.dart';
 
 /// Waits [duration] (the retry backoff; tests pass a no-op).
 typedef Delay = Future<void> Function(Duration duration);

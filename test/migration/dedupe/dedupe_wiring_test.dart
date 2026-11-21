@@ -5,6 +5,7 @@ import 'package:kartka/app/feature.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
+import 'package:kartka/core/updates/chapter_backfill.dart';
 import 'package:kartka/library/library_feature.dart';
 import 'package:kartka/library/ports.dart';
 import 'package:kartka/migration/dedupe/dedupe_wiring.dart';
@@ -81,6 +82,8 @@ void main() {
     final deduper = registry.maybe<LibraryStartTask>()! as LibraryDeduper;
     expect(deduper.facts(), same(facts));
     expect(deduper.updater(), isNull);
+    expect(deduper.backfill(), same(registry.maybe<ChapterBackfill>()));
+    expect(deduper.backfill(), isNotNull);
     expect(await deduper.health(), isNull);
     expect(await deduper.installed(), isEmpty);
     expect(deduper.deps().library, isNotNull);
