@@ -41,7 +41,7 @@ dependencies:
       ref: design_system-v0.4.1
       path: design_system
   # CBZ / folder import (FilePicker seam); web and Android implementations.
-  file_picker: 13.4.0
+  file_picker: 13.4.1
   flutter:
     sdk: flutter
   flutter_js: 0.8.7
@@ -68,7 +68,7 @@ dependencies:
   kuhy_credit:
     git:
       url: https://github.com/kuhyx/utils
-      ref: kuhy-credit-v0.3.0
+      ref: kuhy-credit-v0.3.2
       path: kuhy_credit/flutter
   # Flutter 3.50 moved the Material widgets out of the framework.
   material_ui: 1.11.1
@@ -79,7 +79,7 @@ dependencies:
   sync_settings_ui:
     git:
       url: https://github.com/kuhyx/utils
-      ref: sync_settings_ui-v0.8.4
+      ref: sync_settings_ui-v0.8.5
       path: sync_settings_ui
   url_launcher: 6.3.3
   wakelock_plus: 1.8.2
