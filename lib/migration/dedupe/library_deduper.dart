@@ -45,9 +45,9 @@ class LibraryDeduper implements LibraryStartTask {
     required this.installed,
     required this.local,
     required this.updater,
+    required this.backfill,
     this.log,
     this.clock = utcNow,
-    required this.backfill,
   });
 
   /// Fetches the chapter lists of entries this device never stored.
