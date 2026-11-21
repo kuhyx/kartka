@@ -84,8 +84,10 @@ extension _Open on ReaderSession {
     _cache = PageCache(fetch: (i) => probe.watch(i, deps.loadImage(_flat[i])));
     _add(chapterUrl, loaded, landing: startAtEnd ? page : null);
     phase = ReaderPhase.ready;
-    // Probe: log the single slowest step if the whole open up to ready took >= 1 s.
-    final total = deps.now().difference(stepStart).abs() + slowestDuration;
+    // Probe: log the single slowest step if the whole open up to ready
+// took >= 1 s.
+    final total = deps.now().difference(stepStart).abs()
+        + slowestDuration;
     if (total >= const Duration(seconds: 1) && slowestStep.isNotEmpty) {
       _logOpen(
         ReaderLoadException(

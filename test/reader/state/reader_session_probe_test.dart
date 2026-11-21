@@ -8,10 +8,11 @@ import 'package:kartka/reader/state/reader_session.dart';
 import '../support/fakes.dart';
 import 'session_fixture.dart';
 
-/// A source whose pages call waits on [gate] to simulate a slow page list fetch.
+/// A source whose pages call waits on [gate] to simulate a slow page
+/// list fetch.
 class _SlowPagesSource extends FakeSource {
   _SlowPagesSource({required this.gate, super.pageMap})
-    : super(chapterList: sessionChapters);
+      : super(chapterList: sessionChapters);
 
   final Completer<void> gate;
 
@@ -21,10 +22,11 @@ class _SlowPagesSource extends FakeSource {
   }
 }
 
-/// A source whose lookup waits on [gate] to simulate a slow source lookup.
+/// A source whose lookup waits on [gate] to simulate a slow source
+/// lookup.
 class _SlowLookupSource extends FakeSource {
   _SlowLookupSource({required this.gate, super.pageMap})
-    : super(chapterList: sessionChapters);
+      : super(chapterList: sessionChapters);
 
   final Completer<void> gate;
 
