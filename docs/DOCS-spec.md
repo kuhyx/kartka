@@ -75,8 +75,8 @@ test/               mirrors lib/; test/e2e/ for on-device flows
   created as `finished`. Some unread: the first by order whose name holds
   `abandon` or `complet`, else one created as `abandoned`. Created ones get a
   fixed id (`autoshelve.<shelf>`), so two devices make one category.
-- A move puts the entry in that category only. One already in it is left
-  alone (other categories kept).
+- A move puts the entry in that category only: every other membership is
+  removed, also when it was already in the shelf (counted as moved then).
 - Memory: synced setting `library.autoshelve` (contracts-runtime §16), key to
   the newest upload seen shelved. Until a strictly later upload the entry is
   never moved again, so a manual move-out sticks on every device. Entries

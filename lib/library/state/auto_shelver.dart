@@ -35,11 +35,12 @@ const shelveEvery = Duration(hours: 6);
 ///
 /// A stale entry (newest chapter older than [staleCutoff]) ends in exactly
 /// one category: [Shelf.finished] when every chapter is read, else
-/// [Shelf.abandoned]. The newest upload it was seen shelved at is
-/// remembered in [memory]; until a strictly later upload the entry is never
-/// moved again, so a manual move-out sticks. An entry already in its shelf
-/// is left alone but remembered too, since another device may have moved
-/// it. Entries this device cannot judge keep their memory.
+/// [Shelf.abandoned]; every other membership is removed. The newest upload
+/// it was seen shelved at is remembered in [memory]; until a strictly later
+/// upload the entry is never moved again, so a manual move-out sticks. An
+/// entry already in its shelf only loses its other categories (counted as
+/// moved when it had any) and is remembered too, since another device may
+/// have moved it. Entries this device cannot judge keep their memory.
 class AutoShelver {
   /// Creates the shelver; ports are read lazily (the registry is complete
   /// only after every feature factory ran).
@@ -165,12 +166,13 @@ class AutoShelver {
         live = [...live, target!];
       }
       final inIt = members[e.key] ?? const {};
-      if (inIt.contains(target.id)) continue;
+      // Every other membership goes, a deleted category's included: the
+      // entry ends in exactly its shelf.
+      final others = inIt.where((id) => id != target!.id).toList();
+      if (inIt.contains(target.id) && others.isEmpty) continue;
       await repos.categories.setMembership(e.key, target.id, true);
-      for (final c in live) {
-        if (c.id != target.id && inIt.contains(c.id)) {
-          await repos.categories.setMembership(e.key, c.id, false);
-        }
+      for (final id in others) {
+        await repos.categories.setMembership(e.key, id, false);
       }
       moved[shelf] = moved[shelf]! + 1;
     }

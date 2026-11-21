@@ -135,17 +135,22 @@ void main() {
     expect(await member(a), {'fin'});
   });
 
-  test('already in the target: left alone, yet remembered', () async {
+  test('already in the target: others dropped, then remembered', () async {
     await cat('fin', 'finished', 0);
     await cat('c1', '1', 1);
     await repos.categories.setMembership(a.key, 'fin', true);
     await repos.categories.setMembership(a.key, 'c1', true);
+    await repos.categories.setMembership(a.key, 'gone', true);
+    await repos.categories.setMembership(b.key, 'fin', true);
     facts.byKey[a.key] = fact(old);
-    expect(await shelver.run(), (finished: 0, abandoned: 0));
-    expect(await member(a), {'fin', 'c1'});
+    facts.byKey[b.key] = fact(old);
+    expect(await shelver.run(), (finished: 1, abandoned: 0));
+    expect(await member(a), {'fin'});
+    expect(await member(b), {'fin'});
+    await repos.categories.setMembership(a.key, 'c1', true);
     // Another device moved it; kuhy then took it out by hand.
     await repos.categories.setMembership(a.key, 'fin', false);
-    await shelver.run();
+    expect(await shelver.run(), (finished: 0, abandoned: 0));
     expect(await member(a), {'c1'});
   });
 
