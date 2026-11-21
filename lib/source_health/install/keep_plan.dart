@@ -34,15 +34,19 @@ List<SourceHealthRecord> installTargets(
 /// `all` extension serves many sources), else records with `plugin` whose
 /// plugin is not in [plugins]. A null set is a side that could not be read:
 /// nothing is planned there. `pkg` wins over `plugin`, as on the button.
+/// Packages in [skipped] (uninstalled by the user) are never planned.
 List<List<SourceHealthRecord>> planKeepInstalls(
   List<SourceHealthRecord> keep, {
   required Set<String>? packages,
   required Set<String>? plugins,
+  Set<String> skipped = const {},
 }) {
   final jobs = <String, List<SourceHealthRecord>>{};
   for (final r in keep) {
     if (r.pkg case final pkg?) {
-      if (packages != null && !packages.contains(pkg)) {
+      if (packages != null &&
+          !packages.contains(pkg) &&
+          !skipped.contains(pkg)) {
         (jobs['pkg:$pkg'] ??= []).add(r);
       }
     } else if (r.plugin case final ref?) {

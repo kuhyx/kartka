@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
+import 'package:kartka/source_health/install/uninstall_marks.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_settings.dart';
@@ -23,7 +24,11 @@ const suwayomiExtensionsRoute = '/suwayomi/extensions';
 /// basic-auth image headers for the server, settings and extensions screens.
 ///
 /// [titleOf] finds the library title of a manga the server has not seen.
-KartkaFeature buildSuwayomiFeature(KartkaEnv env, {TitleLookup? titleOf}) {
+KartkaFeature buildSuwayomiFeature(
+  KartkaEnv env, {
+  TitleLookup? titleOf,
+  Future<List<String>> Function()? librarySourceIds,
+}) {
   final platform = env.platform;
   // Synced to the user's other devices; the credentials encrypted (§16).
   final kv = syncedKv(env);
@@ -47,6 +52,7 @@ KartkaFeature buildSuwayomiFeature(KartkaEnv env, {TitleLookup? titleOf}) {
     client: client,
     settings: current,
     onChanged: provider.refresh,
+    marks: UninstallMarks(platform.kv),
   );
   return KartkaFeature(
     id: 'source-suwayomi',
@@ -84,6 +90,7 @@ KartkaFeature buildSuwayomiFeature(KartkaEnv env, {TitleLookup? titleOf}) {
         builder: (_, _) => ExtensionsScreen(
           api: extensions,
           diagnostics: DiagnosticsLog.of(platform.diagnostics),
+          librarySourceIds: librarySourceIds,
         ),
       ),
     ],

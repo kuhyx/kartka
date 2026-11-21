@@ -10,6 +10,7 @@ import 'package:kartka/source_health/install/install_ports.dart';
 import 'package:kartka/source_health/install/keep_plan.dart';
 import 'package:kartka/source_health/install/source_installs.dart';
 import 'package:kartka/source_health/install/source_probe.dart';
+import 'package:kartka/source_health/install/uninstall_marks.dart';
 import 'package:kartka/source_health/model/source_health_meta.dart';
 import 'package:kartka/source_health/model/source_health_record.dart';
 
@@ -167,7 +168,12 @@ class KeepReconciler extends ChangeNotifier {
       plugins,
       (l) => l.installedPluginIds(),
     );
-    final jobs = planKeepInstalls(keep, packages: packages, plugins: pluginIds);
+    final jobs = planKeepInstalls(
+      keep,
+      packages: packages,
+      plugins: pluginIds,
+      skipped: await UninstallMarks(kv).load(),
+    );
     final installed = <String>[];
     final failures = <String, AutoInstallFailure>{};
     void fail(String id, AutoInstallStage stage, String reason) {

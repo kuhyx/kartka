@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/platform/memory/memory_platform.dart';
+import 'package:kartka/source_health/install/uninstall_marks.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 
@@ -13,10 +14,12 @@ const _mangadex = 'eu.kanade.tachiyomi.extension.all.mangadex';
 void main() {
   late FakeKartkaHttp http;
   late int changes;
+  final marks = UninstallMarks(MemoryKeyValueStore());
   SuwayomiExtensionsApi api() => SuwayomiExtensionsApi(
     client: SuwayomiClient(http: http, settings: () => fixtureSettings),
     settings: () => fixtureSettings,
     onChanged: () async => changes++,
+    marks: marks,
   );
 
   setUp(() {
@@ -59,13 +62,17 @@ void main() {
     expect(updated.hasUpdate, isFalse);
     final removed = await api().uninstall(_spare);
     expect(removed.isInstalled, isFalse);
-    expect(changes, 3);
+    expect(await marks.load(), {_spare});
+    await api().install(_spare);
+    expect(await marks.load(), isEmpty);
+    expect(changes, 4);
     expect(
       [for (final r in bodies(http)) (r['variables']! as Map)['patch']],
       [
         {'install': true},
         {'update': true},
         {'uninstall': true},
+        {'install': true},
       ],
     );
   });

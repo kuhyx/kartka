@@ -5,26 +5,34 @@ import 'package:flutter/services.dart';
 import 'package:kartka/app/shown_wait_watch.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/redact.dart';
-import 'package:kartka/core/ui/confirm_mark.dart';
 import 'package:kartka/core/ui/section_mark.dart';
-import 'package:kartka/core/ui/snack_mark.dart';
 import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_exceptions.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 import 'package:kartka/sources/suwayomi/ui/extension_tile.dart';
+import 'package:kartka/sources/suwayomi/ui/extension_uninstall.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Installed and available Suwayomi extensions, with install, update and
 /// uninstall. What is "available" is whatever the server's stores offer.
 class ExtensionsScreen extends StatefulWidget {
   /// Creates the screen.
-  const new({required this.api, this.diagnostics, super.key});
+  const new({
+    required this.api,
+    this.diagnostics,
+    this.librarySourceIds,
+    super.key,
+  });
 
   /// The server's extension API.
   final ExtensionCatalog api;
 
   /// Where a failed listing (the Retry screen) is logged.
   final DiagnosticsLog? diagnostics;
+
+  /// The library's titles as one source id each, for the uninstall
+  /// confirm's count; none counted when null.
+  final Future<List<String>> Function()? librarySourceIds;
 
   @override
   State<ExtensionsScreen> createState() => _ExtensionsState();
@@ -59,14 +67,33 @@ class _ExtensionsState extends State<ExtensionsScreen> {
   static String _describe(Object e) =>
       redactUrlQueries(e is SuwayomiException ? e.message : '$e');
 
-  Future<void> _run(SuwayomiExtension e, ExtensionAction action) async {
+  Future<bool> _confirm(List<SuwayomiExtension> doomed) async {
+    final titles = await widget.librarySourceIds?.call() ?? const [];
+    if (!mounted) return false;
+    return await confirmUninstall(
+      context,
+      doomed,
+      libraryTitlesOf(doomed, titles),
+    );
+  }
+
+  Future<void> _bulk() async {
+    final installed = _items!.where((e) => e.isInstalled).toList();
+    final doomed = await pickUninstalls(context, installed);
+    if (doomed == null || doomed.isEmpty || !await _confirm(doomed)) return;
+    for (final e in doomed) {
+      await _run(e, ExtensionAction.uninstall, confirmed: true);
+    }
+  }
+
+  Future<void> _run(
+    SuwayomiExtension e,
+    ExtensionAction action, {
+    bool confirmed = false,
+  }) async {
     if (action == ExtensionAction.uninstall &&
-        !await confirmMark(
-          context,
-          icon: Icons.extension_off,
-          semanticLabel: 'Uninstall ${e.name}? Its sources leave Browse.',
-          confirmLabel: 'Uninstall',
-        )) {
+        !confirmed &&
+        !await _confirm([e])) {
       return;
     }
     setState(() => _busy.add(e.pkgName));
@@ -89,21 +116,7 @@ class _ExtensionsState extends State<ExtensionsScreen> {
         ExtensionAction.update => (Icons.published_with_changes, 'Updated'),
         ExtensionAction.uninstall => (Icons.delete_forever, 'Uninstalled'),
       };
-      showMark(
-        context,
-        SpokenLabel(
-          semanticLabel: '$verb ${e.name}',
-          child: ExcludeSemantics(
-            child: Row(
-              children: [
-                Icon(icon),
-                const SizedBox(width: AppSpacing.sm),
-                Flexible(child: Text(e.name)),
-              ],
-            ),
-          ),
-        ),
-      );
+      showExtensionDone(context, icon, '$verb ${e.name}', e.name);
     } on Object catch (err) {
       if (mounted) showError(context, '${e.name}: ${_describe(err)}');
     } finally {
@@ -216,6 +229,16 @@ class _ExtensionsState extends State<ExtensionsScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Icon(Icons.extension, semanticLabel: 'Extensions'),
+          actions: [
+            if (_items?.any((e) => e.isInstalled) ?? false)
+              IconButton(
+                onPressed: _bulk,
+                icon: const Icon(
+                  Icons.delete_sweep_outlined,
+                  semanticLabel: 'Uninstall all but ticked',
+                ),
+              ),
+          ],
         ),
         body: _body(),
       ),

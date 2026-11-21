@@ -32,6 +32,11 @@ void main() {
     expect(await libraryTitle(repos, key), 'X');
     expect(await libraryTitle(repos, 'missing'), isNull);
     expect(await libraryTitle(null, key), isNull);
+    final env = KartkaEnv(memoryPlatform())..registry = registry;
+    expect(await libraryTitleSourcesOf(env)(), ['suwayomi:1']);
+    final bare = KartkaEnv(memoryPlatform())
+      ..registry = KartkaRegistry.build(memoryPlatform(), []);
+    expect(await libraryTitleSourcesOf(bare)(), isEmpty);
     final provider = registry.all<SuwayomiSourceProvider>().single;
     expect(await provider.titleOf!(key), 'X');
   });

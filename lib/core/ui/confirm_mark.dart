@@ -5,19 +5,32 @@ import 'package:material_ui/material_ui.dart';
 /// The dialog shows [icon] in the error colour; the old question survives as
 /// [semanticLabel] for screen readers and tests. Returns true only when the
 /// user taps the confirm button ([confirmIcon], spoken as [confirmLabel]).
+/// A non-zero [count] (e.g. library titles affected) badges the icon.
 Future<bool> confirmMark(
   BuildContext context, {
   required IconData icon,
   required String semanticLabel,
   IconData confirmIcon = Icons.delete_outline,
   String confirmLabel = 'Delete',
+  int count = 0,
 }) async {
   final error = Theme.of(context).colorScheme.error;
   const size = Size.square(48);
   final ok = await showDialog<bool>(
     context: context,
     builder: (dialog) => AlertDialog(
-      title: Icon(icon, size: 48, color: error, semanticLabel: semanticLabel),
+      title: Center(
+        child: Badge.count(
+          count: count,
+          isLabelVisible: count > 0,
+          child: Icon(
+            icon,
+            size: 48,
+            color: error,
+            semanticLabel: semanticLabel,
+          ),
+        ),
+      ),
       actions: [
         IconButton(
           style: IconButton.styleFrom(minimumSize: size),

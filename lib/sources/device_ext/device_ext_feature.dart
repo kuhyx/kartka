@@ -6,6 +6,7 @@ import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/platform/extension_runtime.dart';
+import 'package:kartka/source_health/install/uninstall_marks.dart';
 import 'package:kartka/sources/device_ext/device_ext_api.dart';
 import 'package:kartka/sources/device_ext/device_ext_source.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_feature_builder.dart';
@@ -53,8 +54,16 @@ class DeviceExtSourceProvider implements RefreshableSourceProvider {
 /// The Android stand-in for the Suwayomi part: Keiyoushi extensions run
 /// in the app (contracts-runtime §18), so nothing reaches a server. The
 /// settings tile opens the same extensions screen, on the in-app store.
-KartkaFeature buildDeviceExtFeature(KartkaEnv env, ExtensionRuntime runtime) {
-  final api = DeviceExtensionsApi(runtime: runtime, http: env.platform.http);
+KartkaFeature buildDeviceExtFeature(
+  KartkaEnv env,
+  ExtensionRuntime runtime, {
+  Future<List<String>> Function()? librarySourceIds,
+}) {
+  final api = DeviceExtensionsApi(
+    runtime: runtime,
+    http: env.platform.http,
+    marks: UninstallMarks(env.platform.kv),
+  );
   final provider = DeviceExtSourceProvider(api: api, runtime: runtime);
   return KartkaFeature(
     id: 'source-suwayomi',
@@ -74,6 +83,7 @@ KartkaFeature buildDeviceExtFeature(KartkaEnv env, ExtensionRuntime runtime) {
         builder: (_, _) => ExtensionsScreen(
           api: api,
           diagnostics: DiagnosticsLog.of(env.platform.diagnostics),
+          librarySourceIds: librarySourceIds,
         ),
       ),
     ],

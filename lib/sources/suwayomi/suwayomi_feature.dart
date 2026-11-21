@@ -13,13 +13,27 @@ export 'package:kartka/sources/suwayomi/suwayomi_feature_builder.dart';
 /// ([buildDeviceExtFeature]): no server URL is read or contacted there.
 KartkaFeature suwayomiFeature(KartkaEnv env) {
   final runtime = env.platform.extensions;
-  if (runtime != null) return buildDeviceExtFeature(env, runtime);
+  final titleSources = libraryTitleSourcesOf(env);
+  if (runtime != null) {
+    return buildDeviceExtFeature(env, runtime, librarySourceIds: titleSources);
+  }
   return buildSuwayomiFeature(
     env,
     titleOf: (key) =>
         libraryTitle(env.registry.maybe<LibraryRepositories>(), key),
+    librarySourceIds: titleSources,
   );
 }
+
+/// One source id per library title of [env]'s library (none without one),
+/// read on each call (the registry is complete by then): the uninstall
+/// confirm's count.
+Future<List<String>> Function() libraryTitleSourcesOf(KartkaEnv env) =>
+    () async {
+      final repos = env.registry.maybe<LibraryRepositories>();
+      if (repos == null) return const [];
+      return [for (final e in await repos.library.watch().first) e.sourceId];
+    };
 
 /// The library title for [key], if the manga is in the library.
 Future<String?> libraryTitle(LibraryRepositories? repos, MangaKey key) async {

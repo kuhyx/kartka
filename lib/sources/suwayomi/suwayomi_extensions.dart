@@ -1,4 +1,5 @@
 import 'package:kartka/source_health/install/install_ports.dart';
+import 'package:kartka/source_health/install/uninstall_marks.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_client.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_queries.dart';
 
@@ -14,6 +15,7 @@ class SuwayomiExtension {
     required this.isInstalled,
     required this.hasUpdate,
     required this.isObsolete,
+    this.sourceIds = const [],
   });
 
   /// Parses an `ExtensionType`, resolving its icon with [resolve].
@@ -54,6 +56,10 @@ class SuwayomiExtension {
 
   /// Installed but no longer in any store.
   final bool isObsolete;
+
+  /// Kartka ids of the sources it serves, when the catalog knows them (the
+  /// in-app store does; the Suwayomi server's list does not).
+  final List<String> sourceIds;
 }
 
 /// Installed first (pending updates on top), then available, each by name.
@@ -95,7 +101,12 @@ class SuwayomiExtensionsApi
         SuwayomiExtensionUpdater {
   /// Creates the API; [onChanged] runs after every successful change (the
   /// feature re-lists the sources there).
-  new({required this.client, required this.settings, this.onChanged});
+  new({
+    required this.client,
+    required this.settings,
+    this.onChanged,
+    this.marks,
+  });
 
   /// GraphQL client.
   final SuwayomiClient client;
@@ -105,6 +116,9 @@ class SuwayomiExtensionsApi
 
   /// Called after install / update / uninstall.
   final Future<void> Function()? onChanged;
+
+  /// Records user uninstalls so the Keep auto-install skips them.
+  final UninstallMarks? marks;
 
   /// Every extension in the server's stores, refreshed from the stores.
   @override
@@ -120,8 +134,11 @@ class SuwayomiExtensionsApi
 
   /// Installs [pkgName].
   @override
-  Future<SuwayomiExtension> install(String pkgName) =>
-      _patch(pkgName, 'install');
+  Future<SuwayomiExtension> install(String pkgName) async {
+    final done = await _patch(pkgName, 'install');
+    await marks?.clear(pkgName);
+    return done;
+  }
 
   @override
   Future<void> installExtension(String pkg) => install(pkg);
@@ -147,8 +164,11 @@ class SuwayomiExtensionsApi
 
   /// Uninstalls [pkgName].
   @override
-  Future<SuwayomiExtension> uninstall(String pkgName) =>
-      _patch(pkgName, 'uninstall');
+  Future<SuwayomiExtension> uninstall(String pkgName) async {
+    final done = await _patch(pkgName, 'uninstall');
+    await marks?.mark(pkgName);
+    return done;
+  }
 
   Future<SuwayomiExtension> _patch(String pkgName, String action) async {
     final data = await client.run(SuwayomiQueries.updateExtension, {

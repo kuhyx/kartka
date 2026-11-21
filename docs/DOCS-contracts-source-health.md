@@ -195,7 +195,13 @@ under the line cap; same rules. Implementation notes:
   Suwayomi server (one install per package), else `plugin` through the
   plugin manager; at most 2 at a time. "Installed" comes from the
   `InstalledExtensionLister` / `InstalledPluginLister` ports, never the
-  live source list (empty while a server is slow). It never uninstalls.
+  live source list (empty while a server is slow). It never uninstalls,
+  and skips a package the user uninstalled (2026-11-21, `UninstallMarks`,
+  device-local `sourceHealth.userUninstalled`) even when the library uses
+  it; installing it by hand clears the mark. The extensions screen has a
+  per-row uninstall and a one-off "uninstall all but ticked" sheet
+  (MangaFire and Atsumaru pre-ticked, nothing stored); the confirm badges
+  the number of library titles left without their source.
   Each new source is then tested: listed within 60 s and `popular(1)`
   lists a title within 30 s. A failure stays installed, shows "Installed —
   test failed: <reason>" (or "Auto-install failed: <reason>") under the

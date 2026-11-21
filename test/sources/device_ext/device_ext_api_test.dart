@@ -4,7 +4,9 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/platform/memory/memory_extension_runtime.dart';
 import 'package:kartka/platform/memory/memory_fakes.dart';
+import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/platform/platform.dart';
+import 'package:kartka/source_health/install/uninstall_marks.dart';
 import 'package:kartka/sources/device_ext/device_ext_api.dart';
 import 'package:kartka/sources/device_ext/keiyoushi_index.dart';
 
@@ -48,6 +50,9 @@ void main() {
     expect(all[atsu]!.isInstalled, isFalse);
     expect(all[atsu]!.hasUpdate, isFalse);
     expect(all['x.gone']!.isObsolete, isTrue);
+    expect(all[fire]!.sourceIds, ['suwayomi:1']);
+    expect(all['x.gone']!.sourceIds, ['suwayomi:9']);
+    expect(all[atsu]!.sourceIds, isEmpty);
     expect(await api.installedPackages(), {fire, 'x.gone'});
     expect(await api.outdatedPackages(), [fire]);
     expect([for (final s in await api.sources()) s.id], ['1', '9']);
@@ -125,5 +130,21 @@ void main() {
     await expectLater(flaky.list(), throwsA(isA<KartkaHttpException>()));
     status = 200; // the failed fetch is not cached
     expect(await flaky.list(), hasLength(2));
+  });
+
+  test('an uninstall marks the package; an install clears it', () async {
+    final kv = MemoryKeyValueStore();
+    final marks = UninstallMarks(kv);
+    final api = DeviceExtensionsApi(
+      runtime: FakeExtensionRuntime(
+        handler: (m, a) => {'installed': <Object?>[]},
+      ),
+      http: http(),
+      marks: marks,
+    );
+    await api.uninstall(fire);
+    expect(await marks.load(), {fire});
+    await api.install(fire);
+    expect(await marks.load(), isEmpty);
   });
 }

@@ -17,6 +17,7 @@ import 'package:kartka/source_health/install/keep_reconciler.dart';
 import 'package:kartka/source_health/install/source_action_button.dart';
 import 'package:kartka/source_health/install/source_installs.dart';
 import 'package:kartka/source_health/install/source_probe.dart';
+import 'package:kartka/source_health/install/uninstall_marks.dart';
 import 'package:kartka/source_health/labels.dart';
 import 'package:kartka/source_health/metric_explanations.dart';
 import 'package:kartka/source_health/metric_text.dart';

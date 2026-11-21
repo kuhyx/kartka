@@ -4,8 +4,10 @@ import 'dart:typed_data';
 import 'package:kartka/platform/extension_runtime.dart';
 import 'package:kartka/platform/http_client.dart';
 import 'package:kartka/source_health/install/install_ports.dart';
+import 'package:kartka/source_health/install/uninstall_marks.dart';
 import 'package:kartka/sources/device_ext/keiyoushi_index.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
+import 'package:kartka/sources/suwayomi/suwayomi_mappers.dart';
 
 /// One source of an installed extension, as the runtime lists it.
 class DeviceSourceInfo {
@@ -67,7 +69,7 @@ class DeviceExtensionsApi
         InstalledExtensionLister,
         SuwayomiExtensionUpdater {
   /// Creates the API.
-  new({required this.runtime, required this.http, this.indexUrl});
+  new({required this.runtime, required this.http, this.indexUrl, this.marks});
 
   /// The Kotlin host.
   final ExtensionRuntime runtime;
@@ -77,6 +79,9 @@ class DeviceExtensionsApi
 
   /// Store index; null means [keiyoushiIndexUrl].
   final String? indexUrl;
+
+  /// Records user uninstalls so the Keep auto-install skips them.
+  final UninstallMarks? marks;
 
   Future<List<_Installed>>? _loaded;
   Future<List<RepoExtension>>? _index;
@@ -132,6 +137,7 @@ class DeviceExtensionsApi
           isInstalled: installed.containsKey(e.pkg),
           hasUpdate: (installed[e.pkg]?.versionCode ?? 1 << 62) < e.versionCode,
           isObsolete: false,
+          sourceIds: _ids(installed[e.pkg]),
         ),
       for (final e in installed.values)
         if (!offered.contains(e.pkg))
@@ -144,9 +150,15 @@ class DeviceExtensionsApi
             isInstalled: true,
             hasUpdate: false,
             isObsolete: true,
+            sourceIds: _ids(e),
           ),
     ]);
   }
+
+  static List<String> _ids(_Installed? e) => [
+    for (final s in e?.sources ?? const <DeviceSourceInfo>[])
+      kartkaSourceId(s.id),
+  ];
 
   @override
   Future<SuwayomiExtension> install(String pkgName) async {
@@ -158,6 +170,7 @@ class DeviceExtensionsApi
     final res = await http.get(url);
     if (!res.ok) throw KartkaHttpException(url, res.statusCode);
     await runtime.invoke('install', {'apk': Uint8List.fromList(res.bodyBytes)});
+    await marks?.clear(pkgName);
     return await _changed(pkgName);
   }
 
@@ -167,6 +180,7 @@ class DeviceExtensionsApi
   @override
   Future<SuwayomiExtension> uninstall(String pkgName) async {
     await runtime.invoke('uninstall', {'pkg': pkgName});
+    await marks?.mark(pkgName);
     return await _changed(pkgName);
   }
 

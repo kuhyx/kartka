@@ -1,4 +1,6 @@
 import 'package:design_system/design_system.dart';
+import 'package:kartka/core/ui/snack_mark.dart';
+import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:kartka/sources/suwayomi/suwayomi_extensions.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -101,3 +103,26 @@ class ExtensionTile extends StatelessWidget {
     );
   }
 }
+
+/// The word-free "done" snack after an action: [icon] and the extension's
+/// [name] (content), spoken as [semanticLabel].
+void showExtensionDone(
+  BuildContext context,
+  IconData icon,
+  String semanticLabel,
+  String name,
+) => showMark(
+  context,
+  SpokenLabel(
+    semanticLabel: semanticLabel,
+    child: ExcludeSemantics(
+      child: Row(
+        children: [
+          Icon(icon),
+          const SizedBox(width: AppSpacing.sm),
+          Flexible(child: Text(name)),
+        ],
+      ),
+    ),
+  ),
+);
