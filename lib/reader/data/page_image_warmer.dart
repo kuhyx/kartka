@@ -5,12 +5,16 @@ import 'package:kartka/core/models/models.dart';
 
 /// Page images fetched ahead for the reader's first pages.
 ///
-/// A MangaFire page costs 0.5-0.9 s on the server and two at once are no
-/// faster, so the first page after a chapter opened was a reported
-/// `reader.page` wait (28fffd0a). `PageWarmSlot` warms the Continue
-/// chapter's first [count] pages here once the details screen loads, and
+/// A MangaFire page costs 0.5-0.9 s on the server, and several at once
+/// slow each other (4 at once took up to 1.95 s each). `PageWarmSlot`
+/// warms the Continue chapter's first [count] pages here once the details
+/// screen loads (the Updates feed warms its first tiles the same way), and
 /// the reader loads every image through [load], which serves a warmed one
 /// (or joins one still warming) instead of fetching it again.
+///
+/// One warm fetch runs at a time across all chapters, and a warm waits
+/// while the reader fetches a page itself: parallel warms from the Updates
+/// feed put the reader's page 4th in line (28fffd0a).
 class PageImageWarmer {
   /// A warmer over [_fetch], keeping at most [capacity] images.
   new(this._fetch, {this.capacity = 12, this.count = 3});
@@ -25,15 +29,48 @@ class PageImageWarmer {
 
   final _kept = <String, Future<Uint8List>>{}; // Insertion-ordered.
 
+  /// Count of reader loads currently in flight.
+  int _readerLoads = 0;
+
+  /// Completes when the last reader load finishes; null when none in flight.
+  Completer<void>? _idle;
+
+  /// Chain of warm runs; only one executes at a time.
+  Future<void> _warmChain = Future<void>.value();
+
   /// The image of [page]: warmed, warming, or fetched now.
-  Future<Uint8List> load(PageRef page) => _kept[page.imageUrl] ?? _fetch(page);
+  Future<Uint8List> load(PageRef page) {
+    final kept = _kept[page.imageUrl];
+    if (kept != null) return kept;
+    _readerLoads++;
+    final future = _fetch(page);
+    future.whenComplete(() {
+      if (--_readerLoads == 0) {
+        _idle?.complete();
+        _idle = null;
+      }
+    }).ignore();
+    return future;
+  }
 
   /// Fetches [count] of [pages] from index [from], one at a time (the
   /// source is rate-limited; the reader's own fetches come first when it
   /// opens). A failure is dropped, so the reader fetches that page again.
-  Future<void> warm(List<PageRef> pages, {int from = 0}) async {
+  Future<void> warm(List<PageRef> pages, {int from = 0}) {
+    final run = _warmChain.then((_) => _warmNow(pages, from));
+    _warmChain = run.catchError((Object _) {});
+    return run;
+  }
+
+  /// Fetches the next [count] pages one by one, waiting for reader loads.
+  Future<void> _warmNow(List<PageRef> pages, int from) async {
     for (final page in pages.skip(from).take(count)) {
       final url = page.imageUrl;
+      if (_kept.containsKey(url)) continue;
+      while (_readerLoads > 0) {
+        await (_idle ??= Completer<void>()).future;
+        if (_kept.containsKey(url)) break;
+      }
       if (_kept.containsKey(url)) continue;
       final future = _fetch(page);
       _kept[url] = future;
