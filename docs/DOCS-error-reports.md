@@ -107,6 +107,10 @@ thumbnails and its pages, so a grid's 50 uncached covers (up to 25 s each
 on MangaFire) put the next page 8-41 s behind them (89e1ec6e).
 `CoverCache.maxLoads` runs 2 cover loads per host at once, newest first:
 a page then waits behind at most 2 (1.2-1.6 s, fetched a page ahead).
+A library entry whose source is gone (a dead Suwayomi source) showed its
+details and a timed `details.refresh` bar for the whole 10 s source wait
+(2d26b6d5): once every provider has listed (`SourceRegistry.settled`), a
+missing source fails at once, and one listed later loads by itself.
 `tools/agent/flows/f4_reader_sweep.sh` opens the newest chapters on
 Updates headless and fails on any open over 1 s.
 
