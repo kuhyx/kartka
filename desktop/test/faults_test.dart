@@ -106,4 +106,18 @@ void main() {
       const Duration(milliseconds: 250),
     );
   });
+
+  test('slow-details delays details and the chapter list only', () {
+    file.writeAsStringSync('{"s.org": "slow-details:1500"}');
+    for (final op in ['KartkaDetails', 'KartkaChapters']) {
+      expect(
+        at('https://s.org/api/graphql', '{"operationName":"$op"}')!.delay,
+        const Duration(milliseconds: 1500),
+      );
+    }
+    expect(
+      at('https://s.org/api/graphql', '{"operationName":"KartkaPages"}'),
+      isNull,
+    );
+  });
 }

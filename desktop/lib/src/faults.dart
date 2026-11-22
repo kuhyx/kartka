@@ -42,13 +42,20 @@ class ProxyFault {
 /// failure), `gone` (the server no longer has the manga: its id lookup and
 /// the title search come back empty), `slow-pages[:<ms>]` (the page list
 /// call is forwarded [slowPages] or `<ms>` late: a slow `reader.open` for
-/// `f4_reader_sweep.sh` to catch).
+/// `f4_reader_sweep.sh` to catch), `slow-details[:<ms>]` (the same for the
+/// details and chapter-list calls: a slow upstream behind a detail open).
 class ProxyFaults {
   /// Faults read from [file].
   new(this.file);
 
-  /// The default hold of `slow-pages`.
+  /// The default hold of `slow-pages` and `slow-details`.
   static const slowPages = Duration(seconds: 3);
+
+  /// The GraphQL operations each `slow-*` mode holds back.
+  static const _slowOperations = {
+    'slow-pages': {'KartkaPages'},
+    'slow-details': {'KartkaDetails', 'KartkaChapters'},
+  };
 
   /// The JSON rules file; missing or broken means no faults.
   final File file;
@@ -60,12 +67,10 @@ class ProxyFaults {
   ProxyFault? match(Uri target, List<int> body) {
     final mode = _modeFor(target.host);
     final host = target.host;
-    if (mode != null &&
-        (mode == 'slow-pages' || mode.startsWith('slow-pages:'))) {
-      if (_operation(body) != 'KartkaPages') return null;
-      final ms = int.tryParse(
-        mode.substring('slow-pages'.length).replaceFirst(':', ''),
-      );
+    final [slow, ...hold] = (mode ?? '').split(':');
+    if (_slowOperations[slow] case final operations?) {
+      if (!operations.contains(_operation(body))) return null;
+      final ms = hold.isEmpty ? null : int.tryParse(hold.first);
       return ProxyFault.late(
         ms == null ? slowPages : Duration(milliseconds: ms),
       );
