@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
 import 'package:kartka/reader/data/page_list_cache.dart';
@@ -42,6 +43,7 @@ class SessionFixture {
     PageListCache? pageLists,
     bool fresh = false,
     Future<MangaSource?> Function(String id)? findSource,
+    StoredChapterLists? stored,
   }) {
     progress = FakeProgress(initial: saved);
     final src =
@@ -59,6 +61,7 @@ class SessionFixture {
       fresh: fresh,
       deps: ReaderDeps(
         pageLists: pageLists,
+        storedChapters: stored,
         diagnostics: diagnostics,
         advanceTimeout: advanceTimeout,
         findSource: findSource ?? (id) async => id == src.id ? src : null,

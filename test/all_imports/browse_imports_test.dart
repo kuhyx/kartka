@@ -10,6 +10,7 @@ import 'package:kartka/browse/manga_detail_slot.dart';
 import 'package:kartka/browse/ports/browse_chapter_url_resolver.dart';
 import 'package:kartka/browse/ports/browse_dupe_facts.dart';
 import 'package:kartka/browse/ports/browse_shelf_facts.dart';
+import 'package:kartka/browse/ports/browse_stored_chapter_lists.dart';
 import 'package:kartka/browse/ports/browse_unread_counts.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/browse/source_ordering.dart';

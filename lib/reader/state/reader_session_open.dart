@@ -35,8 +35,11 @@ extension _Open on ReaderSession {
         .then((_) => _chapterList(found))
         .then((list) {
           arrived = true;
-          _chapters = list;
+          _chapters = _fresher(list);
         });
+    // Read now, used once page 1 is in: it names the next chapter while
+    // the fresh list is still on its way (19643be5).
+    unawaited(_useStored(firstPage.future));
     final ChapterPages loaded;
     try {
       loaded = await loadChapterPages(
@@ -106,23 +109,21 @@ extension _Open on ReaderSession {
     // Until the list is in, the next chapter is not known: "loading".
     if (!arrived) {
       _listPending = true;
-      _nextLoad = _afterList(listReady);
+      unawaited(_afterList(listReady));
     }
     _maybeLoadNext();
     notifyListeners();
   }
 
   /// The list arrived after the first page showed: every loaded chapter
-  /// gets its neighbours, and the next chapter may load.
+  /// gets its neighbours, a chapter loaded from the stored list that is no
+  /// longer next goes, and the next chapter may load.
   Future<void> _afterList(Future<void> listReady) async {
     await listReady;
-    _nextLoad = null;
     _listPending = false;
     if (_disposed) return;
-    for (var i = 0; i < segments.length; i++) {
-      final s = segments[i];
-      segments[i] = s.withNeighbours(neighboursOf(_chapters, s.url));
-    }
+    _reneighbour();
+    _dropStale();
     _maybeLoadNext();
     notifyListeners();
   }

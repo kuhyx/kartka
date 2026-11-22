@@ -18,6 +18,7 @@ import 'package:kartka/reader/logic/reader_mode.dart';
 import 'package:kartka/reader/state/chapter_segment.dart';
 import 'package:kartka/reader/state/reader_deps.dart';
 
+part 'reader_session_ahead.dart';
 part 'reader_session_advance.dart';
 part 'reader_session_open.dart';
 
@@ -107,6 +108,7 @@ class ReaderSession extends ChangeNotifier {
   Future<void>? _nextLoad;
   bool _onTrailing = false;
   bool _listPending = false;
+  final _EdgeWait _edge = _EdgeWait();
   PageCache? _cache;
   bool _disposed = false;
 
@@ -146,8 +148,8 @@ class ReaderSession extends ChangeNotifier {
   bool get onTrailing => _onTrailing;
 
   /// Whether the next chapter's pages, or the chapter list that names it,
-  /// are being fetched.
-  bool get nextLoading => _nextLoad != null;
+  /// are being fetched (a stored list that ends here is not the end yet).
+  bool get nextLoading => _nextLoad != null || _listPending;
 
   /// Whether the chapter list that names the previous chapter is on its
   /// way: the previous slot is unknown, not absent.
@@ -172,6 +174,7 @@ class ReaderSession extends ChangeNotifier {
 
   /// Tries the failed next chapter again.
   void retryNext() {
+    if (_onTrailing) _edgeMoved(trailing: true);
     nextError = null;
     _maybeLoadNext();
     notifyListeners();
@@ -182,9 +185,7 @@ class ReaderSession extends ChangeNotifier {
     if (segments.isEmpty) return;
     final slot = strip.slotAt(item);
     final trailing = !slot.isPage && !slot.isPreviousChapter;
-    // The next chapter loads a whole chapter early; arriving at the end
-    // retries a failure from then (a blip) instead of stopping on it.
-    if (trailing && !_onTrailing) nextError = null;
+    if (trailing != _onTrailing) _edgeMoved(trailing: trailing);
     _onTrailing = trailing;
     if (slot.isPreviousChapter) {
       segment = 0;

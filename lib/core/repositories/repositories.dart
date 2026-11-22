@@ -6,3 +6,4 @@ export 'category_repository.dart';
 export 'download_repository.dart';
 export 'library_repository.dart';
 export 'progress_repository.dart';
+export 'stored_chapter_lists.dart';

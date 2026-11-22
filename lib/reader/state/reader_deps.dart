@@ -22,6 +22,7 @@ class ReaderDeps {
     this.advanceTimeout = const Duration(seconds: 30),
     this.precache = precacheQuietly,
     this.pageLists,
+    this.storedChapters,
   });
 
   /// The source with this id, or null when it is not installed.
@@ -56,4 +57,9 @@ class ReaderDeps {
   /// Page lists fetched ahead and sources marked as needing a WebView;
   /// one per app run, so it outlives a reader route.
   final PageListCache? pageLists;
+
+  /// The chapter list this device stored for a manga (browse's
+  /// [StoredChapterLists]); it names the next chapter before the source's
+  /// list arrives. Null when browse is not installed.
+  final StoredChapterLists? storedChapters;
 }

@@ -108,6 +108,17 @@ class PageCache {
     _loaded.removeWhere((index, _) => !keep.contains(index));
   }
 
+  /// Drops every entry, queued fetch and waiter at [index] or after: the
+  /// pages there were dropped (a chapter the fresh list no longer puts
+  /// next), so a fetch must never ask for them.
+  void dropFrom(int index) {
+    bool gone(int i) => i >= index;
+    _queue.removeWhere(gone);
+    _waiters.removeWhere((i, _) => gone(i));
+    _entries.removeWhere((i, _) => gone(i));
+    _loaded.removeWhere((i, _) => gone(i));
+  }
+
   /// Drops every entry.
   void clear() {
     _queue.clear();

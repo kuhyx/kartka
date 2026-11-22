@@ -27,6 +27,7 @@ import 'package:kartka/core/repositories/download_repository.dart';
 import 'package:kartka/core/repositories/library_repository.dart';
 import 'package:kartka/core/repositories/progress_repository.dart';
 import 'package:kartka/core/repositories/repositories.dart';
+import 'package:kartka/core/repositories/stored_chapter_lists.dart';
 import 'package:kartka/core/settings/settings_sync.dart';
 import 'package:kartka/core/source/challenge.dart';
 import 'package:kartka/core/source/chapter_warmer.dart';

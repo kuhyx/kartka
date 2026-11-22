@@ -112,16 +112,16 @@ extension _Advance on ReaderSession {
   }
 
   /// Starts loading the chapter after the last loaded one as soon as the
-  /// reader is in that last chapter, so its pages are known a whole chapter
-  /// before the swipe that reaches them. Only one chapter ahead: chapters
-  /// further on wait until the reader gets there.
+  /// reader is in that last chapter, or a few pages before it ([_nearEnd]),
+  /// so its pages are known before the swipe that reaches them. One chapter
+  /// at a time: chapters further on wait until the reader gets near.
   void _maybeLoadNext() {
     if (segments.isEmpty || _nextLoad != null || nextError != null) return;
-    if (segment < segments.length - 1) return;
+    if (!_nearEnd) return;
     final next = nextChapter;
     if (next != null) {
       _nextLoad = _loadNext(next);
-    } else if (segments.last.neighbours.current == null) {
+    } else if (segments.last.neighbours.current == null && !_listPending) {
       // Not in the chapter list (it failed at open): no next is unknown,
       // not the end, so ask the source again.
       _nextLoad = _findNext(segments.last.url);
@@ -139,15 +139,20 @@ extension _Advance on ReaderSession {
         timeout: deps.advanceTimeout,
       );
       if (_disposed) return;
-      _add(next.url, loaded);
-      if (_onTrailing) {
-        // The reader sat on the trailing slot, which is now this page 1.
-        _onTrailing = false;
-        segment = segments.length - 1;
-        page = 0;
-        segments.last.recorder.onPage(0);
+      // The fresh list may have named another next chapter meanwhile: that
+      // one loads instead.
+      if (nextChapter?.url == next.url) {
+        _add(next.url, loaded);
+        if (_onTrailing) {
+          // The reader sat on the trailing slot, which is now this page 1.
+          _onTrailing = false;
+          segment = segments.length - 1;
+          page = 0;
+          segments.last.recorder.onPage(0);
+          _edgeArrived();
+        }
+        _prefetch();
       }
-      _prefetch();
     } on Object catch (e, stack) {
       _advanceFailed(e, stack, next.url);
     } finally {
@@ -177,10 +182,7 @@ extension _Advance on ReaderSession {
         );
       }
       _chapters = list;
-      for (var i = 0; i < segments.length; i++) {
-        final s = segments[i];
-        segments[i] = s.withNeighbours(neighboursOf(list, s.url));
-      }
+      _reneighbour();
     } on Object catch (e, stack) {
       _advanceFailed(e, stack, url);
     } finally {
@@ -193,6 +195,8 @@ extension _Advance on ReaderSession {
   /// Shows [e] redacted on the trailing slot and logs it.
   void _advanceFailed(Object e, StackTrace stack, String chapterUrl) {
     nextError = redactUrlQueries(advanceFailureMessage(e));
+    // The wait ended on the error; Retry starts a new one.
+    _edge.since = null;
     unawaited(
       deps.diagnostics?.append(
         DiagnosticEntry.failure(

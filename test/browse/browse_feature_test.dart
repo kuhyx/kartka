@@ -6,6 +6,7 @@ import 'package:kartka/browse/browse_feature.dart';
 import 'package:kartka/browse/browse_routes.dart';
 import 'package:kartka/browse/source_health_lookup.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 import 'package:kartka/library/library_repositories.dart';
@@ -149,6 +150,8 @@ void main() {
     expect(await facts.of(key), (newestUpload: null, allRead: false));
     final dupes = reg.maybe<DupeFactsLookup>()!;
     expect((await dupes.of(key))!.chapters, hasLength(3));
+    final stored = reg.maybe<StoredChapterLists>()!;
+    expect(await stored.stored(key), hasLength(3));
   });
 
   test('supplies the shared ChapterUpdateChecker', () async {

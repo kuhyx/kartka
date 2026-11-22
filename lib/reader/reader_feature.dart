@@ -83,6 +83,7 @@ ReaderDeps readerDeps(
     loadImage: images?.load ?? _imageLoader(env).load,
     diagnostics: DiagnosticsLog.of(platform.diagnostics),
     pageLists: pageLists,
+    storedChapters: registry.maybe<StoredChapterLists>(),
   );
 }
 

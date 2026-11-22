@@ -20,6 +20,25 @@ void main() {
     fail = false;
   });
 
+  test('dropFrom forgets every page at the index and after', () async {
+    final first = Completer<void>();
+    final c = PageCache(
+      fetch: (i) async {
+        fetched.add(i);
+        if (i == 0) await first.future;
+        return Uint8List.fromList([i]);
+      },
+    )..focus(0, [2, 5]);
+    c.waitFor(6).ignore();
+    expect(fetched, [0], reason: 'the rest wait for page 0');
+    await c.get(4);
+    c.dropFrom(4);
+    first.complete();
+    await pumpEventQueue();
+    expect(fetched, [0, 4, 2]);
+    expect((c.contains(2), c.contains(4), c.peek(4)), (true, false, null));
+  });
+
   test('get fetches once and caches the future', () async {
     final c = make();
     final a = c.get(1);
