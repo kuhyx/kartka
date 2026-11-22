@@ -8,7 +8,6 @@ import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/browse/state/refresh_outcome.dart';
 import 'package:kartka/browse/state/source_wait.dart';
 import 'package:kartka/browse/state/stored_detail.dart';
-import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 
@@ -54,6 +53,7 @@ class MangaDetailController extends ChangeNotifier {
   bool listPending = false;
   bool _disposed = false;
   StackTrace? _stack;
+  StreamSubscription<void>? _listed; // a missing source turning up
 
   /// Loads details and a fresh chapter list in parallel; after a
   /// [SourceUnavailable] (Retry) every provider re-lists its sources first.
@@ -67,20 +67,8 @@ class MangaDetailController extends ChangeNotifier {
     if (failure != null) await _log('details.load', failure, _stack);
   }
 
-  Future<void> _log(String kind, Object failure, [StackTrace? stack]) async {
-    if (isMissingSource(failure)) return;
-    await _deps.diagnostics?.append(
-      DiagnosticEntry.failure(
-        at: _deps.clock(),
-        kind: kind,
-        error: stripUrls('$failure'),
-        stack: stack == null
-            ? null
-            : StackTrace.fromString(stripUrls('$stack')),
-        sourceId: sourceId,
-      ),
-    );
-  }
+  Future<void> _log(String kind, Object failure, [StackTrace? stack]) =>
+      logDetailFailure(_deps, sourceId, kind, failure, stack);
 
   Future<void> _load() async {
     if (error is SourceUnavailable) unawaited(_deps.sources.refresh());
@@ -101,6 +89,9 @@ class MangaDetailController extends ChangeNotifier {
       if (listPending) details = null;
       error = e;
       _stack = stack;
+      if (e is SourceUnavailable) {
+        _listed ??= whenListed(_deps.sources, sourceId, _relisted);
+      }
     }
     loading = false;
     listPending = false;
@@ -127,6 +118,12 @@ class MangaDetailController extends ChangeNotifier {
     if (details == null || chapters.isNotEmpty) return;
     chapters = readingOrder(list);
     _notify();
+  }
+
+  /// A source listed after it failed as missing loads by itself.
+  void _relisted() {
+    _listed = null;
+    if (!_disposed && !loading && error is SourceUnavailable) unawaited(load());
   }
 
   /// Shows the library entry and stored chapters, when there is an entry.
@@ -245,6 +242,7 @@ class MangaDetailController extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    unawaited(_listed?.cancel());
     super.dispose();
   }
 }

@@ -1,4 +1,6 @@
+import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/source_wait.dart';
+import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/redact.dart';
 import 'package:kartka/core/source/manga_gone_error.dart';
@@ -40,6 +42,27 @@ bool isMissingSource(Object error) =>
     error is UnknownSourceError ||
     error is SourceUnavailable ||
     error is MangaGoneError;
+
+/// Logs a detail-screen [failure] as [kind] (source id only, URLs
+/// stripped); a missing source ([isMissingSource]) is shown, not logged.
+Future<void> logDetailFailure(
+  BrowseDeps deps,
+  String sourceId,
+  String kind,
+  Object failure, [
+  StackTrace? stack,
+]) async {
+  if (isMissingSource(failure)) return;
+  await deps.diagnostics?.append(
+    DiagnosticEntry.failure(
+      at: deps.clock(),
+      kind: kind,
+      error: stripUrls('$failure'),
+      stack: stack == null ? null : StackTrace.fromString(stripUrls('$stack')),
+      sourceId: sourceId,
+    ),
+  );
+}
 
 /// The snackbar text for [outcome]: `Refresh failed: <message>` (URL
 /// secrets redacted), `No new chapters`, or `3 new: ch 101, 102, 103`

@@ -18,8 +18,10 @@ class SourceUnavailable implements Exception {
 
 /// The source [sourceId] of [sources], waiting up to [wait] for a runtime
 /// source (Suwayomi, plugin) to appear; else fails with
-/// [SourceUnavailable]. Completes without awaiting the subscription's
-/// cancel, so a slow provider teardown never delays the screen.
+/// [SourceUnavailable], at once when [SourceRegistry.settled] lists lack
+/// it (2d26b6d5: a dead source timed its screen for the whole wait).
+/// Completes without awaiting the subscription's cancel, so a slow
+/// provider teardown never delays the screen.
 Future<MangaSource> waitForSource(
   SourceRegistry sources,
   String sourceId,
@@ -27,17 +29,36 @@ Future<MangaSource> waitForSource(
 ) {
   final found = Completer<MangaSource>();
   late final StreamSubscription<void> sub;
-  final timer = Timer(wait, () {
+  late final Timer timer;
+  void fail() {
     if (found.isCompleted) return;
+    timer.cancel();
     found.completeError(SourceUnavailable(sourceId));
     unawaited(sub.cancel());
-  });
+  }
+
+  timer = Timer(wait, fail);
   sub = sources.watch().listen((_) {
     final source = sources.byId(sourceId);
-    if (source == null || found.isCompleted) return;
+    if (found.isCompleted) return;
+    if (source == null) {
+      if (sources.settled) fail();
+      return;
+    }
     timer.cancel();
     found.complete(source);
     unawaited(sub.cancel());
   });
   return found.future;
 }
+
+/// Calls [then] once [sources] lists [sourceId]; cancel the result to stop.
+StreamSubscription<void> whenListed(
+  SourceRegistry sources,
+  String sourceId,
+  void Function() then,
+) => sources
+    .watch()
+    .where((_) => sources.byId(sourceId) != null)
+    .take(1)
+    .listen((_) => then());
