@@ -121,7 +121,9 @@ Updates headless and fails on any open over 1 s.
   At most 30 entries a minute. Before `installAppErrors` (widget tests): no-op.
 - Hooked: `reader.open`, `reader.page`, `reader.chapter`, `library.load`,
   `updates.load`, `details.load`, `details.refresh`, `details.chapters`
-  (fresh details shown, the chapter list still loading; 9f7cad2f),
+  (fresh details, or a tapped tile's title and cover, shown while the
+  chapter list loads; a hover resting 150 ms or a press starts both
+  fetches early, `DetailPrefetch`; 9f7cad2f),
   `suwayomi.extensions`,
   `downloads.load`, `sources.load`, `browse.nextpage`, `search.global`,
   `plugins.load`, `tracking.search`, `sync.start`. Not hooked: button and

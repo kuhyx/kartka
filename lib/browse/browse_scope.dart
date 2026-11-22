@@ -9,6 +9,7 @@ import 'package:kartka/browse/state/browse_language_store.dart';
 import 'package:kartka/browse/state/browse_shown_store.dart';
 import 'package:kartka/browse/state/chapter_sort_store.dart';
 import 'package:kartka/browse/state/chapter_store.dart';
+import 'package:kartka/browse/state/detail_prefetch.dart';
 import 'package:kartka/browse/state/detail_store.dart';
 import 'package:kartka/browse/state/store_chapter_update_checker.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
@@ -49,8 +50,10 @@ class BrowseDeps {
     BrowseShownStore? shown,
     BrowseContentTypeStore? contentType,
     this.details = const DetailStore(null),
+    DetailPrefetch? prefetch,
     DateTime Function()? clock,
   }) : clock = clock ?? DateTime.now,
+       prefetch = prefetch ?? DetailPrefetch(),
        updates = updates ?? StoreChapterUpdateChecker(chapters),
        chapterSort = chapterSort ?? ChapterSortStore(null),
        shown = shown ?? BrowseShownStore(null),
@@ -109,6 +112,9 @@ class BrowseDeps {
   /// Last fetched details per library manga (the instant detail header).
   final DetailStore details;
 
+  /// Detail fetches a hovered or pressed tile started.
+  final DetailPrefetch prefetch;
+
   /// Clock for `addedAt` / `updatedAt` (injected in tests).
   final DateTime Function() clock;
 }
@@ -127,6 +133,10 @@ class BrowseScope extends InheritedWidget {
     if (scope == null) throw StateError('No BrowseScope above $context');
     return scope.deps;
   }
+
+  /// The nearest [BrowseDeps], or null; registers no dependency.
+  static BrowseDeps? maybeOf(BuildContext context) =>
+      context.getInheritedWidgetOfExactType<BrowseScope>()?.deps;
 
   @override
   bool updateShouldNotify(BrowseScope oldWidget) => deps != oldWidget.deps;

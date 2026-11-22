@@ -5,6 +5,7 @@ import 'package:design_system/design_system.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/routes.dart';
 import 'package:kartka/app/shown_wait_watch.dart';
+import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/paged_controller.dart';
 import 'package:kartka/browse/ui/challenge_prompt.dart';
 import 'package:kartka/browse/ui/cover_image.dart';
@@ -15,23 +16,57 @@ import 'package:kartka/core/ui/spoken_label.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// One manga cover + title; opens the detail route. A focus stop, so arrow
-/// keys walk the grid and the grid scrolls to the focused tile.
-class MangaTile extends StatelessWidget {
+/// keys walk the grid and the grid scrolls to the focused tile. A hover
+/// that rests on it, or a press, starts its detail fetches (9f7cad2f).
+class MangaTile extends StatefulWidget {
   /// Creates a tile for [manga].
   const new(this.manga, {super.key});
 
   /// The manga shown.
   final MangaSummary manga;
 
+  /// How long a hover rests before it warms the tile: a mouse crossing
+  /// the grid passes each tile faster, and those fetches would be waste.
+  static const hoverDwell = Duration(milliseconds: 150);
+
+  @override
+  State<MangaTile> createState() => _MangaTileState();
+}
+
+class _MangaTileState extends State<MangaTile> {
+  Timer? _dwell;
+
+  void _warm() {
+    if (BrowseScope.maybeOf(context) case final deps?) {
+      deps.prefetch.warm(deps, widget.manga);
+    }
+  }
+
+  void _hover(bool inside) {
+    _dwell?.cancel();
+    if (inside) _dwell = Timer(MangaTile.hoverDwell, _warm);
+  }
+
+  @override
+  void dispose() {
+    _dwell?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final manga = widget.manga;
     return Card(
       clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.zero,
       child: InkWell(
-        onTap: () =>
-            unawaited(context.push(mangaRoute(manga.sourceId, manga.url))),
+        onHover: _hover,
+        onTapDown: (_) => _warm(),
+        onTap: () {
+          _warm(); // Enter on a focused tile has no press before it.
+          unawaited(context.push(mangaRoute(manga.sourceId, manga.url)));
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

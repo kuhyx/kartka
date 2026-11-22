@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:kartka/browse/browse_scope.dart';
 import 'package:kartka/browse/state/chapter_order.dart';
+import 'package:kartka/browse/state/detail_prefetch.dart';
 import 'package:kartka/browse/state/detail_store.dart';
 import 'package:kartka/browse/state/read_state.dart';
 import 'package:kartka/browse/state/refresh_outcome.dart';
@@ -12,6 +13,8 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/updates/chapter_update_checker.dart';
 
 export 'package:kartka/browse/state/source_wait.dart' show SourceUnavailable;
+
+part 'manga_detail_seed.dart';
 
 /// State and actions of the manga detail screen.
 class MangaDetailController extends ChangeNotifier {
@@ -76,8 +79,9 @@ class MangaDetailController extends ChangeNotifier {
     error = null;
     _notify();
     // Started before the seed: the seed must never delay the network.
-    final fresh = _fetch()..ignore();
-    if (details == null) await _seed();
+    final ahead = _deps.prefetch.take(key);
+    final fresh = _fetch(ahead)..ignore();
+    if (details == null) await _seed(ahead?.tile);
     try {
       final (d, list) = await fresh;
       final shownCover = listPending ? null : details?.coverUrl;
@@ -98,14 +102,24 @@ class MangaDetailController extends ChangeNotifier {
     _notify();
   }
 
-  /// With nothing shown, details show as they come ([listPending]): on
-  /// MangaFire 0.09 s, beside a 1-2.9 s chapter list (9f7cad2f).
-  Future<(MangaDetails, List<ChapterInfo>)> _fetch() async {
-    final source = await waitForSource(_deps.sources, sourceId, sourceWait);
-    final list = _deps.chapters.load(key, refresh: true)..ignore();
+  /// With nothing shown, or only the tile, details show as they come
+  /// ([listPending]): on MangaFire 0.09 s, beside a 1-2.9 s chapter list
+  /// (9f7cad2f). A hovered or pressed tile's fetches ([ahead]) are reused.
+  Future<(MangaDetails, List<ChapterInfo>)> _fetch(
+    PrefetchedDetail? ahead,
+  ) async {
+    final Future<MangaDetails> pending;
+    final Future<List<ChapterInfo>> list;
+    if (ahead != null) {
+      (pending, list) = (ahead.details, ahead.chapters);
+    } else {
+      final source = await waitForSource(_deps.sources, sourceId, sourceWait);
+      list = _deps.chapters.load(key, refresh: true)..ignore();
+      pending = source.details(mangaUrl);
+    }
     unawaited(list.then(_early, onError: (Object _) {}));
-    final d = await source.details(mangaUrl);
-    if (details == null) {
+    final d = await pending;
+    if (details == null || listPending) {
       details = d;
       listPending = true;
       _notify();
@@ -113,27 +127,10 @@ class MangaDetailController extends ChangeNotifier {
     return (d, await list);
   }
 
-  /// Shows [list] as it lands when details show but none do (2d26b6d5).
-  void _early(List<ChapterInfo> list) {
-    if (details == null || chapters.isNotEmpty) return;
-    chapters = readingOrder(list);
-    _notify();
-  }
-
   /// A source listed after it failed as missing loads by itself.
   void _relisted() {
     _listed = null;
     if (!_disposed && !loading && error is SourceUnavailable) unawaited(load());
-  }
-
-  /// Shows the library entry and stored chapters, when there is an entry.
-  Future<void> _seed() async {
-    final stored = await storedDetail(_deps, key);
-    if (stored == null) return;
-    listPending = false; // Stored data shows: a failed refresh keeps it.
-    details = stored.$1;
-    chapters = readingOrder(stored.$2);
-    _notify();
   }
 
   /// Re-fetches the chapter list through `BrowseDeps.updates` (diffed
