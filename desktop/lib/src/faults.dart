@@ -44,6 +44,7 @@ class ProxyFault {
 /// call is forwarded [slowPages] or `<ms>` late: a slow `reader.open` for
 /// `f4_reader_sweep.sh` to catch), `slow-details[:<ms>]` (the same for the
 /// details and chapter-list calls: a slow upstream behind a detail open).
+/// Both also hold MangaDex's matching REST calls (`f6_chapter_advance.sh`).
 class ProxyFaults {
   /// Faults read from [file].
   new(this.file);
@@ -69,7 +70,8 @@ class ProxyFaults {
     final host = target.host;
     final [slow, ...hold] = (mode ?? '').split(':');
     if (_slowOperations[slow] case final operations?) {
-      if (!operations.contains(_operation(body))) return null;
+      final op = _operation(body) ?? _restOperation(target.path);
+      if (!operations.contains(op)) return null;
       final ms = hold.isEmpty ? null : int.tryParse(hold.first);
       return ProxyFault.late(
         ms == null ? slowPages : Duration(milliseconds: ms),
@@ -137,6 +139,15 @@ class ProxyFaults {
       return null;
     }
   }
+
+  /// The GraphQL operation a MangaDex REST call stands for, so f6 can hold
+  /// a built-in source's chapter list or page list too.
+  static String? _restOperation(String path) => switch (path.split('/')) {
+    ['', 'at-home', 'server', _] => 'KartkaPages',
+    ['', 'manga', _, 'feed'] => 'KartkaChapters',
+    ['', 'manga', _] => 'KartkaDetails',
+    _ => null,
+  };
 
   static ProxyFault _graphqlData(Map<String, Object?> data) =>
       ProxyFault.answer(200, jsonEncode({'data': data}));

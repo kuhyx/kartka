@@ -173,6 +173,9 @@ removed}`, `Category {id, name, order, updatedAt, removed}`,
 `lib/core/models/`. Local impls are in-memory + KeyValueStore-backed; the sync
 part decorates them (same interfaces), so UI never knows sync exists.
 Tracking listens to `ProgressRepository.watch` — no direct coupling.
+`StoredChapterLists.stored(key) → Future<List<ChapterInfo>?>` (browse
+supplies from its chapter store, never fetching): the reader names the next
+chapter from it once page 1 is in, before the source's fresh list arrives.
 
 ## 9. Tracker interface (`lib/tracking/common/tracker.dart`; owner: AniList part)
 

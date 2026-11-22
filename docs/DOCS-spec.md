@@ -125,6 +125,17 @@ literally the same series onto the one on the best source, on its own:
 - Feedback: none on screen. A run that merged logs one device-only
   `library.dedupe` line, counts only.
 
+## Reader advance (19643be5; defaults logged here)
+
+The next chapter's page 1 shows within 1 s of swiping past the last page.
+The stored chapter list names the next chapter once page 1 is in, so its
+page list loads beside the fresh list; the fresh list wins, and a loaded
+chapter it no longer puts next is dropped unless the reader is in it. The
+chapter after a short one starts once fewer than max(prefetch, 5) loaded
+pages are left. An edge wait over 1 s logs `ReaderProbe: next chapter
+waited on list|pages|retry` (`reader.advance`). Live check:
+`tools/agent/flows/f6_chapter_advance.sh`.
+
 ## Commands
 
 - Run: `./run.sh` (desktop Chrome app), `./run.sh android`.

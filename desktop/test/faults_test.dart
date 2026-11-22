@@ -120,4 +120,22 @@ void main() {
       isNull,
     );
   });
+
+  test('slow-* hold MangaDex REST calls by path (f6)', () {
+    const api = 'https://api.mangadex.org';
+    file.writeAsStringSync('{"api.mangadex.org": "slow-details:900"}');
+    expect(
+      at('$api/manga/abc/feed?limit=500')!.delay,
+      const Duration(milliseconds: 900),
+    );
+    expect(at('$api/manga/abc?includes[]=author'), isNotNull);
+    expect(at('$api/at-home/server/c1'), isNull);
+    expect(at('$api/manga?title=x'), isNull, reason: 'a search');
+    file.writeAsStringSync('{"api.mangadex.org": "slow-pages:900"}');
+    expect(
+      at('$api/at-home/server/c1')!.delay,
+      const Duration(milliseconds: 900),
+    );
+    expect(at('$api/manga/abc/feed'), isNull);
+  });
 }

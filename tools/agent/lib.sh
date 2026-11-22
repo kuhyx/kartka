@@ -68,7 +68,9 @@ check() {
 # Pop pushed full-screen routes (sign-in form, reader) until the tab rail shows.
 # The shell is up when the nav's "More" node has the tab role (Flutter 3.50
 # exposes real tab roles instead of a "Tab N of 5" label).
-on_tabs() { drive tree 2>/dev/null | grep -qE '^#[0-9]+ tab "More"'; }
+# grep reads the whole tree: with -q it exits at the first match, and under
+# pipefail the SIGPIPE'd drive made a big tree (Library) read as "no tabs".
+on_tabs() { drive tree 2>/dev/null | grep -E '^#[0-9]+ tab "More"' >/dev/null; }
 
 pop_to_tabs() {
   local i
