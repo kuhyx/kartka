@@ -20,16 +20,38 @@ class DirectKartkaHttp extends KartkaHttp {
     String? body,
   }) async {
     _check(method, url);
-    final request = http.Request(method, url)
-      ..headers.addAll({
-        for (final h in headers.entries)
-          if (h.key.toLowerCase() != 'user-agent') h.key: h.value,
-        // Honest UA, always: hosts like MangaDex reject a spoofed browser.
-        'user-agent': kartkaUserAgent,
-      });
-    if (body != null) request.bodyBytes = utf8.encode(body);
-    return await _complete(client.send(request), (h) => h);
+    Future<KartkaResponse> once() {
+      final request = http.Request(method, url)
+        ..headers.addAll({
+          for (final h in headers.entries)
+            if (h.key.toLowerCase() != 'user-agent') h.key: h.value,
+          // Honest UA, always: hosts like MangaDex reject a spoofed browser.
+          'user-agent': kartkaUserAgent,
+        });
+      if (body != null) request.bodyBytes = utf8.encode(body);
+      return _complete(client.send(request), (h) => h);
+    }
+
+    try {
+      return await once();
+    } on http.ClientException catch (e) {
+      if (!_readOnly.contains(method) || !_dropped.hasMatch(e.message)) {
+        rethrow;
+      }
+      return await once();
+    }
   }
+
+  /// A pooled keep-alive connection the server had already closed: the
+  /// request never reached it, so a fresh connection usually succeeds
+  /// ("Connection closed before full header was received").
+  static final _dropped = RegExp(
+    'Connection closed|Connection reset|connection abort',
+    caseSensitive: false,
+  );
+
+  /// Methods safe to send twice.
+  static const _readOnly = {'GET', 'HEAD'};
 }
 
 /// [KartkaHttp] through the desktop wrapper's `/proxy` (web build).

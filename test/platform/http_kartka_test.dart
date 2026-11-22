@@ -49,6 +49,41 @@ void main() {
       );
     });
 
+    group('a dropped keep-alive connection', () {
+      const dropped = 'Connection closed before full header was received';
+      Future<(int, Object?)> run(String method, String error) async {
+        var calls = 0;
+        final client = MockClient((r) async {
+          calls++;
+          if (calls == 1) throw http.ClientException(error, r.url);
+          return http.Response('ok', 200);
+        });
+        try {
+          await DirectKartkaHttp(client).send(method, Uri.parse('https://h/'));
+          return (calls, null);
+        } on Object catch (e) {
+          return (calls, e);
+        }
+      }
+
+      test('a GET or HEAD is sent once more and succeeds', () async {
+        expect(await run('GET', dropped), (2, null));
+        expect(await run('HEAD', 'Connection reset by peer'), (2, null));
+      });
+
+      test('a POST is never sent twice', () async {
+        final (calls, error) = await run('POST', dropped);
+        expect(calls, 1);
+        expect('$error', contains(dropped));
+      });
+
+      test('another failure is not retried', () async {
+        final (calls, error) = await run('GET', 'Failed host lookup: h');
+        expect(calls, 1);
+        expect(error, isA<http.ClientException>());
+      });
+    });
+
     test('refuses other methods and schemes', () async {
       final kh = DirectKartkaHttp(
         MockClient((_) async => http.Response('', 200)),
