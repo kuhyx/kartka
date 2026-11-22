@@ -204,6 +204,7 @@ class _SettingsState extends State<SuwayomiSettingsScreen> {
                         style: IconButton.styleFrom(minimumSize: _tap),
                         onPressed: _save,
                         icon: const Icon(Icons.save, semanticLabel: 'Save'),
+                        tooltip: 'Save',
                       ),
                       IconButton.outlined(
                         style: IconButton.styleFrom(minimumSize: _tap),
@@ -212,6 +213,7 @@ class _SettingsState extends State<SuwayomiSettingsScreen> {
                           Icons.network_check,
                           semanticLabel: 'Test connection',
                         ),
+                        tooltip: 'Test',
                       ),
                       IconButton(
                         style: IconButton.styleFrom(minimumSize: _tap),
@@ -220,6 +222,7 @@ class _SettingsState extends State<SuwayomiSettingsScreen> {
                           Icons.extension,
                           semanticLabel: 'Extensions',
                         ),
+                        tooltip: 'Extensions',
                       ),
                     ],
                   ),

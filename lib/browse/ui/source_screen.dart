@@ -155,6 +155,7 @@ class _SourceTabsState extends State<_SourceTabs> {
                   Icons.open_in_browser,
                   semanticLabel: 'Open in WebView',
                 ),
+                tooltip: 'WebView',
                 onPressed: () => unawaited(
                   openInWebView(
                     context,

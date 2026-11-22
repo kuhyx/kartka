@@ -71,7 +71,12 @@ class _MigrationWalkScreenState extends State<MigrationWalkScreen> {
               : const Icon(Icons.swap_horiz, semanticLabel: 'Migrate'),
           actions: [
             if (_c.index > 0)
-              _action(Icons.skip_previous, 'Previous entry', _c.back),
+              _action(
+                Icons.skip_previous,
+                'Previous entry',
+                'Previous',
+                _c.back,
+              ),
             if (_auto.running) ...[
               const Icon(Icons.auto_fix_high, semanticLabel: 'Migrated'),
               Text('${_auto.moved}'),
@@ -84,15 +89,17 @@ class _MigrationWalkScreenState extends State<MigrationWalkScreen> {
               _action(
                 Icons.auto_fix_high,
                 'Migrate every strong match',
+                'Auto-migrate',
                 () => unawaited(_auto.run()),
               ),
             if (walking) ...[
               _action(
                 Icons.search,
                 'Search by hand',
+                'Search',
                 () => setState(() => _manual = !_manual),
               ),
-              _action(Icons.skip_next, 'Skip', _c.skip),
+              _action(Icons.skip_next, 'Skip', 'Skip', _c.skip),
             ],
           ],
         ),
@@ -101,12 +108,17 @@ class _MigrationWalkScreenState extends State<MigrationWalkScreen> {
     },
   );
 
-  Widget _action(IconData icon, String label, VoidCallback onPressed) =>
-      IconButton(
-        style: IconButton.styleFrom(minimumSize: const Size.square(48)),
-        onPressed: _c.busy || _auto.running ? null : onPressed,
-        icon: Icon(icon, semanticLabel: label),
-      );
+  Widget _action(
+    IconData icon,
+    String label,
+    String tip,
+    VoidCallback onPressed,
+  ) => IconButton(
+    style: IconButton.styleFrom(minimumSize: const Size.square(48)),
+    onPressed: _c.busy || _auto.running ? null : onPressed,
+    icon: Icon(icon, semanticLabel: label),
+    tooltip: tip,
+  );
 
   Widget _body(BuildContext context) {
     if (!_c.loaded) return const LinearProgressIndicator();

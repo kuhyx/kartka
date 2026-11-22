@@ -53,6 +53,7 @@ Future<void> showUpdateSheet(
                   Icons.open_in_new,
                   semanticLabel: 'Open manga',
                 ),
+                tooltip: 'Open',
               ),
             ),
           ),

@@ -85,6 +85,7 @@ class ChapterTile extends StatelessWidget {
               semanticLabel: read ? 'Mark unread' : 'Mark read',
             ),
             color: read ? theme.colorScheme.primary : muted,
+            tooltip: read ? 'Unread' : 'Read',
             onPressed: () =>
                 unawaited(controller.setRead(chapter, read: !read)),
           ),

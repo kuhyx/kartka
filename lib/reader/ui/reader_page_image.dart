@@ -99,6 +99,7 @@ class ReaderPageImage extends StatelessWidget {
             style: IconButton.styleFrom(minimumSize: const Size.square(48)),
             onPressed: onRetry,
             icon: const Icon(Icons.refresh, semanticLabel: 'Retry'),
+            tooltip: 'Retry',
           ),
         ],
       ),

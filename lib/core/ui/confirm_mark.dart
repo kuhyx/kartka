@@ -35,6 +35,7 @@ Future<bool> confirmMark(
         IconButton(
           style: IconButton.styleFrom(minimumSize: size),
           icon: const Icon(Icons.close, semanticLabel: 'Cancel'),
+          tooltip: 'Cancel',
           onPressed: () => Navigator.of(dialog).pop(false),
         ),
         IconButton.filled(
@@ -43,6 +44,7 @@ Future<bool> confirmMark(
             backgroundColor: error,
           ),
           icon: Icon(confirmIcon, semanticLabel: confirmLabel),
+          tooltip: 'Confirm',
           onPressed: () => Navigator.of(dialog).pop(true),
         ),
       ],

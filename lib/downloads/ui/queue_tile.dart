@@ -76,10 +76,12 @@ class QueueTile extends StatelessWidget {
           if (failed)
             IconButton(
               icon: const Icon(Icons.refresh, semanticLabel: 'Retry'),
+              tooltip: 'Retry',
               onPressed: onRetry,
             ),
           IconButton(
             icon: const Icon(Icons.close, semanticLabel: 'Cancel'),
+            tooltip: 'Cancel',
             onPressed: onCancel,
           ),
         ],

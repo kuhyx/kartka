@@ -56,11 +56,13 @@ class _PassphraseDialogState extends State<PassphraseDialog> {
         style: IconButton.styleFrom(minimumSize: _button),
         onPressed: () => Navigator.of(context).pop(),
         icon: const Icon(Icons.close, semanticLabel: 'Cancel'),
+        tooltip: 'Cancel',
       ),
       IconButton.filled(
         style: IconButton.styleFrom(minimumSize: _button),
         onPressed: _valid ? () => Navigator.of(context).pop(_first.text) : null,
         icon: const Icon(Icons.check, semanticLabel: 'Save'),
+        tooltip: 'Save',
       ),
     ],
   );

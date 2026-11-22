@@ -44,6 +44,7 @@ class ChallengePrompt extends StatelessWidget {
             Icons.open_in_browser,
             semanticLabel: 'Open in WebView',
           ),
+          tooltip: 'WebView',
         ),
       ],
     ),
@@ -119,6 +120,7 @@ class _WebViewPage extends StatelessWidget {
         IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.check, semanticLabel: 'Done'),
+          tooltip: 'Done',
         ),
       ],
     ),

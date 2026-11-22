@@ -97,6 +97,7 @@ class _KeepSheetState extends State<_KeepSheet> {
             Icons.delete_sweep,
             semanticLabel: 'Uninstall the unticked',
           ),
+          tooltip: 'Uninstall',
         ),
       ],
     ),

@@ -143,6 +143,7 @@ class _SyncAccountScreenState extends State<SyncAccountScreen> {
                 _hasPassphrase ? Icons.edit_outlined : Icons.add,
                 semanticLabel: _hasPassphrase ? 'Change' : 'Set passphrase',
               ),
+              tooltip: _hasPassphrase ? 'Change' : 'Set',
             ),
           ),
           if (_problems.isNotEmpty)

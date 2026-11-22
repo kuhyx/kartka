@@ -97,6 +97,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
       paused ? Icons.play_arrow : Icons.pause,
       semanticLabel: paused ? 'Resume downloads' : 'Pause downloads',
     ),
+    tooltip: paused ? 'Resume' : 'Pause',
     onPressed: () =>
         unawaited(paused ? widget.service.resume() : widget.service.pause()),
   );

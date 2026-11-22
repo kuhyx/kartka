@@ -117,6 +117,7 @@ class _DetailMenuState extends State<DetailMenu> {
       ],
       builder: (context, menu, _) => IconButton(
         icon: const Icon(Icons.more_vert, semanticLabel: 'More'),
+        tooltip: 'More',
         onPressed: () => menu.isOpen ? menu.close() : menu.open(),
       ),
     );

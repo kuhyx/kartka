@@ -117,6 +117,7 @@ class ScoringPage extends StatelessWidget {
                 Icons.restart_alt,
                 semanticLabel: 'Reset to evaluator defaults',
               ),
+              tooltip: 'Reset',
               onPressed: p.isDefault ? null : store.reset,
             ),
           ),
@@ -189,6 +190,7 @@ class _WeightRow extends StatelessWidget {
             IconButton(
               key: Key('only-$index'),
               icon: const Icon(Icons.filter_1, semanticLabel: 'Only this'),
+              tooltip: 'Only',
               onPressed: () => store.save(
                 profile.copyWith(
                   weights: ScoreWeights.fromValues([

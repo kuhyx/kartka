@@ -72,6 +72,7 @@ class ReaderControls extends StatelessWidget {
               children: [
                 IconButton(
                   icon: const Icon(Icons.arrow_back, semanticLabel: 'Back'),
+                  tooltip: 'Back',
                   onPressed: onBack,
                 ),
                 Expanded(child: _title(context)),
@@ -94,6 +95,7 @@ class ReaderControls extends StatelessWidget {
                     Icons.fullscreen,
                     semanticLabel: 'Fullscreen',
                   ),
+                  tooltip: 'Fullscreen',
                   onPressed: onFullscreen,
                 ),
                 IconButton(
@@ -101,6 +103,7 @@ class ReaderControls extends StatelessWidget {
                     Icons.tune,
                     semanticLabel: 'Reader settings',
                   ),
+                  tooltip: 'Settings',
                   onPressed: onSettings,
                 ),
               ],
@@ -121,6 +124,7 @@ class ReaderControls extends StatelessWidget {
                       Icons.skip_previous,
                       semanticLabel: 'Previous chapter',
                     ),
+                    tooltip: 'Previous',
                     onPressed: onPreviousChapter,
                   ),
                   Expanded(
@@ -136,6 +140,7 @@ class ReaderControls extends StatelessWidget {
                       Icons.skip_next,
                       semanticLabel: 'Next chapter',
                     ),
+                    tooltip: 'Next',
                     onPressed: onNextChapter,
                   ),
                 ],

@@ -148,6 +148,7 @@ class _GisDialogState extends State<_GisDialog> {
         style: IconButton.styleFrom(minimumSize: const Size.square(48)),
         onPressed: () => _close(null),
         icon: const Icon(Icons.close, semanticLabel: 'Cancel'),
+        tooltip: 'Cancel',
       ),
     ],
   );

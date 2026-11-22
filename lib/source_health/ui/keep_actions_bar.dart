@@ -48,6 +48,7 @@ class KeepActionsBar extends StatelessWidget {
               Icons.swap_horiz,
               semanticLabel: 'Migrate to better sources',
             ),
+            tooltip: 'Migrate',
             onPressed: () => migrate(context),
           ),
       ],

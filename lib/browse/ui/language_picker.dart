@@ -69,6 +69,7 @@ class LanguagePickerDialog extends StatelessWidget {
           IconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: const Icon(Icons.check, semanticLabel: 'Done'),
+            tooltip: 'Done',
           ),
         ],
       );

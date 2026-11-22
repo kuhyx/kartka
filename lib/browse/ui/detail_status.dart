@@ -70,6 +70,7 @@ Widget _retry(MangaDetailController c) => IconButton(
   iconSize: 32,
   onPressed: () => unawaited(c.load()),
   icon: const Icon(Icons.refresh, semanticLabel: 'Retry'),
+  tooltip: 'Retry',
 );
 
 /// The source id is data (which plugin to install), so it stays painted.

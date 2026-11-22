@@ -56,6 +56,7 @@ class _PickerState extends State<_Picker> {
         style: IconButton.styleFrom(minimumSize: const Size.square(48)),
         onPressed: () => Navigator.pop(context),
         icon: const Icon(Icons.close, semanticLabel: 'Cancel'),
+        tooltip: 'Cancel',
       ),
       IconButton.filled(
         style: IconButton.styleFrom(minimumSize: const Size.square(48)),
@@ -64,6 +65,7 @@ class _PickerState extends State<_Picker> {
             if (value != null && value != widget.initial[key]) key: value,
         }),
         icon: const Icon(Icons.check, semanticLabel: 'Apply'),
+        tooltip: 'Apply',
       ),
     ],
   );

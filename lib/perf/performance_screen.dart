@@ -35,6 +35,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
         IconButton(
           onPressed: _reset,
           icon: const Icon(Icons.restart_alt, semanticLabel: 'Reset'),
+          tooltip: 'Reset',
         ),
         const SizedBox(width: AppSpacing.sm),
       ],

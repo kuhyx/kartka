@@ -138,11 +138,13 @@ class _DialogState extends State<MangadexSettingsDialog> {
         style: IconButton.styleFrom(minimumSize: _tap),
         onPressed: () => Navigator.of(context).pop(),
         icon: const Icon(Icons.close, semanticLabel: 'Cancel'),
+        tooltip: 'Cancel',
       ),
       IconButton.filled(
         style: IconButton.styleFrom(minimumSize: _tap),
         onPressed: _save,
         icon: const Icon(Icons.check, semanticLabel: 'Save'),
+        tooltip: 'Save',
       ),
     ],
   );

@@ -198,6 +198,7 @@ class _Footer extends StatelessWidget {
             iconSize: 32,
             onPressed: c.loadMore,
             icon: const Icon(Icons.refresh, semanticLabel: 'Retry'),
+            tooltip: 'Retry',
           ),
         ],
       );

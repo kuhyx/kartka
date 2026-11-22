@@ -54,6 +54,7 @@ class AddRepoRow extends StatelessWidget {
           IconButton(
             style: IconButton.styleFrom(minimumSize: _tap),
             icon: const Icon(Icons.add, semanticLabel: 'Add repository'),
+            tooltip: 'Add',
             onPressed: onAdd,
           ),
       ],
@@ -149,11 +150,13 @@ class AvailableList extends StatelessWidget {
         style: IconButton.styleFrom(minimumSize: _tap),
         onPressed: () => onInstall(p.entry),
         icon: const Icon(Icons.download, semanticLabel: 'Install'),
+        tooltip: 'Install',
       ),
       PluginAvailability.updatable => IconButton.filled(
         style: IconButton.styleFrom(minimumSize: _tap),
         onPressed: () => onInstall(p.entry),
         icon: const Icon(Icons.upgrade, semanticLabel: 'Update'),
+        tooltip: 'Update',
       ),
     };
   }
@@ -219,6 +222,7 @@ class _InstalledListState extends State<InstalledList> {
                   Icons.delete_outline,
                   semanticLabel: 'Uninstall ${p.manifest.name}',
                 ),
+                tooltip: 'Uninstall',
                 onPressed: widget.busy.contains(p.manifest.id)
                     ? null
                     : () => widget.onUninstall(p),

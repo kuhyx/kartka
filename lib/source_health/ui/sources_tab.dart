@@ -212,6 +212,7 @@ class _SourcesTabState extends State<SourcesTab> {
           ? null
           : IconButton(
               icon: const Icon(Icons.clear, semanticLabel: 'Clear search'),
+              tooltip: 'Clear',
               onPressed: () {
                 _search.clear();
                 _setSearch('');

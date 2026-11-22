@@ -103,6 +103,7 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
               actions: [
                 IconButton(
                   icon: const Icon(Icons.refresh, semanticLabel: 'Refresh'),
+                  tooltip: 'Refresh',
                   onPressed: () => unawaited(_refresh()),
                 ),
                 if (details != null)

@@ -76,9 +76,21 @@ void main() {
     tester.widget<PageSlider>(find.byType(PageSlider)).onChanged(3);
     await h.settle(tester);
     expect(find.text('4 / 4'), findsOneWidget);
-    // Word-free: no control paints a tooltip, the Show menu default included.
+    // Word-free: icon-only controls have one-word tooltips
+    // (Back, Fullscreen, Settings, Previous, Next).
     expect(
-      find.byWidgetPredicate((w) => w is Tooltip && w.message != ''),
+      find.byWidgetPredicate(
+        (w) =>
+            w is Tooltip &&
+            w.message != '' &&
+            ![
+              'Back',
+              'Fullscreen',
+              'Settings',
+              'Previous',
+              'Next',
+            ].contains(w.message),
+      ),
       findsNothing,
     );
     await tester.tap(spokenIcon('Next chapter'));

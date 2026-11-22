@@ -82,12 +82,14 @@ class ExtensionTile extends StatelessWidget {
                     style: IconButton.styleFrom(minimumSize: _tap),
                     onPressed: () => onAction(ExtensionAction.install),
                     icon: const Icon(Icons.download, semanticLabel: 'Install'),
+                    tooltip: 'Install',
                   ),
                 if (e.isInstalled && e.hasUpdate)
                   IconButton.filled(
                     style: IconButton.styleFrom(minimumSize: _tap),
                     onPressed: () => onAction(ExtensionAction.update),
                     icon: const Icon(Icons.upgrade, semanticLabel: 'Update'),
+                    tooltip: 'Update',
                   ),
                 if (e.isInstalled)
                   IconButton.outlined(
@@ -97,6 +99,7 @@ class ExtensionTile extends StatelessWidget {
                       Icons.delete_outline,
                       semanticLabel: 'Uninstall',
                     ),
+                    tooltip: 'Uninstall',
                   ),
               ],
             ),

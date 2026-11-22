@@ -43,6 +43,7 @@ class ContentTypeToggle extends StatelessWidget {
               semanticLabel: 'Content types',
             ),
           ),
+          tooltip: 'Types',
           onPressed: () => showModalBottomSheet<void>(
             context: context,
             builder: (_) => _TypeSheet(store),

@@ -53,6 +53,7 @@ class _BrowseTabState extends State<BrowseTab> {
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list, semanticLabel: 'Languages'),
+            tooltip: 'Languages',
             onPressed: _pickLanguages,
           ),
         ],

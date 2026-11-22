@@ -65,12 +65,14 @@ class SourceActionButton extends StatelessWidget {
           key: ValueKey('open-$id'),
           style: _size,
           icon: const Icon(Icons.open_in_new, semanticLabel: 'Open'),
+          tooltip: 'Open',
           onPressed: () => installs.open(context, id),
         ),
         SourceAction.install => IconButton.filledTonal(
           key: ValueKey('install-$id'),
           style: _size,
           icon: const Icon(Icons.download, semanticLabel: 'Install'),
+          tooltip: 'Install',
           onPressed: () => _install(context),
         ),
         SourceAction.installing => IconButton.filledTonal(
@@ -83,6 +85,7 @@ class SourceActionButton extends StatelessWidget {
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
           ),
+          tooltip: 'Installing',
           onPressed: null,
         ),
       };

@@ -125,6 +125,7 @@ class _UpdatesScreenState extends State<UpdatesScreen> {
                 Icons.refresh,
                 semanticLabel: 'Check for updates',
               ),
+              tooltip: 'Update',
               onPressed: () => unawaited(_updateAll()),
             ),
         ],

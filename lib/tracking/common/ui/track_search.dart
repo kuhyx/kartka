@@ -80,6 +80,7 @@ class _TrackSearchState extends State<TrackSearch> {
             IconButton(
               style: IconButton.styleFrom(minimumSize: const Size.square(48)),
               icon: const Icon(Icons.search, semanticLabel: 'Search'),
+              tooltip: 'Search',
               onPressed: _busy ? null : () => unawaited(_search()),
             ),
           ],

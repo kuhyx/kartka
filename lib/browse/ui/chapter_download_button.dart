@@ -53,6 +53,7 @@ class _ChapterDownloadButtonState extends State<ChapterDownloadButton> {
               ? 'Download failed: retry'
               : 'Download',
         ),
+        tooltip: state.status == DownloadStatus.failed ? 'Retry' : 'Download',
         onPressed: () => unawaited(c.download([chapter])),
       ),
       DownloadStatus.queued ||
@@ -61,6 +62,7 @@ class _ChapterDownloadButtonState extends State<ChapterDownloadButton> {
           Icons.cancel_outlined,
           semanticLabel: 'Cancel download',
         ),
+        tooltip: 'Cancel',
         onPressed: () => unawaited(c.cancelDownload(chapter)),
       ),
       DownloadStatus.queued ||
@@ -70,6 +72,7 @@ class _ChapterDownloadButtonState extends State<ChapterDownloadButton> {
           Icons.delete_outline,
           semanticLabel: 'Delete download',
         ),
+        tooltip: 'Delete',
         onPressed: () => unawaited(c.deleteDownload(chapter)),
       ),
       DownloadStatus.done => const _Status('Downloaded', Icons.download_done),

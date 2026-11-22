@@ -107,6 +107,7 @@ class _PluginsScreenState extends State<PluginsScreen> {
           IconButton(
             style: IconButton.styleFrom(minimumSize: _tap),
             icon: const Icon(Icons.refresh, semanticLabel: 'Refresh'),
+            tooltip: 'Refresh',
             onPressed: _loading ? null : _refresh,
           ),
         ],
@@ -128,6 +129,7 @@ class _PluginsScreenState extends State<PluginsScreen> {
                   Icons.delete_outline,
                   semanticLabel: 'Remove repository',
                 ),
+                tooltip: 'Remove',
                 onPressed: () => _guarded('repo', () => _m.removeRepo(r)),
               ),
             ),

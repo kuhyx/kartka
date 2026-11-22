@@ -70,6 +70,7 @@ class LibraryAppBar extends StatelessWidget implements PreferredSizeWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.select_all, semanticLabel: 'Select all'),
+            tooltip: 'Select-all',
             onPressed: c.selectAllVisible,
           ),
           IconButton(
@@ -77,6 +78,7 @@ class LibraryAppBar extends StatelessWidget implements PreferredSizeWidget {
               Icons.label_outline,
               semanticLabel: 'Set categories',
             ),
+            tooltip: 'Categories',
             onPressed: c.selected.isEmpty ? null : onSetCategories,
           ),
           IconButton(
@@ -84,6 +86,7 @@ class LibraryAppBar extends StatelessWidget implements PreferredSizeWidget {
               Icons.delete_outline,
               semanticLabel: 'Remove from library',
             ),
+            tooltip: 'Remove',
             onPressed: c.selected.isEmpty ? null : onRemove,
           ),
         ],
@@ -104,28 +107,34 @@ class LibraryAppBar extends StatelessWidget implements PreferredSizeWidget {
         if (searching)
           IconButton(
             icon: const Icon(Icons.close, semanticLabel: 'Close search'),
+            tooltip: 'Close',
             onPressed: onCloseSearch,
           )
         else
           IconButton(
             icon: const Icon(Icons.search, semanticLabel: 'Search'),
+            tooltip: 'Search',
             onPressed: onSearch,
           ),
         if (onUpdateAll != null)
           IconButton(
             icon: const Icon(Icons.refresh, semanticLabel: 'Update library'),
+            tooltip: 'Update',
             onPressed: onUpdateAll,
           ),
         IconButton(
           icon: const Icon(Icons.filter_list, semanticLabel: 'Sort and filter'),
+          tooltip: 'Filter',
           onPressed: onOptions,
         ),
         IconButton(
           icon: const Icon(Icons.checklist, semanticLabel: 'Select'),
+          tooltip: 'Select',
           onPressed: c.startSelecting,
         ),
         IconButton(
           icon: const Icon(Icons.label, semanticLabel: 'Edit categories'),
+          tooltip: 'Categories',
           onPressed: onEditCategories,
         ),
         const Padding(

@@ -88,6 +88,7 @@ class _CandidateCardState extends State<CandidateCard> {
                     Icons.photo_library_outlined,
                     semanticLabel: 'Page previews',
                   ),
+                  tooltip: 'Previews',
                   onPressed: () => setState(() => _previews = !_previews),
                 ),
             ],

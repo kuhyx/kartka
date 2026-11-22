@@ -56,6 +56,7 @@ class OfflineMangaTile extends StatelessWidget {
                 Icons.delete_outline,
                 semanticLabel: 'Delete chapter',
               ),
+              tooltip: 'Delete',
               onPressed: () => _confirm(
                 context,
                 Icons.delete_outline,
@@ -64,16 +65,19 @@ class OfflineMangaTile extends StatelessWidget {
               ),
             ),
           ),
-        ListTile(
-          leading: const Icon(
-            Icons.delete_sweep_outlined,
-            semanticLabel: 'Delete all chapters',
-          ),
-          onTap: () => _confirm(
-            context,
-            Icons.delete_sweep_outlined,
-            'Delete all of $title?',
-            onDeleteAll,
+        Tooltip(
+          message: 'Delete-all',
+          child: ListTile(
+            leading: const Icon(
+              Icons.delete_sweep_outlined,
+              semanticLabel: 'Delete all chapters',
+            ),
+            onTap: () => _confirm(
+              context,
+              Icons.delete_sweep_outlined,
+              'Delete all of $title?',
+              onDeleteAll,
+            ),
           ),
         ),
       ],

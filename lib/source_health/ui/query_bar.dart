@@ -49,6 +49,7 @@ class QueryBar extends StatelessWidget {
           query.reversed ? Icons.arrow_upward : Icons.arrow_downward,
           semanticLabel: query.reversed ? 'Worst first' : 'Best first',
         ),
+        tooltip: query.reversed ? 'Worst-first' : 'Best-first',
         onPressed: () => onChanged(query.copyWith(reversed: !query.reversed)),
       ),
       for (final v in HealthVerdict.values)

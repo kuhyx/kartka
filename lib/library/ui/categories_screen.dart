@@ -64,6 +64,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       actions: [
         IconButton(
           icon: const Icon(Icons.add, semanticLabel: 'Add category'),
+          tooltip: 'Add',
           onPressed: () => unawaited(_add()),
         ),
       ],
@@ -130,18 +131,22 @@ class _Row extends StatelessWidget {
       children: [
         IconButton(
           icon: const Icon(Icons.arrow_upward, semanticLabel: 'Move up'),
+          tooltip: 'Up',
           onPressed: index == 0 ? null : onUp,
         ),
         IconButton(
           icon: const Icon(Icons.arrow_downward, semanticLabel: 'Move down'),
+          tooltip: 'Down',
           onPressed: last ? null : onDown,
         ),
         IconButton(
           icon: const Icon(Icons.edit_outlined, semanticLabel: 'Rename'),
+          tooltip: 'Rename',
           onPressed: onRename,
         ),
         IconButton(
           icon: const Icon(Icons.delete_outline, semanticLabel: 'Delete'),
+          tooltip: 'Delete',
           onPressed: onDelete,
         ),
       ],

@@ -52,11 +52,13 @@ class _NameDialogState extends State<_NameDialog> {
         style: IconButton.styleFrom(minimumSize: const Size.square(48)),
         onPressed: () => Navigator.pop(context),
         icon: const Icon(Icons.close, semanticLabel: 'Cancel'),
+        tooltip: 'Cancel',
       ),
       IconButton.filled(
         style: IconButton.styleFrom(minimumSize: const Size.square(48)),
         onPressed: _save,
         icon: const Icon(Icons.check, semanticLabel: 'Save'),
+        tooltip: 'Save',
       ),
     ],
   );

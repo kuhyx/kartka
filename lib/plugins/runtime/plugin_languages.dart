@@ -125,6 +125,7 @@ class _LanguagesDialogState extends State<_LanguagesDialog> {
         IconButton(
           style: IconButton.styleFrom(minimumSize: const Size.square(48)),
           icon: const Icon(Icons.check, semanticLabel: 'Done'),
+          tooltip: 'Done',
           onPressed: () => Navigator.of(context).pop(),
         ),
       ],

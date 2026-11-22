@@ -123,6 +123,7 @@ class _MigrateButtonState extends State<_MigrateButton> {
         ? IconButton.outlined(
             style: IconButton.styleFrom(minimumSize: const Size.square(48)),
             icon: const Icon(Icons.swap_horiz, semanticLabel: 'Migrate'),
+            tooltip: 'Migrate',
             onPressed: () =>
                 unawaited(context.push(migrateRouteFor([widget.mangaKey]))),
           )

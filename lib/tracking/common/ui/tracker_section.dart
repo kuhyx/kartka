@@ -159,12 +159,14 @@ class _TrackerSectionState extends State<TrackerSection> {
           style: _button,
           onPressed: () => unawaited(_guard(_t.logout)),
           icon: const Icon(Icons.logout, semanticLabel: 'Log out'),
+          tooltip: 'Logout',
         )
       else
         IconButton.filled(
           style: _button,
           onPressed: () => unawaited(_guard(() => _login(context))),
           icon: Icon(Icons.login, semanticLabel: 'Log in to ${_t.name}'),
+          tooltip: 'Login',
         ),
     ],
   );
@@ -198,6 +200,7 @@ class _TrackerSectionState extends State<TrackerSection> {
             _guard(() => widget.service.unbind(widget.mangaKey, _t.id)),
           ),
           icon: const Icon(Icons.link_off, semanticLabel: 'Unbind'),
+          tooltip: 'Unbind',
         ),
       ],
     );

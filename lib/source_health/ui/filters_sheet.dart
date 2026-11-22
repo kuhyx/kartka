@@ -46,6 +46,7 @@ class FiltersButton extends StatelessWidget {
         label: Text('$active'),
         child: const Icon(Icons.tune, semanticLabel: 'Filters'),
       ),
+      tooltip: 'Filters',
       onPressed: onPressed,
     );
   }
@@ -129,6 +130,7 @@ class FiltersSheet extends StatelessWidget {
             p.isDefault ? Icons.tune : Icons.sync,
             semanticLabel: 'Scoring: ${p.name}',
           ),
+          tooltip: 'Scoring',
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => ScoringPage(store: store)),
           ),
