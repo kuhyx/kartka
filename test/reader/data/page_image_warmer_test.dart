@@ -77,4 +77,77 @@ void main() {
     unawaited(warmer.load(pages[5]));
     expect(asked, [...pages.map((p) => p.imageUrl), pages[0].imageUrl]);
   });
+
+  test(
+    'two chapters warming at once fetch one page at a time in total',
+    () async {
+      final done1 = warmer.warm([_p(0), _p(1)]);
+      final done2 = warmer.warm([_p(10), _p(11)]);
+      await pumpEventQueue();
+      expect(asked.length, 1, reason: 'only one warm fetch at a time');
+      pending[_p(0).imageUrl]!.complete(Uint8List(0));
+      await pumpEventQueue();
+      expect(asked.length, 2);
+      pending[_p(1).imageUrl]!.complete(Uint8List(1));
+      await pumpEventQueue();
+      expect(asked.length, 3);
+      pending[_p(10).imageUrl]!.complete(Uint8List(10));
+      await pumpEventQueue();
+      expect(asked.length, 4);
+      pending[_p(11).imageUrl]!.complete(Uint8List(11));
+      await Future.wait([done1, done2]);
+      expect(asked, [
+        _p(0).imageUrl,
+        _p(1).imageUrl,
+        _p(10).imageUrl,
+        _p(11).imageUrl,
+      ]);
+    },
+  );
+
+  test('a warm waits while the reader fetches a page itself', () async {
+    final shown = warmer.load(_p(5));
+    unawaited(warmer.warm([_p(0)]));
+    await pumpEventQueue();
+    expect(asked, [
+      _p(5).imageUrl,
+    ], reason: 'warm did not start while reader fetches');
+    pending[_p(5).imageUrl]!.complete(Uint8List(5));
+    await shown;
+    await pumpEventQueue();
+    expect(
+      asked.last,
+      _p(0).imageUrl,
+      reason: 'warm starts after reader finishes',
+    );
+  });
+
+  test('a failed reader fetch still lets the warm go on', () async {
+    final shown = warmer.load(_p(5));
+    unawaited(warmer.warm([_p(0)]));
+    await pumpEventQueue();
+    expect(asked, [_p(5).imageUrl]);
+    pending[_p(5).imageUrl]!.completeError(StateError('500'));
+    await expectLater(shown, throwsStateError);
+    await pumpEventQueue();
+    expect(
+      asked.last,
+      _p(0).imageUrl,
+      reason: 'warm continues after reader error',
+    );
+  });
+
+  test('a page the reader fetched itself is not warmed again', () async {
+    final done = warmer.warm([_p(0), _p(1)]);
+    await pumpEventQueue();
+    final shown = warmer.load(_p(1));
+    pending[_p(0).imageUrl]!.complete(Uint8List(1));
+    await pumpEventQueue();
+    pending[_p(1).imageUrl]!.complete(Uint8List(2));
+    expect(await shown, hasLength(2));
+    await done;
+    expect(asked, [_p(0).imageUrl, _p(1).imageUrl]);
+    expect(await warmer.load(_p(1)), hasLength(2), reason: 'kept: no refetch');
+    expect(asked, hasLength(2));
+  });
 }

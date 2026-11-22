@@ -16,7 +16,7 @@ source-eval = "source_eval.cli:main"
 
 [dependency-groups]
 dev = [
-    "hypothesis==6.170.16",
+    "hypothesis==6.170.17",
     "mypy==2.4.1",
     "pytest==9.2.0",
     "pytest-cov==7.1.0",
