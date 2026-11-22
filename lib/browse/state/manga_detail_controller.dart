@@ -53,6 +53,7 @@ class MangaDetailController extends ChangeNotifier {
   /// Whether fresh [details] show while the chapter list still loads.
   bool listPending = false;
   bool _disposed = false;
+  StackTrace? _stack;
 
   /// Loads details and a fresh chapter list in parallel; after a
   /// [SourceUnavailable] (Retry) every provider re-lists its sources first.
@@ -65,8 +66,6 @@ class MangaDetailController extends ChangeNotifier {
     final failure = error;
     if (failure != null) await _log('details.load', failure, _stack);
   }
-
-  StackTrace? _stack;
 
   Future<void> _log(String kind, Object failure, [StackTrace? stack]) async {
     if (isMissingSource(failure)) return;
@@ -95,7 +94,7 @@ class MangaDetailController extends ChangeNotifier {
       final (d, list) = await fresh;
       final shownCover = listPending ? null : details?.coverUrl;
       details = shownCover == null ? d : withCover(d, shownCover);
-      _keep(d).ignore(); // A cache: a failed write only costs the next open.
+      keepStoredDetail(_deps, key, d).ignore(); // Only a cache.
       chapters = readingOrder(list);
     } on Object catch (e, stack) {
       // Early details go again: the failure screen and Retry show as before.
@@ -113,6 +112,7 @@ class MangaDetailController extends ChangeNotifier {
   Future<(MangaDetails, List<ChapterInfo>)> _fetch() async {
     final source = await waitForSource(_deps.sources, sourceId, sourceWait);
     final list = _deps.chapters.load(key, refresh: true)..ignore();
+    unawaited(list.then(_early, onError: (Object _) {}));
     final d = await source.details(mangaUrl);
     if (details == null) {
       details = d;
@@ -122,11 +122,11 @@ class MangaDetailController extends ChangeNotifier {
     return (d, await list);
   }
 
-  /// Stores [d] for the next open when the manga is in the library.
-  Future<void> _keep(MangaDetails d) async {
-    if (await libraryEntry(_deps.library, key) != null) {
-      await _deps.details.write(key, d);
-    }
+  /// Shows [list] as it lands when details show but none do (2d26b6d5).
+  void _early(List<ChapterInfo> list) {
+    if (details == null || chapters.isNotEmpty) return;
+    chapters = readingOrder(list);
+    _notify();
   }
 
   /// Shows the library entry and stored chapters, when there is an entry.

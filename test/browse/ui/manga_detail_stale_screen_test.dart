@@ -88,6 +88,34 @@ void main() {
     await t.pumpAndSettle();
   });
 
+  testWidgets('a stored manga shows its list before slow details land', (
+    t,
+  ) async {
+    final src = FakeSource('mangadex')
+      ..chaptersGate = Completer<void>()
+      ..detailsOnlyGate = Completer<void>();
+    final h = await _stored(t, src);
+    await h.pump(
+      t,
+      const SizedBox(),
+      at: mangaRoute('mangadex', _url),
+      settle: false,
+    );
+    await t.pump();
+    final watch = find.byType(WaitWatch, skipOffstage: false);
+    expect(watch, findsOneWidget); // Nothing to read yet.
+    src.chaptersGate!.complete();
+    await t.pump();
+    await t.pump();
+    // The list landed, details did not: chapters show, the bar is untimed.
+    expect(find.text('Stored title'), findsOneWidget);
+    expect(find.bySemanticsLabel('3 chapters'), findsOneWidget);
+    expect(watch, findsNothing);
+    src.detailsOnlyGate!.complete();
+    await t.pumpAndSettle();
+    expect(find.text('Detail title'), findsOneWidget);
+  });
+
   testWidgets('a challenge over stored data still offers the prompt', (
     t,
   ) async {

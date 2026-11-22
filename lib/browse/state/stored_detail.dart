@@ -51,3 +51,14 @@ Future<LibraryEntry?> libraryEntry(LibraryRepository library, MangaKey key) {
   );
   return found.future;
 }
+
+/// Stores [d] for the next open when [key] is in the library.
+Future<void> keepStoredDetail(
+  BrowseDeps deps,
+  MangaKey key,
+  MangaDetails d,
+) async {
+  if (await libraryEntry(deps.library, key) != null) {
+    await deps.details.write(key, d);
+  }
+}
