@@ -38,12 +38,32 @@ class PageImageWarmer {
   /// Chain of warm runs; only one executes at a time.
   Future<void> _warmChain = Future<void>.value();
 
-  /// The image of [page]: warmed, warming, or fetched now.
+  /// Stores [future] under [url], evicting oldest until capacity holds.
+  void _keep(String url, Future<Uint8List> future) {
+    _kept[url] = future;
+    while (_kept.length > capacity) {
+      _kept.remove(_kept.keys.first)?.ignore();
+    }
+  }
+
+  /// The image of [page]: warmed, warming, or fetched now and kept, so a warm
+  /// queued behind it does not fetch it again.
   Future<Uint8List> load(PageRef page) {
-    final kept = _kept[page.imageUrl];
+    final url = page.imageUrl;
+    final kept = _kept[url];
     if (kept != null) return kept;
     _readerLoads++;
     final future = _fetch(page);
+    _keep(url, future);
+    // On error drop the kept entry so a retry fetches again.
+    future
+        .then<void>(
+          (_) {},
+          onError: (Object _) {
+            if (identical(_kept[url], future)) _kept.remove(url)?.ignore();
+          },
+        )
+        .ignore();
     future.whenComplete(() {
       if (--_readerLoads == 0) {
         _idle?.complete();
@@ -73,10 +93,7 @@ class PageImageWarmer {
       }
       if (_kept.containsKey(url)) continue;
       final future = _fetch(page);
-      _kept[url] = future;
-      while (_kept.length > capacity) {
-        _kept.remove(_kept.keys.first)?.ignore();
-      }
+      _keep(url, future);
       try {
         await future;
       } on Object {

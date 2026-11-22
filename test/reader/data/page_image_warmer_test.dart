@@ -136,4 +136,18 @@ void main() {
       reason: 'warm continues after reader error',
     );
   });
+
+  test('a page the reader fetched itself is not warmed again', () async {
+    final done = warmer.warm([_p(0), _p(1)]);
+    await pumpEventQueue();
+    final shown = warmer.load(_p(1));
+    pending[_p(0).imageUrl]!.complete(Uint8List(1));
+    await pumpEventQueue();
+    pending[_p(1).imageUrl]!.complete(Uint8List(2));
+    expect(await shown, hasLength(2));
+    await done;
+    expect(asked, [_p(0).imageUrl, _p(1).imageUrl]);
+    expect(await warmer.load(_p(1)), hasLength(2), reason: 'kept: no refetch');
+    expect(asked, hasLength(2));
+  });
 }
