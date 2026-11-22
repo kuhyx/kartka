@@ -2,4 +2,13 @@
 # entries are predicates: they clear themselves when the blocker moves, so
 # they carry no `expires`.
 
-exceptions: []
+exceptions:
+  - ecosystem: gittag
+    package: design_system
+    pinned: "0.4.1"
+    reason: >-
+      design_system 0.5.x depends on flutter_svg 2.5.0, whose
+      vector_graphics_compiler (newest, 1.3.6) caps xml at <=7.0.1, while this
+      repo pins xml 7.1.0 (newest): pub cannot resolve both, so the shared
+      theme waits for the SVG compiler.
+    blocked_by: transitive:vector_graphics_compiler@1.3.6
