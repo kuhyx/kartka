@@ -89,8 +89,12 @@ class MangaDetailController extends ChangeNotifier {
       keepStoredDetail(_deps, key, d).ignore(); // Only a cache.
       chapters = readingOrder(list);
     } on Object catch (e, stack) {
-      // Early details go again: the failure screen and Retry show as before.
-      if (listPending) details = null;
+      // Early details (and a list that beat them) go again: the failure
+      // screen and Retry show as before.
+      if (listPending) {
+        details = null;
+        chapters = const [];
+      }
       error = e;
       _stack = stack;
       if (e is SourceUnavailable) {

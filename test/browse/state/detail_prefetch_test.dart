@@ -118,4 +118,22 @@ void main() {
     expect(deps.prefetch.take(manga('gone', 1).key), isNull);
     await _settle();
   });
+
+  test('a list that landed before details failed goes with them, so the '
+      'failure screen shows no stale rows', () async {
+    final gate = Completer<void>();
+    src.detailsOnlyGate = gate;
+    deps.prefetch.warm(deps, _tile);
+    gate.future.then((_) => src.failWith = StateError('details down')).ignore();
+    final c = open();
+    final done = c.load();
+    await _settle();
+    expect(c.details?.title, 'Tile title');
+    expect(c.chapters, hasLength(3)); // the list landed first
+    gate.complete();
+    await done;
+    expect(c.details, isNull);
+    expect(c.chapters, isEmpty);
+    expect(c.error, isA<StateError>());
+  });
 }

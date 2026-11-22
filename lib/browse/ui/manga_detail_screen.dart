@@ -147,26 +147,28 @@ class _MangaDetailScreenState extends State<MangaDetailScreen> {
         slivers: [
           if (banner != null) SliverToBoxAdapter(child: banner),
           SliverToBoxAdapter(child: DetailHeader(details: details)),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-              child: SpokenLabel(
-                semanticLabel: '${c.chapters.length} chapters',
-                child: ExcludeSemantics(
-                  child: Row(
-                    children: [
-                      const Icon(Icons.format_list_numbered),
-                      const SizedBox(width: AppSpacing.sm),
-                      Text(
-                        '${c.chapters.length}',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                    ],
+          // No count over a list still loading: 0 would read as empty.
+          if (!c.listPending || c.chapters.isNotEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                child: SpokenLabel(
+                  semanticLabel: '${c.chapters.length} chapters',
+                  child: ExcludeSemantics(
+                    child: Row(
+                      children: [
+                        const Icon(Icons.format_list_numbered),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(
+                          '${c.chapters.length}',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
           SliverList.builder(
             itemCount: shown.length,
             itemBuilder: (_, i) => ChapterTile(
