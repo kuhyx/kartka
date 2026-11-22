@@ -60,6 +60,8 @@ badges the ticked count and opens a sheet of three labelled checkboxes
 
 All HTTP goes through `lib/platform/http_client.dart` (`KartkaHttp`): Android
 uses a direct client; web routes through the desktop wrapper's `/proxy` (CORS).
+The direct client sends a GET or HEAD once more when a pooled keep-alive
+connection was dropped ("Connection closed before full header"; 0ba7b071).
 Sources never import `package:http` directly.
 
 ## 3. Feature registry (`lib/app/registry.dart`)
