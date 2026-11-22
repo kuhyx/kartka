@@ -104,7 +104,9 @@ step and a screenshot: `f0_smoke.sh` (shell + tab switch + non-blank shot),
 `f3_sync.sh [title chapter [trigger_epoch]]` (signs in to the real /kartka
 RTDB, then the chapter reads as read within 10 s), `f4_reader_sweep.sh
 [count [limit_ms]]` (opens the newest Updates chapters; fails on an open
-over 1 s). Sign-in uses no password:
+over 1 s), `f6_chapter_advance.sh [limit_ms [runs]]` (a MangaDex manga
+outside the library: swipes past a chapter's end, fails on a next-chapter
+wait over 1 s). Sign-in uses no password:
 the account is Google-only. When `~/.config/kartka-agent/firebase_auth.json`
 exists, `start` passes it as `--sync-credentials`, and the app adopts it
 once (contracts-runtime §17). With no seed, f3 exits 1 and prints kuhy's
