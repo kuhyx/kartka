@@ -3,6 +3,9 @@ import 'dart:typed_data';
 
 import 'package:kartka/core/models/models.dart';
 
+/// When a kept image's fetch started, and whether a warm started it.
+typedef PageStart = ({DateTime at, bool warm});
+
 /// Page images fetched ahead for the reader's first pages.
 ///
 /// A MangaFire page costs 0.5-0.9 s on the server, and several at once
@@ -17,7 +20,12 @@ import 'package:kartka/core/models/models.dart';
 /// feed put the reader's page 4th in line (28fffd0a).
 class PageImageWarmer {
   /// A warmer over [_fetch], keeping at most [capacity] images.
-  new(this._fetch, {this.capacity = 12, this.count = 3});
+  new(
+    this._fetch, {
+    this.capacity = 12,
+    this.count = 3,
+    this.now = DateTime.now,
+  });
 
   final Future<Uint8List> Function(PageRef page) _fetch;
 
@@ -27,7 +35,11 @@ class PageImageWarmer {
   /// Pages warmed per chapter, from the page the reader opens on.
   final int count;
 
+  /// The clock [started] reads.
+  final DateTime Function() now;
+
   final _kept = <String, Future<Uint8List>>{}; // Insertion-ordered.
+  final _starts = <String, PageStart>{};
 
   /// Count of reader loads currently in flight.
   int _readerLoads = 0;
@@ -39,12 +51,20 @@ class PageImageWarmer {
   Future<void> _warmChain = Future<void>.value();
 
   /// Stores [future] under [url], evicting oldest until capacity holds.
-  void _keep(String url, Future<Uint8List> future) {
+  void _keep(String url, Future<Uint8List> future, {required bool warm}) {
     _kept[url] = future;
+    _starts[url] = (at: now(), warm: warm);
     while (_kept.length > capacity) {
-      _kept.remove(_kept.keys.first)?.ignore();
+      final oldest = _kept.keys.first;
+      _starts.remove(oldest);
+      _kept.remove(oldest)?.ignore();
     }
   }
+
+  /// When the kept image of [page] started loading, or null when none is
+  /// kept: the reader's page probe times a joined warm from its start.
+  PageStart? started(PageRef page) =>
+      _kept.containsKey(page.imageUrl) ? _starts[page.imageUrl] : null;
 
   /// The image of [page]: warmed, warming, or fetched now and kept, so a warm
   /// queued behind it does not fetch it again.
@@ -54,7 +74,7 @@ class PageImageWarmer {
     if (kept != null) return kept;
     _readerLoads++;
     final future = _fetch(page);
-    _keep(url, future);
+    _keep(url, future, warm: false);
     // On error drop the kept entry so a retry fetches again.
     future
         .then<void>(
@@ -93,7 +113,7 @@ class PageImageWarmer {
       }
       if (_kept.containsKey(url)) continue;
       final future = _fetch(page);
-      _keep(url, future);
+      _keep(url, future, warm: true);
       try {
         await future;
       } on Object {

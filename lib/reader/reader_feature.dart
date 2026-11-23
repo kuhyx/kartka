@@ -13,6 +13,7 @@ import 'package:kartka/reader/data/page_list_cache.dart';
 import 'package:kartka/reader/data/page_warm_slot.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
 import 'package:kartka/reader/data/source_lookup.dart';
+import 'package:kartka/reader/logic/shown_page_wait.dart';
 import 'package:kartka/reader/platform/reader_system.dart';
 import 'package:kartka/reader/state/reader_deps.dart';
 import 'package:kartka/reader/ui/reader_screen.dart';
@@ -29,9 +30,12 @@ KartkaFeature readerFeature(KartkaEnv env, {ReaderSystem? system}) {
   final images = PageImageWarmer((page) => _imageLoader(env).load(page));
   // One per app run too: it keeps every provider's list between opens.
   final sources = SourceLookup(() => env.registry.all<SourceProvider>());
+  // One per app run: downloads wait on it through the registry.
+  final shown = ShownPageWait();
   return KartkaFeature(
     id: 'reader',
     services: [
+      shown,
       PageWarmSlot(
         cache: pageLists,
         findSource: sources.find,
@@ -51,6 +55,7 @@ KartkaFeature readerFeature(KartkaEnv env, {ReaderSystem? system}) {
           pageLists,
           images,
           sources,
+          shown,
         ),
       ),
     ],
@@ -71,6 +76,7 @@ ReaderDeps readerDeps(
   PageListCache? pageLists,
   PageImageWarmer? images,
   SourceLookup? sources,
+  ShownPageWait? shown,
 }) {
   final registry = env.registry;
   final platform = env.platform;
@@ -84,6 +90,8 @@ ReaderDeps readerDeps(
     diagnostics: DiagnosticsLog.of(platform.diagnostics),
     pageLists: pageLists,
     storedChapters: registry.maybe<StoredChapterLists>(),
+    imageStarted: images?.started,
+    shownPages: shown,
   );
 }
 
@@ -95,6 +103,7 @@ Widget _route(
   PageListCache pageLists,
   PageImageWarmer images,
   SourceLookup sources,
+  ShownPageWait shown,
 ) {
   final args = parseReadRoute(state.uri.toString());
   if (args == null) {
@@ -115,6 +124,7 @@ Widget _route(
       pageLists: pageLists,
       images: images,
       sources: sources,
+      shown: shown,
     ),
     system: system,
     startAtEnd: state.extra == readAtEndExtra,

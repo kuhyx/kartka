@@ -150,4 +150,27 @@ void main() {
     expect(await warmer.load(_p(1)), hasLength(2), reason: 'kept: no refetch');
     expect(asked, hasLength(2));
   });
+
+  test('started names when a kept image began and whether a warm began '
+      'it; an evicted one is unknown (248024d4)', () async {
+    var clock = DateTime.utc(2026, 11, 23);
+    final timed = PageImageWarmer(
+      (page) => Completer<Uint8List>().future,
+      capacity: 2,
+      count: 1,
+      now: () => clock,
+    );
+    expect(timed.started(_p(0)), isNull);
+    unawaited(timed.warm([_p(0)]));
+    await pumpEventQueue();
+    final warmedAt = clock;
+    clock = clock.add(const Duration(seconds: 1));
+    timed.load(_p(1)).ignore();
+    expect(timed.started(_p(0)), (at: warmedAt, warm: true));
+    expect(timed.started(_p(1)), (at: clock, warm: false));
+    timed
+      ..load(_p(2)).ignore()
+      ..load(_p(3)).ignore();
+    expect(timed.started(_p(0)), isNull);
+  });
 }

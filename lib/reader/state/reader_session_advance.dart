@@ -17,24 +17,6 @@ extension _Advance on ReaderSession {
     return Future.error(e, stack);
   }
 
-  /// The page probe's report (28fffd0a): the shown page [flat] spun 1 s or
-  /// more, mostly on [step]. Names the source and the image host's domain,
-  /// never the time: the perf.slow report has it, and one text per step
-  /// and source keeps it to one board ticket each.
-  void _pageSlow(int flat, String step, Duration _) {
-    final log = deps.diagnostics;
-    if (log == null || flat >= _flat.length) return;
-    final from = PageWaitProbe.domain(_flat[flat].imageUrl);
-    ErrorReporter.of(log).report(
-      'reader.pagewait',
-      ReaderLoadException(
-        'ReaderProbe: $sourceId page waited on $step from $from',
-      ),
-      stack: StackTrace.current,
-      sourceId: sourceId,
-    );
-  }
-
   /// The probe's report: the pages the chapter opened on all failed.
   void _firstImagesFailed(Object e) => _logOpen(
     ReaderLoadException('ReaderProbe: first 3 images failed on $sourceId: $e'),
@@ -127,6 +109,7 @@ extension _Advance on ReaderSession {
         prefetchIndices(current: current, total: total, ahead: ahead),
       )
       ..retain(retainWindow(current: current, total: total, ahead: ahead));
+    _holdShown(current);
   }
 
   /// Starts loading the chapter after the last loaded one as soon as the
@@ -148,6 +131,8 @@ extension _Advance on ReaderSession {
 
   Future<void> _loadNext(ChapterInfo next) async {
     try {
+      // The shown page first: the same source serves a few pages a second.
+      await deps.shownPages?.idle();
       final loaded = await loadNextChapterPages(
         key: key,
         chapterUrl: next.url,
@@ -185,6 +170,7 @@ extension _Advance on ReaderSession {
   /// one fetched at open did not contain.
   Future<void> _findNext(String url) async {
     try {
+      await deps.shownPages?.idle();
       final source = _source ??= await deps.findSource(sourceId);
       if (source == null) {
         throw const ReaderLoadException(

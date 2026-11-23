@@ -18,6 +18,7 @@ import 'package:kartka/reader/logic/prefetch.dart';
 import 'package:kartka/reader/logic/progress_recorder.dart';
 import 'package:kartka/reader/logic/reader_keys.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
+import 'package:kartka/reader/logic/shown_page_wait.dart';
 import 'package:kartka/reader/logic/tap_zones.dart';
 import 'package:kartka/reader/logic/webtoon_position.dart';
 import 'package:kartka/reader/platform/reader_system.dart';

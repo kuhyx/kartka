@@ -4,8 +4,10 @@ import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/reader/data/page_image_warmer.dart';
 import 'package:kartka/reader/data/page_list_cache.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
+import 'package:kartka/reader/logic/shown_page_wait.dart';
 import 'package:kartka/reader/ui/page_precache.dart';
 
 /// Everything the reader talks to, injected so tests use fakes.
@@ -23,6 +25,8 @@ class ReaderDeps {
     this.precache = precacheQuietly,
     this.pageLists,
     this.storedChapters,
+    this.imageStarted,
+    this.shownPages,
   });
 
   /// The source with this id, or null when it is not installed.
@@ -62,4 +66,12 @@ class ReaderDeps {
   /// [StoredChapterLists]); it names the next chapter before the source's
   /// list arrives. Null when browse is not installed.
   final StoredChapterLists? storedChapters;
+
+  /// When [loadImage]'s fetch of a page started, if it joined one already
+  /// running (`PageImageWarmer.started`); null: it starts at the call.
+  final PageStart? Function(PageRef page)? imageStarted;
+
+  /// The gate the shown page holds while it loads, so background work on
+  /// sources waits for it (28fffd0a). Null: nothing waits.
+  final ShownPageWait? shownPages;
 }

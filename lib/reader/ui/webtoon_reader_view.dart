@@ -1,4 +1,5 @@
 import 'package:design_system/design_system.dart';
+import 'package:flutter/foundation.dart' show setEquals;
 import 'package:kartka/reader/logic/chapter_strip.dart';
 import 'package:kartka/reader/logic/webtoon_position.dart';
 import 'package:kartka/reader/ui/paged_reader_view.dart';
@@ -55,6 +56,11 @@ class _WebtoonReaderViewState extends State<WebtoonReaderView>
   double _viewportHeight = 0;
   int? _current;
 
+  /// Items at least partly on screen: only their spinners time a wait.
+  /// The list builds pages below the screen too, and those sat in the
+  /// fetch queue for seconds, reported as reader.page waits (28fffd0a).
+  Set<int> _onScreen = const {};
+
   @override
   void initState() {
     super.initState();
@@ -70,8 +76,14 @@ class _WebtoonReaderViewState extends State<WebtoonReaderView>
   }
 
   void _onPositions() {
+    final positions = _positions.itemPositions.value;
+    final onScreen = {
+      for (final p in positions)
+        if (p.itemTrailingEdge > 0 && p.itemLeadingEdge < 1) p.index,
+    };
+    if (!setEquals(onScreen, _onScreen)) setState(() => _onScreen = onScreen);
     final item = currentWebtoonItem([
-      for (final p in _positions.itemPositions.value)
+      for (final p in positions)
         (
           index: p.index,
           leading: p.itemLeadingEdge,
@@ -114,8 +126,10 @@ class _WebtoonReaderViewState extends State<WebtoonReaderView>
           itemScrollController: _items,
           scrollOffsetController: _offsets,
           itemPositionsListener: _positions,
-          itemBuilder: (context, item) =>
-              widget.slotBuilder(context, widget.strip.slotAt(item)),
+          itemBuilder: (context, item) => TickerMode(
+            enabled: _onScreen.contains(item),
+            child: widget.slotBuilder(context, widget.strip.slotAt(item)),
+          ),
         ),
       );
     },

@@ -1,4 +1,6 @@
+import 'package:crdt_sync_flutter/crdt_sync_flutter.dart' show WaitWatch;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/app/shown_wait_watch.dart';
 import 'package:kartka/reader/logic/chapter_strip.dart';
 import 'package:kartka/reader/ui/reader_view_controller.dart';
 import 'package:kartka/reader/ui/webtoon_reader_view.dart';
@@ -73,5 +75,37 @@ void main() {
       ..step(1)
       ..jumpToItem(3);
     expect(items, [1]);
+  });
+
+  testWidgets('only pages on screen time their spinner; the ones built '
+      'in the cache extent do not (28fffd0a)', (tester) async {
+    final watches = find.byType(WaitWatch, skipOffstage: false);
+    final spinners = find.byType(
+      CircularProgressIndicator,
+      skipOffstage: false,
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: WebtoonReaderView(
+          strip: const ChapterStrip(pageCounts: [6]),
+          initialItem: 1,
+          slotBuilder: (context, slot) => const SizedBox(
+            height: 500,
+            child: ShownWaitWatch.centered('reader.page'),
+          ),
+          onItemChanged: items.add,
+          controller: controller,
+          onTap: (p, s) => taps.add(p),
+        ),
+      ),
+    );
+    await tester.pump();
+    // Items 1 and 2 share the 600 px screen; the rest are off it.
+    expect(spinners.evaluate().length, greaterThan(2));
+    expect(watches, findsNWidgets(2));
+    controller.jumpToItem(4);
+    await tester.pump();
+    await tester.pump();
+    expect(watches, findsNWidgets(2));
   });
 }

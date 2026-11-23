@@ -35,6 +35,7 @@ import 'package:kartka/core/source/chapter_warmer.dart';
 import 'package:kartka/core/source/content_type.dart';
 import 'package:kartka/core/source/manga_gone_error.dart';
 import 'package:kartka/core/source/manga_source.dart';
+import 'package:kartka/core/source/shown_page_gate.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/core/ui/confirm_mark.dart';

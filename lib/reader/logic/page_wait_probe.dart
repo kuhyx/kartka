@@ -4,9 +4,12 @@ import 'dart:async';
 /// asks for page bytes that have not arrived until they settle. A wait of
 /// [limit] or more goes to [onSlow] with the step most of it went to:
 /// `queue` (waiting for its turn behind the shown page and the
-/// look-aheads), `fetch after turn` (a fetch that started only at the
-/// turn: no look-ahead reached the page) or `prefetch` (fetched well before
-/// the turn, and the host was still slower than the reader).
+/// look-aheads), `turn` (a fetch that started only at the turn: no
+/// look-ahead reached the page), `open` or `advance` (the same, for the
+/// page a chapter opened on or the first page past a chapter edge), `warm`
+/// (joined a fetch the details screen or the Updates sheet warmed) or
+/// `prefetch` (fetched well before the turn, and the host was still slower
+/// than the reader).
 ///
 /// The perf.slow report says only that a page spun; this says why.
 class PageWaitProbe {
@@ -32,14 +35,17 @@ class PageWaitProbe {
   static const prefetchLead = Duration(milliseconds: 250);
 
   final Map<int, DateTime> _asked = {};
-  final Map<int, DateTime> _started = {};
+  final Map<int, ({DateTime at, bool warm})> _started = {};
 
-  /// The fetch of page [index] started (again, after a failure).
-  void started(int index) => _started[index] = now();
+  /// The fetch of page [index] started (again, after a failure): now, or
+  /// [at] when it joined a fetch already running ([warm]: a warm's).
+  void started(int index, {DateTime? at, bool warm = false}) =>
+      _started[index] = (at: at ?? now(), warm: warm);
 
   /// The screen asked for page [index], whose bytes are [bytes] and have
-  /// not arrived; an ask while it is already timed joins that wait.
-  void asked(int index, Future<Object?> bytes) {
+  /// not arrived; an ask while it is already timed joins that wait. [edge]
+  /// (`open`, `advance`) names a fetch that started only at the ask.
+  void asked(int index, Future<Object?> bytes, {String? edge}) {
     if (_asked.containsKey(index)) return;
     final at = now();
     _asked[index] = at;
@@ -47,7 +53,8 @@ class PageWaitProbe {
       _asked.remove(index);
       final waited = now().difference(at);
       if (waited < limit) return;
-      onSlow(index, _step(_started[index], at, waited), waited);
+      final step = _step(_started[index], at, waited);
+      onSlow(index, step == 'turn' ? edge ?? step : step, waited);
     }
 
     unawaited(
@@ -57,16 +64,18 @@ class PageWaitProbe {
 
   /// What a wait of [waited] from [asked] went to, for a fetch that
   /// [began] then (null: never started).
-  static String _step(DateTime? began, DateTime asked, Duration waited) {
+  static String _step(
+    ({DateTime at, bool warm})? began,
+    DateTime asked,
+    Duration waited,
+  ) {
     if (began == null) return 'queue';
-    if (began.isAfter(asked)) {
-      return began.difference(asked) * 2 > waited
-          ? 'queue'
-          : 'fetch after turn';
+    final at = began.at;
+    if (at.isAfter(asked)) {
+      return at.difference(asked) * 2 > waited ? 'queue' : 'turn';
     }
-    return asked.difference(began) < prefetchLead
-        ? 'fetch after turn'
-        : 'prefetch';
+    if (began.warm) return 'warm';
+    return asked.difference(at) < prefetchLead ? 'turn' : 'prefetch';
   }
 
   /// The image host of [imageUrl] cut to its last two labels (an IP

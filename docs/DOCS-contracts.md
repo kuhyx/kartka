@@ -74,7 +74,10 @@ edit each other's files.
 as a service. The shell's `reportScreens()` sends the top go_router route
 PATTERN (`/read/:sourceId/:mangaUrl/:chapterUrl`, `?` when unknown), never
 the concrete path, to every `ScreenObserver` service, once per change.
-`JankTracker` (`lib/perf/`) is one.
+`JankTracker` (`lib/perf/`) is one. `ShownPageGate`
+(`lib/core/source/shown_page_gate.dart`) is another: the reader offers one,
+and downloads await `idle()` of every one before each page, so the shown
+page never queues behind background work on the same source.
 
 ## 4. Sync model (RTDB root `/kartka/`, via crdt_sync_flutter)
 

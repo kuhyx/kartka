@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/unknown_source_error.dart';
@@ -21,15 +23,19 @@ void main() {
   late MemoryBlobStore blobs;
   late FakeSource source;
 
-  DownloadEngine engine(FakeLoader loader, {int maxAttempts = 3}) =>
-      DownloadEngine(
-        blobs: blobs,
-        loadPage: loader.call,
-        sourceFor: (id) async => id == 'mangadex' ? source : null,
-        policy: RetryPolicy(maxAttempts: maxAttempts),
-        sleep: (_) async {},
-        now: () => DateTime.utc(2026, 10, 24),
-      );
+  DownloadEngine engine(
+    FakeLoader loader, {
+    int maxAttempts = 3,
+    Future<void> Function()? shownPageIdle,
+  }) => DownloadEngine(
+    shownPageIdle: shownPageIdle ?? () async {},
+    blobs: blobs,
+    loadPage: loader.call,
+    sourceFor: (id) async => id == 'mangadex' ? source : null,
+    policy: RetryPolicy(maxAttempts: maxAttempts),
+    sleep: (_) async {},
+    now: () => DateTime.utc(2026, 10, 24),
+  );
 
   setUp(() {
     blobs = MemoryBlobStore();
@@ -136,5 +142,20 @@ void main() {
       engine(FakeLoader()).download(task, onProgress: (_) {}),
       throwsA(isA<StateError>()),
     );
+  });
+
+  test('each page waits for the shown reader page (28fffd0a)', () async {
+    final loader = FakeLoader();
+    var shown = Completer<void>();
+    final run = engine(
+      loader,
+      shownPageIdle: () => shown.future,
+    ).download(task, onProgress: (_) {});
+    await pumpEventQueue();
+    expect(loader.calls, isEmpty);
+    shown.complete();
+    shown = Completer<void>()..complete();
+    final done = await run;
+    expect(done.pageCount, 3);
   });
 }

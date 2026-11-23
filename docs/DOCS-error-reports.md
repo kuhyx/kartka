@@ -15,7 +15,7 @@ The device log (`DOCS-contracts.md` §7) stays kartka's.
 | `ui.snackbar` | `ReportingScaffoldMessenger`, mounted in `MaterialApp.builder` (`lib/app/app.dart`), so it is the nearest messenger of every route. An error is a snackbar with the danger hue (design_system `showError`) or failure text (`failed`, `Exception`, `unavailable`, ...). |
 | `reader.open` | `ReaderSession.open` (the reader's Retry screen); not a chapter neither downloaded nor fetchable (`ChapterUnavailable`). The reader's probe adds the cause with the source id: `ReaderProbe: <sourceId> listed no pages`, or `first 3 images failed on <sourceId>: <error>` (`FirstImagesProbe`). |
 | `reader.page` | `ReaderSession.image` (a page's Retry); background prefetch stays quiet. |
-| `reader.pagewait` | `PageWaitProbe` (28fffd0a): the shown page spun 1 s or more, `ReaderProbe: <sourceId> page waited on queue\|fetch after turn\|prefetch from <image domain>` (last two host labels, `storage` for a downloaded page; no time, so one ticket per step and source). `fetch after turn`: no look-ahead reached the page; `prefetch`: it was fetched ahead and the host was still slower than the reader. |
+| `reader.pagewait` | `PageWaitProbe` (28fffd0a, 248024d4): the shown page spun 1 s or more, `ReaderProbe: <sourceId> page waited on <step> from <image domain>` (last two host labels, `storage` for a downloaded page, `source` for an in-app extension; no time, so one ticket per step and source). Steps: `open` (the page a chapter opened on), `advance` (the first page past a chapter edge), `turn` (no look-ahead reached the page), `warm` (joined a details/Updates warm, timed from its start), `queue` (waited for its turn), `prefetch` (fetched ahead and the host was still slower than the reader). |
 | `downloads.failed` | `DownloadService.onFailure` (the queue's Retry), wired by `downloadsFeature`; not a source nothing lists (`UnknownSourceError`). |
 | `downloads.offline` | `downloadFailureReporter`: a server that cannot be reached (`isOfflineError`: Dart's `Failed host lookup` or an Android extension's Java `Unable to resolve host`), once per server per 10 min, not once per chapter. |
 | `plugins.repo` | `PluginManager.onRepoError` (the per-repo error list on More → Plugins). |
@@ -70,14 +70,18 @@ under 1 s. `ShownWaitWatch(operation, child)` (`lib/app/`) wraps a
 spinner in crdt_sync_flutter's `WaitWatch`, which times how long it stays
 mounted, but only while its tickers run: a page under a pushed route or
 in a hidden tab is not timed. A refresh bar over readable stored chapters
-is not a wait either, nor the pager's neighbour pages built off screen.
+is not a wait either, nor the pager's neighbour pages built off screen,
+nor the webtoon list's pages built below the screen (only items at least
+partly on screen time their spinner).
 `reader.page`: the server rate-limits a source (4 pages at once took up
 to 1.95 s each, one at a time 0.15 s; 28fffd0a), so `PageCache.focus`
 fetches the shown page alone, then the look-aheads one at a time. No page
 widget or decode plan starts a fetch beside it (`PageCache.waitFor`): the
 pager's off-screen neighbour and the webtoon cache extent made it 3-19 at
 once. The reader asks for the chapter list only once page 1 is in (beside the open
-it slowed page 1 from 0.3-0.8 s to 2.9-4.0 s).
+it slowed page 1 from 0.3-0.8 s to 2.9-4.0 s). While the shown page loads it
+holds `ShownPageGate` (`ShownPageWait`, at most 3 s): the next chapter's
+page list and each download page wait for it before they ask the source.
 Opening a chapter online from a WebView source waited ~20 s on the
 server's own upstream fetch (971debc8; AllManga: `DOCS-suwayomi.md`, KCEF
 section). `PageListCache` marks a source whose page list timed out on a

@@ -6,8 +6,10 @@ import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
+import 'package:kartka/reader/data/page_image_warmer.dart';
 import 'package:kartka/reader/data/page_list_cache.dart';
 import 'package:kartka/reader/data/reader_prefs.dart';
+import 'package:kartka/reader/logic/shown_page_wait.dart';
 import 'package:kartka/reader/state/reader_deps.dart';
 import 'package:kartka/reader/state/reader_session.dart';
 
@@ -48,6 +50,8 @@ class SessionFixture {
     bool fresh = false,
     Future<MangaSource?> Function(String id)? findSource,
     StoredChapterLists? stored,
+    PageStart? Function(PageRef page)? imageStarted,
+    ShownPageWait? shownPages,
   }) {
     progress = FakeProgress(initial: saved);
     final src =
@@ -66,6 +70,8 @@ class SessionFixture {
       deps: ReaderDeps(
         pageLists: pageLists,
         storedChapters: stored,
+        imageStarted: imageStarted,
+        shownPages: shownPages,
         diagnostics: diagnostics,
         advanceTimeout: advanceTimeout,
         findSource: findSource ?? (id) async => id == src.id ? src : null,

@@ -22,6 +22,7 @@ import 'package:kartka/reader/state/reader_deps.dart';
 part 'reader_session_ahead.dart';
 part 'reader_session_advance.dart';
 part 'reader_session_open.dart';
+part 'reader_session_wait.dart';
 
 /// Where a session is in its life.
 enum ReaderPhase {
@@ -109,6 +110,7 @@ class ReaderSession extends ChangeNotifier {
   late final _pageWait = PageWaitProbe(now: deps.now, onSlow: _pageSlow);
   Future<void>? _nextLoad;
   bool _onTrailing = false;
+  bool _landing = true;
   bool _listPending = false;
   final _EdgeWait _edge = _EdgeWait();
   PageCache? _cache;
@@ -165,12 +167,7 @@ class ReaderSession extends ChangeNotifier {
   /// the queue's turn, never beside it (28fffd0a). A failure shown here
   /// (the page's Retry) is logged as `reader.page`; a failed background
   /// prefetch is not. The current page's wait is timed (`PageWaitProbe`).
-  Future<Uint8List> image(int flat) {
-    final bytes = _cache!.waitFor(flat);
-    final shown = flat == strip.offsetOf(segment) + page;
-    if (shown && _cache!.peek(flat) == null) _pageWait.asked(flat, bytes);
-    return bytes.onError<Object>(_pageFailed);
-  }
+  Future<Uint8List> image(int flat) => _image(flat);
 
   /// The bytes of the page at [flat] if they have arrived, else null.
   Uint8List? loadedImage(int flat) => _cache?.peek(flat);

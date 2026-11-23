@@ -46,6 +46,7 @@ class DownloadEngine {
     HostLimiter? limiter,
     this.policy = const RetryPolicy(),
     this.sleep = realSleep,
+    this.shownPageIdle = _nothing,
     DateTime Function()? now,
   }) : limiter = limiter ?? HostLimiter(),
        _now = now ?? DateTime.now;
@@ -67,6 +68,11 @@ class DownloadEngine {
 
   /// Backoff sleep (injectable for tests).
   final Sleep sleep;
+
+  /// Completes once the reader's shown page is in (`ShownPageGate.idle`):
+  /// each page waits for it before it takes a slot on the host, so a
+  /// download never puts the page on screen behind its own (28fffd0a).
+  final Future<void> Function() shownPageIdle;
 
   final DateTime Function() _now;
 
@@ -127,6 +133,7 @@ class DownloadEngine {
     final key = pageBlobKey(task.mangaKey, task.chapter.url, page.index);
     final existing = stored.contains(key) ? await blobs.get(key) : null;
     if (existing != null) return existing.length;
+    await shownPageIdle();
     final data = await _guarded(
       hostOf(page.imageUrl),
       shouldStop,
@@ -155,3 +162,5 @@ class DownloadEngine {
 }
 
 bool _never() => false;
+
+Future<void> _nothing() async {}

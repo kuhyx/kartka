@@ -6,6 +6,7 @@ import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/net/network_errors.dart';
+import 'package:kartka/core/source/shown_page_gate.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/downloads/auto/auto_downloader.dart';
@@ -44,6 +45,9 @@ KartkaFeature downloadsFeature(KartkaEnv env) {
         imageHeaders: env.registry.all<ImageHeaders>(),
         extensions: p.extensions,
       ).load(page),
+      shownPageIdle: () => Future.wait([
+        for (final gate in env.registry.all<ShownPageGate>()) gate.idle(),
+      ]),
     ),
     onLoaded: () => unawaited(auto.checkIfDue()),
     onFailure: downloadFailureReporter(DiagnosticsLog.of(p.diagnostics)),
