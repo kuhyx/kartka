@@ -31,6 +31,22 @@ port_open() {
   curl -s -o /dev/null --max-time 1 "$AGENT_URL"
 }
 
+# The wrapper runs as a compiled exe, never `fvm dart run`: through the
+# board's fvm shim a `dart run` server holds a machine-wide build slot for as
+# long as it serves. The exe is rebuilt (about 2 s) only when a wrapper source
+# is newer than it.
+readonly WRAPPER_EXE="$REPO_DIR/desktop/.dart_tool/kartka_desktop"
+
+wrapper_exe() {
+  local stale
+  stale="$(find "$REPO_DIR/desktop/bin" "$REPO_DIR/desktop/lib" \
+    "$REPO_DIR/desktop/pubspec.yaml" "$REPO_DIR/desktop/pubspec.lock" \
+    -type f -newer "$WRAPPER_EXE" -print -quit 2>/dev/null || true)"
+  [[ -x "$WRAPPER_EXE" && -z "$stale" ]] && return 0
+  (cd "$REPO_DIR/desktop" && fvm dart pub get >/dev/null &&
+    fvm dart compile exe bin/kartka_desktop.dart -o "$WRAPPER_EXE" >/dev/null)
+}
+
 start_wrapper() {
   if port_open; then
     return 0
@@ -43,17 +59,18 @@ start_wrapper() {
     # seed written later needs `stop` + `start`.
     local seed=()
     [[ -r "$AGENT_SEED" ]] && seed=(--sync-credentials "$AGENT_SEED")
+    wrapper_exe
     systemctl --user reset-failed "$WRAPPER_UNIT" 2>/dev/null || true
     systemd-run --user --unit="$WRAPPER_UNIT" --collect --quiet \
       -p WorkingDirectory="$REPO_DIR/desktop" \
       -p "UnsetEnvironment=DISPLAY WAYLAND_DISPLAY" \
-      "$(command -v fvm)" dart run bin/kartka_desktop.dart \
+      "$WRAPPER_EXE" \
       --web-root "$REPO_DIR/build/web" --no-browser --port "$AGENT_PORT" \
       --files-dir "$AGENT_HOME/files" --secrets-path "$AGENT_HOME/secrets.json" \
       --fault-file "$AGENT_FAULTS" --agent "${seed[@]}"
   fi
-  # A first `dart run` compiles the wrapper; poll, and if it is still going
-  # tell the caller to rerun rather than blocking past the 60 s action cap.
+  # Poll until it serves; if it is still not up, tell the caller to rerun
+  # rather than blocking past the 60 s action cap.
   local i
   for ((i = 0; i < WRAPPER_WAIT_SEC * 4; i++)); do
     port_open && return 0
@@ -61,7 +78,7 @@ start_wrapper() {
       { echo "kartka-agent: wrapper exited; journalctl --user -u $WRAPPER_UNIT" >&2; exit 3; }
     sleep 0.25
   done
-  echo "kartka-agent: wrapper not serving yet (still compiling?); rerun start" >&2
+  echo "kartka-agent: wrapper not serving yet; rerun start" >&2
   exit 3
 }
 
