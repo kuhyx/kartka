@@ -164,10 +164,11 @@ class ReaderSession extends ChangeNotifier {
   /// The bytes of the page at [flat] among every loaded page, fetched in
   /// the queue's turn, never beside it (28fffd0a). A failure shown here
   /// (the page's Retry) is logged as `reader.page`; a failed background
-  /// prefetch is not.
+  /// prefetch is not. The current page's wait is timed (`PageWaitProbe`).
   Future<Uint8List> image(int flat) {
     final bytes = _cache!.waitFor(flat);
-    if (_cache!.peek(flat) == null) _pageWait.asked(flat, bytes);
+    final shown = flat == strip.offsetOf(segment) + page;
+    if (shown && _cache!.peek(flat) == null) _pageWait.asked(flat, bytes);
     return bytes.onError<Object>(_pageFailed);
   }
 

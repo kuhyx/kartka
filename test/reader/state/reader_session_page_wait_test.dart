@@ -24,7 +24,9 @@ void main() {
     gate.complete();
     await pumpEventQueue();
     expect(await probes(), [
-      contains('ReaderProbe: page waited on fetch over 1 s from img.test'),
+      contains(
+        'ReaderProbe: page waited on fetch after turn over 1 s from img.test',
+      ),
     ]);
   });
 
@@ -35,6 +37,17 @@ void main() {
     f.clock = f.clock.add(const Duration(seconds: 3));
     await s.image(0);
     s.image(1).ignore();
+    await pumpEventQueue();
+    expect(await probes(), isEmpty);
+  });
+
+  test('an off-screen neighbour that spins is not timed', () async {
+    final gate = f.imageGates['https://img.test/c/2/2.png'] = Completer();
+    final s = f.make();
+    await s.open();
+    s.image(2).ignore();
+    f.clock = f.clock.add(const Duration(seconds: 3));
+    gate.complete();
     await pumpEventQueue();
     expect(await probes(), isEmpty);
   });

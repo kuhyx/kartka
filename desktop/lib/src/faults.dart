@@ -45,6 +45,8 @@ class ProxyFault {
 /// `f4_reader_sweep.sh` to catch), `slow-details[:<ms>]` (the same for the
 /// details and chapter-list calls: a slow upstream behind a detail open).
 /// Both also hold MangaDex's matching REST calls (`f6_chapter_advance.sh`).
+/// `slow-images[:<ms>]` holds page images the same way
+/// (`f7_page_turns.sh`: a spinning page, `reader.page`).
 class ProxyFaults {
   /// Faults read from [file].
   new(this.file);
@@ -69,13 +71,14 @@ class ProxyFaults {
     final mode = _modeFor(target.host);
     final host = target.host;
     final [slow, ...hold] = (mode ?? '').split(':');
+    final ms = hold.isEmpty ? null : int.tryParse(hold.first);
+    final late = ProxyFault.late(
+      ms == null ? slowPages : Duration(milliseconds: ms),
+    );
+    if (slow == 'slow-images') return _isImage(target.path) ? late : null;
     if (_slowOperations[slow] case final operations?) {
       final op = _operation(body) ?? _restOperation(target.path);
-      if (!operations.contains(op)) return null;
-      final ms = hold.isEmpty ? null : int.tryParse(hold.first);
-      return ProxyFault.late(
-        ms == null ? slowPages : Duration(milliseconds: ms),
-      );
+      return operations.contains(op) ? late : null;
     }
     return switch (mode) {
       'offline' => ProxyFault.error(
@@ -107,6 +110,15 @@ class ProxyFaults {
       _ => null,
     };
   }
+
+  /// A page image: a file with an image extension (MangaDex's at-home
+  /// `/data/...`, most CDNs) or a Suwayomi `/page/<n>` call.
+  static bool _isImage(String path) =>
+      RegExp(
+        r'\.(png|jpe?g|webp|gif|avif)$',
+        caseSensitive: false,
+      ).hasMatch(path) ||
+      RegExp(r'/page/\d+$').hasMatch(path);
 
   String? _modeFor(String host) {
     final String text;

@@ -138,4 +138,23 @@ void main() {
     );
     expect(at('$api/manga/abc/feed'), isNull);
   });
+
+  test('slow-images holds page images only (f7)', () {
+    file.writeAsStringSync('{"*": "slow-images:700"}');
+    for (final url in [
+      'https://cdn.x.org/data/ab/1-x.png',
+      'https://cdn.x.org/data/ab/2.JPG',
+      'https://cdn.x.org/a/3.webp?token=1',
+      'http://127.0.0.1:4567/api/v1/manga/5/chapter/2/page/0',
+    ]) {
+      expect(at(url)?.delay, const Duration(milliseconds: 700), reason: url);
+    }
+    expect(at('https://api.mangadex.org/at-home/server/x'), isNull);
+    expect(
+      at('https://s.org/api/graphql', '{"operationName":"KartkaPages"}'),
+      isNull,
+    );
+    file.writeAsStringSync('{"*": "slow-images"}');
+    expect(at('https://cdn.x.org/1.jpeg')?.delay, ProxyFaults.slowPages);
+  });
 }

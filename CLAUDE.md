@@ -96,7 +96,8 @@ to `flutter_web_drive` (kuhyx/utils; README there): `tree`, `tap "<label>"`,
 `text --file`, `key`, `scroll`, `wait`, `shot`, `console`. It serves the
 existing `build/web`, so rebuild that first when lib/ changed. `fault <host|*> <mode>` / `fault clear`
 injects `/proxy` faults (offline, abort-once, page-500, webview,
-upstream-dns, gone, slow-pages[:ms], slow-details[:ms]; `desktop/lib/src/faults.dart`); `tools/agent/uploadable.dart`
+upstream-dns, gone, slow-pages[:ms], slow-details[:ms], slow-images[:ms];
+`desktop/lib/src/faults.dart`); `tools/agent/uploadable.dart`
 judges a diagnostics log by the app's upload rule. The agent wrapper runs with
 `--agent`, so its app never uploads error reports (no board tickets). Flows in
 `tools/agent/flows/` log numbered steps and exit non-zero with the failing
@@ -106,7 +107,10 @@ RTDB, then the chapter reads as read within 10 s), `f4_reader_sweep.sh
 [count [limit_ms]]` (opens the newest Updates chapters; fails on an open
 over 1 s), `f6_chapter_advance.sh [limit_ms [runs]]` (a MangaDex manga
 outside the library: swipes past a chapter's end, fails on a next-chapter
-wait over 1 s). Sign-in uses no password:
+wait over 1 s), `f7_page_turns.sh [limit_ms [turns [read_ms]]]` (the same
+manga at a reading pace: fails on a page spinner over 1 s). The agent runs
+the wrapper as a cached exe (`desktop/.dart_tool/kartka_desktop`), never
+`fvm dart run`, which holds a build slot for as long as it serves. Sign-in uses no password:
 the account is Google-only. When `~/.config/kartka-agent/firebase_auth.json`
 exists, `start` passes it as `--sync-credentials`, and the app adopts it
 once (contracts-runtime §17). With no seed, f3 exits 1 and prints kuhy's
