@@ -17,18 +17,18 @@ extension _Advance on ReaderSession {
     return Future.error(e, stack);
   }
 
-  /// The page probe's report (28fffd0a): page [flat] spun [waited], mostly
-  /// on [step]; names the image host (`storage` for a downloaded page).
-  void _pageSlow(int flat, String step, Duration waited) {
+  /// The page probe's report (28fffd0a): the shown page [flat] spun 1 s or
+  /// more, mostly on [step]. Names the source and the image host's domain,
+  /// never the time: the perf.slow report has it, and one text per step
+  /// and source keeps it to one board ticket each.
+  void _pageSlow(int flat, String step, Duration _) {
     final log = deps.diagnostics;
     if (log == null || flat >= _flat.length) return;
-    final host = Uri.tryParse(_flat[flat].imageUrl)?.host ?? '';
-    final from = host.isEmpty ? 'storage' : host;
-    final bucket = PageWaitProbe.bucket(waited);
+    final from = PageWaitProbe.domain(_flat[flat].imageUrl);
     ErrorReporter.of(log).report(
       'reader.pagewait',
       ReaderLoadException(
-        'ReaderProbe: page waited on $step $bucket from $from',
+        'ReaderProbe: $sourceId page waited on $step from $from',
       ),
       stack: StackTrace.current,
       sourceId: sourceId,

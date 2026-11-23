@@ -69,11 +69,15 @@ class PageWaitProbe {
         : 'prefetch';
   }
 
-  /// [waited] rounded down to 1, 2, 4 or 8 s, so a report's text (and its
-  /// signature) does not change with every millisecond.
-  static String bucket(Duration waited) {
-    final s = waited.inSeconds;
-    final b = s >= 8 ? 8 : (s >= 4 ? 4 : (s >= 2 ? 2 : 1));
-    return 'over $b s';
+  /// The image host of [imageUrl] cut to its last two labels (an IP
+  /// whole), or `storage` for a downloaded page. A report's text, and so
+  /// its board ticket, stays one per step and source: MangaDex hands out a
+  /// different `<node>.mangadex.network` per chapter.
+  static String domain(String imageUrl) {
+    final host = Uri.tryParse(imageUrl)?.host ?? '';
+    if (host.isEmpty) return 'storage';
+    if (RegExp(r'^[\d.]+$').hasMatch(host)) return host;
+    final labels = host.split('.');
+    return labels.skip(labels.length < 2 ? 0 : labels.length - 2).join('.');
   }
 }

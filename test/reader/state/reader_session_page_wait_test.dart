@@ -25,7 +25,7 @@ void main() {
     await pumpEventQueue();
     expect(await probes(), [
       contains(
-        'ReaderProbe: page waited on fetch after turn over 1 s from img.test',
+        'ReaderProbe: fake page waited on fetch after turn from img.test',
       ),
     ]);
   });

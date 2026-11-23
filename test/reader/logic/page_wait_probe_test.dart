@@ -104,13 +104,19 @@ void main() {
     expect(slow, ['2 fetch after turn 1000']);
   });
 
-  test('bucket rounds down to 1, 2, 4 or 8 s', () {
+  test('domain keeps the last two host labels; a stored page is storage', () {
     expect(
       [
-        for (final ms in [1000, 1999, 2000, 4100, 9000, 60000])
-          PageWaitProbe.bucket(Duration(milliseconds: ms)),
+        for (final url in [
+          'https://cmdxd98sb0x3yprd.mangadex.network:443/data/a/1.png',
+          'https://uploads.mangadex.org/data/a/1.png',
+          'https://img.test/c/2/0.png',
+          'http://127.0.0.1:4567/api/v1/manga/5/chapter/2/page/0',
+          'blob-key/chapter/0',
+        ])
+          PageWaitProbe.domain(url),
       ],
-      ['over 1 s', 'over 1 s', 'over 2 s', 'over 4 s', 'over 8 s', 'over 8 s'],
+      ['mangadex.network', 'mangadex.org', 'img.test', '127.0.0.1', 'storage'],
     );
   });
 }
