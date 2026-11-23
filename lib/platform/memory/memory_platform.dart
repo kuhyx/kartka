@@ -13,7 +13,7 @@ export 'memory_stores.dart';
 KartkaPlatform memoryPlatform({
   FakeKartkaHttp? http,
   MemoryBlobStore? blobs,
-  MemoryKeyValueStore? kv,
+  KeyValueStore? kv,
   MemoryKeyValueStore? secrets,
   FakeFilePicker? filePicker,
   FakeOAuthRedirect? oauth,

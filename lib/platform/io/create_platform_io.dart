@@ -2,12 +2,14 @@
 // Thin wiring of plugins that need a device (path_provider, the Keystore,
 // app links); every piece it assembles is unit-tested on its own.
 // phone-slot: not-shared-storage (getExternalStorageDirectory is per-package).
+import 'dart:async';
 import 'dart:io';
 
 import 'package:app_links/app_links.dart';
 import 'package:file_picker/file_picker.dart' as fp;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:kartka/core/diagnostics/startup_marks.dart';
 import 'package:kartka/platform/caching_key_value_store.dart';
 import 'package:kartka/platform/coalescing_saver.dart';
 import 'package:kartka/platform/cookie_http.dart';
@@ -20,6 +22,7 @@ import 'package:kartka/platform/io/webview_browser.dart';
 import 'package:kartka/platform/oauth_impls.dart';
 import 'package:kartka/platform/platform.dart';
 import 'package:kartka/platform/plugin_file_picker.dart';
+import 'package:kartka/platform/split_key_value_store.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,10 +35,26 @@ Future<KartkaPlatform> createPlatform() async {
   // (library.load a133bbb8).
   final support = await getApplicationSupportDirectory();
   // Sharded since 2026-10-29; the first launch migrates the old kv.json.
-  final kv = FileKeyValueStore(
+  final fastKv = FileKeyValueStore(
     Directory(p.join(support.path, 'kv')),
     legacy: File(p.join(support.path, 'kv.json')),
   )..warm();
+  // Sync state and chapter lists, read once the library's keys are in.
+  // Its own marks: the launch line times the read the library waits on.
+  final deferredKv = FileKeyValueStore(
+    Directory(p.join(support.path, 'kv-deferred')),
+    marks: StartupMarks(),
+  );
+  final kv = SplitKeyValueStore(
+    fastKv,
+    deferredKv,
+    deferredPrefixes: kvDeferredPrefixes,
+    flushFast: fastKv.flush,
+    flushDeferred: deferredKv.flush,
+  );
+  // Moves the keys written before the split, well after the first paint;
+  // a failure is retried on the next launch (the move is copy-first).
+  Timer(const Duration(seconds: 10), () => kv.migrate().ignore());
   final (docs, cacheDir, external) = await (
     getApplicationDocumentsDirectory(),
     getApplicationCacheDirectory(),

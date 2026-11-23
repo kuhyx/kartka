@@ -156,11 +156,11 @@ Continues [`DOCS-contracts.md`](DOCS-contracts.md) (§1-§9); same rules.
   beside `Tracker`. The track sheet calls `showLogin(context)` when
   `tracker is CredentialsLogin`, else `tracker.login()`. MangaUpdates shows
   its username + password sheet; AniList and MAL stay OAuth (§9 unchanged).
-- **Android kv is 64 shard files, writes coalesced, off the UI isolate.**
-  `<support>/kv/shard-NN.json` (FNV-1a, fixed forever): only changed keys
-  leave the UI isolate, at most once per 250 ms, unchanged values never; an
-  `Isolate.run` patches their shards' files (`patchKvShards`). First launch copies `kv.json` in, writes `kv/.migrated`,
-  keeps it as `kv.json.migrated` (`.corrupt` if unreadable).
+- **Android kv: two 64-shard stores, writes coalesced, off the UI isolate.**
+  `<support>/kv/shard-NN.json` (FNV-1a, fixed forever) holds all but `sync.` and `browse.chapters.`: those sit in `kv-deferred/`,
+  read only after `kv/` (`SplitKeyValueStore`; the first library paint parses 8, not 20 MB, a133bbb8), and 10 s in, older copies move
+  over, copy first. Changed keys leave the UI isolate at most once per 250 ms; an `Isolate.run` patches their shards.
+  First launch copies `kv.json` in, writes `kv/.migrated`, keeps it as `kv.json.migrated` (`.corrupt` if unreadable).
   `flushOnBackground` flushes on every non-resumed lifecycle state.
 - **The wrapper never logs a /proxy target.** A query can carry a
   credential (RTDB `?auth=<token>`, forwarded byte-identical). A mid-body
