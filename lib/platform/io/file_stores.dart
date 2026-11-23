@@ -210,7 +210,9 @@ Future<List<Map<String, String>>> _readOff(
     ]);
     shards = [for (final part in parts) ...part];
   }
-  marks.mark('kv.done');
+  marks
+    ..mark('kv.done')
+    ..note('kv', () => kvSizeSummary(shards));
   return shards;
 }
 

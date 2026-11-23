@@ -191,3 +191,29 @@ void writeKvShards(String dir, Map<int, Map<String, String>> shards) {
   }
   written.forEach((tmp, path) => tmp.renameSync(path));
 }
+
+/// Total MB and the three key prefixes holding the most (what the launch
+/// read waits on), e.g. `20.1MB browse.chapters/=14.2 ...`.
+String kvSizeSummary(List<Map<String, String>> shards) {
+  final sizes = <String, int>{};
+  var total = 0;
+  for (final shard in shards) {
+    for (final MapEntry(:key, :value) in shard.entries) {
+      final slash = key.indexOf('/');
+      final dot = key.lastIndexOf('.');
+      final prefix = slash >= 0
+          ? key.substring(0, slash + 1)
+          : dot >= 0
+          ? key.substring(0, dot + 1)
+          : key;
+      sizes[prefix] = (sizes[prefix] ?? 0) + value.length;
+      total += value.length;
+    }
+  }
+  String mb(int chars) => (chars / 1e6).toStringAsFixed(1);
+  final top = sizes.entries.toList()..sort((a, b) => b.value - a.value);
+  return [
+    '${mb(total)}MB',
+    for (final e in top.take(3)) '${e.key}=${mb(e.value)}',
+  ].join(' ');
+}

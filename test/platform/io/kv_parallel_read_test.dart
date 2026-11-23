@@ -63,4 +63,23 @@ void main() {
     expect(await store.get('a'), '1');
     expect(marks.marks, contains('kv.done'));
   });
+
+  test('the launch line says which key prefixes fill the kv', () async {
+    final kv = Directory('${dir.path}/kv');
+    final values = {
+      for (var i = 0; i < 10; i++) 'browse.chapters/m$i': 'x' * 100000,
+      for (var i = 0; i < 10; i++) 'library/m$i': 'y' * 1000,
+      'reader.pagesOk.a': 'zz',
+      'flag': '1',
+    };
+    writeKvShards(kv.path, groupKvShards(values).asMap());
+    final marks = StartupMarks();
+    await FileKeyValueStore(kv, marks: marks).get('flag');
+    expect(
+      marks.describe(),
+      endsWith(
+        'kv=1.0MB browse.chapters/=1.0 library/=0.0 reader.pagesOk.=0.0',
+      ),
+    );
+  });
 }

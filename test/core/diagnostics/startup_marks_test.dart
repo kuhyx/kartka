@@ -48,6 +48,18 @@ void main() {
     expect(slow.ms, 900);
   });
 
+  test('a note is read only when described, after the marks', () {
+    var reads = 0;
+    at(0, 'main');
+    marks.note('kv', () {
+      reads++;
+      return '20.1MB';
+    });
+    expect(reads, 0, reason: 'nothing computed on the load path');
+    expect(marks.describe(), 'main=0 kv=20.1MB');
+    expect(reads, 1);
+  });
+
   test('nothing to name without the wait mark', () {
     at(0, 'main');
     expect(marks.slowestSince('library.wait'), isNull);

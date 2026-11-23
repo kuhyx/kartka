@@ -16,17 +16,24 @@ class StartupMarks {
 
   final int Function() _elapsedMs;
   final Map<String, int> _at = {};
+  final Map<String, String Function()> _notes = {};
 
   /// Records that [step] happened now, unless it already did.
   void mark(String step) => _at.putIfAbsent(step, _elapsedMs);
 
+  /// Adds `name=<text()>` after the marks; [text] runs only in [describe],
+  /// so a costly summary stays off the path it describes.
+  void note(String name, String Function() text) =>
+      _notes.putIfAbsent(name, () => text);
+
   /// Every step so far with its moment, in the order they happened.
   Map<String, int> get marks => Map.unmodifiable(_at);
 
-  /// `step=ms` pairs in order, one line.
-  String describe() =>
-      [for (final MapEntry(:key, :value) in _at.entries) '$key=$value']
-          .join(' ');
+  /// `step=ms` pairs in order, then the notes, one line.
+  String describe() => [
+    for (final MapEntry(:key, :value) in _at.entries) '$key=$value',
+    for (final MapEntry(:key, :value) in _notes.entries) '$key=${value()}',
+  ].join(' ');
 
   /// Milliseconds from [from] to [to], or null if either is missing.
   int? since(String from, String to) {
