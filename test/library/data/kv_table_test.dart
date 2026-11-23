@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/core/diagnostics/startup_marks.dart';
 import 'package:kartka/library/data/kv_table.dart';
 
 import 'package:kartka/platform/memory/memory_stores.dart';
@@ -20,6 +21,8 @@ void main() {
       'n/a': jsonEncode({'v': 1}),
     });
     expect(await _table(kv).load(), {'a': 1});
+    // The first load of a table marks the launch (LibraryProbe).
+    expect(StartupMarks.launch.marks, contains('table n/'));
   });
 
   test('corrupt or foreign rows are skipped, not fatal', () async {

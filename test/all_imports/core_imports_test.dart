@@ -7,6 +7,7 @@ import 'package:kartka/core/diagnostics/diagnostic_entry.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
 import 'package:kartka/core/diagnostics/diagnostics_log.dart';
 import 'package:kartka/core/diagnostics/error_reporter.dart';
+import 'package:kartka/core/diagnostics/startup_marks.dart';
 import 'package:kartka/core/diagnostics/upload_rule.dart';
 import 'package:kartka/core/models/category.dart';
 import 'package:kartka/core/models/chapter_info.dart';

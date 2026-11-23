@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
+import 'package:kartka/core/diagnostics/startup_marks.dart';
 import 'package:kartka/core/repositories/repositories.dart';
 import 'package:kartka/library/library_feature.dart';
 import 'package:kartka/library/library_repositories.dart';
@@ -83,6 +84,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(LibraryScreen), findsOneWidget);
     expect(task.starts, 1);
+    // The spinner marked the wait, the first paint with rows ran the
+    // probe (LibraryProbe; its lines: library_load_probe_test.dart).
+    expect(StartupMarks.launch.marks, contains('library.wait'));
+    expect(StartupMarks.launch.marks, contains('library.shown'));
     final screen = tester.widget<LibraryScreen>(find.byType(LibraryScreen));
     expect(screen.deps.unread, same(unread));
     expect(screen.deps.repos, same(registry.maybe<LibraryRepositories>()));

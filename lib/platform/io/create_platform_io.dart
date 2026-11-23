@@ -26,16 +26,22 @@ import 'package:url_launcher/url_launcher.dart';
 
 /// Builds the Android platform.
 Future<KartkaPlatform> createPlatform() async {
-  final docs = await getApplicationDocumentsDirectory();
+  // The kv read (~20 MB of shards, the library's first paint waits on it)
+  // starts as soon as its directory is known, beside the other directory
+  // calls, the error queue, the registry and the first frame
+  // (library.load a133bbb8).
   final support = await getApplicationSupportDirectory();
-  final cacheDir = await getApplicationCacheDirectory();
-  // getExternalFilesDir(null): adb can pull it from a release build.
-  final external = await getExternalStorageDirectory();
   // Sharded since 2026-10-29; the first launch migrates the old kv.json.
   final kv = FileKeyValueStore(
     Directory(p.join(support.path, 'kv')),
     legacy: File(p.join(support.path, 'kv.json')),
-  );
+  )..warm();
+  final (docs, cacheDir, external) = await (
+    getApplicationDocumentsDirectory(),
+    getApplicationCacheDirectory(),
+    // getExternalFilesDir(null): adb can pull it from a release build.
+    getExternalStorageDirectory(),
+  ).wait;
   // Held by the binding for the app's lifetime: pause/detach writes kv/.
   flushOnBackground(kv.flush);
   final hosts = WebViewHosts(kv);

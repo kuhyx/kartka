@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kartka/core/diagnostics/startup_marks.dart';
 import 'package:kartka/platform/io/file_stores.dart';
 import 'package:kartka/platform/io/kv_shard_files.dart';
 
@@ -48,5 +49,18 @@ void main() {
     File('${kv.path}/$kvMigratedMarker').writeAsStringSync('x');
     final store = FileKeyValueStore(kv, legacy: File('${dir.path}/kv.json'));
     expect(await store.entries(prefix: 'library/'), values);
+  });
+
+  test('warm starts the one read at once and marks the launch', () async {
+    final kv = Directory('${dir.path}/kv');
+    writeKvShards(kv.path, groupKvShards({'a': '1'}).asMap());
+    final marks = StartupMarks();
+    final store = FileKeyValueStore(kv, marks: marks)..warm();
+    // Before any caller: createPlatform warms it, so the 20 MB read runs
+    // beside app start-up instead of after it (library.load a133bbb8).
+    expect(marks.marks, contains('kv.read'));
+    expect(marks.marks, isNot(contains('kv.done')));
+    expect(await store.get('a'), '1');
+    expect(marks.marks, contains('kv.done'));
   });
 }

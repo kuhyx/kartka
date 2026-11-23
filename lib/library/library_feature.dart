@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/settings_stores.dart';
 import 'package:kartka/core/diagnostics/diagnostics.dart';
+import 'package:kartka/core/diagnostics/startup_marks.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/source_provider.dart';
 import 'package:kartka/core/updates/chapter_backfill.dart';
@@ -15,6 +16,7 @@ import 'package:kartka/library/ports.dart';
 import 'package:kartka/library/repository_decorator.dart';
 import 'package:kartka/library/state/auto_shelver.dart';
 import 'package:kartka/library/state/library_deps.dart';
+import 'package:kartka/library/state/library_load_probe.dart';
 import 'package:kartka/library/ui/categories_screen.dart';
 import 'package:kartka/library/ui/library_screen.dart';
 import 'package:kartka/platform/cover_cache.dart';
@@ -54,7 +56,11 @@ KartkaFeature libraryFeature(KartkaEnv env) {
   );
   LibraryDeps? cached;
   // Built on first use: the registry is complete only after every factory.
-  LibraryDeps deps() => cached ??= _deps(env, repos, covers, shelver);
+  final probe = LibraryLoadProbe(
+    StartupMarks.launch,
+    ErrorReporter.of(DiagnosticsLog.of(platform.diagnostics)),
+  );
+  LibraryDeps deps() => cached ??= _deps(env, repos, covers, shelver, probe);
   return KartkaFeature(
     id: 'library',
     services: [repos, covers, shelver, backfill],
@@ -81,6 +87,7 @@ LibraryDeps _deps(
   LibraryRepositories repos,
   CoverCache covers,
   AutoShelver shelver,
+  LibraryLoadProbe probe,
 ) {
   final registry = env.registry;
   return LibraryDeps(
@@ -93,6 +100,7 @@ LibraryDeps _deps(
     coverLoader: covers.get,
     updater: registry.maybe<LibraryUpdater>(),
     onFirstLoad: () {
+      probe.shown();
       unawaited(shelver.start());
       for (final task in registry.all<LibraryStartTask>()) {
         unawaited(task.start());

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
+import 'package:kartka/core/diagnostics/startup_marks.dart';
 import 'package:kartka/platform/blob_store.dart';
 import 'package:kartka/platform/coalescing_saver.dart';
 import 'package:kartka/platform/io/kv_shard_files.dart';
@@ -76,7 +77,8 @@ class FileKeyValueStore implements OffUiDecodingStore {
     this.dir, {
     this.legacy,
     Duration window = const Duration(milliseconds: 250),
-  }) {
+    StartupMarks? marks,
+  }) : _marks = marks ?? StartupMarks.launch {
     _saver = CoalescingSaver(_save, window: window);
   }
 
@@ -86,6 +88,9 @@ class FileKeyValueStore implements OffUiDecodingStore {
   /// The pre-shard kv.json to migrate from, if any.
   final File? legacy;
 
+  // Where the read's start and end are marked (the launch's by default).
+  final StartupMarks _marks;
+
   late final CoalescingSaver _saver;
   // Key -> new value (null: removed), since the last save.
   final Map<String, String?> _changes = {};
@@ -94,6 +99,7 @@ class FileKeyValueStore implements OffUiDecodingStore {
   late final Future<List<Map<String, String>>> _shards = _readOff(
     dir.path,
     legacy?.path,
+    _marks,
   );
 
   /// Entries handed to the writer isolate so far (the save-cost tests
@@ -110,6 +116,10 @@ class FileKeyValueStore implements OffUiDecodingStore {
   // behind these (a save is coalesced and asynchronous), the files are
   // exact for every other key.
   final Set<String> _touched = {};
+
+  /// Starts the one shard read now, beside the rest of app start-up,
+  /// instead of at the first caller (library.load a133bbb8).
+  void warm() => _shards.ignore();
 
   /// Whether a change has not been written yet.
   bool get pending => _saver.pending;
@@ -184,15 +194,24 @@ class FileKeyValueStore implements OffUiDecodingStore {
 // Top-level, so each isolate closure captures only its arguments.
 /// Parses the shards in [kvReadGroups] isolates at once (one, while a
 /// legacy kv.json is still to migrate); each result moves back uncopied.
-Future<List<Map<String, String>>> _readOff(String dir, String? legacy) async {
+Future<List<Map<String, String>>> _readOff(
+  String dir,
+  String? legacy,
+  StartupMarks marks,
+) async {
+  marks.mark('kv.read');
+  final List<Map<String, String>> shards;
   if (kvMigrationPending(dir, legacy)) {
-    return await Isolate.run(() => readKvDir(dir, legacy));
+    shards = await Isolate.run(() => readKvDir(dir, legacy));
+  } else {
+    final parts = await Future.wait([
+      for (final (from, to) in kvReadRanges())
+        Isolate.run(() => readKvShards(dir, from, to)),
+    ]);
+    shards = [for (final part in parts) ...part];
   }
-  final parts = await Future.wait([
-    for (final (from, to) in kvReadRanges())
-      Isolate.run(() => readKvShards(dir, from, to)),
-  ]);
-  return [for (final part in parts) ...part];
+  marks.mark('kv.done');
+  return shards;
 }
 
 Future<void> _patchOff(String dir, Map<String, String?> changes) =>

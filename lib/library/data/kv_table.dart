@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:kartka/core/diagnostics/startup_marks.dart';
 import 'package:kartka/library/data/row_watchers.dart';
 import 'package:kartka/platform/key_value_store.dart';
 
@@ -80,6 +81,7 @@ class KvTable<T> {
     _live = total < kvTableOffUiChars
         ? _decodeRows(job)
         : await compute(_decodeRows<T>, job);
+    StartupMarks.launch.mark('table $_prefix');
   }
 
   Map<String, T> _publish() => _snapshot ??= UnmodifiableMapView(_live);
