@@ -12,6 +12,7 @@ import 'package:kartka/reader/logic/chapter_order.dart';
 import 'package:kartka/reader/logic/chapter_strip.dart';
 import 'package:kartka/reader/logic/first_images_probe.dart';
 import 'package:kartka/reader/logic/page_cache.dart';
+import 'package:kartka/reader/logic/page_wait_probe.dart';
 import 'package:kartka/reader/logic/prefetch.dart';
 import 'package:kartka/reader/logic/progress_recorder.dart';
 import 'package:kartka/reader/logic/reader_mode.dart';
@@ -105,6 +106,7 @@ class ReaderSession extends ChangeNotifier {
   Future<void>? _listReady;
   MangaSource? _source;
   List<PageRef> _flat = const [];
+  late final _pageWait = PageWaitProbe(now: deps.now, onSlow: _pageSlow);
   Future<void>? _nextLoad;
   bool _onTrailing = false;
   bool _listPending = false;
@@ -163,8 +165,11 @@ class ReaderSession extends ChangeNotifier {
   /// the queue's turn, never beside it (28fffd0a). A failure shown here
   /// (the page's Retry) is logged as `reader.page`; a failed background
   /// prefetch is not.
-  Future<Uint8List> image(int flat) =>
-      _cache!.waitFor(flat).onError<Object>(_pageFailed);
+  Future<Uint8List> image(int flat) {
+    final bytes = _cache!.waitFor(flat);
+    if (_cache!.peek(flat) == null) _pageWait.asked(flat, bytes);
+    return bytes.onError<Object>(_pageFailed);
+  }
 
   /// The bytes of the page at [flat] if they have arrived, else null.
   Uint8List? loadedImage(int flat) => _cache?.peek(flat);

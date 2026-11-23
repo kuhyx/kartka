@@ -13,6 +13,7 @@ import 'package:kartka/reader/logic/chapter_order.dart';
 import 'package:kartka/reader/logic/chapter_strip.dart';
 import 'package:kartka/reader/logic/first_images_probe.dart';
 import 'package:kartka/reader/logic/page_cache.dart';
+import 'package:kartka/reader/logic/page_wait_probe.dart';
 import 'package:kartka/reader/logic/prefetch.dart';
 import 'package:kartka/reader/logic/progress_recorder.dart';
 import 'package:kartka/reader/logic/reader_keys.dart';

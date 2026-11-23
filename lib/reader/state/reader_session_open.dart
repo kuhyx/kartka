@@ -80,7 +80,12 @@ extension _Open on ReaderSession {
     final probe = FirstImagesProbe([
       for (var i = page; i < page + 3 && i <= last; i++) i,
     ], _firstImagesFailed);
-    _cache = PageCache(fetch: (i) => probe.watch(i, deps.loadImage(_flat[i])));
+    _cache = PageCache(
+      fetch: (i) {
+        _pageWait.started(i);
+        return probe.watch(i, deps.loadImage(_flat[i]));
+      },
+    );
     _add(chapterUrl, loaded, landing: startAtEnd ? page : null);
     phase = ReaderPhase.ready;
     // Probe: log the single slowest step if the whole open up to ready

@@ -17,6 +17,24 @@ extension _Advance on ReaderSession {
     return Future.error(e, stack);
   }
 
+  /// The page probe's report (28fffd0a): page [flat] spun [waited], mostly
+  /// on [step]; names the image host (`storage` for a downloaded page).
+  void _pageSlow(int flat, String step, Duration waited) {
+    final log = deps.diagnostics;
+    if (log == null || flat >= _flat.length) return;
+    final host = Uri.tryParse(_flat[flat].imageUrl)?.host ?? '';
+    final from = host.isEmpty ? 'storage' : host;
+    final bucket = PageWaitProbe.bucket(waited);
+    ErrorReporter.of(log).report(
+      'reader.pagewait',
+      ReaderLoadException(
+        'ReaderProbe: page waited on $step $bucket from $from',
+      ),
+      stack: StackTrace.current,
+      sourceId: sourceId,
+    );
+  }
+
   /// The probe's report: the pages the chapter opened on all failed.
   void _firstImagesFailed(Object e) => _logOpen(
     ReaderLoadException('ReaderProbe: first 3 images failed on $sourceId: $e'),

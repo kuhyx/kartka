@@ -15,6 +15,7 @@ The device log (`DOCS-contracts.md` §7) stays kartka's.
 | `ui.snackbar` | `ReportingScaffoldMessenger`, mounted in `MaterialApp.builder` (`lib/app/app.dart`), so it is the nearest messenger of every route. An error is a snackbar with the danger hue (design_system `showError`) or failure text (`failed`, `Exception`, `unavailable`, ...). |
 | `reader.open` | `ReaderSession.open` (the reader's Retry screen); not a chapter neither downloaded nor fetchable (`ChapterUnavailable`). The reader's probe adds the cause with the source id: `ReaderProbe: <sourceId> listed no pages`, or `first 3 images failed on <sourceId>: <error>` (`FirstImagesProbe`). |
 | `reader.page` | `ReaderSession.image` (a page's Retry); background prefetch stays quiet. |
+| `reader.pagewait` | `PageWaitProbe` (28fffd0a): a shown page that spun 1 s or more, `ReaderProbe: page waited on queue\|fetch over 1\|2\|4\|8 s from <image host>` (`storage` for a downloaded page). The perf.slow report says only that a page spun; this says why. |
 | `downloads.failed` | `DownloadService.onFailure` (the queue's Retry), wired by `downloadsFeature`; not a source nothing lists (`UnknownSourceError`). |
 | `downloads.offline` | `downloadFailureReporter`: a server that cannot be reached (`isOfflineError`: Dart's `Failed host lookup` or an Android extension's Java `Unable to resolve host`), once per server per 10 min, not once per chapter. |
 | `plugins.repo` | `PluginManager.onRepoError` (the per-repo error list on More → Plugins). |

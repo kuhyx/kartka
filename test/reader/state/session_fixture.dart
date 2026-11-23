@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:kartka/core/diagnostics/diagnostics.dart';
@@ -26,6 +27,9 @@ class SessionFixture {
 
   /// When set, every page image load throws it.
   Error? imageError;
+
+  /// Page images (by URL) that load only once their completer completes.
+  final Map<String, Completer<void>> imageGates = {};
   ReaderPrefs prefs = ReaderPrefs(MemoryKeyValueStore());
   final MemoryBlobStore diagnosticsStore = MemoryBlobStore();
   late final DiagnosticsLog diagnostics = DiagnosticsLog(diagnosticsStore);
@@ -70,6 +74,7 @@ class SessionFixture {
         prefs: prefs,
         loadImage: (p) async {
           fetched.add(p.imageUrl);
+          await imageGates[p.imageUrl]?.future;
           if (imageError case final e?) throw e;
           return Uint8List(1);
         },
