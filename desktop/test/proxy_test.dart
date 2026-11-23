@@ -24,6 +24,28 @@ class Upstream {
       if (r.uri.path == '/img') {
         res.headers.contentType = ContentType('image', 'jpeg');
         res.add([0xff, 0xd8, 0x00, 0xff]);
+      } else if (r.uri.path.endsWith('/feed')) {
+        // As MangaDex: JSON with no charset, so Dart would pick Latin-1.
+        res.headers.contentType = ContentType('application', 'json');
+        res.add(
+          utf8.encode(
+            jsonEncode({
+              'data': [
+                {
+                  'attributes': {'volume': '1', 'chapter': '2'},
+                },
+                {
+                  'attributes': {
+                    'volume': '1',
+                    'chapter': '1',
+                    'title': 'Me and “Him”',
+                  },
+                },
+              ],
+              'total': 2,
+            }),
+          ),
+        );
       } else if (r.uri.path == '/missing') {
         res.statusCode = 404;
       } else {
@@ -157,5 +179,16 @@ void main() {
     );
     expect(r.status, 200);
     expect(watch.elapsedMilliseconds, greaterThanOrEqualTo(300));
+  });
+
+  test('a rewrite fault forwards, then changes the answer', () async {
+    final f = await Harness.start(faults: '{"127.0.0.1": "hide-newest"}');
+    addTearDown(f.close);
+    final r = await f.call('GET', proxied(up.url('/manga/m1/feed?offset=0')));
+    expect(r.status, 200);
+    final json = jsonDecode(utf8.decode(r.body)) as Map<String, Object?>;
+    expect(json['total'], 1);
+    expect(utf8.decode(r.body), isNot(contains('"chapter":"2"')));
+    expect(utf8.decode(r.body), contains('Me and “Him”'), reason: 'UTF-8');
   });
 }

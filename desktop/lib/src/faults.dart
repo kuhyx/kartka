@@ -6,16 +6,35 @@ import 'dart:io';
 /// [body], or the real answer after a [delay].
 class ProxyFault {
   /// A failure to reach the upstream at all.
-  const new error(String this.error) : status = 502, body = null, delay = null;
+  const new error(String this.error)
+    : status = 502,
+      body = null,
+      delay = null,
+      rewrite = null;
 
   /// A canned upstream answer.
-  const new answer(int this.status, [this.body]) : error = null, delay = null;
+  const new answer(int this.status, [this.body])
+    : error = null,
+      delay = null,
+      rewrite = null;
 
   /// The request is forwarded as usual, [delay] late.
   const new late(Duration this.delay)
     : error = null,
       status = null,
-      body = null;
+      body = null,
+      rewrite = null;
+
+  /// The request is forwarded at once and the answer's text goes through
+  /// [rewrite] before the app sees it.
+  const new rewritten(String Function(String) this.rewrite)
+    : error = null,
+      status = null,
+      body = null,
+      delay = null;
+
+  /// Changes the upstream's answer text, or null to pass it through.
+  final String Function(String)? rewrite;
 
   /// How long to hold the request before forwarding it, or null.
   final Duration? delay;
@@ -46,7 +65,10 @@ class ProxyFault {
 /// details and chapter-list calls: a slow upstream behind a detail open).
 /// Both also hold MangaDex's matching REST calls (`f6_chapter_advance.sh`).
 /// `slow-images[:<ms>]` holds page images the same way
-/// (`f7_page_turns.sh`: a spinning page, `reader.page`).
+/// (`f7_page_turns.sh`: a spinning page, `reader.page`). `hide-newest`
+/// drops the newest chapter from MangaDex's chapter feed: browse a manga
+/// with it on, clear it, and the reader meets a chapter released after
+/// the stored list was saved.
 class ProxyFaults {
   /// Faults read from [file].
   new(this.file);
@@ -81,6 +103,9 @@ class ProxyFaults {
       return operations.contains(op) ? late : null;
     }
     return switch (mode) {
+      'hide-newest' when _isFirstFeedPage(target) => const ProxyFault.rewritten(
+        _dropNewest,
+      ),
       'offline' => ProxyFault.error(
         "SocketException: Failed host lookup: '$host' "
         '(OS Error: No address associated with hostname, errno = 7)',
@@ -160,6 +185,40 @@ class ProxyFaults {
     ['', 'manga', _] => 'KartkaDetails',
     _ => null,
   };
+
+  static bool _isFirstFeedPage(Uri target) =>
+      _restOperation(target.path) == 'KartkaChapters' &&
+      (target.queryParameters['offset'] ?? '0') == '0';
+
+  /// MangaDex's feed newest first (volume, chapter desc) without its first
+  /// chapter and that chapter's other uploads: as the list stood before
+  /// the newest chapter came out. Text that is not a feed passes through.
+  static String _dropNewest(String text) {
+    try {
+      final feed = jsonDecode(text);
+      if (feed is! Map<String, Object?> || feed['data'] is! List) return text;
+      final data = feed['data']! as List<Object?>;
+      if (data.isEmpty) return text;
+      String number(Object? c) {
+        final a = c is Map ? c['attributes'] : null;
+        return a is Map ? '${a['volume']}/${a['chapter']}' : '';
+      }
+
+      final newest = number(data.first);
+      final kept = [
+        for (final c in data)
+          if (number(c) != newest) c,
+      ];
+      final total = feed['total'];
+      return jsonEncode({
+        ...feed,
+        'data': kept,
+        if (total is int) 'total': total - (data.length - kept.length),
+      });
+    } on FormatException {
+      return text;
+    }
+  }
 
   static ProxyFault _graphqlData(Map<String, Object?> data) =>
       ProxyFault.answer(200, jsonEncode({'data': data}));

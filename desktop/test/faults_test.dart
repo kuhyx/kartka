@@ -157,4 +157,23 @@ void main() {
     file.writeAsStringSync('{"*": "slow-images"}');
     expect(at('https://cdn.x.org/1.jpeg')?.delay, ProxyFaults.slowPages);
   });
+
+  test('hide-newest drops the newest chapter from the first feed page', () {
+    file.writeAsStringSync('{"api.mangadex.org": "hide-newest"}');
+    const feed = 'https://api.mangadex.org/manga/m1/feed';
+    final fault = at('$feed?offset=0&order[chapter]=desc')!;
+    expect(fault.delay, isNull);
+    expect(fault.status, isNull, reason: 'forwarded, then rewritten');
+    String chapter(String v, String n) =>
+        '{"id":"$v-$n","attributes":{"volume":"$v","chapter":"$n"}}';
+    final body =
+        '{"result":"ok","data":[${chapter('9', '80')},${chapter('9', '80')},'
+        '${chapter('9', '79')}],"limit":500,"offset":0,"total":3}';
+    final out = jsonDecode(fault.rewrite!(body)) as Map<String, Object?>;
+    expect([for (final c in out['data']! as List) (c as Map)['id']], ['9-79']);
+    expect(out['total'], 1);
+    expect(fault.rewrite!('not json'), 'not json');
+    expect(at('$feed?offset=500'), isNull, reason: 'older pages untouched');
+    expect(at('https://api.mangadex.org/manga/m1'), isNull);
+  });
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:kartka_desktop/src/faults.dart';
@@ -93,7 +94,7 @@ class ProxyRoute {
     final body = await request.fold<List<int>>([], (a, b) => a..addAll(b));
     final fault = faults?.match(target, body);
     if (fault?.delay case final delay?) await Future<void>.delayed(delay);
-    if (fault != null && fault.delay == null) {
+    if (fault != null && fault.delay == null && fault.rewrite == null) {
       response.statusCode = fault.status!;
       if (fault.error case final error?) {
         response.headers.set(proxyErrorHeader, error);
@@ -140,6 +141,12 @@ class ProxyRoute {
       response.headers.set('$responseHeaderPrefix$name', values.join(', '));
       if (name == 'content-type') response.headers.set(name, values.first);
     });
+    if (fault?.rewrite case final rewrite?) {
+      // add, not write: write encodes by the content type's charset, which
+      // is Latin-1 for MangaDex's charset-less JSON.
+      response.add(utf8.encode(rewrite(await utf8.decodeStream(upstream))));
+      return;
+    }
     try {
       await response.addStream(upstream);
     } on Object catch (e) {
