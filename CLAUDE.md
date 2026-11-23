@@ -110,7 +110,8 @@ outside the library: swipes past a chapter's end, fails on a next-chapter
 wait over 1 s), `f7_page_turns.sh [limit_ms [turns [read_ms]]]` (the same
 manga at a reading pace: fails on a page spinner over 1 s),
 `f8_newer_chapter.sh [limit_ms]` (a chapter newer than the stored list:
-fails unless it opens within 1 s). The agent runs
+fails unless it opens within 1 s), `f9_library_launch.sh [limit_ms
+[runs]]` (reloads the app; fails on a library spinner over 1 s). The agent runs
 the wrapper as a cached exe (`desktop/.dart_tool/kartka_desktop`), never
 `fvm dart run`, which holds a build slot for as long as it serves. Sign-in uses no password:
 the account is Google-only. When `~/.config/kartka-agent/firebase_auth.json`

@@ -31,4 +31,17 @@ void main() {
     expect(await kv.entries(prefix: 'zz'), isEmpty);
     expect(await kv.entries(), hasLength(6));
   });
+
+  test('entries pairs every key with its own value across many rows', () async {
+    final kv = await IdbKeyValueStore.open(newIdbFactoryMemory());
+    final rows = {
+      for (var i = 0; i < 300; i++) 'lib/${(i * 7919) % 1000}': 'v$i',
+      'lia': 'outside',
+    };
+    for (final MapEntry(:key, :value) in rows.entries) {
+      await kv.set(key, value);
+    }
+    expect(await kv.entries(prefix: 'lib/'), {...rows}..remove('lia'));
+    expect(await kv.entries(), rows);
+  });
 }

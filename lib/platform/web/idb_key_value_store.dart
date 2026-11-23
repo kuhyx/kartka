@@ -50,21 +50,26 @@ class IdbKeyValueStore implements KeyValueStore {
   Future<void> remove(String key) =>
       _run(idbModeReadWrite, (s) => s.delete(key));
 
-  /// Visits only keys in `[prefix, prefix + U+FFFF]` (IndexedDB orders
+  /// Reads only keys in `[prefix, prefix + U+FFFF]` (IndexedDB orders
   /// strings by UTF-16 code unit, so that is every key starting with
-  /// [prefix]), not the whole store: the startup reads of each table no
-  /// longer scan every other table's rows too.
+  /// [prefix]), not the whole store, as two bulk requests (`getAllKeys` and
+  /// `getAll`, same range, same transaction, so both lists share one key
+  /// order). Not a cursor: each cursor step is an event-loop turn, and at
+  /// launch every turn queued behind a frame, so the library's 450- and
+  /// 800-row tables took 1-4 s on the agent (library.load a133bbb8).
   @override
-  Future<Map<String, String>> entries({String prefix = ''}) =>
-      _run(idbModeReadOnly, (s) async {
-        final result = <String, String>{};
-        final range = prefix.isEmpty
-            ? null
-            : KeyRange.bound(prefix, '$prefix\uffff');
-        await s.openCursor(range: range, autoAdvance: true).forEach((c) {
-          final key = c.key as String;
-          if (key.startsWith(prefix)) result[key] = c.value as String;
-        });
-        return result;
-      });
+  Future<Map<String, String>> entries({String prefix = ''}) => _run(
+    idbModeReadOnly,
+    (s) async {
+      final range = prefix.isEmpty
+          ? null
+          : KeyRange.bound(prefix, '$prefix\uffff');
+      final (keys, values) = await (s.getAllKeys(range), s.getAll(range)).wait;
+      return {
+        for (var i = 0; i < keys.length; i++)
+          if ((keys[i] as String).startsWith(prefix))
+            keys[i] as String: values[i] as String,
+      };
+    },
+  );
 }
