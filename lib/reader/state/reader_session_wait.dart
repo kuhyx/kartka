@@ -36,7 +36,7 @@ extension _Wait on ReaderSession {
     final cache = _cache;
     final gate = deps.shownPages;
     if (cache == null || gate == null || cache.peek(current) != null) return;
-    gate.hold(cache.get(current));
+    gate.hold(this, cache.get(current));
   }
 
   /// The page probe's report (28fffd0a): the shown page [flat] spun 1 s or

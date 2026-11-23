@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
 import 'package:kartka/core/source/unknown_source_error.dart';
 import 'package:kartka/downloads/engine/download_engine.dart';
+import 'package:kartka/downloads/engine/host_limiter.dart';
 import 'package:kartka/downloads/engine/retry.dart';
 import 'package:kartka/downloads/keys.dart';
 import 'package:kartka/downloads/queue/download_task.dart';
@@ -157,5 +158,35 @@ void main() {
     shown = Completer<void>()..complete();
     final done = await run;
     expect(done.pageCount, 3);
+  });
+
+  test('a page waits for a shown page that started mid-chapter', () async {
+    final loader = FakeLoader(gate: Completer<void>());
+    source = FakeSource(
+      pages: [
+        for (var i = 0; i < 2; i++)
+          PageRef(index: i, imageUrl: 'https://one.test/$i.png'),
+      ],
+    );
+    Completer<void>? shown;
+    final run = DownloadEngine(
+      blobs: blobs,
+      loadPage: loader.call,
+      sourceFor: (id) async => source,
+      limiter: HostLimiter(perHost: 1),
+      shownPageIdle: () => shown?.future ?? Future<void>.value(),
+      sleep: (_) async {},
+    ).download(task, onProgress: (_) {});
+    await pumpEventQueue();
+    expect(loader.calls.keys, ['https://one.test/0.png']);
+    shown = Completer<void>();
+    final first = loader.gate!;
+    loader.gate = null;
+    first.complete();
+    await pumpEventQueue();
+    expect(loader.calls.keys, ['https://one.test/0.png']);
+    shown.complete();
+    await run;
+    expect(loader.calls, hasLength(2));
   });
 }

@@ -113,6 +113,16 @@ void main() {
     expect(shown.busy, isFalse);
   });
 
+  test('leaving the reader releases its shown page', () async {
+    f.imageGates['https://img.test/c/2/0.png'] = Completer();
+    final shown = ShownPageWait();
+    final s = f.make(shownPages: shown);
+    await s.open();
+    expect(shown.busy, isTrue);
+    s.dispose();
+    expect(shown.busy, isFalse);
+  });
+
   test('the next chapter waits for the shown page, at most maxHold', () {
     fakeAsync((async) {
       f.prefs.saveSettings(const ReaderSettings(prefetchAhead: 0)).ignore();

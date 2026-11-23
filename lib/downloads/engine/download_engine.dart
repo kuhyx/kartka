@@ -70,7 +70,7 @@ class DownloadEngine {
   final Sleep sleep;
 
   /// Completes once the reader's shown page is in (`ShownPageGate.idle`):
-  /// each page waits for it before it takes a slot on the host, so a
+  /// each page waits for it, once it has its slot on the host, so a
   /// download never puts the page on screen behind its own (28fffd0a).
   final Future<void> Function() shownPageIdle;
 
@@ -133,12 +133,12 @@ class DownloadEngine {
     final key = pageBlobKey(task.mangaKey, task.chapter.url, page.index);
     final existing = stored.contains(key) ? await blobs.get(key) : null;
     if (existing != null) return existing.length;
-    await shownPageIdle();
-    final data = await _guarded(
-      hostOf(page.imageUrl),
-      shouldStop,
-      () => loadPage(page),
-    );
+    final data = await _guarded(hostOf(page.imageUrl), shouldStop, () async {
+      // In the host's slot, so a shown page that starts mid-chapter holds
+      // back every page after it, not only the ones not yet queued.
+      await shownPageIdle();
+      return await loadPage(page);
+    });
     await blobs.put(key, data);
     return data.length;
   }

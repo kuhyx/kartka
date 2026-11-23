@@ -237,6 +237,7 @@ class ReaderSession extends ChangeNotifier {
       s.recorder.dispose();
     }
     _cache?.clear();
+    deps.shownPages?.releaseAll(this);
     super.dispose();
   }
 }
