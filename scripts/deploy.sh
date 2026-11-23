@@ -60,7 +60,10 @@ capped() {
     fi
 }
 
-# Untracked files (kuhy's .claude/) are fine; tracked edits are not.
+# Untracked files (kuhy's .claude/) are fine; tracked edits are not, except
+# the weekly source-eval job's output (kartka-source-eval-full.timer rewrites
+# tools/source_eval/data/ in place; no build reads it).
+readonly GENERATED=':(exclude)tools/source_eval/data'
 preflight() {
     [[ -f "${OAUTH}" ]] || die "OAuth defines missing: ${OAUTH}"
     [[ -f "${KEYSTORE}" ]] || die "signing key missing: ${KEYSTORE}"
@@ -68,7 +71,8 @@ preflight() {
     # the debug -> release rotation lineage, scripts/lib/signing.sh).
     [[ -f "${SRC}/android/key.properties" ]] ||
         die "release key missing: ${SRC}/android/key.properties"
-    if ! git -C "${SRC}" diff --quiet || ! git -C "${SRC}" diff --cached --quiet; then
+    if ! git -C "${SRC}" diff --quiet -- . "${GENERATED}" ||
+        ! git -C "${SRC}" diff --cached --quiet -- . "${GENERATED}"; then
         die "${SRC} has uncommitted tracked changes"
     fi
     log "git pull --ff-only in ${SRC}"
