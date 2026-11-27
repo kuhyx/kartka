@@ -130,9 +130,9 @@ void main() {
     }
     // Every screen skips a gone manga; a path that logs it anyway is an
     // environment state, never a board ticket (as Suwayomi's own text).
-    final gone = DeviceExtMangaGone(
+    const gone = DeviceExtMangaGone(
       'suwayomi:2327480808438768017',
-      const ExtensionRuntimeException('HTTP error 451'),
+      ExtensionRuntimeException('HTTP error 451'),
     );
     expect(isEnvironmentError(gone), isTrue);
     final down = failing('HTTP error 500');

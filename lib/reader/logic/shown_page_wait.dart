@@ -18,7 +18,8 @@ class ShownPageWait implements ShownPageGate {
   /// The clock.
   final DateTime Function() now;
 
-  final _holds = <Object, ({Object owner, DateTime at})>{};
+  final _holds =
+      <Object, ({Object owner, Future<Object?> bytes, DateTime at})>{};
   Completer<void>? _idle;
 
   /// Whether a shown page is loading.
@@ -26,9 +27,16 @@ class ShownPageWait implements ShownPageGate {
 
   /// The page [owner] shows has [bytes] loading: [idle] waits until they
   /// settle or [releaseAll] drops them.
+  /// Holding the same [bytes] again (a rebuild of the same page) keeps its
+  /// first start, so [maxHold] still counts from it.
   void hold(Object owner, Future<Object?> bytes) {
+    if (_holds.values.any(
+      (h) => identical(h.owner, owner) && identical(h.bytes, bytes),
+    )) {
+      return;
+    }
     final token = Object();
-    _holds[token] = (owner: owner, at: now());
+    _holds[token] = (owner: owner, bytes: bytes, at: now());
     void release() => _release(token);
     bytes
         .then<void>((_) => release(), onError: (Object _) => release())

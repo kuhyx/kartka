@@ -199,7 +199,11 @@ void main() {
     fakeAsync((async) {
       f.imageGates['https://img.test/c/2/2.png'] = Completer();
       final source = _LateList();
-      final s = f.make(source: source, shownPages: ShownPageWait());
+      // The gate reads the fake clock: on the real one every idle() call
+      // got a fresh 3 s in fake time.
+      final t0 = DateTime.utc(2026, 11, 27);
+      final gate = ShownPageWait(now: () => t0.add(async.elapsed));
+      final s = f.make(source: source, shownPages: gate);
       s.open().ignore();
       async.flushMicrotasks();
       s.onItem(s.strip.itemForPage(2));

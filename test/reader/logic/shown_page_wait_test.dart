@@ -75,6 +75,19 @@ void main() {
     });
   });
 
+  test('holding the same page again keeps its first start', () {
+    fakeAsync((async) {
+      final stuck = Completer<int>().future;
+      final wait = timed(async)..hold(1, stuck);
+      async.elapse(const Duration(seconds: 2));
+      wait.hold(1, stuck);
+      var done = false;
+      unawaited(wait.idle().then((_) => done = true));
+      async.elapse(const Duration(seconds: 1));
+      expect(done, isTrue);
+    });
+  });
+
   test("releasing an owner drops only that owner's holds", () {
     fakeAsync((async) {
       final wait = timed(async);
