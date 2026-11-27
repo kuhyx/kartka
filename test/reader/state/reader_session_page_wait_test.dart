@@ -139,6 +139,42 @@ void main() {
     expect(shown.busy, isFalse);
   });
 
+  test('the open holds the gate before its page list arrives', () async {
+    final source = _LatePages();
+    final shown = ShownPageWait();
+    final s = f.make(source: source, shownPages: shown);
+    final opened = s.open();
+    await pumpEventQueue();
+    expect(shown.busy, isTrue);
+    source.pagesIn.complete(fakePages('/c/2', 5));
+    await opened;
+    await pumpEventQueue();
+    expect(shown.busy, isFalse);
+  });
+
+  test('the open holds the gate until its first 3 pages are in', () async {
+    final third = f.imageGates['https://img.test/c/2/2.png'] = Completer();
+    final shown = ShownPageWait();
+    final s = f.make(shownPages: shown);
+    await s.open();
+    await pumpEventQueue();
+    expect(shown.busy, isTrue);
+    third.complete();
+    await pumpEventQueue();
+    expect(shown.busy, isFalse);
+  });
+
+  test('an open that fails releases its hold', () async {
+    final source = _LatePages();
+    final shown = ShownPageWait();
+    final s = f.make(source: source, shownPages: shown);
+    final opened = s.open();
+    await pumpEventQueue();
+    source.pagesIn.completeError(StateError('offline'));
+    await opened;
+    expect(shown.busy, isFalse);
+  });
+
   test('the next chapter waits for the shown page, at most maxHold', () {
     fakeAsync((async) {
       f.prefs.saveSettings(const ReaderSettings(prefetchAhead: 0)).ignore();
@@ -188,6 +224,16 @@ class _LateList extends FakeSource {
 
   @override
   Future<List<ChapterInfo>> chapters(String mangaUrl) => list.future;
+}
+
+/// A source whose page list arrives when [pagesIn] completes.
+class _LatePages extends FakeSource {
+  new() : super(chapterList: sessionChapters, pageMap: const {});
+
+  final pagesIn = Completer<List<PageRef>>();
+
+  @override
+  Future<List<PageRef>> pages(String chapterUrl) => pagesIn.future;
 }
 
 FakeSource _threeChapters() => FakeSource(

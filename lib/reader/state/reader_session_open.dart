@@ -31,6 +31,12 @@ extension _Open on ReaderSession {
     // Suwayomi's list refresh (same rate-limited source) slowed the page
     // list from 0.12 s to 2.1 s and page 1 from 0.4 s to 1.3 s.
     final firstPage = Completer<void>();
+    // Held from the open's start until the first 3 pages are in: a
+    // download beside the page list slowed it and page 1 past 1 s on 2 of
+    // 3 opens, and one let in at page 1 queued page 2 (28fffd0a). A failed
+    // open releases it (`_fail`).
+    final landed = Completer<void>();
+    deps.shownPages?.hold(this, landed.future);
     final listReady = _listReady = firstPage.future
         .then((_) => _chapterList(found))
         .then((list) {
@@ -95,6 +101,15 @@ extension _Open on ReaderSession {
       );
     }
     _prefetch();
+    // The shown page and the look-aheads it fetches next, at most 2.
+    final ahead = settings.prefetchAhead < 2 ? settings.prefetchAhead : 2;
+    final cache = _cache!;
+    unawaited(
+      [
+        for (var i = page; i <= page + ahead && i <= last; i++)
+          cache.waitFor(i).then<void>((_) {}, onError: _no),
+      ].wait.whenComplete(landed.complete),
+    );
     if (_flat.isEmpty) {
       firstPage.complete();
     } else {
@@ -143,4 +158,6 @@ extension _Open on ReaderSession {
       return const [];
     }
   }
+
+  static void _no(Object _) {}
 }

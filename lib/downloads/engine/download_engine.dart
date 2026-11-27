@@ -92,7 +92,12 @@ class DownloadEngine {
     final pages = await _guarded(
       'source:${task.sourceId}',
       shouldStop,
-      () => source.pages(url),
+      // The page list too: on a device extension it is a call to the same
+      // site, and a reader opening beside it waits for both (28fffd0a).
+      () async {
+        await shownPageIdle();
+        return await source.pages(url);
+      },
     );
     if (pages.isEmpty) throw StateError('chapter $url has no pages');
     final stored = (await blobs.list(chapterBlobPrefix(task.mangaKey, url)))

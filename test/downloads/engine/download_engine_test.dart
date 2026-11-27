@@ -145,6 +145,19 @@ void main() {
     );
   });
 
+  test('the page list waits for the shown reader page too', () async {
+    final shown = Completer<void>();
+    final run = engine(
+      FakeLoader(),
+      shownPageIdle: () => shown.future,
+    ).download(task, onProgress: (_) {});
+    await pumpEventQueue();
+    expect(source.pageCalls, 0);
+    shown.complete();
+    await run;
+    expect(source.pageCalls, 1);
+  });
+
   test('each page waits for the shown reader page (28fffd0a)', () async {
     final loader = FakeLoader();
     var shown = Completer<void>();

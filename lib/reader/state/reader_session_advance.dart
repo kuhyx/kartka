@@ -4,6 +4,8 @@ part of 'reader_session.dart';
 /// chapter.
 extension _Advance on ReaderSession {
   void _fail(String? message) {
+    // A failed open shows no page: background work may go on.
+    deps.shownPages?.releaseAll(this);
     error = message;
     phase = ReaderPhase.failed;
     notifyListeners();
