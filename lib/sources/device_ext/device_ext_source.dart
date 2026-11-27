@@ -1,4 +1,5 @@
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/manga_gone_error.dart';
 import 'package:kartka/core/source/manga_source.dart';
 import 'package:kartka/platform/extension_runtime.dart';
 import 'package:kartka/sources/device_ext/device_ext_api.dart';
@@ -77,11 +78,23 @@ class DeviceExtSource implements MangaSource {
         : extImageUrl(info.id, index: 0, imageUrl: thumb);
   }
 
+  /// [method] on the manga at [mangaUrl]. A site that answers 404, 410 or
+  /// 451 (taken down) no longer has it, a state the screens show
+  /// (4c696ac8: Atsumaru's 451 filed a ticket on every update check).
+  Future<Object?> _manga(String method, String mangaUrl) async {
+    try {
+      return await runtime.invoke(method, _args({'url': _url(mangaUrl)}));
+    } on ExtensionRuntimeException catch (e) {
+      if (_gone.hasMatch(e.message)) throw DeviceExtMangaGone(ref.id, e);
+      rethrow;
+    }
+  }
+
+  static final _gone = RegExp(r'^HTTP error (404|410|451)$');
+
   @override
   Future<MangaDetails> details(String mangaUrl) async {
-    final m =
-        (await runtime.invoke('details', _args({'url': _url(mangaUrl)})))!
-            as Map<Object?, Object?>;
+    final m = (await _manga('details', mangaUrl))! as Map<Object?, Object?>;
     final status = m['status'] as int? ?? 0;
     return MangaDetails(
       sourceId: ref.id,
@@ -99,9 +112,7 @@ class DeviceExtSource implements MangaSource {
 
   @override
   Future<List<ChapterInfo>> chapters(String mangaUrl) async {
-    final list =
-        (await runtime.invoke('chapters', _args({'url': _url(mangaUrl)})))!
-            as List<Object?>;
+    final list = (await _manga('chapters', mangaUrl))! as List<Object?>;
     return [
       for (final e in list)
         if (e case final Map<Object?, Object?> c)
@@ -151,3 +162,19 @@ List<String> _list(String csv) => {
   for (final s in csv.split(','))
     if (s.trim().isNotEmpty) s.trim(),
 }.toList();
+
+/// The site no longer serves this manga (HTTP 404, 410 or 451). Names the
+/// source and the status only: the text is logged verbatim.
+class DeviceExtMangaGone implements MangaGoneError {
+  /// Creates the error for [sourceId] from the runtime's [cause].
+  const new(this.sourceId, this.cause);
+
+  /// Kartka source id.
+  final String sourceId;
+
+  /// What the extension reported.
+  final ExtensionRuntimeException cause;
+
+  @override
+  String toString() => '$cause: gone from $sourceId';
+}

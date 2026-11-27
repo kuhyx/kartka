@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/source/manga_gone_error.dart';
 import 'package:kartka/platform/memory/memory_extension_runtime.dart';
 import 'package:kartka/platform/memory/memory_fakes.dart';
 import 'package:kartka/platform/memory/memory_stores.dart';
@@ -112,5 +113,28 @@ void main() {
       ),
     );
     expect((await odd.details('/m')).status, MangaStatus.unknown);
+  });
+
+  test('a manga the site refuses (404, 410, 451) is gone (4c696ac8)', () async {
+    DeviceExtSource failing(String text) => DeviceExtSource(
+      info: info,
+      runtime: FakeExtensionRuntime(
+        handler: (m, a) => throw ExtensionRuntimeException(text),
+      ),
+    );
+    for (final code in [404, 410, 451]) {
+      final s = failing('HTTP error $code');
+      await expectLater(s.chapters('/m'), throwsA(isA<MangaGoneError>()));
+      await expectLater(s.details('/m'), throwsA(isA<MangaGoneError>()));
+    }
+    final down = failing('HTTP error 500');
+    await expectLater(
+      down.chapters('/m'),
+      throwsA(isA<ExtensionRuntimeException>()),
+    );
+    await expectLater(
+      failing('HTTP error 451').popular(1),
+      throwsA(isA<ExtensionRuntimeException>()),
+    );
   });
 }

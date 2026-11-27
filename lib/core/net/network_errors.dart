@@ -6,7 +6,9 @@
 /// wrapped (`ClientException with SocketException: ...`) anyway. Android
 /// extension chapters fetch in Java (OkHttp), and only its message comes
 /// back (`ExtensionRuntimeException`), so Java's texts are matched too:
-/// `Unable to resolve host "<h>"` is its failed DNS lookup.
+/// `Unable to resolve host "<h>"` is its failed DNS lookup, and a bare
+/// `timeout` its socket timeout (07626036: the phone's network dropping
+/// mid-check).
 library;
 
 import 'dart:async';
@@ -15,7 +17,7 @@ final _transient = RegExp(
   'Failed host lookup|Unable to resolve host|Network is unreachable|'
   'No route to host|Connection reset|connection abort|Connection closed|'
   'Connection refused|'
-  r'Connection timed out|timed out|: timeout\b|HandshakeException',
+  r'Connection timed out|timed out|: timeout\b|^timeout$|HandshakeException',
   caseSensitive: false,
 );
 
@@ -39,7 +41,7 @@ final _environment = RegExp(
   'No route to host|'
   'Name or service not known|connection abort|Connection reset|'
   'Connection refused|Timed out waiting for WebView|'
-  r'KartkaHttpException\(50[0234],|not on the server for ',
+  r'KartkaHttpException\(50[0234],|not on the server for |^timeout$',
   caseSensitive: false,
 );
 

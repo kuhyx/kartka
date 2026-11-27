@@ -53,6 +53,15 @@ void main() {
     expect(isEnvironmentError(java), isTrue);
   });
 
+  test("Java's socket timeout from the extension runtime is transient "
+      '(07626036)', () {
+    const java = ExtensionRuntimeException('timeout');
+    expect(isTransientNetworkError(java), isTrue);
+    expect(isOfflineError(java), isFalse);
+    expect(isEnvironmentError(java), isTrue);
+    expect(isEnvironmentError(StateError('timeout of x')), isFalse);
+  });
+
   test('a transient failure is retried with backoff, then works', () async {
     final key = mangaKeyOf('suwayomi:1', '/a');
     final waits = <Duration>[];
