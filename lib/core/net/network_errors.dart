@@ -41,7 +41,8 @@ final _environment = RegExp(
   'No route to host|'
   'Name or service not known|connection abort|Connection reset|'
   'Connection refused|Timed out waiting for WebView|'
-  r'KartkaHttpException\(50[0234],|not on the server for |^timeout$',
+  r'KartkaHttpException\(50[0234],|not on the server for |gone from |'
+  r'^timeout$',
   caseSensitive: false,
 );
 

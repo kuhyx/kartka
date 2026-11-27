@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kartka/core/models/models.dart';
+import 'package:kartka/core/net/network_errors.dart';
 import 'package:kartka/core/source/manga_gone_error.dart';
 import 'package:kartka/platform/memory/memory_extension_runtime.dart';
 import 'package:kartka/platform/memory/memory_fakes.dart';
@@ -127,6 +128,13 @@ void main() {
       await expectLater(s.chapters('/m'), throwsA(isA<MangaGoneError>()));
       await expectLater(s.details('/m'), throwsA(isA<MangaGoneError>()));
     }
+    // Every screen skips a gone manga; a path that logs it anyway is an
+    // environment state, never a board ticket (as Suwayomi's own text).
+    final gone = DeviceExtMangaGone(
+      'suwayomi:2327480808438768017',
+      const ExtensionRuntimeException('HTTP error 451'),
+    );
+    expect(isEnvironmentError(gone), isTrue);
     final down = failing('HTTP error 500');
     await expectLater(
       down.chapters('/m'),
