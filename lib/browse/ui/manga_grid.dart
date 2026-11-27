@@ -171,16 +171,26 @@ class _PagedMangaGridState extends State<PagedMangaGrid> {
             itemBuilder: (_, i) => MangaTile(c.items[i]),
           ),
         ),
-        SliverToBoxAdapter(child: _Footer(c)),
+        // The footer is laid out below the screen too, while the next page
+        // loads a screen ahead: only a footer on screen is a wait anyone
+        // sees (89e1ec6e).
+        SliverLayoutBuilder(
+          builder: (_, constraints) => SliverToBoxAdapter(
+            child: _Footer(c, shown: constraints.remainingPaintExtent > 0),
+          ),
+        ),
       ],
     );
   }
 }
 
 class _Footer extends StatelessWidget {
-  const new(this.c);
+  const new(this.c, {required this.shown});
 
   final PagedController<MangaSummary> c;
+
+  /// Whether the footer is on screen: only then is its spinner timed.
+  final bool shown;
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +213,9 @@ class _Footer extends StatelessWidget {
         ],
       );
     } else if (c.hasNext) {
-      if (c.loading) {
+      if (c.loading && !shown) {
+        child = const CircularProgressIndicator();
+      } else if (c.loading) {
         child = ShownWaitWatch(
           key: ValueKey(c.pagesLoaded),
           operation: 'browse.nextpage',
