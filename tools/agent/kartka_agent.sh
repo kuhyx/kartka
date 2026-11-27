@@ -10,6 +10,9 @@
 #                             # slow-pages[:<ms>], slow-details[:<ms>],
 #                             # slow-images[:<ms>], hide-newest
 #   kartka_agent.sh fault clear             # back to the real network
+#   kartka_agent.sh hits <since ISO UTC>    # reader/perf.slow probe entries
+#                             # since then, each tagged [clean] or with the
+#                             # fault that was on (read before blaming code)
 #   kartka_agent.sh <verb>    # any flutter_web_drive verb: tree, tap, text,
 #                             # key, scroll, wait, shot, eval, console, tap-xy
 #
@@ -84,6 +87,9 @@ start_wrapper() {
 }
 
 cmd_start() {
+  mkdir -p "$AGENT_HOME"
+  # Opens the fault record for this run: the rules already in force.
+  if [[ -r "$AGENT_FAULTS" ]]; then log_fault "$(jq -c . "$AGENT_FAULTS")"; else log_fault none; fi
   start_wrapper
   echo "wrapper: $AGENT_URL (unit $WRAPPER_UNIT)"
   drive start --url "$AGENT_URL" --profile "$AGENT_HOME/profile" \
@@ -110,6 +116,7 @@ cmd_fault() {
   mkdir -p "$AGENT_HOME"
   if [[ "$host" == clear ]]; then
     rm -f "$AGENT_FAULTS"
+    log_fault none
     echo "faults: none"
     return 0
   fi
@@ -119,7 +126,34 @@ cmd_fault() {
   [[ -r "$AGENT_FAULTS" ]] && current="$(cat "$AGENT_FAULTS")"
   jq --arg h "$host" --arg m "$mode" '.[$h] = $m' <<<"$current" >"$AGENT_FAULTS.tmp"
   mv "$AGENT_FAULTS.tmp" "$AGENT_FAULTS"
+  log_fault "$(jq -c . "$AGENT_FAULTS")"
   echo "faults: $(jq -c . "$AGENT_FAULTS")"
+}
+
+# Appends the rules now in force ($1: JSON or `none`) to the fault history.
+log_fault() {
+  printf '%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)" "$1" >>"$AGENT_FAULT_HISTORY"
+}
+
+# Prints the reader and perf.slow entries of the agent's diagnostics log at
+# or after $1, each tagged with the fault in force then ([clean]: none;
+# [unrecorded]: before the first history line, so nobody knows).
+# Timestamps share one ISO form, so they compare as strings.
+cmd_hits() {
+  local since="${1:-}"
+  [[ -n "$since" ]] || { echo "usage: kartka_agent.sh hits <since ISO UTC>" >&2; exit 2; }
+  [[ -r "$AGENT_DIAGNOSTICS" ]] ||
+    { echo "kartka-agent: no diagnostics log at $AGENT_DIAGNOSTICS" >&2; exit 1; }
+  local history=""
+  [[ -r "$AGENT_FAULT_HISTORY" ]] && history="$(cat "$AGENT_FAULT_HISTORY")"
+  jq -r --arg since "$since" --arg history "$history" '
+    ($history | split("\n") | map(select(length > 0) | capture("^(?<at>\\S+) (?<rules>.*)$"))) as $h
+    | select(.at >= $since and (.kind | test("^reader\\.|^perf\\.slow$")))
+    | .at as $t
+    | ([$h[] | select(.at <= $t)] | last | .rules // "") as $f
+    | ({"": "[unrecorded]", "none": "[clean]"}[$f] // "[fault \($f)]") as $tag
+    | "\(.at) \(.kind) \($tag) \(.error)"
+  ' "$AGENT_DIAGNOSTICS"
 }
 
 main() {
@@ -129,7 +163,8 @@ main() {
     stop) cmd_stop ;;
     status) cmd_status ;;
     fault) shift; cmd_fault "$@" ;;
-    "" | -h | --help) sed -n '2,21p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' ;;
+    hits) shift; cmd_hits "$@" ;;
+    "" | -h | --help) sed -n '2,25p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' ;;
     *) drive "$@" ;;
   esac
 }

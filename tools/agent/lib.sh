@@ -12,6 +12,10 @@ readonly AGENT_PORT="${KARTKA_AGENT_PORT:-47392}"
 readonly AGENT_CDP_PORT="${KARTKA_AGENT_CDP_PORT:-9342}"
 readonly AGENT_HOME="$HOME/.local/share/kartka-agent"
 readonly AGENT_FAULTS="$AGENT_HOME/faults.json"
+# Every fault change, one "<UTC ms ISO> <rules JSON|none>" line each, so a
+# probe entry can be told apart from one a fault caused (`hits`).
+readonly AGENT_FAULT_HISTORY="$AGENT_HOME/faults.history"
+readonly AGENT_DIAGNOSTICS="$AGENT_HOME/files/diagnostics/kartka-diagnostics.jsonl"
 readonly AGENT_URL="http://127.0.0.1:${AGENT_PORT}/"
 readonly WRAPPER_UNIT="kartka-agent-wrapper"
 readonly CHROME_UNIT="kartka-agent-chrome"

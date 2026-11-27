@@ -40,6 +40,9 @@ to_tabs() {
     fi
     sleep 0.5
   done
+  # A route opened by URL (SOURCE_ID) has no page under it to pop to.
+  on_tabs || drive eval "location.hash = '#/library'" >/dev/null 2>&1 || true
+  sleep 1
   on_tabs || fail "the tab shell never appeared"
 }
 
@@ -52,11 +55,18 @@ open_reader() {
   to_tabs
 
   step "open \"$TITLE\" from $SOURCE"
-  check drive tap Browse >/dev/null
-  check drive wait "$SOURCE" --timeout 20 >/dev/null
-  # The source grid settles once every provider listed: tap after that.
-  sleep 2
-  check drive tap "$SOURCE" >/dev/null
+  if [[ -n "${SOURCE_ID:-}" ]]; then
+    # A source the Browse grid does not show (its language is not picked,
+    # and the picked languages sync): open its route directly.
+    check drive eval "location.hash = '#/browse/source/' +
+      encodeURIComponent('$SOURCE_ID')" >/dev/null
+  else
+    check drive tap Browse >/dev/null
+    check drive wait "$SOURCE" --timeout 20 >/dev/null
+    # The source grid settles once every provider listed: tap after that.
+    sleep 2
+    check drive tap "$SOURCE" >/dev/null
+  fi
   check drive wait "$TITLE" --timeout 20 >/dev/null
   check drive tap "$TITLE" >/dev/null
   check drive wait "Show details" --timeout 20 >/dev/null
@@ -67,7 +77,7 @@ open_reader() {
   step "open chapter row $CHAPTER_ROW"
   # Chapter row N of the detail list, once the list is in (up to ~10 s).
   chapter_row() {
-    drive tree | sed -nE 's/^#[0-9]+ button "(Ch\.[^"]+)" \[tap\].*/\1/p' |
+    drive tree | sed -nE 's/^#[0-9]+ button "((Vol\. [0-9]+ )?Ch(\.|apter )[^"]+)" \[tap\].*/\1/p' |
       sed -n "${CHAPTER_ROW}p"
   }
   local chapter=""

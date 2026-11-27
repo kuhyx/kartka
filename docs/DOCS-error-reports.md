@@ -107,17 +107,16 @@ after the sheet opened still joined a cold page list (1.7 s on f4).
 each open re-listed every provider one after another, so a slow runtime
 added up to 5 s (build 615) and a cold miss took 0.83 s. The reader's two
 synced-kv prefs reads (0.33 s on web) run beside the page list.
-Left over (2026-11-27, a876fae): one `page waited on open` from a
-MangaDex@Home node on the agent (11:12Z); its cause was not caught. Later
-opens, two of chapters nothing had fetched before, never tripped it:
-in the browser's resource timing the at-home lookup takes 0.30-0.38 s,
-the page 1 request starts 0.01-0.07 s after it, and the node serves it
-from cache in 0.01-0.1 s (a 3.7 MB page over `/proxy` in 0.05 s). A node
-cache miss (about 1 s measured direct: data-saver misses 1.0-1.1 s, a
-23 MB page 0.8 s) is the likely, unconfirmed cause. The image URL exists
-only once the lookup answers, and MangaDex's documented recovery is a new
-at-home lookup (40/min) after a failure, not a parallel fetch, so no
-hedge is sent.
+Both agent `page waited on open` hits of 2026-11-27 (11:12Z, 11:52Z) came
+from runs with `fault '*' slow-images:800` on, not from MangaDex: with the
+fault an open shows page 1 after 1.66 s, at 1200 ms the same entry is
+logged at once, and clean opens (5 timed, 3 right after leaving another
+chapter) fetch page 1 with no stall, done 0.5-0.66 s after the tap. Full
+pages come from the node's cache in 0.06-0.13 s; only data-saver files,
+off by default, missed (about 1 s). Read probe entries through
+`kartka_agent.sh hits <since>`, which tags each with the fault then in
+force. Suwayomi turns (Weeb Central on the eval server, f7 `F7_SOURCE_ID`)
+peak at 0.32 s at a reading pace and 0.24 s at 0.25 s per page.
 `browse.nextpage`: the server's source rate limiter is shared by its
 thumbnails and its pages, so a grid's 50 uncached covers (up to 25 s each
 on MangaFire) put the next page 8-41 s behind them (89e1ec6e).

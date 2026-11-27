@@ -97,7 +97,9 @@ to `flutter_web_drive` (kuhyx/utils; README there): `tree`, `tap "<label>"`,
 existing `build/web`, so rebuild that first when lib/ changed. `fault <host|*> <mode>` / `fault clear`
 injects `/proxy` faults (offline, abort-once, page-500, webview,
 upstream-dns, gone, slow-pages[:ms], slow-details[:ms], slow-images[:ms], hide-newest;
-`desktop/lib/src/faults.dart`); `tools/agent/uploadable.dart`
+`desktop/lib/src/faults.dart`); `hits <since ISO UTC>` lists the reader
+probe entries since then, each tagged `[clean]` or with the fault in force
+(read it before blaming code for a hit); `tools/agent/uploadable.dart`
 judges a diagnostics log by the app's upload rule. The agent wrapper runs with
 `--agent`, so its app never uploads error reports (no board tickets). Flows in
 `tools/agent/flows/` log numbered steps and exit non-zero with the failing

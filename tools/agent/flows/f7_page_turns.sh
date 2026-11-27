@@ -7,7 +7,9 @@
 # per turn; exits 1 when one is over LIMIT_MS. A page's image cached by the
 # browser from an earlier run loads at once: use F7_CHAPTER for fresh ones.
 #   tools/agent/flows/f7_page_turns.sh [limit_ms=1000] [turns=8] [read_ms=1500]
-# F7_SOURCE / F7_TITLE / F7_CHAPTER pick the manga. Combine with
+# F7_SOURCE / F7_TITLE / F7_CHAPTER pick the manga; F7_SOURCE_ID (e.g.
+# `suwayomi:2131019126180322627`, Weeb Central on a Suwayomi server set
+# for the agent) opens a source the Browse grid hides. Combine with
 # `kartka_agent.sh fault '*' slow-images:<ms>` (every page image <ms> late).
 # Rebuild build/web first when lib/ changed (scripts/build_web.sh).
 set -euo pipefail
@@ -21,6 +23,7 @@ readonly LIMIT_MS="${1:-1000}"
 readonly TURNS="${2:-8}"
 readonly READ_MS="${3:-1500}"
 readonly SOURCE="${F7_SOURCE:-M | Built-in | MangaDex}"
+readonly SOURCE_ID="${F7_SOURCE_ID:-}"
 readonly DEFAULT_TITLE="The Guy She Was Interested in Wasn't a Guy at All"
 readonly TITLE="${F7_TITLE:-$DEFAULT_TITLE}"
 readonly CHAPTER_ROW="${F7_CHAPTER:-8}"

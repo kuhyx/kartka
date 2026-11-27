@@ -22,3 +22,6 @@ scripts/test_deploy.sh
 
 # The agent flows' reader-header parsing (no agent needed).
 tools/agent/flows/test_reader_nav.sh
+
+# The agent's fault history and `hits` tagging (no agent needed).
+tools/agent/test_agent_hits.sh
