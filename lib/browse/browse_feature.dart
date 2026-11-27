@@ -151,6 +151,7 @@ class BrowseRuntime {
     health: _health,
     detailSlots: _env.registry.all<MangaDetailSlot>(),
     coverLoader: _covers.get,
+    coversYieldTo: _covers.yieldTo,
     browser: _env.platform.browser,
     diagnostics: DiagnosticsLog.of(_env.platform.diagnostics),
     details: DetailStore(_env.platform.kv),

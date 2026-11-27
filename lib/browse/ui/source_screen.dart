@@ -81,7 +81,7 @@ class _SourceTabsState extends State<_SourceTabs> {
     final q = raw.trim();
     if (q.isEmpty) return;
     setState(() => _active = q);
-    unawaited(_search.reset(fetch: _searchFetch(q)));
+    unawaited(_search.reset(fetch: _yielding(_searchFetch(q))));
   }
 
   /// A new content type reloads what was already fetched; the other grids
@@ -96,10 +96,19 @@ class _SourceTabsState extends State<_SourceTabs> {
 
   PagedController<MangaSummary> _paged(PageFetcher<MangaSummary> fetch) =>
       PagedController<MangaSummary>(
-        fetch,
+        _yielding(fetch),
         keyOf: (m) => m.url,
         onError: _report,
       );
+
+  // A page fetch goes before queued covers (89e1ec6e): they share the
+  // server's rate limiter for this source.
+  PageFetcher<MangaSummary> _yielding(PageFetcher<MangaSummary> fetch) =>
+      (page) {
+        final result = fetch(page);
+        if (mounted) BrowseScope.of(context).coversYieldTo?.call(result);
+        return result;
+      };
 
   /// A failed page (the grid's Retry screen) goes to the diagnostics log.
   void _report(Object error, StackTrace stack) {

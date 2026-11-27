@@ -43,6 +43,7 @@ class BrowseDeps {
     this.health,
     this.detailSlots = const [],
     this.coverLoader,
+    this.coversYieldTo,
     this.browser = const UnavailableBrowser(),
     this.diagnostics,
     ChapterUpdateChecker? updates,
@@ -89,6 +90,10 @@ class BrowseDeps {
 
   /// Cover bytes loader.
   final CoverLoader? coverLoader;
+
+  /// Lets a page fetch go before queued covers on the source's rate
+  /// limiter (`CoverCache.yieldTo`, 89e1ec6e); none: covers never wait.
+  final void Function(Future<Object?> work)? coversYieldTo;
 
   /// "Open in WebView" (docs/DOCS-contracts-webview.md §7).
   final KartkaBrowser browser;

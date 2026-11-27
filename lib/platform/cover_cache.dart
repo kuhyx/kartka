@@ -24,6 +24,8 @@ class CoverCache {
     this.store,
     this.maxBytes = 48 << 20,
     this.maxLoads = 2,
+    this.maxHold = const Duration(seconds: 3),
+    this.releaseGrace = const Duration(milliseconds: 250),
   });
 
   /// Fetches a cover the cache does not have.
@@ -45,6 +47,14 @@ class CoverCache {
   /// first.
   final int maxLoads;
 
+  /// How long [yieldTo] holds back un-started covers at most.
+  final Duration maxHold;
+
+  /// How long covers stay held after the last [yieldTo] settles, so the
+  /// grid's next page (asked for 30-60 ms later) does not start behind
+  /// covers released in between (1.7 s instead of 0.7 s, 89e1ec6e).
+  final Duration releaseGrace;
+
   /// Key prefix in [store].
   static const prefix = 'cache/covers/';
 
@@ -53,6 +63,54 @@ class CoverCache {
   final _running = <String, int>{};
   final _waiting = <String, List<Completer<void>>>{};
   int _bytes = 0;
+  int _yields = 0;
+  Timer? _grace; // Running: covers stay held ([releaseGrace]).
+
+  bool get _held => _yields > 0 || _grace != null;
+
+  /// Holds back cover loads that have not started while [work] (a browse
+  /// page fetch) runs, at most [maxHold], so the page is not queued
+  /// behind covers on the server's rate limiter (89e1ec6e). Covers
+  /// already loading finish; the held ones then start, newest first.
+  void yieldTo(Future<Object?> work) {
+    _yields++;
+    _grace?.cancel();
+    _grace = null;
+    var settled = false;
+    late final Timer expiry;
+    void done() {
+      if (settled) return;
+      settled = true;
+      // A settled page leaves no timer behind (widget tests assert that).
+      expiry.cancel();
+      _yields--;
+      if (_yields > 0) return;
+      if (releaseGrace == Duration.zero) return _startWaiting();
+      _grace = Timer(releaseGrace, () {
+        _grace = null;
+        _startWaiting();
+      });
+    }
+
+    expiry = Timer(maxHold, done);
+    work.then<void>((_) => done(), onError: (Object _) => done()).ignore();
+  }
+
+  /// When every yield is over, start waiting covers of every host up to
+  /// [maxLoads] each, newest first.
+  void _startWaiting() {
+    for (final host in _waiting.keys.toList()) {
+      final waiting = _waiting[host];
+      if (waiting == null) continue;
+      var free = maxLoads - (_running[host] ?? 0);
+      while (free > 0 && waiting.isNotEmpty) {
+        waiting.removeLast().complete();
+        _running[host] = (_running[host] ?? 0) + 1;
+        free--;
+      }
+      if (waiting.isEmpty) _waiting.remove(host);
+    }
+  }
 
   /// The cover of [url] when it is in memory (marking it recent), else null.
   Uint8List? peek(String url) {
@@ -87,10 +145,12 @@ class CoverCache {
     return _remember(url, bytes);
   }
 
-  /// [load] of [url] once its host has a free slot.
+  /// [load] of [url] once its host has a free slot and no page fetch
+  /// holds covers back ([yieldTo]).
   Future<Uint8List> _slotted(String url) async {
     final host = Uri.tryParse(url)?.host ?? '';
-    if ((_running[host] ?? 0) >= maxLoads) {
+    if (_held || (_running[host] ?? 0) >= maxLoads) {
+      // Whoever completes the turn has already counted this slot.
       final turn = Completer<void>();
       (_waiting[host] ??= []).add(turn);
       await turn.future;
@@ -100,9 +160,10 @@ class CoverCache {
     try {
       return await load(url);
     } finally {
-      // The slot passes to the newest waiting cover, or frees.
+      // The slot passes to the newest waiting cover, or frees (always
+      // frees while a page fetch holds covers back).
       final waiting = _waiting[host];
-      if (waiting != null && waiting.isNotEmpty) {
+      if (!_held && waiting != null && waiting.isNotEmpty) {
         waiting.removeLast().complete();
       } else {
         _running[host] = _running[host]! - 1;

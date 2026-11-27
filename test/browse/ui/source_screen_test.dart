@@ -16,6 +16,14 @@ void main() {
     expect(find.text('Title 5'), findsOneWidget);
   });
 
+  testWidgets('every page fetch holds covers back (89e1ec6e)', (t) async {
+    final src = FakeSource('mangadex', pageCount: 3, perPage: 2);
+    final holds = <Future<Object?>>[];
+    final h = Harness(sources: [src], coversYieldTo: holds.add);
+    await h.pump(t, const SizedBox(), at: sourceRoute('mangadex'));
+    expect(holds, hasLength(src.calls.length));
+  });
+
   testWidgets('scrolling near the end loads the next page', (t) async {
     final src = FakeSource('mangadex', pageCount: 3, perPage: 30);
     final h = Harness(sources: [src]);

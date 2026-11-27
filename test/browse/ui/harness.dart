@@ -93,6 +93,7 @@ class Harness {
     BrowseLanguageStore? languages,
     BrowseShownStore? shown,
     BrowseContentTypeStore? contentType,
+    void Function(Future<Object?> work)? coversYieldTo,
   }) : provider = FakeSourceProvider(),
        languages = languages ?? BrowseLanguageStore(MemoryKeyValueStore()) {
     final registry = SourceRegistry([
@@ -110,6 +111,7 @@ class Harness {
       health: health,
       detailSlots: [slot],
       coverLoader: withCovers ? (_) async => onePixelPng : null,
+      coversYieldTo: coversYieldTo,
       clock: () => DateTime.utc(2026, 10, 24),
       browser: browser ?? const UnavailableBrowser(),
       diagnostics: diagnostics,

@@ -123,6 +123,9 @@ thumbnails and its pages, so a grid's 50 uncached covers (up to 25 s each
 on MangaFire) put the next page 8-41 s behind them (89e1ec6e).
 `CoverCache.maxLoads` runs 2 cover loads per host at once, newest first:
 a page then waits behind at most 2 (1.2-1.6 s, fetched a page ahead).
+While a page is fetched the queued covers wait (`CoverCache.yieldTo`,
+at most 3 s, then 250 ms more for the grid's next page), so the page goes
+next on the limiter: 0.7 s at most, 1.7 s with 2 covers loading.
 A library entry whose source is gone (a dead Suwayomi source) showed its
 details and a timed `details.refresh` bar for the whole 10 s source wait
 (2d26b6d5): once every provider has listed (`SourceRegistry.settled`), a
