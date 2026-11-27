@@ -107,15 +107,17 @@ after the sheet opened still joined a cold page list (1.7 s on f4).
 each open re-listed every provider one after another, so a slow runtime
 added up to 5 s (build 615) and a cold miss took 0.83 s. The reader's two
 synced-kv prefs reads (0.33 s on web) run beside the page list.
-Left over (2026-11-27, a876fae): `page waited on open` from a MangaDex@Home
-node, 1 of 14 fresh opens on the agent. Measured in the browser's resource
-timing: the at-home lookup takes 0.30-0.38 s, the page 1 request starts
-0.01-0.07 s after it, and a node cache hit serves it in 0.01-0.1 s
-(a 3.7 MB page over `/proxy` in 0.05 s). A node cache miss takes about
-1 s (data-saver misses 1.0-1.1 s, a 23 MB page 0.8 s), and the image URL
-exists only once the lookup answers, so nothing in the reader can start it
-sooner. MangaDex's documented recovery is a new at-home lookup (40/min)
-after a failure, not a parallel fetch, so no hedge is sent.
+Left over (2026-11-27, a876fae): one `page waited on open` from a
+MangaDex@Home node on the agent (11:12Z); its cause was not caught. Later
+opens, two of chapters nothing had fetched before, never tripped it:
+in the browser's resource timing the at-home lookup takes 0.30-0.38 s,
+the page 1 request starts 0.01-0.07 s after it, and the node serves it
+from cache in 0.01-0.1 s (a 3.7 MB page over `/proxy` in 0.05 s). A node
+cache miss (about 1 s measured direct: data-saver misses 1.0-1.1 s, a
+23 MB page 0.8 s) is the likely, unconfirmed cause. The image URL exists
+only once the lookup answers, and MangaDex's documented recovery is a new
+at-home lookup (40/min) after a failure, not a parallel fetch, so no
+hedge is sent.
 `browse.nextpage`: the server's source rate limiter is shared by its
 thumbnails and its pages, so a grid's 50 uncached covers (up to 25 s each
 on MangaFire) put the next page 8-41 s behind them (89e1ec6e).
