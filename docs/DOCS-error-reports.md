@@ -46,8 +46,9 @@ connects):
   never go up. Environment states
   (`isEnvironmentError`: no DNS or route, a dropped or refused connection, a
   500/502/503/504 from our server, its upstream unknown or its WebView
-  timing out, a manga the server no longer has) stay on the device: the
-  screens show them; a ticket could not fix them.
+  timing out, a manga the server no longer has, an in-app extension's bare
+  Java `timeout` (07626036) or its 404/410/451 for one manga, 4c696ac8)
+  stay on the device: the screens show them; a ticket could not fix them.
 - `ErrorRouteObserver` stamps the go_router pattern into the shared
   reporter, so perf.slow signatures (kind + route + operation) are the
   same as before.
@@ -126,6 +127,9 @@ A library entry whose source is gone (a dead Suwayomi source) showed its
 details and a timed `details.refresh` bar for the whole 10 s source wait
 (2d26b6d5): once every provider has listed (`SourceRegistry.settled`), a
 missing source fails at once, and one listed later loads by itself.
+An open beside running downloads (64f0bd6f): download calls already in
+flight made its page list and page 1 take ~1 s each (0.2 s alone), so each
+new shown page cancels them (DOCS-device-extensions, `cancelBackground`).
 `tools/agent/flows/f4_reader_sweep.sh` opens the newest chapters on
 Updates headless and fails on any open over 1 s.
 
