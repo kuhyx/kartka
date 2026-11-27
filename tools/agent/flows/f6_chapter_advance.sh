@@ -50,10 +50,14 @@ open_reader
 for ((run = 1; run <= RUNS; run++)); do
   IFS='|' read -r name page count <<<"$h"
   step "run $run: page to the end of \"$name\" ($page / $count)"
-  for ((p = page; p < count; p++)); do
-    check drive key PageDown >/dev/null
+  # A burst of PageDowns can drop one or two: top up from the header.
+  for ((try = 0; try < 4 && page < count; try++)); do
+    for ((p = page; p < count; p++)); do
+      check drive key PageDown >/dev/null
+    done
+    h="$(wait_header)" || fail "the header went away"
+    IFS='|' read -r _ page _ <<<"$h"
   done
-  h="$(wait_header)" || fail "the header went away"
   [[ "$h" == "$name|$count|$count" ]] || fail "not on the last page: $h"
   start="$(now_ms)"
   check drive key PageDown >/dev/null

@@ -19,3 +19,6 @@ export CAP_MEM="${CAP_MEM:-4G}" CAP_CPU_PCT="${CAP_CPU_PCT:-20}"
 
 # The deploy script against fakes (no phone, no port 47391).
 scripts/test_deploy.sh
+
+# The agent flows' reader-header parsing (no agent needed).
+tools/agent/flows/test_reader_nav.sh

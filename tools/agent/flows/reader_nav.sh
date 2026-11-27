@@ -9,8 +9,11 @@ readonly HEADER='^#[0-9]+ group "(.+) \| ([0-9]+) / ([0-9]+)"'
 now_ms() { date +%s%3N; }
 
 # Prints "<chapter>|<page>|<count>" from the controls' header, or nothing.
+# A downloaded chapter's header carries " | Downloaded" after the name: cut,
+# so the name field never holds a "|".
 header() {
-  drive tree 2>/dev/null | sed -nE "s@${HEADER}.*@\1|\2|\3@p" | head -n 1
+  drive tree 2>/dev/null | sed -nE "s@${HEADER}.*@\1|\2|\3@p" |
+    sed -E 's@ \| Downloaded\|@|@' | head -n 1
 }
 
 # The header, waiting up to 10 s for it (the controls show after a tap).

@@ -75,6 +75,22 @@ void main() {
     expect(await probes(), [contains('waited on turn from img.test')]);
   });
 
+  test('reading page by page through the look-aheads logs no wait', () async {
+    final s = f.make();
+    await s.open();
+    await s.image(0);
+    await pumpEventQueue();
+    for (var p = 1; p <= 3; p++) {
+      f.clock = f.clock.add(const Duration(seconds: 3));
+      s.onItem(s.strip.itemForPage(p));
+      await s.image(p);
+      await pumpEventQueue();
+    }
+    final all = await probes();
+    expect(all, isEmpty);
+    expect(all.where((e) => e.contains('after turn')), isEmpty);
+  });
+
   test('the first page past a chapter edge names advance', () async {
     await f.prefs.saveSettings(const ReaderSettings(prefetchAhead: 0));
     final gate = f.imageGates['https://img.test/c/3/0.png'] = Completer();
