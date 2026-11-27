@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 /// The in-app runtime for Tachiyomi/Keiyoushi extension APKs (Android
@@ -19,7 +20,30 @@ abstract interface class ExtensionRuntime {
     required String url,
     String? imageUrl,
   });
+
+  /// Cancels every background call in flight ([runAsBackground]); each
+  /// throws [ExtensionCallCancelled]. Sent when a shown page starts
+  /// loading: downloads beside an open made its page list and page 1 take
+  /// 1 s each instead of 0.2 s (64f0bd6f).
+  Future<void> cancelBackground();
 }
+
+/// A background call the host cancelled for a shown page: not a failure,
+/// the caller runs it again once the shown page is in.
+class ExtensionCallCancelled extends ExtensionRuntimeException {
+  /// Creates the error.
+  const new() : super('cancelled');
+}
+
+final _background = Object();
+
+/// Runs [body] as background work (a download): its [ExtensionRuntime]
+/// calls are marked so [ExtensionRuntime.cancelBackground] can stop them.
+T runAsBackground<T>(T Function() body) =>
+    runZoned(body, zoneValues: {_background: true});
+
+/// Whether the current code runs inside [runAsBackground].
+bool get isBackgroundCall => Zone.current[_background] == true;
 
 /// A failed [ExtensionRuntime] call, with the extension's own message.
 class ExtensionRuntimeException implements Exception {

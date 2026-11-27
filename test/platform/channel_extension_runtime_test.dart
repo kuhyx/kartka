@@ -50,6 +50,30 @@ void main() {
     );
   });
 
+  test('background calls say so; a cancelled one throws its own type '
+      '(64f0bd6f)', () async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      if (call.method == 'pages') {
+        throw PlatformException(code: 'cancelled', message: 'cancelled');
+      }
+      return null;
+    });
+    const runtime = ChannelExtensionRuntime();
+    await runtime.invoke('details', {'id': '1'});
+    await expectLater(
+      runAsBackground(() => runtime.invoke('pages', {'id': '1'})),
+      throwsA(isA<ExtensionCallCancelled>()),
+    );
+    expect(calls.map((c) => c.arguments), [
+      {'id': '1'},
+      {'id': '1', 'background': true},
+    ]);
+    await runtime.cancelBackground();
+    expect(calls.last.method, 'cancelBackground');
+  });
+
   test('image URLs round-trip through loadExtImage', () async {
     final url = extImageUrl('42', index: 3, url: '/p/3', imageUrl: 'https://x');
     final plain = extImageUrl('42', index: 0);

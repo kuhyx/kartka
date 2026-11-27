@@ -88,6 +88,16 @@ void main() {
     });
   });
 
+  test('tells onStart of each new shown page, not of a rebuild', () {
+    var starts = 0;
+    final page = Completer<int>();
+    ShownPageWait(onStart: () => starts++)
+      ..hold(1, page.future)
+      ..hold(1, page.future)
+      ..hold(1, Completer<int>().future);
+    expect(starts, 2);
+  });
+
   test("releasing an owner drops only that owner's holds", () {
     fakeAsync((async) {
       final wait = timed(async);

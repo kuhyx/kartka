@@ -15,11 +15,18 @@ class ChannelExtensionRuntime implements ExtensionRuntime {
     Map<String, Object?> args = const {},
   ]) async {
     try {
-      return await channel.invokeMethod<Object?>(method, args);
+      return await channel.invokeMethod<Object?>(
+        method,
+        isBackgroundCall ? {...args, 'background': true} : args,
+      );
     } on PlatformException catch (e) {
+      if (e.code == 'cancelled') throw const ExtensionCallCancelled();
       throw ExtensionRuntimeException(e.message ?? e.code);
     }
   }
+
+  @override
+  Future<void> cancelBackground() => invoke('cancelBackground');
 
   @override
   Future<Uint8List> image(

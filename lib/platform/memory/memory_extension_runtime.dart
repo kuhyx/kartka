@@ -35,6 +35,9 @@ class FakeExtensionRuntime implements ExtensionRuntime {
   }
 
   @override
+  Future<void> cancelBackground() => invoke('cancelBackground');
+
+  @override
   Future<Uint8List> image(
     String sourceId, {
     required int index,

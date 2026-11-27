@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:go_router/go_router.dart';
 import 'package:kartka/app/feature.dart';
 import 'package:kartka/app/routes.dart';
@@ -31,7 +33,9 @@ KartkaFeature readerFeature(KartkaEnv env, {ReaderSystem? system}) {
   // One per app run too: it keeps every provider's list between opens.
   final sources = SourceLookup(() => env.registry.all<SourceProvider>());
   // One per app run: downloads wait on it through the registry.
-  final shown = ShownPageWait();
+  final shown = ShownPageWait(
+    onStart: () => unawaited(env.platform.extensions?.cancelBackground()),
+  );
   return KartkaFeature(
     id: 'reader',
     services: [

@@ -47,6 +47,15 @@ move between phone and desktop unchanged.
 | `chapters` | `id`, `url` | `[chapter]` (`getMangaUpdate`, chapters only) |
 | `pages` | `id`, `url` | `[{index, url, imageUrl?}]` |
 | `image` | `id`, `index`, `url`, `imageUrl?` | bytes, fetched with `HttpSource.getImage` |
+| `cancelBackground` | none | count; cancels every call sent with `background: true` |
+
+Downloads run inside `runAsBackground`, so each of their calls carries
+`background: true`. A shown page that starts loading sends
+`cancelBackground`; each cancelled call fails with code `cancelled`
+(`ExtensionCallCancelled`), and the download engine runs it again after
+the shown page is in, without spending a retry. Downloads in flight made
+an open's page list and page 1 take about 1 s each instead of 0.2 s
+(64f0bd6f).
 
 `ext` = `{pkg, name, versionName, versionCode, nsfw, sources: [{id, name,
 lang, supportsLatest, baseUrl}]}`. Source ids are strings: they exceed

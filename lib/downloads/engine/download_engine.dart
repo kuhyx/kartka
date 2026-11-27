@@ -153,9 +153,16 @@ class DownloadEngine {
     bool Function() shouldStop,
     Future<T> Function() job,
   ) {
-    Future<T> attempt() => limiter.run(host, () {
-      if (shouldStop()) throw const DownloadStopped();
-      return job();
+    Future<T> attempt() => limiter.run(host, () async {
+      while (true) {
+        if (shouldStop()) throw const DownloadStopped();
+        try {
+          return await runAsBackground(job);
+        } on ExtensionCallCancelled {
+          // Cancelled for a shown page (64f0bd6f): not a failure. The job
+          // waits for the shown page again before its next call.
+        }
+      }
     });
     return retry(
       attempt,

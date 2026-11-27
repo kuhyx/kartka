@@ -8,7 +8,11 @@ import 'package:kartka/core/source/shown_page_gate.dart';
 class ShownPageWait implements ShownPageGate {
   /// A gate that holds work back at most [maxHold] after the newest shown
   /// page started, reading [now].
-  new({this.maxHold = const Duration(seconds: 3), this.now = DateTime.now});
+  new({
+    this.maxHold = const Duration(seconds: 3),
+    this.now = DateTime.now,
+    this.onStart,
+  });
 
   /// How long after a shown page started [idle] still waits for it: a page
   /// stuck on a slow host must not stall a download behind it, page after
@@ -17,6 +21,10 @@ class ShownPageWait implements ShownPageGate {
 
   /// The clock.
   final DateTime Function() now;
+
+  /// Told each time a new shown page starts loading (a rebuild of the same
+  /// page is not new): the app cancels background calls then (64f0bd6f).
+  final void Function()? onStart;
 
   final _holds =
       <Object, ({Object owner, Future<Object?> bytes, DateTime at})>{};
@@ -37,6 +45,7 @@ class ShownPageWait implements ShownPageGate {
     }
     final token = Object();
     _holds[token] = (owner: owner, bytes: bytes, at: now());
+    onStart?.call();
     void release() => _release(token);
     bytes
         .then<void>((_) => release(), onError: (Object _) => release())

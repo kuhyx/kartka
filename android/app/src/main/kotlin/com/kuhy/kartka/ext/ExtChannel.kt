@@ -11,11 +11,15 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -30,23 +34,37 @@ class ExtChannel(private val app: Application, messenger: BinaryMessenger) {
     private var loader: ExtLoader? = null
     private val exts = linkedMapOf<String, LoadedExt>()
     private val failed = linkedMapOf<String, String>()
+    private val background = BackgroundCalls()
     private val inFlight = hashMapOf<String, Deferred<SMangaUpdate>>()
 
     init {
         channel.setMethodCallHandler { call, result ->
-            scope.launch {
+            // On the main thread, so it lands before the reader's next call.
+            if (call.method == "cancelBackground") {
+                result.success(background.cancelAll())
+                return@setMethodCallHandler
+            }
+            val job = scope.launch(start = CoroutineStart.LAZY) {
                 val reply = try {
                     Result.success(handle(call))
                 } catch (e: Throwable) {
                     Result.failure(e)
                 }
-                withContext(Dispatchers.Main) {
+                val cancelled = reply.isFailure && !isActive
+                // A cancelled call still answers, or Dart waits forever.
+                withContext(NonCancellable + Dispatchers.Main) {
+                    if (cancelled) {
+                        result.error("cancelled", "cancelled", null)
+                        return@withContext
+                    }
                     reply.fold(
                         { if (it === NotImplemented) result.notImplemented() else result.success(it) },
                         { result.error("ext_error", it.message ?: it.javaClass.name, it.javaClass.name) },
                     )
                 }
             }
+            if (call.argument<Boolean>("background") == true) background.add(job)
+            job.start()
         }
     }
 
@@ -141,7 +159,9 @@ class ExtChannel(private val app: Application, messenger: BinaryMessenger) {
         val s = source(call) as? HttpSource ?: throw ExtError("not an HTTP source")
         val page = Page(call.argument<Int>("index")!!, call.argument<String>("url") ?: "", call.argument<String>("imageUrl"))
         if (page.imageUrl.isNullOrEmpty()) page.imageUrl = s.getImageUrl(page)
-        return s.getImage(page).use { it.body.bytes() }
+        // Interruptible: most of a page's time is its body, read after the
+        // call's own cancel hook is gone (cancelBackground).
+        return s.getImage(page).use { runInterruptible { it.body.bytes() } }
     }
 
     private object NotImplemented
