@@ -141,7 +141,7 @@ second across all its hosts. An open needs 2 in a row (list, page 1), so
 admit at -271 ms + 1 s; page 1 at +955 = -46 + 1 s; page 1 on screen
 1.22 s). Kartka keeps the site's limit; it does not pace downloads. The
 open probe times open start to page 1's bytes as one wait, so such an
-open is reported (`open waited on image` or the slowest list step).
+open is reported as `open to page 1 waited on <image or list step>`.
 `tools/agent/flows/f4_reader_sweep.sh` opens the newest chapters on
 Updates headless and fails on any open over 1 s.
 

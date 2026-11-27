@@ -114,7 +114,8 @@ extension _Open on ReaderSession {
         final image = deps.now().difference(ready);
         if (listSlow || image >= const Duration(seconds: 1)) return;
         if (total + image < const Duration(seconds: 1)) return;
-        _openSlow(image > slowestDuration ? 'image' : slowestStep);
+        final step = image > slowestDuration ? 'image' : slowestStep;
+        _openSlow(step, what: 'open to page 1');
       }, onError: (Object _) => firstPage.complete()).ignore();
     }
     // Until the list is in, the next chapter is not known: "loading".
@@ -126,11 +127,12 @@ extension _Open on ReaderSession {
     notifyListeners();
   }
 
-  /// The open probe's report: page 1 came 1 s or more after the open
-  /// started, mostly on [step]. One text per step and source keeps it to
-  /// one board ticket each.
-  void _openSlow(String step) => _logOpen(
-    ReaderLoadException('ReaderProbe: $sourceId open waited on $step'),
+  /// The open probe's report: [what] (the open up to its page list, or
+  /// up to page 1's bytes) took 1 s or more, mostly on [step]. One text
+  /// per kind, step and source keeps it to one board ticket each; the
+  /// two kinds never share one (`open waited on pages` is 64f0bd6f).
+  void _openSlow(String step, {String what = 'open'}) => _logOpen(
+    ReaderLoadException('ReaderProbe: $sourceId $what waited on $step'),
     StackTrace.current,
   );
 

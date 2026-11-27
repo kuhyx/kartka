@@ -122,11 +122,12 @@ void main() {
 
     // 64f0bd6f: the list (0.32 s) and page 1 (0.79 s) were each under 1 s,
     // so neither probe spoke, yet page 1 showed 1.2 s after the tap.
-    Future<List<DiagnosticEntry>> openWith(Duration image) async {
+    Future<List<DiagnosticEntry>> openWith(
+      Duration image, {
+      Duration list = const Duration(milliseconds: 400),
+    }) async {
       final gate = f.imageGates['https://img.test/c/2/0.png'] = Completer();
-      final s = f.make(
-        source: _SlowPages(f, const Duration(milliseconds: 400)),
-      );
+      final s = f.make(source: _SlowPages(f, list));
       await s.open();
       final first = s.image(0);
       f.clock = f.clock.add(image);
@@ -139,8 +140,18 @@ void main() {
     test('list and page 1 under 1 s each but 1 s together report', () async {
       final probes = await openWith(const Duration(milliseconds: 700));
       expect(probes, hasLength(1));
-      expect(probes.single.error, contains('open waited on image'));
+      expect(probes.single.error, contains('open to page 1 waited on image'));
       expect(isUploadedEntry(probes.single), isTrue);
+    });
+
+    test('a combined wait mostly on the list keeps its own text', () async {
+      // `open waited on pages` is 64f0bd6f: the page list alone >= 1 s.
+      final probes = await openWith(
+        const Duration(milliseconds: 400),
+        list: const Duration(milliseconds: 700),
+      );
+      expect(probes, hasLength(1));
+      expect(probes.single.error, contains('open to page 1 waited on pages'));
     });
 
     test('list and page 1 under 1 s together log no probe', () async {
