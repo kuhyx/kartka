@@ -92,14 +92,8 @@ extension _Open on ReaderSession {
     // Probe: log the single slowest step if the whole open up to ready
     // took >= 1 s.
     final total = deps.now().difference(openStart);
-    if (total >= const Duration(seconds: 1) && slowestStep.isNotEmpty) {
-      _logOpen(
-        ReaderLoadException(
-          'ReaderProbe: $sourceId open waited on $slowestStep',
-        ),
-        StackTrace.current,
-      );
-    }
+    final listSlow = total >= const Duration(seconds: 1);
+    if (listSlow && slowestStep.isNotEmpty) _openSlow(slowestStep);
     _prefetch();
     // The shown page and the look-aheads it fetches next, at most 2.
     final ahead = settings.prefetchAhead < 2 ? settings.prefetchAhead : 2;
@@ -113,13 +107,15 @@ extension _Open on ReaderSession {
     if (_flat.isEmpty) {
       firstPage.complete();
     } else {
-      _cache!
-          .get(page)
-          .then<void>(
-            (_) => firstPage.complete(),
-            onError: (Object _) => firstPage.complete(),
-          )
-          .ignore();
+      final ready = deps.now();
+      _cache!.get(page).then<void>((_) {
+        firstPage.complete();
+        // 64f0bd6f: the list and page 1 each under 1 s, together over.
+        final image = deps.now().difference(ready);
+        if (listSlow || image >= const Duration(seconds: 1)) return;
+        if (total + image < const Duration(seconds: 1)) return;
+        _openSlow(image > slowestDuration ? 'image' : slowestStep);
+      }, onError: (Object _) => firstPage.complete()).ignore();
     }
     // Until the list is in, the next chapter is not known: "loading".
     if (!arrived) {
@@ -129,6 +125,14 @@ extension _Open on ReaderSession {
     _maybeLoadNext();
     notifyListeners();
   }
+
+  /// The open probe's report: page 1 came 1 s or more after the open
+  /// started, mostly on [step]. One text per step and source keeps it to
+  /// one board ticket each.
+  void _openSlow(String step) => _logOpen(
+    ReaderLoadException('ReaderProbe: $sourceId open waited on $step'),
+    StackTrace.current,
+  );
 
   /// The list arrived after the first page showed: every loaded chapter
   /// gets its neighbours, a chapter loaded from the stored list that is no

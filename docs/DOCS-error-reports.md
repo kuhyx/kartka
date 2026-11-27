@@ -133,6 +133,15 @@ new shown page cancels them (DOCS-device-extensions, `cancelBackground`).
 Pixel, MangaFire, 2+ downloads queued: page 1 on screen 2.3-2.5 s after
 the tap before, 0.69-0.85 s after on 4 of 5 opens; one took 1.10-1.26 s,
 inside the quiet opens' 0.69-0.97 s; the probe logged none of them.
+What remains is the source's own limit, not kartka: Keiyoushi's lib adds
+a network interceptor to MangaFire that admits 2 requests per rolling
+second across all its hosts. An open needs 2 in a row (list, page 1), so
+2 download requests admitted in the second before the tap delay it
+(OkHttp EventListener build: list let in at tap +728 ms = a download's
+admit at -271 ms + 1 s; page 1 at +955 = -46 + 1 s; page 1 on screen
+1.22 s). Kartka keeps the site's limit; it does not pace downloads. The
+open probe times open start to page 1's bytes as one wait, so such an
+open is reported (`open waited on image` or the slowest list step).
 `tools/agent/flows/f4_reader_sweep.sh` opens the newest chapters on
 Updates headless and fails on any open over 1 s.
 
