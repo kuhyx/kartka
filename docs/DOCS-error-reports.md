@@ -130,6 +130,9 @@ missing source fails at once, and one listed later loads by itself.
 An open beside running downloads (64f0bd6f): download calls already in
 flight made its page list and page 1 take ~1 s each (0.2 s alone), so each
 new shown page cancels them (DOCS-device-extensions, `cancelBackground`).
+Pixel, MangaFire, 2+ downloads queued: page 1 on screen 2.3-2.5 s after
+the tap before, 0.69-0.85 s after on 4 of 5 opens; one took 1.10-1.26 s,
+inside the quiet opens' 0.69-0.97 s; the probe logged none of them.
 `tools/agent/flows/f4_reader_sweep.sh` opens the newest chapters on
 Updates headless and fails on any open over 1 s.
 
