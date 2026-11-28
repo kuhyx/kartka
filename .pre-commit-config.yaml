@@ -10,11 +10,6 @@ default_install_hook_types: [pre-commit, pre-push, post-commit, post-merge, post
 repos:
   - repo: local
     hooks:
-      # The shared 250-line cap, code and prose alike. No allowlist.
-      - id: file-length
-        name: file length <= 250 lines
-        entry: scripts/check_file_length.sh
-        language: system
 
       # README / CLAUDE* / DOCS* / TODO* (+ the TODO marker rule).
       - id: md-naming

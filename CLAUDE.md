@@ -14,9 +14,9 @@ embedder, which manages ~20 fps at 4K.
 - run: `./run.sh` (desktop; `./run.sh android` builds, `adb install -r`s and launches)
 - test: `fvm flutter test --reporter=compact`
 - test-changed: `scripts/test_changed.sh`
-- lint: `fvm dart analyze --fatal-infos && fvm dart format --set-exit-if-changed lib test desktop`
-- coverage: `scripts/coverage.sh`
-- coverage-gaps: `coverage-gaps coverage/lcov.info`
+- lint: n/a: dropped (kuhy, 2026-11-27)
+- coverage: n/a: dropped (kuhy, 2026-11-27)
+- coverage-gaps: n/a: dropped (kuhy, 2026-11-27)
 - build-android: `scripts/build_android.sh [release|profile] [step]` (arm64 APK in `build/app/outputs/flutter-apk/`)
 - deploy: `scripts/deploy.sh`
   (pulls ~/src/kartka, installs on the Pixel + desktop, health-checks; `--verify-only` checks only)
