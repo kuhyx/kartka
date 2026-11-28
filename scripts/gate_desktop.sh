@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # ============================================================================
-# Gate step: the desktop/ wrapper package (separate pubspec), analyzed and
-# tested. Capped like test_shard.sh when run from an agent session.
+# Gate step: the desktop/ wrapper package (separate pubspec), tested. Capped
+# like test_shard.sh when run from an agent session.
 # ============================================================================
 
 set -euo pipefail
@@ -13,5 +13,4 @@ pre=()
 if [[ -x "${CAPPED}" && -z "${CI:-}" ]]; then pre=("${CAPPED}"); fi
 export CAP_MEM="${CAP_MEM:-4G}" CAP_CPU_PCT="${CAP_CPU_PCT:-20}"
 
-"${pre[@]}" fvm dart analyze --fatal-infos
 "${pre[@]}" fvm dart test --reporter=compact

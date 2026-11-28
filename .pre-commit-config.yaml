@@ -89,7 +89,7 @@ repos:
       # Manual stage = the gate, split so each call stays under the 60 s cap.
       # `scripts/check_gate_stamp.sh full --list` prints the order.
       - id: gate-static
-        name: gate (analyze + format)
+        name: gate (format + script tests)
         entry: scripts/gate_static.sh
         language: system
         pass_filenames: false
@@ -160,7 +160,7 @@ repos:
         require_serial: true
         stages: [manual]
       - id: gate-desktop
-        name: gate (desktop wrapper analyze + tests)
+        name: gate (desktop wrapper tests)
         entry: scripts/gate_desktop.sh
         language: system
         pass_filenames: false
